@@ -10,7 +10,12 @@ import os
 scheduler = BackgroundScheduler()
 
 def start_scheduler():
-    """Start the background scheduler"""
+    """Start the background scheduler (only once)"""
+    # Don't start if already running
+    if scheduler.running:
+        print("[*] Scheduler already running")
+        return
+
     sync_interval = int(os.getenv('SYNC_INTERVAL', 6))
 
     scheduler.add_job(

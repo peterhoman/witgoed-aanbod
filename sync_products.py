@@ -11,28 +11,32 @@ from models import db, Product, Category, SyncLog
 import json
 
 class BolAPI:
-    """Bol.com API client"""
+    """Bol.com API client - using Open Partner API"""
 
     def __init__(self, client_id, client_secret):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.base_url = "https://api.bol.com/retailer"
+        self.base_url = "https://api.bol.com/v2"
         self.token = None
-        self.token_expires = None
 
     def authenticate(self):
         """Get OAuth token from Bol.com"""
-        auth_url = f"{self.base_url}/login"
-        payload = {
-            "client_id": self.client_id,
-            "client_secret": self.client_secret
-        }
+        auth_url = f"{self.base_url}/oauth/token"
 
         try:
-            response = requests.post(auth_url, json=payload, timeout=10)
+            response = requests.post(
+                auth_url,
+                data={
+                    "client_id": self.client_id,
+                    "client_secret": self.client_secret,
+                    "grant_type": "client_credentials"
+                },
+                timeout=10
+            )
             response.raise_for_status()
             data = response.json()
             self.token = data.get('access_token')
+            print(f"[+] Authenticated successfully")
             return True
         except Exception as e:
             print(f"[!] Authentication failed: {e}")
@@ -45,16 +49,15 @@ class BolAPI:
             "Accept": "application/json"
         }
 
-    def fetch_products(self, category_name, limit=100):
+    def fetch_products(self, category_name, limit=50):
         """Fetch products for a category"""
         if not self.token:
             self.authenticate()
 
-        url = f"{self.base_url}/catalogs/search"
+        url = f"{self.base_url}/products"
         params = {
-            "q": category_name,
-            "limit": limit,
-            "offset": 0
+            "search": category_name,
+            "limit": limit
         }
 
         try:

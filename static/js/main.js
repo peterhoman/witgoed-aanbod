@@ -2,25 +2,71 @@
 // WITGOEDAANBOD.NL - Main JS
 // ============================================
 
-// Cookie Banner
+// Cookie Consent Modal
 document.addEventListener('DOMContentLoaded', function() {
-    const cookieBanner = document.getElementById('cookie-banner');
+    const cookieModal = document.getElementById('cookie-banner');
     const cookieAccept = document.getElementById('cookie-accept');
+    const cookieReject = document.getElementById('cookie-reject');
+    const cookieClose = document.getElementById('cookie-close');
+    const cookieAnalytics = document.getElementById('cookie-analytics');
+    const cookieMarketing = document.getElementById('cookie-marketing');
 
-    // Check if user already accepted
-    if (!localStorage.getItem('cookies-accepted')) {
-        cookieBanner.style.display = 'flex';
-    } else {
-        cookieBanner.style.display = 'none';
+    function showCookieModal() {
+        if (!localStorage.getItem('cookie-consent')) {
+            cookieModal.classList.remove('hidden');
+        }
     }
 
-    // Accept button
+    function saveCookieConsent(analytics = false, marketing = false) {
+        const consent = {
+            essential: true,
+            analytics: analytics,
+            marketing: marketing,
+            date: new Date().toISOString()
+        };
+        localStorage.setItem('cookie-consent', JSON.stringify(consent));
+        cookieModal.classList.add('hidden');
+
+        if (analytics) {
+            loadAnalytics();
+        }
+    }
+
+    function loadAnalytics() {
+        // Load Google Analytics or other tracking
+        console.log('[Analytics] Tracking enabled');
+    }
+
+    // Show modal on first visit
+    showCookieModal();
+
+    // Accept all
     if (cookieAccept) {
         cookieAccept.addEventListener('click', function() {
-            localStorage.setItem('cookies-accepted', 'true');
-            cookieBanner.style.display = 'none';
+            saveCookieConsent(true, true);
         });
     }
+
+    // Reject (essential only)
+    if (cookieReject) {
+        cookieReject.addEventListener('click', function() {
+            saveCookieConsent(false, false);
+        });
+    }
+
+    // Close button
+    if (cookieClose) {
+        cookieClose.addEventListener('click', function() {
+            cookieModal.classList.add('hidden');
+        });
+    }
+
+    // Close on outside click
+    cookieModal.addEventListener('click', function(e) {
+        if (e.target === cookieModal) {
+            cookieModal.classList.add('hidden');
+        }
+    });
 
     // Lazy loading images
     if ('IntersectionObserver' in window) {

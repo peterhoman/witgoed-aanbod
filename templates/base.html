@@ -83,10 +83,44 @@
         </div>
     </footer>
 
-    <!-- Cookie Consent Banner -->
-    <div id="cookie-banner" class="cookie-banner">
-        <p>We gebruiken cookies voor analyse en beter ervaring. Door verder te browsing accepteer je ons <a href="/cookies">cookiebeleid</a>.</p>
-        <button id="cookie-accept" class="btn-primary">Accepteren</button>
+    <!-- Cookie Consent Modal -->
+    <div id="cookie-banner" class="cookie-modal-overlay hidden">
+        <div class="cookie-modal">
+            <button class="cookie-modal-close" id="cookie-close">&times;</button>
+            <h2>Cookie Instellingen</h2>
+            <p>WitgoedAanbod.nl gebruikt cookies voor analyses, persoonlijke instellingen en marketing. Lees meer in ons <a href="/cookies" target="_blank">cookiebeleid</a>.</p>
+
+            <div class="cookie-options">
+                <div class="cookie-option">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="cookie-essential" checked disabled>
+                        <span><strong>Essentiële Cookies</strong></span>
+                    </label>
+                    <p class="cookie-desc">Noodzakelijk voor het functioneren van de website (GDPR verplicht)</p>
+                </div>
+
+                <div class="cookie-option">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="cookie-analytics">
+                        <span><strong>Analytische Cookies</strong></span>
+                    </label>
+                    <p class="cookie-desc">Helpt ons begrijpen hoe je de site gebruikt</p>
+                </div>
+
+                <div class="cookie-option">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="cookie-marketing">
+                        <span><strong>Marketing Cookies</strong></span>
+                    </label>
+                    <p class="cookie-desc">Voor gerichte advertenties en aanbiedingen</p>
+                </div>
+            </div>
+
+            <div class="cookie-buttons">
+                <button id="cookie-reject" class="btn-secondary">Alleen Essentieel</button>
+                <button id="cookie-accept" class="btn-primary">Alles Accepteren</button>
+            </div>
+        </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>

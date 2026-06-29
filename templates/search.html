@@ -41,6 +41,22 @@
                     <input type="range" id="max_price" name="max_price" min="0" max="10000" step="50" value="10000">
                 </div>
 
+                <!-- Brand Filter -->
+                {% if available_brands %}
+                <div class="filter-group">
+                    <label>Merk</label>
+                    <div class="brand-checkboxes">
+                        {% for brand in available_brands %}
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="brand" value="{{ brand }}"
+                                {% if brand in selected_brands %}checked{% endif %}>
+                            {{ brand }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
                 <button type="submit" class="btn-primary">Filter toepassen</button>
             </form>
         </aside>

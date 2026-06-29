@@ -19,10 +19,12 @@ def create_app(config_name=None):
     from routes.main import main_bp
     from routes.products import products_bp
     from routes.legal import legal_bp
+    from routes.seo import seo_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(products_bp)
     app.register_blueprint(legal_bp)
+    app.register_blueprint(seo_bp)
 
     @app.errorhandler(404)
     def not_found(e):

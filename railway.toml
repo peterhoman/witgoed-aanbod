@@ -2,6 +2,6 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "gunicorn app:create_app()"
+startCommand = "gunicorn wsgi:app"
 healthcheckPath = "/"
 healthcheckTimeout = 5

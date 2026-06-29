@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.title }} | WitgoedAanbod.nl{% endblock %}
+{% block meta_description %}{{ product.ai_meta_description or product.description[:160] }}{% endblock %}
+
+{% block content %}
+<div class="container product-detail">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+        <a href="/">Home</a> /
+        <a href="/category/{{ product.category.slug }}">{{ product.category.name }}</a> /
+        <span>{{ product.title[:50] }}</span>
+    </nav>
+
+    <div class="product-main">
+        <!-- Product Image -->
+        <div class="product-image-section">
+            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="product-image-large" loading="lazy">
+        </div>
+
+        <!-- Product Info -->
+        <div class="product-details">
+            <h1>{{ product.title }}</h1>
+            <p class="brand">{{ product.brand or 'Merk onbekend' }}</p>
+
+            <div class="price-section">
+                <span class="price-large">€{{ "%.2f"|format(product.price) }}</span>
+                {% if product.is_available %}
+                <span class="availability available">Op voorraad</span>
+                {% else %}
+                <span class="availability unavailable">Uitverkocht</span>
+                {% endif %}
+            </div>
+
+            <!-- Product Description -->
+            <div class="description-section">
+                <h2>Beschrijving</h2>
+                <p>{{ product.ai_description or product.description }}</p>
+            </div>
+
+            <!-- Specifications -->
+            {% if product.specs %}
+            <div class="specs-section">
+                <h2>Specificaties</h2>
+                <dl>
+                    {% for key, value in product.specs.items() %}
+                    <dt>{{ key }}</dt>
+                    <dd>{{ value }}</dd>
+                    {% endfor %}
+                </dl>
+            </div>
+            {% endif %}
+
+            <!-- CTA Button -->
+            <div class="cta-section">
+                <a href="{{ product.bol_url }}" target="_blank" class="btn-large btn-primary">
+                    Bekijk & Koop op Bol.com →
+                </a>
+                <p class="affiliate-disclosure">
+                    <small>WitgoedAanbod.nl is deelnemer aan het Bol.com partnerprogramma. Als je via deze link iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.</small>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <section class="related-products">
+        <h2>Gerelateerde Producten</h2>
+        <div class="product-grid">
+            {% for related in related_products %}
+            <article class="product-card">
+                <a href="/product/{{ related.slug }}" class="product-image">
+                    <img src="{{ related.image_url }}" alt="{{ related.title }}" loading="lazy">
+                </a>
+                <div class="product-info">
+                    <h3><a href="/product/{{ related.slug }}">{{ related.title }}</a></h3>
+                    <p class="brand">{{ related.brand or 'Merk onbekend' }}</p>
+                    <div class="product-meta">
+                        <span class="price">€{{ "%.2f"|format(related.price) }}</span>
+                        {% if related.is_available %}
+                        <span class="availability available">Op voorraad</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ related.bol_url }}" target="_blank" class="btn-secondary">Bekijk op Bol.com</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+
+<!-- Schema.org Product Schema -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": "{{ product.title }}",
+    "description": "{{ product.description or product.title }}",
+    "image": "{{ product.image_url }}",
+    "brand": {
+        "@type": "Brand",
+        "name": "{{ product.brand or 'Onbekend' }}"
+    },
+    "offers": {
+        "@type": "Offer",
+        "url": "{{ product.bol_url }}",
+        "priceCurrency": "EUR",
+        "price": "{{ product.price }}",
+        "availability": "https://schema.org/{% if product.is_available %}InStock{% else %}OutOfStock{% endif %}"
+    }
+}
+</script>
+{% endblock %}

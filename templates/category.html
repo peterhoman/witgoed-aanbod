@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - Vergelijk op WitgoedAanbod.nl{% endblock %}
+{% block meta_description %}Vergelijk en koop {{ category.name }} op Bol.com. Ontdek de beste aanbiedingen en deals.{% endblock %}
+
+{% block content %}
+<div class="container category-page">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+        <a href="/">Home</a> / <span>{{ category.name }}</span>
+    </nav>
+
+    <!-- Category Header -->
+    <header class="category-header">
+        <h1>{{ category.name }}</h1>
+        {% if category.ai_intro %}
+        <p>{{ category.ai_intro }}</p>
+        {% else %}
+        <p>Vergelijk en vind de beste {{ category.name }} op Bol.com. Alle producten, prijzen en aanbiedingen op één plek.</p>
+        {% endif %}
+    </header>
+
+    <!-- Filters Sidebar -->
+    <div class="category-layout">
+        <aside class="filters-sidebar">
+            <h3>Filters</h3>
+
+            <form method="get" action="" class="filters-form">
+                <!-- Price Range -->
+                <div class="filter-group">
+                    <label for="min_price">Min. prijs: €<span id="min-price-label">0</span></label>
+                    <input type="range" id="min_price" name="min_price" min="0" max="10000" step="50" value="0">
+
+                    <label for="max_price">Max. prijs: €<span id="max-price-label">10000</span></label>
+                    <input type="range" id="max_price" name="max_price" min="0" max="10000" step="50" value="10000">
+                </div>
+
+                <button type="submit" class="btn-primary">Filter toepassen</button>
+            </form>
+        </aside>
+
+        <!-- Products Grid -->
+        <div class="category-products">
+            {% if products %}
+            <div class="product-grid">
+                {% for product in products %}
+                <article class="product-card">
+                    <a href="/product/{{ product.slug }}" class="product-image">
+                        <img src="{{ product.image_url }}" alt="{{ product.title }}" loading="lazy">
+                    </a>
+                    <div class="product-info">
+                        <h3><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
+                        <p class="brand">{{ product.brand or 'Merk onbekend' }}</p>
+                        <div class="product-meta">
+                            <span class="price">€{{ "%.2f"|format(product.price) }}</span>
+                            {% if product.is_available %}
+                            <span class="availability available">Op voorraad</span>
+                            {% else %}
+                            <span class="availability unavailable">Uitverkocht</span>
+                            {% endif %}
+                        </div>
+                        <a href="{{ product.bol_url }}" target="_blank" class="btn-primary">Bekijk op Bol.com</a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if pagination.pages > 1 %}
+            <nav class="pagination">
+                {% if pagination.has_prev %}
+                <a href="?page={{ pagination.prev_num }}" class="btn-secondary">← Vorige</a>
+                {% endif %}
+
+                <span class="page-info">Pagina {{ pagination.page }} van {{ pagination.pages }}</span>
+
+                {% if pagination.has_next %}
+                <a href="?page={{ pagination.next_num }}" class="btn-secondary">Volgende →</a>
+                {% endif %}
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="no-products">
+                <p>Geen producten gevonden in deze categorie.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('min_price').addEventListener('input', function() {
+    document.getElementById('min-price-label').textContent = this.value;
+});
+document.getElementById('max_price').addEventListener('input', function() {
+    document.getElementById('max-price-label').textContent = this.value;
+});
+</script>
+{% endblock %}

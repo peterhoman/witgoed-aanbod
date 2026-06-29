@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}WitgoedAanbod.nl - Vergelijk Witgoed & Huishoudapparaten{% endblock %}
+{% block meta_description %}Vergelijk wasmachines, drogers, koelkasten en meer. Vind de beste deals en laagste prijzen op Bol.com.{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Vergelijk Witgoed & Huishoudapparaten</h1>
+            <p>Vind de beste deals op wasmachines, drogers, koelkasten en meer. Alle aanbiedingen van Bol.com op één plek.</p>
+            <form action="/search" method="get" class="hero-search">
+                <input type="text" name="q" placeholder="Zoek een product..." required>
+                <button type="submit">Zoeken</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="featured-section">
+        <h2>Aanbevolen Producten</h2>
+        <div class="product-grid">
+            {% for product in featured_products %}
+            <article class="product-card">
+                <a href="/product/{{ product.slug }}" class="product-image">
+                    <img src="{{ product.image_url }}" alt="{{ product.title }}" loading="lazy">
+                </a>
+                <div class="product-info">
+                    <h3><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
+                    <p class="brand">{{ product.brand or 'Merk onbekend' }}</p>
+                    <div class="product-meta">
+                        <span class="price">€{{ "%.2f"|format(product.price) }}</span>
+                        {% if product.is_available %}
+                        <span class="availability available">Op voorraad</span>
+                        {% else %}
+                        <span class="availability unavailable">Uitverkocht</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ product.bol_url }}" target="_blank" class="btn-primary">Bekijk op Bol.com</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Categories Preview -->
+    <section class="categories-section">
+        <h2>Populaire Categorieën</h2>
+        <div class="categories-grid">
+            {% for category in categories %}
+            <a href="/category/{{ category.slug }}" class="category-card">
+                <h3>{{ category.name }}</h3>
+                <p>{{ category.description or 'Ontdek meer →' }}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Info Section -->
+    <section class="info-section">
+        <h2>Hoe werkt WitgoedAanbod.nl?</h2>
+        <div class="info-grid">
+            <div class="info-card">
+                <h3>1. Zoeken</h3>
+                <p>Zoek het witgoed product dat je zoekt op onze site.</p>
+            </div>
+            <div class="info-card">
+                <h3>2. Vergelijken</h3>
+                <p>Vergelijk specs, prijzen en reviews van verschillende merken.</p>
+            </div>
+            <div class="info-card">
+                <h3>3. Kopen op Bol.com</h3>
+                <p>Klik door naar Bol.com en koop je product direct.</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}Vergelijk witgoed: wasmachines, drogers, koelkasten en meer. Vind de beste deals op Bol.com{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}/static/img/og-image.png{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ config.SITE_URL }}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.url }}">
+    <title>{% block title %}WitgoedAanbod.nl - Vergelijk Witgoed{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <a href="/" class="logo">
+                    <h1>WitgoedAanbod.nl</h1>
+                </a>
+                <form action="/search" method="get" class="search-form">
+                    <input type="text" name="q" placeholder="Zoek wasmachines, drogers..." required>
+                    <button type="submit">Zoeken</button>
+                </form>
+                <nav class="nav-secondary">
+                    <a href="/privacy">Privacy</a>
+                    <a href="/disclaimer">Disclaimer</a>
+                    <a href="/contact">Contact</a>
+                </nav>
+            </div>
+
+            <!-- Categories Navigation -->
+            <nav class="nav-categories">
+                <a href="/category/wasmachines">Wasmachines</a>
+                <a href="/category/drogers">Drogers</a>
+                <a href="/category/wasdroogcombinaties">Combi Was-Droog</a>
+                <a href="/category/koelkasten">Koelkasten</a>
+                <a href="/category/vaatwassers">Vaatwassers</a>
+                <a href="/category/magnetrons">Magnetrons</a>
+                <a href="/category/ovens">Ovens</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Over WitgoedAanbod</h3>
+                    <p>WitgoedAanbod.nl helpt je de beste witgoed producten vinden op Bol.com. Vergelijk prijzen, specificaties en reviews.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Categorieën</h3>
+                    <ul>
+                        <li><a href="/category/wasmachines">Wasmachines</a></li>
+                        <li><a href="/category/drogers">Drogers</a></li>
+                        <li><a href="/category/koelkasten">Koelkasten</a></li>
+                        <li><a href="/category/vaatwassers">Vaatwassers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Juridisch</h3>
+                    <ul>
+                        <li><a href="/privacy">Privacybeleid</a></li>
+                        <li><a href="/cookies">Cookiebeleid</a></li>
+                        <li><a href="/disclaimer">Affiliate Disclaimer</a></li>
+                        <li><a href="/voorwaarden">Algemene Voorwaarden</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 WitgoedAanbod.nl. WitgoedAanbod.nl is deelnemer aan het Bol.com partnerprogramma. Als je via onze links iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-banner" class="cookie-banner">
+        <p>We gebruiken cookies voor analyse en beter ervaring. Door verder te browsing accepteer je ons <a href="/cookies">cookiebeleid</a>.</p>
+        <button id="cookie-accept" class="btn-primary">Accepteren</button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

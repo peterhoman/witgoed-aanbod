@@ -1,0 +1,87 @@
+from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+class Category(db.Model):
+    __tablename__ = 'categories'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    slug = db.Column(db.String(100), nullable=False, unique=True)
+    description = db.Column(db.Text)
+    ai_intro = db.Column(db.Text)
+    parent_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
+
+    products = db.relationship('Product', backref='category', lazy=True, cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f'<Category {self.name}>'
+
+
+class Product(db.Model):
+    __tablename__ = 'products'
+
+    id = db.Column(db.Integer, primary_key=True)
+    ean = db.Column(db.String(20), nullable=False, unique=True)
+    title = db.Column(db.String(255), nullable=False)
+    artist = db.Column(db.String(255))
+    brand = db.Column(db.String(100))
+
+    description = db.Column(db.Text)
+    ai_description = db.Column(db.Text)
+    ai_meta_description = db.Column(db.String(160))
+
+    price = db.Column(db.Float, nullable=False)
+    image_url = db.Column(db.String(500))
+    bol_url = db.Column(db.String(500), nullable=False)
+    affiliate_url = db.Column(db.String(500))
+
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
+    subcategory = db.Column(db.String(100))
+    format = db.Column(db.String(100))
+    genre = db.Column(db.String(100))
+    label = db.Column(db.String(100))
+    year = db.Column(db.Integer)
+
+    specs = db.Column(db.JSON)
+
+    is_available = db.Column(db.Boolean, default=True)
+    slug = db.Column(db.String(255), nullable=False)
+
+    last_synced = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Product {self.title}>'
+
+
+class SyncLog(db.Model):
+    __tablename__ = 'sync_logs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    started_at = db.Column(db.DateTime, default=datetime.utcnow)
+    finished_at = db.Column(db.DateTime)
+    products_synced = db.Column(db.Integer, default=0)
+    products_updated = db.Column(db.Integer, default=0)
+    products_hidden = db.Column(db.Integer, default=0)
+    errors = db.Column(db.Text)
+
+    def __repr__(self):
+        return f'<SyncLog {self.started_at}>'
+
+
+class AIContent(db.Model):
+    __tablename__ = 'ai_content'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=True)
+    content_type = db.Column(db.String(50), nullable=False)  # description, meta, guide, etc
+    content = db.Column(db.Text, nullable=False)
+    tokens_used = db.Column(db.Integer)
+    cost = db.Column(db.Float)
+    generated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<AIContent {self.content_type}>'

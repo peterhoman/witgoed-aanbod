@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 from config import config
 import os
 
@@ -25,6 +25,11 @@ def create_app(config_name=None):
     app.register_blueprint(products_bp)
     app.register_blueprint(legal_bp)
     app.register_blueprint(seo_bp)
+
+    @app.before_request
+    def redirect_to_www():
+        if request.host == 'witgoedaanbod.nl':
+            return redirect(f'https://www.{request.host}{request.path}', code=301)
 
     @app.errorhandler(404)
     def not_found(e):

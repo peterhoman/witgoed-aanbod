@@ -3,10 +3,12 @@
    ============================================ */
 
 :root {
-    --primary: #FF6B35;
-    --primary-dark: #E85A24;
-    --secondary: #0052CC;
+    --primary: #0090DA;
+    --primary-dark: #0072AD;
+    --secondary: #003D8F;
     --secondary-light: #E3F2FD;
+    --accent: #FF6B35;
+    --accent-dark: #E85A24;
     --success: #27AE60;
     --danger: #E74C3C;
     --warning: #F39C12;
@@ -87,7 +89,7 @@ body {
 
 .search-form button {
     padding: 12px 24px;
-    background: var(--primary);
+    background: var(--accent);
     color: white;
     border: none;
     border-radius: var(--radius);
@@ -97,7 +99,7 @@ body {
 }
 
 .search-form button:hover {
-    background: var(--primary-dark);
+    background: var(--accent-dark);
 }
 
 .nav-secondary {
@@ -183,7 +185,7 @@ body {
 
 .hero-search button {
     padding: 14px 32px;
-    background: var(--secondary);
+    background: var(--accent);
     color: white;
     border: none;
     border-radius: var(--radius);
@@ -219,7 +221,7 @@ body {
 
 .product-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 82, 204, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 144, 218, 0.15);
 }
 
 .product-image {
@@ -303,6 +305,7 @@ body {
 
 .btn-primary,
 .btn-secondary,
+.btn-buy,
 .btn-large {
     padding: 10px 20px;
     border: none;
@@ -324,6 +327,16 @@ body {
 
 .btn-primary:hover {
     background: var(--primary-dark);
+}
+
+.btn-buy {
+    background: var(--accent);
+    color: white;
+    width: 100%;
+}
+
+.btn-buy:hover {
+    background: var(--accent-dark);
 }
 
 .btn-secondary {
@@ -384,7 +397,7 @@ section h2 {
 
 .category-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 82, 204, 0.15);
+    box-shadow: 0 8px 24px rgba(0, 144, 218, 0.2);
 }
 
 .category-card h3 {

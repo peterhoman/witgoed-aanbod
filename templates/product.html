@@ -53,7 +53,7 @@
 
             <!-- CTA Button -->
             <div class="cta-section">
-                <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-large btn-primary">
+                <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-large btn-buy">
                     {{ product.get_button_text() }} →
                 </a>
                 <p class="affiliate-disclosure">
@@ -82,7 +82,7 @@
                         <span class="availability available">Op voorraad</span>
                         {% endif %}
                     </div>
-                    <a href="{{ related.affiliate_url or related.bol_url }}" target="_blank" class="btn-secondary">Bekijk op bol</a>
+                    <a href="{{ related.affiliate_url or related.bol_url }}" target="_blank" class="btn-buy">{{ related.get_button_text() }}</a>
                 </div>
             </article>
             {% endfor %}

@@ -28,12 +28,44 @@
             <form method="get" action="" class="filters-form">
                 <!-- Price Range -->
                 <div class="filter-group">
-                    <label for="min_price">Min. prijs: €<span id="min-price-label">0</span></label>
-                    <input type="range" id="min_price" name="min_price" min="0" max="10000" step="50" value="0">
+                    <label for="min_price">Min. prijs: €<span id="min-price-label">{{ min_price|int }}</span></label>
+                    <input type="range" id="min_price" name="min_price" min="0" max="10000" step="50" value="{{ min_price|int }}">
 
-                    <label for="max_price">Max. prijs: €<span id="max-price-label">10000</span></label>
-                    <input type="range" id="max_price" name="max_price" min="0" max="10000" step="50" value="10000">
+                    <label for="max_price">Max. prijs: €<span id="max-price-label">{{ max_price|int }}</span></label>
+                    <input type="range" id="max_price" name="max_price" min="0" max="10000" step="50" value="{{ max_price|int }}">
                 </div>
+
+                <!-- Brand -->
+                {% if brand_facet %}
+                <div class="filter-group">
+                    <label>Merk</label>
+                    <div class="brand-checkboxes">
+                        {% for option in brand_facet %}
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="brand" value="{{ option.value }}"
+                                {% if option.value in selected_brands %}checked{% endif %}>
+                            {{ option.value }} ({{ option.count }})
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Dynamic spec filters -->
+                {% for facet in spec_facets %}
+                <div class="filter-group">
+                    <label>{{ facet.key }}</label>
+                    <div class="brand-checkboxes">
+                        {% for option in facet.options %}
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="spec" value="{{ facet.key }}::{{ option.value }}"
+                                {% if option.value in selected_specs.get(facet.key, []) %}checked{% endif %}>
+                            {{ option.value }} ({{ option.count }})
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
 
                 <button type="submit" class="btn-primary">Filter toepassen</button>
             </form>

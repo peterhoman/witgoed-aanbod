@@ -191,6 +191,38 @@ class BolAPI:
             return []
 
 
+def extract_specs(prod_data):
+    """Normalize Bol.com API 'specifications' field into a flat {name: value} dict.
+
+    The Marketing Catalog API groups specifications, e.g.:
+    "specifications": [{"values": [{"key": "Vulgewicht", "value": "9 kg"}, ...]}, ...]
+
+    This is defensive since the exact shape should be reconfirmed against a
+    live API response once Bol.com API access is approved.
+    """
+    specs = {}
+    raw_specs = prod_data.get('specifications', [])
+
+    if isinstance(raw_specs, dict):
+        return {str(k): str(v) for k, v in raw_specs.items() if v}
+
+    if isinstance(raw_specs, list):
+        for group in raw_specs:
+            if not isinstance(group, dict):
+                continue
+            values = group.get('values', group.get('specifications', []))
+            if isinstance(values, list):
+                for item in values:
+                    if not isinstance(item, dict):
+                        continue
+                    key = item.get('key') or item.get('name')
+                    value = item.get('value')
+                    if key and value:
+                        specs[str(key)] = str(value)
+
+    return specs
+
+
 def sync_products():
     """Main sync function - fetches products from Bol.com Marketing Catalog API"""
     app = create_app()
@@ -287,6 +319,8 @@ def sync_products():
                     if 'rating' in prod_data:
                         rating = float(prod_data['rating'].get('score', 0) or 0)
 
+                    specs = extract_specs(prod_data)
+
                     slug = f"{title[:50].lower().replace(' ', '-').replace('/', '-')}-{ean}"
                     bol_url = f"https://www.bol.com/nl/p/{ean}/"
 
@@ -297,6 +331,7 @@ def sync_products():
                         product.rating = rating
                         product.bol_url = bol_url
                         product.retailer = 'bol'
+                        product.specs = specs
                         product.affiliate_url = product.generate_short_affiliate_url(bitly_client, site_id='1528790')
                         product.is_available = True
                         product.last_synced = datetime.utcnow()
@@ -313,6 +348,7 @@ def sync_products():
                             category_id=category.id,
                             slug=slug,
                             retailer='bol',
+                            specs=specs,
                             is_available=True,
                             last_synced=datetime.utcnow()
                         )

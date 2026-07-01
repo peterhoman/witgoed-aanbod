@@ -73,6 +73,18 @@
 
         <!-- Products Grid -->
         <div class="category-products">
+            <div class="products-toolbar">
+                <span class="results-count">{{ pagination.total }} resultaten</span>
+                <label for="sort-select" class="sort-label">
+                    Sorteren op:
+                    <select id="sort-select" onchange="applySort(this.value)">
+                        <option value="" {% if not selected_sort %}selected{% endif %}>Relevantie</option>
+                        <option value="price_asc" {% if selected_sort == 'price_asc' %}selected{% endif %}>Prijs: laag naar hoog</option>
+                        <option value="price_desc" {% if selected_sort == 'price_desc' %}selected{% endif %}>Prijs: hoog naar laag</option>
+                    </select>
+                </label>
+            </div>
+
             {% if products %}
             <div class="product-grid">
                 {% for product in products %}
@@ -127,5 +139,16 @@ document.getElementById('min_price').addEventListener('input', function() {
 document.getElementById('max_price').addEventListener('input', function() {
     document.getElementById('max-price-label').textContent = this.value;
 });
+
+function applySort(value) {
+    const params = new URLSearchParams(window.location.search);
+    if (value) {
+        params.set('sort', value);
+    } else {
+        params.delete('sort');
+    }
+    params.delete('page');
+    window.location.search = params.toString();
+}
 </script>
 {% endblock %}

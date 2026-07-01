@@ -38,6 +38,12 @@ def category(slug):
     for key, values in selected_specs.items():
         q = q.filter(Product.specs[key].as_string().in_(values))
 
+    sort = request.args.get('sort', '')
+    if sort == 'price_asc':
+        q = q.order_by(Product.price.asc())
+    elif sort == 'price_desc':
+        q = q.order_by(Product.price.desc())
+
     products = q.paginate(page=page, per_page=24)
 
     return render_template(
@@ -51,4 +57,5 @@ def category(slug):
         selected_specs=selected_specs,
         min_price=min_price,
         max_price=max_price,
+        selected_sort=sort,
     )

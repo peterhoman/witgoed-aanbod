@@ -21,6 +21,9 @@ class Config:
     # Claude API
     ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
 
+    # Bit.ly API for URL shortening
+    BITLY_TOKEN = os.getenv('BITLY_TOKEN')
+
     # Site config
     SITE_NAME = os.getenv('SITE_NAME', 'WitgoedAanbod.nl')
     SITE_URL = os.getenv('SITE_URL', 'https://witgoedaanbod.nl')

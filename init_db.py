@@ -22,6 +22,7 @@ def init_database():
             {'name': 'Vaatwassers', 'slug': 'vaatwassers', 'description': 'Vergelijk vaatwassers'},
             {'name': 'Magnetrons', 'slug': 'magnetrons', 'description': 'De beste magnetrons'},
             {'name': 'Ovens', 'slug': 'ovens', 'description': 'Alle ovens op Bol.com'},
+            {'name': 'Stofzuigers', 'slug': 'stofzuigers', 'description': 'Vergelijk alle stofzuigers'},
         ]
 
         for cat_data in categories:

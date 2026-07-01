@@ -36,6 +36,7 @@ class Product(db.Model):
     image_url = db.Column(db.String(500))
     bol_url = db.Column(db.String(500), nullable=False)
     affiliate_url = db.Column(db.String(500))
+    retailer = db.Column(db.String(50), default='bol')
 
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
     subcategory = db.Column(db.String(100))
@@ -52,6 +53,38 @@ class Product(db.Model):
     last_synced = db.Column(db.DateTime, default=datetime.utcnow)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def generate_affiliate_url(self, site_id='1528790'):
+        """Generate Bol.com affiliate tracking URL"""
+        base_url = "https://partner.bol.com/click/click"
+        params = {
+            't': 'url',
+            's': site_id,
+            'url': self.bol_url,
+            'f': 'api',
+            'subid': f'product-{self.ean}'
+        }
+        query_string = '&'.join(f'{k}={v}' for k, v in params.items())
+        return f"{base_url}?{query_string}"
+
+    def generate_short_affiliate_url(self, bitly_client, site_id='1528790'):
+        """Generate and shorten affiliate tracking URL using Bit.ly"""
+        long_url = self.generate_affiliate_url(site_id)
+        if bitly_client:
+            short_url = bitly_client.shorten_url(long_url, title=self.title[:50])
+            return short_url or long_url
+        return long_url
+
+    def get_button_text(self):
+        """Get dynamic button text based on retailer"""
+        if self.retailer == 'bol':
+            return 'Bekijk op bol'
+        elif self.retailer == 'coolblue':
+            return 'Bekijk bij Coolblue'
+        elif self.retailer == 'mediamarkt':
+            return 'Bekijk bij MediaMarkt'
+        else:
+            return f'Bekijk bij {self.retailer.capitalize()}'
 
     def __repr__(self):
         return f'<Product {self.title}>'

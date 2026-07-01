@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}WitgoedAanbod.nl - Vergelijk Witgoed & Huishoudapparaten{% endblock %}
-{% block meta_description %}Vergelijk wasmachines, drogers, koelkasten en meer. Vind de beste deals en laagste prijzen op Bol.com.{% endblock %}
+{% block meta_description %}Vergelijk wasmachines, drogers, koelkasten en meer. Vind de beste deals en laagste prijzen op bol.{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -37,7 +37,7 @@
                         <span class="availability unavailable">Uitverkocht</span>
                         {% endif %}
                     </div>
-                    <a href="{{ product.bol_url }}" target="_blank" class="btn-primary">Bekijk op Bol.com</a>
+                    <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-primary">{{ product.get_button_text() }}</a>
                 </div>
             </article>
             {% endfor %}

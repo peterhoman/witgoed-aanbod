@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ category.name }} - Vergelijk op WitgoedAanbod.nl{% endblock %}
-{% block meta_description %}Vergelijk en koop {{ category.name }} op Bol.com. Ontdek de beste aanbiedingen en deals.{% endblock %}
+{% block meta_description %}Vergelijk en koop {{ category.name }} op bol. Ontdek de beste aanbiedingen en deals.{% endblock %}
 
 {% block content %}
 <div class="container category-page">
@@ -16,7 +16,7 @@
         {% if category.ai_intro %}
         <p>{{ category.ai_intro }}</p>
         {% else %}
-        <p>Vergelijk en vind de beste {{ category.name }} op Bol.com. Alle producten, prijzen en aanbiedingen op één plek.</p>
+        <p>Vergelijk en vind de beste {{ category.name }} op bol. Alle producten, prijzen en aanbiedingen op één plek.</p>
         {% endif %}
     </header>
 
@@ -59,7 +59,7 @@
                             <span class="availability unavailable">Uitverkocht</span>
                             {% endif %}
                         </div>
-                        <a href="{{ product.bol_url }}" target="_blank" class="btn-primary">Bekijk op Bol.com</a>
+                        <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-primary">{{ product.get_button_text() }}</a>
                     </div>
                 </article>
                 {% endfor %}

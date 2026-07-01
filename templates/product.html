@@ -53,11 +53,11 @@
 
             <!-- CTA Button -->
             <div class="cta-section">
-                <a href="{{ product.bol_url }}" target="_blank" class="btn-large btn-primary">
-                    Bekijk & Koop op Bol.com →
+                <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-large btn-primary">
+                    {{ product.get_button_text() }} →
                 </a>
                 <p class="affiliate-disclosure">
-                    <small>WitgoedAanbod.nl is deelnemer aan het Bol.com partnerprogramma. Als je via deze link iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.</small>
+                    <small>WitgoedAanbod.nl is deelnemer aan het bol partnerprogramma. Als je via deze link iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.</small>
                 </p>
             </div>
         </div>
@@ -82,7 +82,7 @@
                         <span class="availability available">Op voorraad</span>
                         {% endif %}
                     </div>
-                    <a href="{{ related.bol_url }}" target="_blank" class="btn-secondary">Bekijk op Bol.com</a>
+                    <a href="{{ related.affiliate_url or related.bol_url }}" target="_blank" class="btn-secondary">Bekijk op bol</a>
                 </div>
             </article>
             {% endfor %}

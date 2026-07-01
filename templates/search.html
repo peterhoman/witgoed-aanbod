@@ -82,7 +82,7 @@
                             <span class="availability unavailable">Uitverkocht</span>
                             {% endif %}
                         </div>
-                        <a href="{{ product.bol_url }}" target="_blank" class="btn-primary">Bekijk op Bol.com</a>
+                        <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-primary">{{ product.get_button_text() }}</a>
                     </div>
                 </article>
                 {% endfor %}

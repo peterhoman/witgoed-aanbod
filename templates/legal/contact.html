@@ -7,27 +7,12 @@
     <h1>Contact</h1>
 
     <div class="contact-content">
-        <h2>Neem Contact Met Ons Op</h2>
+        <p class="contact-intro">Heb je een vraag of opmerking? Vul het formulier in en we nemen zo snel mogelijk contact op. Voor onze volledige bedrijfsgegevens, zie ons <a href="/privacy">privacybeleid</a>.</p>
 
-        <div class="contact-grid">
-            <div class="contact-info">
-                <h3>Email</h3>
-                <p><a href="mailto:info@avantius.nl">info@avantius.nl</a></p>
-
-                <h3>Adres</h3>
-                <p>Avantius<br>J.J.v. Rhijnstraat 27<br>2171PT Sassenheim<br>Nederland</p>
-
-                <h3>Bedrijfsgegevens</h3>
-                <p><strong>KvK-nummer:</strong> 87572508<br>
-                <strong>BTW-ID:</strong> NL864334503B01</p>
-
-                <h3>Website</h3>
-                <p><a href="https://www.witgoedaanbod.nl">www.witgoedaanbod.nl</a></p>
-            </div>
-
+        <div class="contact-grid contact-grid-single">
             <div class="contact-form">
-                <h3>Contactformulier</h3>
-                <form method="post" action="/contact" class="form">
+                <div id="contact-message" style="display:none;"></div>
+                <form id="contact-form" method="post" action="/contact" class="form">
                     <div class="form-group">
                         <label for="name">Naam *</label>
                         <input type="text" id="name" name="name" required>
@@ -45,12 +30,50 @@
 
                     <div class="form-group">
                         <label for="message">Bericht *</label>
-                        <textarea id="message" name="message" rows="5" required></textarea>
+                        <textarea id="message" name="message" rows="7" required></textarea>
                     </div>
 
-                    <button type="submit" class="btn-primary">Verstuur</button>
+                    <button type="submit" id="submit-btn" class="btn-primary">Verstuur</button>
                 </form>
             </div>
+
+            <script>
+            document.getElementById('contact-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('submit-btn');
+                const msgDiv = document.getElementById('contact-message');
+                const formData = new FormData(e.target);
+
+                btn.disabled = true;
+                btn.textContent = 'Verzenden...';
+
+                try {
+                    const response = await fetch('/contact', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        msgDiv.innerHTML = `<p style="color: green; padding: 10px; background: #e8f5e9; border-radius: 4px;">✓ ${data.message}</p>`;
+                        e.target.reset();
+                        btn.textContent = 'Verstuur';
+                    } else {
+                        msgDiv.innerHTML = `<p style="color: red; padding: 10px; background: #ffebee; border-radius: 4px;">✗ ${data.error}</p>`;
+                        btn.textContent = 'Verstuur';
+                    }
+                    msgDiv.style.display = 'block';
+
+                } catch (error) {
+                    msgDiv.innerHTML = `<p style="color: red; padding: 10px; background: #ffebee; border-radius: 4px;">✗ Fout bij verzenden. Probeer het later opnieuw.</p>`;
+                    msgDiv.style.display = 'block';
+                    btn.textContent = 'Verstuur';
+                } finally {
+                    btn.disabled = false;
+                }
+            });
+            </script>
         </div>
     </div>
 </div>

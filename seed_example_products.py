@@ -115,15 +115,6 @@ KOELKASTEN = [
         'description': 'Koel-vriescombinatie met waterdispenser en No Frost-techniek. Inhoud van 231 liter, geschikt voor middelgrote huishoudens.',
         'specs': {'Inhoud': '231 liter', 'Type': 'Koel-vriescombinatie', 'Energielabel': 'E', 'Afmetingen (h)': '170 cm', 'Ontdooisysteem': 'No Frost', 'Extra': 'Waterdispenser'},
     },
-    {
-        'ean': 'EXAMPLE0000105',
-        'title': 'Inventum KV1808B Koel-vriescombinatie',
-        'brand': 'Inventum',
-        'price': 360.00,
-        'image_url': 'https://media.s-bol.com/xXn1XOYnrM5l/E9AB7Vl/257x840.jpg',
-        'description': 'Ruime koel-vriescombinatie van 180 cm hoog met een inhoud van 270 liter en No Frost-techniek.',
-        'specs': {'Inhoud': '270 liter', 'Type': 'Koel-vriescombinatie', 'Energielabel': 'D', 'Afmetingen (h)': '180 cm', 'Ontdooisysteem': 'No Frost'},
-    },
 ]
 
 CATEGORY_PRODUCTS = {

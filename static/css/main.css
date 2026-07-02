@@ -102,6 +102,32 @@ body {
     background: var(--accent-dark);
 }
 
+.lang-switcher {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.lang-switcher a {
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray);
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.lang-switcher a:hover {
+    background: var(--light);
+}
+
+.lang-switcher a.active {
+    background: var(--primary);
+    color: white;
+}
+
 .nav-secondary {
     display: flex;
     gap: 20px;

@@ -8,18 +8,18 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Vergelijk Witgoed & Huishoudapparaten</h1>
-            <p>Vind de beste deals op wasmachines, drogers, koelkasten en meer. Kijk en vergelijk.</p>
+            <h1>{{ t('home.hero_title') }}</h1>
+            <p>{{ t('home.hero_text') }}</p>
             <form action="/search" method="get" class="hero-search">
-                <input type="text" name="q" placeholder="Zoek een product..." required>
-                <button type="submit">Zoeken</button>
+                <input type="text" name="q" placeholder="{{ t('home.hero_search_placeholder') }}" required>
+                <button type="submit">{{ t('search.button') }}</button>
             </form>
         </div>
     </section>
 
     <!-- Featured Products -->
     <section class="featured-section">
-        <h2>Aanbevolen Producten</h2>
+        <h2>{{ t('home.featured_title') }}</h2>
         <div class="product-grid">
             {% for product in featured_products %}
             <article class="product-card">
@@ -28,17 +28,17 @@
                 </a>
                 <div class="product-info">
                     <h3><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
-                    <p class="brand">{{ product.brand or 'Merk onbekend' }}</p>
+                    <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
                     <div class="product-meta">
                         <span class="price">€{{ "%.2f"|format(product.price) }}</span>
                         {% if product.is_available %}
-                        <span class="availability available">Op voorraad</span>
+                        <span class="availability available">{{ t('product.in_stock') }}</span>
                         {% else %}
-                        <span class="availability unavailable">Uitverkocht</span>
+                        <span class="availability unavailable">{{ t('product.out_of_stock') }}</span>
                         {% endif %}
                     </div>
                     {% if product.is_example %}
-                    <span class="badge-example badge-example-block">Voorbeeldproduct</span>
+                    <span class="badge-example badge-example-block">{{ t('product.example_badge') }}</span>
                     {% endif %}
                     <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-buy">{{ product.get_button_text() }}</a>
                 </div>
@@ -49,12 +49,12 @@
 
     <!-- Categories Preview -->
     <section class="categories-section">
-        <h2>Populaire Categorieën</h2>
+        <h2>{{ t('home.categories_title') }}</h2>
         <div class="categories-grid">
             {% for category in categories %}
             <a href="/category/{{ category.slug }}" class="category-card">
                 <h3>{{ category.name }}</h3>
-                <p>{{ category.description or 'Ontdek meer →' }}</p>
+                <p>{{ category.description or t('home.categories_discover') }}</p>
             </a>
             {% endfor %}
         </div>
@@ -62,22 +62,22 @@
 
     <!-- Info Section -->
     <section class="info-section">
-        <h2>Over WitgoedAanbod</h2>
-        <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">WitgoedAanbod.nl helpt je de beste witgoed producten vinden online. Vergelijk prijzen, specificaties en reviews.</p>
+        <h2>{{ t('home.about_title') }}</h2>
+        <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">{{ t('home.about_text') }}</p>
 
-        <h2>Hoe werkt WitgoedAanbod.nl?</h2>
+        <h2>{{ t('home.how_it_works_title') }}</h2>
         <div class="info-grid">
             <div class="info-card">
-                <h3>1. Zoeken</h3>
-                <p>Zoek het product op de site.</p>
+                <h3>{{ t('home.step1_title') }}</h3>
+                <p>{{ t('home.step1_text') }}</p>
             </div>
             <div class="info-card">
-                <h3>2. Vergelijken</h3>
-                <p>Vergelijk specificaties, prijzen en reviews van verschillende merken.</p>
+                <h3>{{ t('home.step2_title') }}</h3>
+                <p>{{ t('home.step2_text') }}</p>
             </div>
             <div class="info-card">
-                <h3>3. Koop het product</h3>
-                <p>Klik door naar de aanbieder en koop direct.</p>
+                <h3>{{ t('home.step3_title') }}</h3>
+                <p>{{ t('home.step3_text') }}</p>
             </div>
         </div>
     </section>

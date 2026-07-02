@@ -1,9 +1,17 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect
 from models import Category, Product
 from sqlalchemy import or_
 from filter_helpers import compute_brand_facet, compute_spec_facets, parse_spec_filters
 
 main_bp = Blueprint('main', __name__)
+
+
+@main_bp.route('/set-language/<lang>')
+def set_language(lang):
+    response = redirect(request.referrer or '/')
+    if lang in ('nl', 'en'):
+        response.set_cookie('lang', lang, max_age=60 * 60 * 24 * 365)
+    return response
 
 
 @main_bp.route('/')

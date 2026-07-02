@@ -23,22 +23,22 @@
     <!-- Filters Sidebar -->
     <div class="category-layout">
         <aside class="filters-sidebar">
-            <h3>Filters</h3>
+            <h3>{{ t('filters.title') }}</h3>
 
             <form method="get" action="" class="filters-form">
                 <!-- Price Range -->
                 <div class="filter-group">
-                    <label for="min_price">Min. prijs: €<span id="min-price-label">{{ min_price|int }}</span></label>
+                    <label for="min_price">{{ t('filters.min_price') }}: €<span id="min-price-label">{{ min_price|int }}</span></label>
                     <input type="range" id="min_price" name="min_price" min="0" max="10000" step="50" value="{{ min_price|int }}">
 
-                    <label for="max_price">Max. prijs: €<span id="max-price-label">{{ max_price|int }}</span></label>
+                    <label for="max_price">{{ t('filters.max_price') }}: €<span id="max-price-label">{{ max_price|int }}</span></label>
                     <input type="range" id="max_price" name="max_price" min="0" max="10000" step="50" value="{{ max_price|int }}">
                 </div>
 
                 <!-- Brand -->
                 {% if brand_facet %}
                 <div class="filter-group">
-                    <label>Merk</label>
+                    <label>{{ t('filters.brand') }}</label>
                     <div class="brand-checkboxes">
                         {% for option in brand_facet %}
                         <label class="checkbox-label">
@@ -67,20 +67,20 @@
                 </div>
                 {% endfor %}
 
-                <button type="submit" class="btn-primary">Filter toepassen</button>
+                <button type="submit" class="btn-primary">{{ t('filters.apply') }}</button>
             </form>
         </aside>
 
         <!-- Products Grid -->
         <div class="category-products">
             <div class="products-toolbar">
-                <span class="results-count">{{ pagination.total }} resultaten</span>
+                <span class="results-count">{{ pagination.total }} {{ t('results.count') }}</span>
                 <label for="sort-select" class="sort-label">
-                    Sorteren op:
+                    {{ t('sort.label') }}
                     <select id="sort-select" onchange="applySort(this.value)">
-                        <option value="" {% if not selected_sort %}selected{% endif %}>Relevantie</option>
-                        <option value="price_asc" {% if selected_sort == 'price_asc' %}selected{% endif %}>Prijs: laag naar hoog</option>
-                        <option value="price_desc" {% if selected_sort == 'price_desc' %}selected{% endif %}>Prijs: hoog naar laag</option>
+                        <option value="" {% if not selected_sort %}selected{% endif %}>{{ t('sort.relevance') }}</option>
+                        <option value="price_asc" {% if selected_sort == 'price_asc' %}selected{% endif %}>{{ t('sort.price_asc') }}</option>
+                        <option value="price_desc" {% if selected_sort == 'price_desc' %}selected{% endif %}>{{ t('sort.price_desc') }}</option>
                     </select>
                 </label>
             </div>
@@ -94,17 +94,17 @@
                     </a>
                     <div class="product-info">
                         <h3><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
-                        <p class="brand">{{ product.brand or 'Merk onbekend' }}</p>
+                        <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
                         <div class="product-meta">
                             <span class="price">€{{ "%.2f"|format(product.price) }}</span>
                             {% if product.is_available %}
-                            <span class="availability available">Op voorraad</span>
+                            <span class="availability available">{{ t('product.in_stock') }}</span>
                             {% else %}
-                            <span class="availability unavailable">Uitverkocht</span>
+                            <span class="availability unavailable">{{ t('product.out_of_stock') }}</span>
                             {% endif %}
                         </div>
                         {% if product.is_example %}
-                        <span class="badge-example badge-example-block">Voorbeeldproduct</span>
+                        <span class="badge-example badge-example-block">{{ t('product.example_badge') }}</span>
                         {% endif %}
                         <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-buy">{{ product.get_button_text() }}</a>
                     </div>
@@ -116,19 +116,19 @@
             {% if pagination.pages > 1 %}
             <nav class="pagination">
                 {% if pagination.has_prev %}
-                <a href="?page={{ pagination.prev_num }}" class="btn-secondary">← Vorige</a>
+                <a href="?page={{ pagination.prev_num }}" class="btn-secondary">{{ t('pagination.prev') }}</a>
                 {% endif %}
 
-                <span class="page-info">Pagina {{ pagination.page }} van {{ pagination.pages }}</span>
+                <span class="page-info">{{ t('pagination.page_of', page=pagination.page, pages=pagination.pages) }}</span>
 
                 {% if pagination.has_next %}
-                <a href="?page={{ pagination.next_num }}" class="btn-secondary">Volgende →</a>
+                <a href="?page={{ pagination.next_num }}" class="btn-secondary">{{ t('pagination.next') }}</a>
                 {% endif %}
             </nav>
             {% endif %}
             {% else %}
             <div class="no-products">
-                <p>Geen producten gevonden in deze categorie.</p>
+                <p>{{ t('products.none_found') }}</p>
             </div>
             {% endif %}
         </div>

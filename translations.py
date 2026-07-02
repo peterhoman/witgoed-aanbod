@@ -1,0 +1,205 @@
+"""
+Lightweight UI translation dictionary (no external dependency, no build step).
+
+Covers UI chrome (nav, footer, filters, pagination, etc.) only. Product
+and category data come from Bol.com in Dutch and are intentionally left
+untranslated, as are the legal pages.
+"""
+
+TRANSLATIONS = {
+    'nl': {
+        # Header
+        'header.tagline': 'Vergelijk Witgoed',
+        'search.placeholder': 'Zoek wasmachines, drogers...',
+        'search.button': 'Zoeken',
+        'nav.privacy': 'Privacy',
+        'nav.disclaimer': 'Disclaimer',
+        'nav.contact': 'Contact',
+
+        # Category nav (also reused in footer)
+        'nav.wasmachines': 'Wasmachines',
+        'nav.drogers': 'Drogers',
+        'nav.wasdroogcombinaties': 'Combi Was-Droog',
+        'nav.koelkasten': 'Koelkasten',
+        'nav.vaatwassers': 'Vaatwassers',
+        'nav.magnetrons': 'Magnetrons',
+        'nav.ovens': 'Ovens',
+        'nav.stofzuigers': 'Stofzuigers',
+
+        # Footer
+        'footer.about_title': 'Over WitgoedAanbod',
+        'footer.about_text': 'WitgoedAanbod.nl helpt je de beste producten online vinden. Vergelijk prijzen, specificaties en reviews.',
+        'footer.categories_title': 'Categorieën',
+        'footer.legal_title': 'Juridisch',
+        'footer.privacy': 'Privacybeleid',
+        'footer.cookies': 'Cookiebeleid',
+        'footer.disclaimer': 'Affiliate Disclaimer',
+        'footer.terms': 'Algemene Voorwaarden',
+        'footer.copyright': '© 2026 WitgoedAanbod.nl is deelnemer aan affiliate partnerprogramma. Als je via onze links iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.',
+
+        # Cookie modal
+        'cookie.title': 'Cookie Instellingen',
+        'cookie.intro': 'WitgoedAanbod.nl gebruikt cookies voor analyses, persoonlijke instellingen en marketing. Lees meer in ons',
+        'cookie.policy_link': 'cookiebeleid',
+        'cookie.essential_title': 'Essentiële Cookies',
+        'cookie.essential_desc': 'Noodzakelijk voor het functioneren van de website (GDPR verplicht)',
+        'cookie.analytics_title': 'Analytische Cookies',
+        'cookie.analytics_desc': 'Helpt ons begrijpen hoe je de site gebruikt',
+        'cookie.marketing_title': 'Marketing Cookies',
+        'cookie.marketing_desc': 'Voor gerichte advertenties en aanbiedingen',
+        'cookie.reject': 'Alleen Essentieel',
+        'cookie.accept': 'Alles Accepteren',
+
+        # Filters
+        'filters.title': 'Filters',
+        'filters.min_price': 'Min. prijs',
+        'filters.max_price': 'Max. prijs',
+        'filters.brand': 'Merk',
+        'filters.apply': 'Filter toepassen',
+
+        # Sorting / results / pagination
+        'sort.label': 'Sorteren op:',
+        'sort.relevance': 'Relevantie',
+        'sort.price_asc': 'Prijs: laag naar hoog',
+        'sort.price_desc': 'Prijs: hoog naar laag',
+        'results.count': 'resultaten',
+        'pagination.prev': '← Vorige',
+        'pagination.next': 'Volgende →',
+        'pagination.page_of': 'Pagina {page} van {pages}',
+        'products.none_found': 'Geen producten gevonden in deze categorie.',
+
+        # Product cards / detail
+        'product.brand_unknown': 'Merk onbekend',
+        'product.in_stock': 'Op voorraad',
+        'product.out_of_stock': 'Uitverkocht',
+        'product.example_badge': 'Voorbeeldproduct',
+        'product.example_badge_detail': 'Voorbeeldproduct — nog niet automatisch gesynchroniseerd',
+        'product.description_title': 'Beschrijving',
+        'product.specs_title': 'Specificaties',
+        'product.related_title': 'Gerelateerde Producten',
+
+        # Search page
+        'search.results_for': 'Zoekresultaten voor "{query}"',
+        'search.results_found': 'resultaten gevonden',
+        'search.category_label': 'Categorie',
+        'search.all_categories': 'Alle categorieën',
+        'search.no_results_title': 'Geen resultaten gevonden',
+        'search.no_results_text': 'Probeer een ander zoekwoord of bekijk onze categorieën.',
+        'search.back_home': 'Terug naar home',
+        'product.affiliate_disclosure': 'WitgoedAanbod.nl is deelnemer aan het bol partnerprogramma. Als je via deze link iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.',
+
+        # Homepage
+        'home.hero_title': 'Vergelijk Witgoed & Huishoudapparaten',
+        'home.hero_text': 'Vind de beste deals op wasmachines, drogers, koelkasten en meer. Kijk en vergelijk.',
+        'home.hero_search_placeholder': 'Zoek een product...',
+        'home.featured_title': 'Aanbevolen Producten',
+        'home.categories_title': 'Populaire Categorieën',
+        'home.categories_discover': 'Ontdek meer →',
+        'home.about_title': 'Over WitgoedAanbod',
+        'home.about_text': 'WitgoedAanbod.nl helpt je de beste witgoed producten vinden online. Vergelijk prijzen, specificaties en reviews.',
+        'home.how_it_works_title': 'Hoe werkt WitgoedAanbod.nl?',
+        'home.step1_title': '1. Zoeken',
+        'home.step1_text': 'Zoek het product op de site.',
+        'home.step2_title': '2. Vergelijken',
+        'home.step2_text': 'Vergelijk specificaties, prijzen en reviews van verschillende merken.',
+        'home.step3_title': '3. Koop het product',
+        'home.step3_text': 'Klik door naar de aanbieder en koop direct.',
+    },
+    'en': {
+        'header.tagline': 'Compare Appliances',
+        'search.placeholder': 'Search washing machines, dryers...',
+        'search.button': 'Search',
+        'nav.privacy': 'Privacy',
+        'nav.disclaimer': 'Disclaimer',
+        'nav.contact': 'Contact',
+
+        'nav.wasmachines': 'Washing Machines',
+        'nav.drogers': 'Dryers',
+        'nav.wasdroogcombinaties': 'Washer-Dryers',
+        'nav.koelkasten': 'Refrigerators',
+        'nav.vaatwassers': 'Dishwashers',
+        'nav.magnetrons': 'Microwaves',
+        'nav.ovens': 'Ovens',
+        'nav.stofzuigers': 'Vacuum Cleaners',
+
+        'footer.about_title': 'About WitgoedAanbod',
+        'footer.about_text': 'WitgoedAanbod.nl helps you find the best products online. Compare prices, specifications and reviews.',
+        'footer.categories_title': 'Categories',
+        'footer.legal_title': 'Legal',
+        'footer.privacy': 'Privacy Policy',
+        'footer.cookies': 'Cookie Policy',
+        'footer.disclaimer': 'Affiliate Disclaimer',
+        'footer.terms': 'Terms & Conditions',
+        'footer.copyright': '© 2026 WitgoedAanbod.nl participates in an affiliate partner program. If you buy something through our links, we may earn a small commission, at no extra cost to you.',
+
+        'cookie.title': 'Cookie Settings',
+        'cookie.intro': 'WitgoedAanbod.nl uses cookies for analytics, personalization and marketing. Read more in our',
+        'cookie.policy_link': 'cookie policy',
+        'cookie.essential_title': 'Essential Cookies',
+        'cookie.essential_desc': 'Necessary for the website to function (GDPR required)',
+        'cookie.analytics_title': 'Analytics Cookies',
+        'cookie.analytics_desc': 'Helps us understand how you use the site',
+        'cookie.marketing_title': 'Marketing Cookies',
+        'cookie.marketing_desc': 'For targeted ads and offers',
+        'cookie.reject': 'Essential Only',
+        'cookie.accept': 'Accept All',
+
+        'filters.title': 'Filters',
+        'filters.min_price': 'Min. price',
+        'filters.max_price': 'Max. price',
+        'filters.brand': 'Brand',
+        'filters.apply': 'Apply Filters',
+
+        'sort.label': 'Sort by:',
+        'sort.relevance': 'Relevance',
+        'sort.price_asc': 'Price: low to high',
+        'sort.price_desc': 'Price: high to low',
+        'results.count': 'results',
+        'pagination.prev': '← Previous',
+        'pagination.next': 'Next →',
+        'pagination.page_of': 'Page {page} of {pages}',
+        'products.none_found': 'No products found in this category.',
+
+        'product.brand_unknown': 'Brand unknown',
+        'product.in_stock': 'In stock',
+        'product.out_of_stock': 'Out of stock',
+        'product.example_badge': 'Example product',
+        'product.example_badge_detail': 'Example product — not yet automatically synced',
+        'product.description_title': 'Description',
+        'product.specs_title': 'Specifications',
+        'product.related_title': 'Related Products',
+
+        'search.results_for': 'Search results for "{query}"',
+        'search.results_found': 'results found',
+        'search.category_label': 'Category',
+        'search.all_categories': 'All categories',
+        'search.no_results_title': 'No results found',
+        'search.no_results_text': 'Try a different search term or browse our categories.',
+        'search.back_home': 'Back to home',
+        'product.affiliate_disclosure': 'WitgoedAanbod.nl participates in the bol affiliate program. If you buy something through this link, we may earn a small commission, at no extra cost to you.',
+
+        'home.hero_title': 'Compare Appliances & Household Devices',
+        'home.hero_text': 'Find the best deals on washing machines, dryers, refrigerators and more. Look and compare.',
+        'home.hero_search_placeholder': 'Search for a product...',
+        'home.featured_title': 'Featured Products',
+        'home.categories_title': 'Popular Categories',
+        'home.categories_discover': 'Discover more →',
+        'home.about_title': 'About WitgoedAanbod',
+        'home.about_text': 'WitgoedAanbod.nl helps you find the best appliances online. Compare prices, specifications and reviews.',
+        'home.how_it_works_title': 'How does WitgoedAanbod.nl work?',
+        'home.step1_title': '1. Search',
+        'home.step1_text': 'Search for the product on the site.',
+        'home.step2_title': '2. Compare',
+        'home.step2_text': 'Compare specifications, prices and reviews from different brands.',
+        'home.step3_title': '3. Buy the product',
+        'home.step3_text': 'Click through to the retailer and buy directly.',
+    },
+}
+
+
+def translate(key, lang, **kwargs):
+    lang_dict = TRANSLATIONS.get(lang, TRANSLATIONS['nl'])
+    text = lang_dict.get(key, TRANSLATIONS['nl'].get(key, key))
+    if kwargs:
+        text = text.format(**kwargs)
+    return text

@@ -7,9 +7,9 @@
 <div class="container search-page">
     <!-- Search Header -->
     <header class="search-header">
-        <h1>Zoekresultaten voor "{{ query }}"</h1>
+        <h1>{{ t('search.results_for', query=query) }}</h1>
         {% if results %}
-        <p>{{ pagination.total }} resultaten gevonden</p>
+        <p>{{ pagination.total }} {{ t('search.results_found') }}</p>
         {% endif %}
     </header>
 
@@ -17,15 +17,15 @@
     <div class="search-layout">
         <!-- Filters Sidebar -->
         <aside class="filters-sidebar">
-            <h3>Filters</h3>
+            <h3>{{ t('filters.title') }}</h3>
             <form method="get" action="/search" class="filters-form">
                 <input type="hidden" name="q" value="{{ query }}">
 
                 <!-- Category Filter -->
                 <div class="filter-group">
-                    <label>Categorie</label>
+                    <label>{{ t('search.category_label') }}</label>
                     <select name="category">
-                        <option value="">Alle categorieën</option>
+                        <option value="">{{ t('search.all_categories') }}</option>
                         {% for cat in categories %}
                         <option value="{{ cat.id }}" {% if selected_category|string == cat.id|string %}selected{% endif %}>{{ cat.name }}</option>
                         {% endfor %}
@@ -34,17 +34,17 @@
 
                 <!-- Price Filter -->
                 <div class="filter-group">
-                    <label for="min_price">Min. prijs: €<span id="min-price-label">0</span></label>
+                    <label for="min_price">{{ t('filters.min_price') }}: €<span id="min-price-label">0</span></label>
                     <input type="range" id="min_price" name="min_price" min="0" max="10000" step="50" value="0">
 
-                    <label for="max_price">Max. prijs: €<span id="max-price-label">10000</span></label>
+                    <label for="max_price">{{ t('filters.max_price') }}: €<span id="max-price-label">10000</span></label>
                     <input type="range" id="max_price" name="max_price" min="0" max="10000" step="50" value="10000">
                 </div>
 
                 <!-- Brand Filter -->
                 {% if available_brands %}
                 <div class="filter-group">
-                    <label>Merk</label>
+                    <label>{{ t('filters.brand') }}</label>
                     <div class="brand-checkboxes">
                         {% for brand in available_brands %}
                         <label class="checkbox-label">
@@ -57,7 +57,7 @@
                 </div>
                 {% endif %}
 
-                <button type="submit" class="btn-primary">Filter toepassen</button>
+                <button type="submit" class="btn-primary">{{ t('filters.apply') }}</button>
             </form>
         </aside>
 
@@ -72,18 +72,18 @@
                     </a>
                     <div class="product-info">
                         <h3><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
-                        <p class="brand">{{ product.brand or 'Merk onbekend' }}</p>
+                        <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
                         <p class="excerpt">{{ product.description[:100] }}...</p>
                         <div class="product-meta">
                             <span class="price">€{{ "%.2f"|format(product.price) }}</span>
                             {% if product.is_available %}
-                            <span class="availability available">Op voorraad</span>
+                            <span class="availability available">{{ t('product.in_stock') }}</span>
                             {% else %}
-                            <span class="availability unavailable">Uitverkocht</span>
+                            <span class="availability unavailable">{{ t('product.out_of_stock') }}</span>
                             {% endif %}
                         </div>
                         {% if product.is_example %}
-                        <span class="badge-example badge-example-block">Voorbeeldproduct</span>
+                        <span class="badge-example badge-example-block">{{ t('product.example_badge') }}</span>
                         {% endif %}
                         <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-buy">{{ product.get_button_text() }}</a>
                     </div>
@@ -95,21 +95,21 @@
             {% if pagination.pages > 1 %}
             <nav class="pagination">
                 {% if pagination.has_prev %}
-                <a href="?q={{ query }}&page={{ pagination.prev_num }}" class="btn-secondary">← Vorige</a>
+                <a href="?q={{ query }}&page={{ pagination.prev_num }}" class="btn-secondary">{{ t('pagination.prev') }}</a>
                 {% endif %}
 
-                <span class="page-info">Pagina {{ pagination.page }} van {{ pagination.pages }}</span>
+                <span class="page-info">{{ t('pagination.page_of', page=pagination.page, pages=pagination.pages) }}</span>
 
                 {% if pagination.has_next %}
-                <a href="?q={{ query }}&page={{ pagination.next_num }}" class="btn-secondary">Volgende →</a>
+                <a href="?q={{ query }}&page={{ pagination.next_num }}" class="btn-secondary">{{ t('pagination.next') }}</a>
                 {% endif %}
             </nav>
             {% endif %}
             {% else %}
             <div class="no-results">
-                <h2>Geen resultaten gevonden</h2>
-                <p>Probeer een ander zoekwoord of bekijk onze categorieën.</p>
-                <a href="/" class="btn-primary">Terug naar home</a>
+                <h2>{{ t('search.no_results_title') }}</h2>
+                <p>{{ t('search.no_results_text') }}</p>
+                <a href="/" class="btn-primary">{{ t('search.back_home') }}</a>
             </div>
             {% endif %}
         </div>

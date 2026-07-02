@@ -21,30 +21,30 @@
         <!-- Product Info -->
         <div class="product-details">
             <h1>{{ product.title }}</h1>
-            <p class="brand">{{ product.brand or 'Merk onbekend' }}</p>
+            <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
             {% if product.is_example %}
-            <span class="badge-example">Voorbeeldproduct — nog niet automatisch gesynchroniseerd</span>
+            <span class="badge-example">{{ t('product.example_badge_detail') }}</span>
             {% endif %}
 
             <div class="price-section">
                 <span class="price-large">€{{ "%.2f"|format(product.price) }}</span>
                 {% if product.is_available %}
-                <span class="availability available">Op voorraad</span>
+                <span class="availability available">{{ t('product.in_stock') }}</span>
                 {% else %}
-                <span class="availability unavailable">Uitverkocht</span>
+                <span class="availability unavailable">{{ t('product.out_of_stock') }}</span>
                 {% endif %}
             </div>
 
             <!-- Product Description -->
             <div class="description-section">
-                <h2>Beschrijving</h2>
+                <h2>{{ t('product.description_title') }}</h2>
                 <p>{{ product.ai_description or product.description }}</p>
             </div>
 
             <!-- Specifications -->
             {% if product.specs %}
             <div class="specs-section">
-                <h2>Specificaties</h2>
+                <h2>{{ t('product.specs_title') }}</h2>
                 <dl>
                     {% for key, value in product.specs.items() %}
                     <dt>{{ key }}</dt>
@@ -60,7 +60,7 @@
                     {{ product.get_button_text() }} →
                 </a>
                 <p class="affiliate-disclosure">
-                    <small>WitgoedAanbod.nl is deelnemer aan het bol partnerprogramma. Als je via deze link iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.</small>
+                    <small>{{ t('product.affiliate_disclosure') }}</small>
                 </p>
             </div>
         </div>
@@ -69,7 +69,7 @@
     <!-- Related Products -->
     {% if related_products %}
     <section class="related-products">
-        <h2>Gerelateerde Producten</h2>
+        <h2>{{ t('product.related_title') }}</h2>
         <div class="product-grid">
             {% for related in related_products %}
             <article class="product-card">
@@ -78,11 +78,11 @@
                 </a>
                 <div class="product-info">
                     <h3><a href="/product/{{ related.slug }}">{{ related.title }}</a></h3>
-                    <p class="brand">{{ related.brand or 'Merk onbekend' }}</p>
+                    <p class="brand">{{ related.brand or t('product.brand_unknown') }}</p>
                     <div class="product-meta">
                         <span class="price">€{{ "%.2f"|format(related.price) }}</span>
                         {% if related.is_available %}
-                        <span class="availability available">Op voorraad</span>
+                        <span class="availability available">{{ t('product.in_stock') }}</span>
                         {% endif %}
                     </div>
                     <a href="{{ related.affiliate_url or related.bol_url }}" target="_blank" class="btn-buy">{{ related.get_button_text() }}</a>

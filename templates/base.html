@@ -22,26 +22,30 @@
                     <h1>WitgoedAanbod.nl</h1>
                 </a>
                 <form action="/search" method="get" class="search-form">
-                    <input type="text" name="q" placeholder="Zoek wasmachines, drogers..." required>
-                    <button type="submit">Zoeken</button>
+                    <input type="text" name="q" placeholder="{{ t('search.placeholder') }}" required>
+                    <button type="submit">{{ t('search.button') }}</button>
                 </form>
+                <div class="lang-switcher">
+                    <a href="/set-language/nl" class="{{ 'active' if current_lang == 'nl' }}">NL</a>
+                    <a href="/set-language/en" class="{{ 'active' if current_lang == 'en' }}">EN</a>
+                </div>
                 <nav class="nav-secondary">
-                    <a href="/privacy">Privacy</a>
-                    <a href="/disclaimer">Disclaimer</a>
-                    <a href="/contact">Contact</a>
+                    <a href="/privacy">{{ t('nav.privacy') }}</a>
+                    <a href="/disclaimer">{{ t('nav.disclaimer') }}</a>
+                    <a href="/contact">{{ t('nav.contact') }}</a>
                 </nav>
             </div>
 
             <!-- Categories Navigation -->
             <nav class="nav-categories">
-                <a href="/category/wasmachines">Wasmachines</a>
-                <a href="/category/drogers">Drogers</a>
-                <a href="/category/wasdroogcombinaties">Combi Was-Droog</a>
-                <a href="/category/koelkasten">Koelkasten</a>
-                <a href="/category/vaatwassers">Vaatwassers</a>
-                <a href="/category/magnetrons">Magnetrons</a>
-                <a href="/category/ovens">Ovens</a>
-                <a href="/category/stofzuigers">Stofzuigers</a>
+                <a href="/category/wasmachines">{{ t('nav.wasmachines') }}</a>
+                <a href="/category/drogers">{{ t('nav.drogers') }}</a>
+                <a href="/category/wasdroogcombinaties">{{ t('nav.wasdroogcombinaties') }}</a>
+                <a href="/category/koelkasten">{{ t('nav.koelkasten') }}</a>
+                <a href="/category/vaatwassers">{{ t('nav.vaatwassers') }}</a>
+                <a href="/category/magnetrons">{{ t('nav.magnetrons') }}</a>
+                <a href="/category/ovens">{{ t('nav.ovens') }}</a>
+                <a href="/category/stofzuigers">{{ t('nav.stofzuigers') }}</a>
             </nav>
         </div>
     </header>
@@ -56,34 +60,34 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>Over WitgoedAanbod</h3>
-                    <p>WitgoedAanbod.nl helpt je de beste producten online vinden. Vergelijk prijzen, specificaties en reviews.</p>
+                    <h3>{{ t('footer.about_title') }}</h3>
+                    <p>{{ t('footer.about_text') }}</p>
                 </div>
                 <div class="footer-section">
-                    <h3>Categorieën</h3>
+                    <h3>{{ t('footer.categories_title') }}</h3>
                     <ul>
-                        <li><a href="/category/wasmachines">Wasmachines</a></li>
-                        <li><a href="/category/drogers">Drogers</a></li>
-                        <li><a href="/category/wasdroogcombinaties">Combi Was-Droog</a></li>
-                        <li><a href="/category/koelkasten">Koelkasten</a></li>
-                        <li><a href="/category/vaatwassers">Vaatwassers</a></li>
-                        <li><a href="/category/magnetrons">Magnetrons</a></li>
-                        <li><a href="/category/ovens">Ovens</a></li>
-                        <li><a href="/category/stofzuigers">Stofzuigers</a></li>
+                        <li><a href="/category/wasmachines">{{ t('nav.wasmachines') }}</a></li>
+                        <li><a href="/category/drogers">{{ t('nav.drogers') }}</a></li>
+                        <li><a href="/category/wasdroogcombinaties">{{ t('nav.wasdroogcombinaties') }}</a></li>
+                        <li><a href="/category/koelkasten">{{ t('nav.koelkasten') }}</a></li>
+                        <li><a href="/category/vaatwassers">{{ t('nav.vaatwassers') }}</a></li>
+                        <li><a href="/category/magnetrons">{{ t('nav.magnetrons') }}</a></li>
+                        <li><a href="/category/ovens">{{ t('nav.ovens') }}</a></li>
+                        <li><a href="/category/stofzuigers">{{ t('nav.stofzuigers') }}</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
-                    <h3>Juridisch</h3>
+                    <h3>{{ t('footer.legal_title') }}</h3>
                     <ul>
-                        <li><a href="/privacy">Privacybeleid</a></li>
-                        <li><a href="/cookies">Cookiebeleid</a></li>
-                        <li><a href="/disclaimer">Affiliate Disclaimer</a></li>
-                        <li><a href="/voorwaarden">Algemene Voorwaarden</a></li>
+                        <li><a href="/privacy">{{ t('footer.privacy') }}</a></li>
+                        <li><a href="/cookies">{{ t('footer.cookies') }}</a></li>
+                        <li><a href="/disclaimer">{{ t('footer.disclaimer') }}</a></li>
+                        <li><a href="/voorwaarden">{{ t('footer.terms') }}</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 WitgoedAanbod.nl is deelnemer aan affiliate partnerprogramma. Als je via onze links iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.</p>
+                <p>{{ t('footer.copyright') }}</p>
             </div>
         </div>
     </footer>
@@ -92,38 +96,38 @@
     <div id="cookie-banner" class="cookie-modal-overlay hidden">
         <div class="cookie-modal">
             <button class="cookie-modal-close" id="cookie-close">&times;</button>
-            <h2>Cookie Instellingen</h2>
-            <p>WitgoedAanbod.nl gebruikt cookies voor analyses, persoonlijke instellingen en marketing. Lees meer in ons <a href="/cookies" target="_blank">cookiebeleid</a>.</p>
+            <h2>{{ t('cookie.title') }}</h2>
+            <p>{{ t('cookie.intro') }} <a href="/cookies" target="_blank">{{ t('cookie.policy_link') }}</a>.</p>
 
             <div class="cookie-options">
                 <div class="cookie-option">
                     <label class="checkbox-label">
                         <input type="checkbox" id="cookie-essential" checked disabled>
-                        <span><strong>Essentiële Cookies</strong></span>
+                        <span><strong>{{ t('cookie.essential_title') }}</strong></span>
                     </label>
-                    <p class="cookie-desc">Noodzakelijk voor het functioneren van de website (GDPR verplicht)</p>
+                    <p class="cookie-desc">{{ t('cookie.essential_desc') }}</p>
                 </div>
 
                 <div class="cookie-option">
                     <label class="checkbox-label">
                         <input type="checkbox" id="cookie-analytics">
-                        <span><strong>Analytische Cookies</strong></span>
+                        <span><strong>{{ t('cookie.analytics_title') }}</strong></span>
                     </label>
-                    <p class="cookie-desc">Helpt ons begrijpen hoe je de site gebruikt</p>
+                    <p class="cookie-desc">{{ t('cookie.analytics_desc') }}</p>
                 </div>
 
                 <div class="cookie-option">
                     <label class="checkbox-label">
                         <input type="checkbox" id="cookie-marketing">
-                        <span><strong>Marketing Cookies</strong></span>
+                        <span><strong>{{ t('cookie.marketing_title') }}</strong></span>
                     </label>
-                    <p class="cookie-desc">Voor gerichte advertenties en aanbiedingen</p>
+                    <p class="cookie-desc">{{ t('cookie.marketing_desc') }}</p>
                 </div>
             </div>
 
             <div class="cookie-buttons">
-                <button id="cookie-reject" class="btn-secondary">Alleen Essentieel</button>
-                <button id="cookie-accept" class="btn-primary">Alles Accepteren</button>
+                <button id="cookie-reject" class="btn-secondary">{{ t('cookie.reject') }}</button>
+                <button id="cookie-accept" class="btn-primary">{{ t('cookie.accept') }}</button>
             </div>
         </div>
     </div>

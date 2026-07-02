@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, g
 from config import config
+from translations import translate
 import os
 
 def create_app(config_name=None):
@@ -30,6 +31,17 @@ def create_app(config_name=None):
     def redirect_to_www():
         if request.host == 'witgoedaanbod.nl':
             return redirect(f'https://www.{request.host}{request.path}', code=301)
+
+    @app.before_request
+    def set_language():
+        lang = request.cookies.get('lang', 'nl')
+        g.lang = lang if lang in ('nl', 'en') else 'nl'
+
+    @app.context_processor
+    def inject_translations():
+        def t(key, **kwargs):
+            return translate(key, g.get('lang', 'nl'), **kwargs)
+        return {'t': t, 'current_lang': g.get('lang', 'nl')}
 
     @app.errorhandler(404)
     def not_found(e):

@@ -163,7 +163,8 @@ document.addEventListener('DOMContentLoaded', function() {
             bar = document.createElement('div');
             bar.id = 'compare-bar';
             bar.className = 'compare-bar';
-            document.body.appendChild(bar);
+            const anchor = document.getElementById('compare-bar-anchor');
+            (anchor || document.body).appendChild(bar);
         }
 
         const ids = list.map(item => item.id).join(',');

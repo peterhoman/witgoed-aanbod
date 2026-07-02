@@ -36,10 +36,10 @@
                         {% else %}
                         <span class="availability unavailable">Uitverkocht</span>
                         {% endif %}
-                        {% if product.is_example %}
-                        <span class="badge-example">Voorbeeldproduct</span>
-                        {% endif %}
                     </div>
+                    {% if product.is_example %}
+                    <span class="badge-example badge-example-block">Voorbeeldproduct</span>
+                    {% endif %}
                     <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-buy">{{ product.get_button_text() }}</a>
                 </div>
             </article>

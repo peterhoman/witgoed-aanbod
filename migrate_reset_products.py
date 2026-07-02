@@ -9,16 +9,22 @@ models.py (e.g. via Railway's Console/Shell tab), then run
 seed_example_products.py.
 """
 
+from sqlalchemy import text
 from app import create_app
-from models import db, Product
+from models import db
 
 
 def migrate():
     app = create_app()
 
     with app.app_context():
-        Product.__table__.drop(db.engine, checkfirst=True)
-        print("[+] Dropped products table (if it existed)")
+        is_postgres = db.engine.dialect.name == 'postgresql'
+        drop_sql = "DROP TABLE IF EXISTS products CASCADE" if is_postgres else "DROP TABLE IF EXISTS products"
+
+        with db.engine.connect() as conn:
+            conn.execute(text(drop_sql))
+            conn.commit()
+        print("[+] Dropped products table (if it existed), including dependent objects")
 
         db.create_all()
         print("[+] Recreated products table with current schema (incl. is_example)")

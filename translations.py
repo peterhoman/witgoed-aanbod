@@ -78,6 +78,10 @@ TRANSLATIONS = {
         'product.description_title': 'Beschrijving',
         'product.specs_title': 'Specificaties',
         'product.related_title': 'Gerelateerde Producten',
+        'product.compare_label': 'Vergelijk met andere producten',
+        'compare.title': 'Vergelijk producten',
+        'compare.empty': 'Geen producten geselecteerd om te vergelijken. Ga naar een categorie en vink "Vergelijk" aan bij maximaal 3 producten.',
+        'compare.property': 'Eigenschap',
 
         # Search page
         'search.results_for': 'Zoekresultaten voor "{query}"',
@@ -177,6 +181,10 @@ TRANSLATIONS = {
         'product.description_title': 'Description',
         'product.specs_title': 'Specifications',
         'product.related_title': 'Related Products',
+        'product.compare_label': 'Compare with other products',
+        'compare.title': 'Compare products',
+        'compare.empty': 'No products selected to compare. Go to a category and check "Compare" on up to 3 products.',
+        'compare.property': 'Property',
 
         'search.results_for': 'Search results for "{query}"',
         'search.results_found': 'results found',

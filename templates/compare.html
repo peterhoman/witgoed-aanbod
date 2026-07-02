@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ t('compare.title') }} | WitgoedAanbod.nl{% endblock %}
+{% block meta_description %}{{ t('compare.title') }}{% endblock %}
+
+{% block content %}
+<div class="container legal-page">
+    <h1>{{ t('compare.title') }}</h1>
+
+    {% if products %}
+    <div class="compare-wrapper">
+        <table class="comparison-table compare-full-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    {% for product in products %}
+                    <th>
+                        <a href="/product/{{ product.slug }}">
+                            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="compare-product-image">
+                        </a>
+                        <a href="/product/{{ product.slug }}" class="compare-product-title">{{ product.title }}</a>
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>{{ t('filters.brand') }}</strong></td>
+                    {% for product in products %}
+                    <td>{{ product.brand or t('product.brand_unknown') }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td><strong>Prijs</strong></td>
+                    {% for product in products %}
+                    <td class="price">€{{ "%.2f"|format(product.price) }}</td>
+                    {% endfor %}
+                </tr>
+                {% for key in spec_keys %}
+                <tr>
+                    <td><strong>{{ key }}</strong></td>
+                    {% for product in products %}
+                    <td>{{ product.specs.get(key, '—') }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    {% for product in products %}
+                    <td><a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-buy">{{ product.get_button_text() }}</a></td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="contact-intro">{{ t('compare.empty') }}</p>
+    {% endif %}
+</div>
+{% endblock %}

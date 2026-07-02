@@ -29,7 +29,7 @@ WASMACHINES = [
         'price': 499.00,
         'image_url': 'https://media.s-bol.com/jmGgWnD7O1ol/g5pAGBD/550x771.jpg',
         'description': 'Ruime wasmachine met een vulgewicht van 10,5 kg, geschikt voor grote gezinnen. Centrifugeert op 1400 toeren per minuut en heeft energielabel A.',
-        'specs': {'Vulgewicht': '10.5 kg', 'Toerental': '1400', 'Energielabel': 'A'},
+        'specs': {'Vulgewicht': '10.5 kg', 'Toerental': '1400', 'Energielabel': 'A', 'Type': 'Voorlader'},
     },
     {
         'ean': 'EXAMPLE0000002',
@@ -38,7 +38,7 @@ WASMACHINES = [
         'price': 749.00,
         'image_url': 'https://media.s-bol.com/RzmOqlGApGEY/E9Oq4og/550x771.jpg',
         'description': 'Wasmachine uit AEG\'s 8000-serie met automatische wasmiddeldosering. Vulgewicht van 8 kg en energielabel A, tot 40% zuiniger dan vereist.',
-        'specs': {'Vulgewicht': '8 kg', 'Energielabel': 'A'},
+        'specs': {'Vulgewicht': '8 kg', 'Energielabel': 'A (-40%)', 'Type': 'Voorlader', 'Extra': 'Automatische wasmiddeldosering (UniversalDose)'},
     },
     {
         'ean': 'EXAMPLE0000003',
@@ -47,7 +47,7 @@ WASMACHINES = [
         'price': 316.66,
         'image_url': 'https://media.s-bol.com/NqpWOWjPrLw6/Ro5O4Az/550x741.jpg',
         'description': 'Compacte en voordelige wasmachine met een vulgewicht van 7 kg, geschikt voor kleinere huishoudens. Energielabel A.',
-        'specs': {'Vulgewicht': '7 kg', 'Energielabel': 'A'},
+        'specs': {'Vulgewicht': '7 kg', 'Energielabel': 'A', 'Type': 'Voorlader', 'Geluidsniveau': '69 dB', 'Extra': 'Beladingssensor, AI Smart-functie'},
     },
     {
         'ean': 'EXAMPLE0000004',
@@ -56,7 +56,7 @@ WASMACHINES = [
         'price': 499.00,
         'image_url': 'https://media.s-bol.com/gGzvREnYzjDY/qgRYWG/550x770.jpg',
         'description': 'Wasmachine uit Samsung\'s Ecobubble-serie, wast op lage temperaturen dankzij bubbeltechnologie. Vulgewicht 9 kg, energielabel A.',
-        'specs': {'Vulgewicht': '9 kg', 'Energielabel': 'A'},
+        'specs': {'Vulgewicht': '9 kg', 'Energielabel': 'A (-10%)', 'Type': 'Voorlader', 'Geluidsniveau': '72 dB', 'Extra': 'Beladingssensor, Ecobubble-technologie'},
     },
     {
         'ean': 'EXAMPLE0000005',
@@ -65,7 +65,7 @@ WASMACHINES = [
         'price': 419.00,
         'image_url': 'https://media.s-bol.com/7RMA0gpn0xKQ/k54QL9Y/550x766.jpg',
         'description': 'Betaalbare wasmachine van Inventum met een vulgewicht van 8 kg en een centrifugesnelheid van 1400 toeren per minuut.',
-        'specs': {'Vulgewicht': '8 kg', 'Toerental': '1400', 'Energielabel': 'A-10%'},
+        'specs': {'Vulgewicht': '8 kg', 'Toerental': '1400', 'Energielabel': 'A-10%', 'Type': 'Voorlader'},
     },
     {
         'ean': 'EXAMPLE0000006',
@@ -74,7 +74,7 @@ WASMACHINES = [
         'price': 384.00,
         'image_url': 'https://media.s-bol.com/JmlEpPxAv3vo/Ro5O6gR/550x745.jpg',
         'description': 'Ruime wasmachine met 10 kg vulgewicht en 1400 toeren centrifugesnelheid, geschikt voor grotere wasladingen.',
-        'specs': {'Vulgewicht': '10 kg', 'Toerental': '1400', 'Energielabel': 'A-30%'},
+        'specs': {'Vulgewicht': '10 kg', 'Toerental': '1400', 'Energielabel': 'A-30%', 'Type': 'Voorlader', 'Geluidsniveau': '76 dB', 'Extra': 'Beladingssensor, stoomwassen, Quick Wash'},
     },
 ]
 
@@ -86,7 +86,7 @@ KOELKASTEN = [
         'price': 1238.00,
         'image_url': 'https://media.s-bol.com/KNJrQqkGlZpG/rkWKDBw/286x840.jpg',
         'description': 'Ruime koel-vriescombinatie van 203 cm hoog met No Frost-techniek, zodat er nooit meer ontdooid hoeft te worden. Inhoud 440 liter, energielabel A.',
-        'specs': {'Inhoud': '440 liter', 'Type': 'Koel-vriescombinatie', 'Energielabel': 'A'},
+        'specs': {'Inhoud': '440 liter', 'Type': 'Koel-vriescombinatie', 'Energielabel': 'A', 'Afmetingen (h x b)': '203 x 70 cm', 'Ontdooisysteem': 'No Frost'},
     },
     {
         'ean': 'EXAMPLE0000102',
@@ -95,7 +95,7 @@ KOELKASTEN = [
         'price': 159.95,
         'image_url': 'https://media.s-bol.com/pDonnGL9x66V/VOkAEnz/550x646.jpg',
         'description': 'Compacte tafelmodel-koelkast, ideaal voor een studentenkamer of als bijzet-koelkast. Inhoud 30 liter en met 22 dB erg stil in gebruik.',
-        'specs': {'Inhoud': '30 liter', 'Type': 'Tafelmodel'},
+        'specs': {'Inhoud': '30 liter', 'Type': 'Tafelmodel', 'Afmetingen (h)': '47 cm', 'Geluidsniveau': '22 dB'},
     },
     {
         'ean': 'EXAMPLE0000103',
@@ -104,7 +104,7 @@ KOELKASTEN = [
         'price': 249.00,
         'image_url': 'https://media.s-bol.com/qqB4g6L0zpq0/1wkMKq0/282x840.jpg',
         'description': 'Compacte koel-vriescombinatie met een inhoud van 157 liter, geschikt voor kleinere keukens. Low Frost-techniek beperkt ijsvorming.',
-        'specs': {'Inhoud': '157 liter', 'Type': 'Koel-vriescombinatie', 'Energielabel': 'E'},
+        'specs': {'Inhoud': '157 liter', 'Type': 'Koel-vriescombinatie', 'Energielabel': 'E', 'Afmetingen (h)': '144 cm', 'Ontdooisysteem': 'Low Frost'},
     },
     {
         'ean': 'EXAMPLE0000104',
@@ -113,7 +113,7 @@ KOELKASTEN = [
         'price': 384.00,
         'image_url': 'https://media.s-bol.com/NgwyO8O2qqEz/qxWoro3/279x840.jpg',
         'description': 'Koel-vriescombinatie met waterdispenser en No Frost-techniek. Inhoud van 231 liter, geschikt voor middelgrote huishoudens.',
-        'specs': {'Inhoud': '231 liter', 'Type': 'Koel-vriescombinatie', 'Energielabel': 'E'},
+        'specs': {'Inhoud': '231 liter', 'Type': 'Koel-vriescombinatie', 'Energielabel': 'E', 'Afmetingen (h)': '170 cm', 'Ontdooisysteem': 'No Frost', 'Extra': 'Waterdispenser'},
     },
     {
         'ean': 'EXAMPLE0000105',
@@ -122,7 +122,7 @@ KOELKASTEN = [
         'price': 360.00,
         'image_url': 'https://media.s-bol.com/xXn1XOYnrM5l/E9AB7Vl/257x840.jpg',
         'description': 'Ruime koel-vriescombinatie van 180 cm hoog met een inhoud van 270 liter en No Frost-techniek.',
-        'specs': {'Inhoud': '270 liter', 'Type': 'Koel-vriescombinatie', 'Energielabel': 'D'},
+        'specs': {'Inhoud': '270 liter', 'Type': 'Koel-vriescombinatie', 'Energielabel': 'D', 'Afmetingen (h)': '180 cm', 'Ontdooisysteem': 'No Frost'},
     },
 ]
 

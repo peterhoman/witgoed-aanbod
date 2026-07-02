@@ -57,6 +57,33 @@ def search():
                          available_brands=available_brands, selected_brands=brand_filter)
 
 
+@products_bp.route('/vergelijk')
+def compare():
+    ids_param = request.args.get('ids', '')
+    ids = []
+    for raw_id in ids_param.split(','):
+        raw_id = raw_id.strip()
+        if raw_id.isdigit():
+            product_id = int(raw_id)
+            if product_id not in ids:
+                ids.append(product_id)
+    ids = ids[:3]
+
+    products = []
+    if ids:
+        found = Product.query.filter(Product.id.in_(ids)).all()
+        by_id = {p.id: p for p in found}
+        products = [by_id[i] for i in ids if i in by_id]
+
+    spec_keys = []
+    for product in products:
+        for key in (product.specs or {}).keys():
+            if key not in spec_keys:
+                spec_keys.append(key)
+
+    return render_template('compare.html', products=products, spec_keys=spec_keys)
+
+
 @products_bp.route('/api/categories')
 def api_categories():
     categories = Category.query.filter_by(parent_id=None).all()

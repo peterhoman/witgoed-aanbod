@@ -667,6 +667,233 @@ section h2 {
     border-bottom: none;
 }
 
+/* ============================================
+   PRODUCT COMPARISON
+   ============================================ */
+
+.compare-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.compare-label input[type="checkbox"] {
+    accent-color: var(--primary);
+}
+
+.compare-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--dark);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    z-index: 200;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.compare-bar-count {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.compare-bar-items {
+    flex: 1;
+    font-size: 13px;
+    color: #ccc;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.compare-bar-cta {
+    width: auto;
+    padding: 10px 20px;
+    white-space: nowrap;
+}
+
+.compare-bar-clear {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+}
+
+.compare-wrapper {
+    overflow-x: auto;
+}
+
+.compare-full-table th {
+    text-align: center;
+    padding: 16px;
+    vertical-align: top;
+}
+
+.compare-product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 8px;
+}
+
+.compare-product-title {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--dark);
+    text-decoration: none;
+    max-width: 160px;
+    margin: 0 auto;
+}
+
+.compare-product-title:hover {
+    color: var(--primary);
+}
+
+.compare-full-table td {
+    text-align: center;
+    min-width: 140px;
+}
+
+.compare-full-table td:first-child {
+    text-align: left;
+    min-width: 140px;
+}
+
+/* ============================================
+   PRODUCT DETAIL PAGE
+   ============================================ */
+
+.breadcrumbs {
+    font-size: 13px;
+    color: var(--gray);
+    margin: 20px 0;
+}
+
+.breadcrumbs a {
+    color: var(--gray);
+    text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+    color: var(--primary);
+}
+
+.product-main {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 40px;
+    margin-bottom: 48px;
+    align-items: start;
+}
+
+.product-image-section {
+    position: sticky;
+    top: 20px;
+}
+
+.product-image-large {
+    width: 100%;
+    max-width: 380px;
+    height: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: block;
+}
+
+.product-details h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.product-details .brand {
+    color: var(--gray);
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.price-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0 24px;
+}
+
+.price-large {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.description-section,
+.specs-section {
+    margin-bottom: 28px;
+}
+
+.description-section h2,
+.specs-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.specs-section dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 4px 24px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+}
+
+.specs-section dt {
+    font-size: 13px;
+    color: var(--gray);
+    grid-column: 1;
+}
+
+.specs-section dd {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 0 10px;
+    grid-column: 1;
+}
+
+.cta-section {
+    margin-top: 24px;
+}
+
+.affiliate-disclosure {
+    display: block;
+    margin-top: 10px;
+    color: var(--gray);
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .product-main {
+        grid-template-columns: 1fr;
+    }
+
+    .product-image-section {
+        position: static;
+    }
+}
+
 .legal-content strong {
     font-weight: 500;
     color: var(--gray);

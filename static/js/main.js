@@ -105,6 +105,93 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// ============================================
+// PRODUCT COMPARISON (max 3 producten, localStorage)
+// ============================================
+(function() {
+    const STORAGE_KEY = 'compare-products';
+    const MAX_COMPARE = 3;
+
+    function getCompareList() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveCompareList(list) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        renderCompareBar();
+        syncCheckboxes();
+    }
+
+    function toggleCompare(id, title) {
+        let list = getCompareList();
+        const existingIndex = list.findIndex(item => item.id === id);
+
+        if (existingIndex > -1) {
+            list.splice(existingIndex, 1);
+        } else {
+            if (list.length >= MAX_COMPARE) {
+                alert('Je kunt maximaal ' + MAX_COMPARE + ' producten tegelijk vergelijken. Verwijder eerst een product uit je vergelijking.');
+                return;
+            }
+            list.push({ id: id, title: title });
+        }
+        saveCompareList(list);
+    }
+
+    function syncCheckboxes() {
+        const list = getCompareList();
+        const ids = list.map(item => item.id);
+        document.querySelectorAll('.compare-checkbox').forEach(function(checkbox) {
+            checkbox.checked = ids.includes(parseInt(checkbox.dataset.productId, 10));
+        });
+    }
+
+    function renderCompareBar() {
+        const list = getCompareList();
+        let bar = document.getElementById('compare-bar');
+
+        if (list.length === 0) {
+            if (bar) bar.remove();
+            return;
+        }
+
+        if (!bar) {
+            bar = document.createElement('div');
+            bar.id = 'compare-bar';
+            bar.className = 'compare-bar';
+            document.body.appendChild(bar);
+        }
+
+        const ids = list.map(item => item.id).join(',');
+        bar.innerHTML =
+            '<span class="compare-bar-count">Vergelijk (' + list.length + '/' + MAX_COMPARE + ')</span>' +
+            '<span class="compare-bar-items">' + list.map(item => item.title.substring(0, 30)).join(' vs. ') + '</span>' +
+            '<a href="/vergelijk?ids=' + ids + '" class="btn-buy compare-bar-cta">Vergelijk nu →</a>' +
+            '<button type="button" class="compare-bar-clear" title="Wis vergelijking">&times;</button>';
+
+        bar.querySelector('.compare-bar-clear').addEventListener('click', function() {
+            saveCompareList([]);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.compare-checkbox').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                const id = parseInt(this.dataset.productId, 10);
+                const title = this.dataset.productTitle || '';
+                toggleCompare(id, title);
+            });
+        });
+
+        syncCheckboxes();
+        renderCompareBar();
+    });
+})();
+
 // Smooth scroll behavior (fallback for older browsers)
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {

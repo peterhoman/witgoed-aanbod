@@ -85,6 +85,10 @@
                         <span class="availability available">{{ t('product.in_stock') }}</span>
                         {% endif %}
                     </div>
+                    <label class="compare-label">
+                        <input type="checkbox" class="compare-checkbox" data-product-id="{{ related.id }}" data-product-title="{{ related.title }}">
+                        {{ t('product.compare_label') }}
+                    </label>
                     <a href="{{ related.affiliate_url or related.bol_url }}" target="_blank" class="btn-buy">{{ related.get_button_text() }}</a>
                 </div>
             </article>

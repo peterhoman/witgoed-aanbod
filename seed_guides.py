@@ -176,12 +176,209 @@ WASMACHINE_COMPARISON_GUIDE = {
 """,
 }
 
+DROGER_GUIDE = {
+    'slug': 'droger-kopen-waar-op-letten',
+    'title': 'Droger kopen: waarschijnlijk het minst zuinige apparaat in huis',
+    'excerpt': 'Warmtepomp versus condensdroger, capaciteit en energielabel uitgelegd — en waarom dit precies het apparaat is waar een goed label het meeste verschil maakt.',
+    'category_slug': 'drogers',
+    'content': """
+<p>Een droger is van alle grote huishoudapparaten doorgaans het minst zuinige toestel qua energieverbruik per gebruiksmoment. Dat maakt de keuze voor het juiste type en energielabel hier extra belangrijk — meer nog dan bij een wasmachine of koelkast.</p>
+
+<h2>Warmtepompdroger versus condensdroger</h2>
+<p>Er zijn twee hoofdtypen. Een <strong>condensdroger</strong> verwarmt lucht met een verwarmingselement, vergelijkbaar met een föhn, en is relatief eenvoudig maar verbruikt veel stroom. Een <strong>warmtepompdroger</strong> hergebruikt warmte via een gesloten circuit, vergelijkbaar met hoe een koelkast werkt, en verbruikt daardoor aanzienlijk minder energie — vaak 40 tot 50% minder dan een condensdroger. Warmtepompdrogers zijn duurder in aanschaf, maar verdienen dat verschil bij regelmatig gebruik binnen enkele jaren terug via de energierekening.</p>
+
+<h2>Capaciteit</h2>
+<p>Net als bij een wasmachine wordt de capaciteit van een droger uitgedrukt in kg. Kies bij voorkeur een droger met een vergelijkbare of net iets grotere capaciteit dan je wasmachine, zodat je een volle trommel wasgoed in één keer kunt drogen.</p>
+
+<h2>Energielabel: hier telt het het meest</h2>
+<p>Omdat drogen relatief veel energie kost per gebruiksmoment, is het energielabel bij een droger nog belangrijker dan bij andere witgoed. De meeste moderne warmtepompdrogers zitten in de zuinigste klassen; condensdrogers scoren doorgaans merkbaar lager. Lees ook onze algemene <a href="/gidsen/energielabel-witgoed-uitgelegd">uitleg over energielabels</a> voor de achtergrond.</p>
+
+<h2>Afvoer- of condensdroger: waar moet het water heen?</h2>
+<p>Een condensdroger vangt het vocht uit de was op in een reservoir dat je regelmatig moet legen, of sluit je aan op een afvoer. Sommige modellen hebben een automatische afvoerslang naar de riolering, wat het legen overbodig maakt. Warmtepompdrogers werken vrijwel altijd met een reservoir, omdat ze geen actieve afvoer van warme lucht naar buiten nodig hebben — handig als je geen buitenmuur in de buurt hebt, in tegenstelling tot oudere afvoerdrogers die een slang naar buiten nodig hadden.</p>
+
+<h2>Onderhoud: pluizenfilter en condensor</h2>
+<p>Welk type droger je ook kiest, regelmatig onderhoud is belangrijk voor zowel de droogprestatie als de levensduur. Maak het pluizenfilter na iedere droogbeurt leeg, en reinig bij een warmtepompdroger periodiek (ongeveer elke paar maanden) ook de condensor, waar zich anders pluis kan ophopen dat de efficiëntie vermindert. Dit wordt vaak vergeten, maar heeft direct invloed op zowel de droogtijd als het energieverbruik.</p>
+
+<h2>Kort samengevat</h2>
+<p>Kies, tenzij het budget echt niet toelaat, voor een warmtepompdroger — het energieverschil met een condensdroger is bij regelmatig gebruik simpelweg te groot om te negeren. Stem de capaciteit af op je wasmachine, en onderhoud filter en condensor regelmatig om de efficiëntie op peil te houden.</p>
+""",
+}
+
+WASDROOGCOMBI_GUIDE = {
+    'slug': 'wasdroogcombinatie-kopen-voor-en-nadelen',
+    'title': 'Wasdroogcombinatie kopen: voor- en nadelen op een rij',
+    'excerpt': 'Eén apparaat dat wast én droogt — handig bij weinig ruimte, maar met een aantal praktische afwegingen die je vooraf moet kennen.',
+    'category_slug': 'wasdroogcombinaties',
+    'content': """
+<p>Een wasdroogcombinatie combineert een wasmachine en droger in één toestel. Dit is aantrekkelijk als je weinig ruimte hebt of niet twee aparte apparaten wilt plaatsen, maar er zijn een paar praktische afwegingen om vooraf te kennen.</p>
+
+<h2>Het belangrijkste nadeel: droogcapaciteit is vaak lager dan wascapaciteit</h2>
+<p>Bij de meeste wasdroogcombinaties kun je bijvoorbeeld 9 kg was in één keer wassen, maar slechts 6 kg in één keer drogen. Dit betekent dat je bij een volle wasbeurt vaak een deel van de was er tussenuit moet halen voordat je kunt drogen, of in twee keer moet drogen. Let dus goed op de aparte was- én droogcapaciteit in de specificaties, niet alleen op het vulgewicht dat vaak prominent wordt vermeld.</p>
+
+<h2>Eén apparaat, één storing</h2>
+<p>Een praktisch nadeel: als het apparaat kapot gaat, ben je in één keer zowel je wasmachine als je droger kwijt, in plaats van dat je nog met één van de twee verder kunt.</p>
+
+<h2>Energielabel en verbruik</h2>
+<p>Wasdroogcombinaties hebben een eigen energielabel-systematiek die rekening houdt met zowel de was- als de droogfunctie. Omdat drogen relatief veel energie kost (zie onze <a href="/gidsen/droger-kopen-waar-op-letten">gids over drogers</a>), is het energielabel hier extra de moeite waard om te vergelijken tussen modellen.</p>
+
+<h2>Voor wie is dit de juiste keuze?</h2>
+<p>Een wasdroogcombinatie is vooral geschikt voor kleinere huishoudens met beperkte ruimte, bijvoorbeeld een appartement zonder aparte opstelplek voor twee apparaten. Voor grotere gezinnen die regelmatig volle wasladingen draaien, is een aparte wasmachine en droger vaak praktischer, juist vanwege het verschil in was- en droogcapaciteit.</p>
+
+<h2>Langere programmaduur</h2>
+<p>Omdat wassen en drogen na elkaar in hetzelfde toestel gebeuren, duurt een volledig was-en-droogprogramma bij een combinatie vaak aanzienlijk langer dan wanneer je een aparte wasmachine en droger gebruikt — soms wel 4 tot 5 uur voor een combinatieprogramma. Dat is geen probleem als je 's ochtends een programma start en 's avonds droge was uit de machine haalt, maar wel iets om rekening mee te houden als je snel schone kleding nodig hebt.</p>
+
+<h2>Alternatief: stapelen in plaats van combineren</h2>
+<p>Wie wél twee aparte apparaten wil maar weinig vloerruimte heeft, kan overwegen een wasmachine en droger op elkaar te stapelen met een speciaal stapelframe. Dit vraagt wel om voldoende stahoogte en is niet bij elk model mogelijk — check vooraf of de gewenste wasmachine en droger geschikt zijn om te stapelen, en of de afmetingen op elkaar aansluiten.</p>
+
+<h2>Kort samengevat</h2>
+<p>Let bij een wasdroogcombinatie extra goed op de aparte droogcapaciteit (vaak lager dan de wascapaciteit) en weeg de ruimtebesparing af tegen het risico dat je bij een defect in één keer beide functies kwijt bent. Heb je iets meer stahoogte beschikbaar, overweeg dan ook een gestapelde losse wasmachine en droger als alternatief.</p>
+""",
+}
+
+VAATWASSER_GUIDE = {
+    'slug': 'vaatwasser-kopen-complete-gids',
+    'title': 'Vaatwasser kopen: waar moet je op letten?',
+    'excerpt': 'Formaat, aantal couverts, energie- en waterverbruik en geluidsniveau uitgelegd, voor een vaatwasser die past bij je huishouden.',
+    'category_slug': 'vaatwassers',
+    'content': """
+<p>Een vaatwasser gebruik je waarschijnlijk dagelijks, wat de keuze voor het juiste formaat en energielabel direct voelbaar maakt in je energie- en waterrekening.</p>
+
+<h2>Formaat: volledig, smal of tafelmodel</h2>
+<p>De standaardbreedte is 60 cm, geschikt voor de meeste huishoudens. Smalle vaatwassers (45 cm) zijn een goede optie voor kleinere keukens of 1-2 personen, maar bieden minder capaciteit per beurt. Tafelmodellen zijn er ook, vooral geschikt als er geen ruimte is voor een inbouw- of vrijstaand model.</p>
+
+<h2>Aantal couverts</h2>
+<p>De capaciteit van een vaatwasser wordt uitgedrukt in "couverts" (het aantal complete gedekte tafels dat erin past). Als richtlijn: 10-12 couverts voor 1-2 personen, 12-14 voor een gezin van 3-4 personen, en 14 of meer voor grotere huishoudens.</p>
+
+<h2>Energie- en waterverbruik</h2>
+<p>Net als bij een wasmachine loopt het energielabel van A tot G. Omdat een vaatwasser bij de meeste huishoudens dagelijks of bijna dagelijks draait, telt het verschil tussen een zuinig en minder zuinig model op termijn stevig op — zie onze algemene <a href="/gidsen/energielabel-witgoed-uitgelegd">uitleg over energielabels</a>. Let ook op het waterverbruik per programma, in liters: moderne vaatwassers gebruiken vaak minder water dan handmatig afwassen.</p>
+
+<h2>Geluidsniveau</h2>
+<p>Draait je vaatwasser vaak 's avonds of in een open keuken? Let dan op het geluidsniveau in dB. Stille modellen zitten rond de 40-44 dB; wie extra gevoelig is voor geluid kan kiezen voor modellen onder de 40 dB.</p>
+
+<h2>Programma's: meer dan alleen "standaard"</h2>
+<p>De meeste vaatwassers hebben naast een standaardprogramma ook een ECO-stand (lagere temperatuur, langere duur, minder verbruik — zie onze <a href="/gidsen/energielabel-witgoed-uitgelegd">uitleg over ECO-programma's</a>), een kort/snelprogramma voor licht vervuild serviesgoed, en vaak een intensief programma voor pannen en ovenschalen. Let bij het vergelijken niet alleen op het aantal programma's, maar vooral of de programma's aansluiten bij hoe je daadwerkelijk afwast — veel extra programma's die je nooit gebruikt voegen weinig waarde toe.</p>
+
+<h2>Besteklade: een klein detail met groot gemak</h2>
+<p>Veel nieuwere vaatwassers hebben een derde lade specifiek voor bestek, bovenin het apparaat, in plaats van een bestekmandje in de onderste lade. Dit geeft meer ruimte in de onderste lade voor pannen en schalen, en zorgt vaak voor een beter wasresultaat van het bestek zelf. Niet essentieel, maar wel een prettig detail om op te letten bij het vergelijken van modellen.</p>
+
+<h2>Kort samengevat</h2>
+<p>Kies het formaat en aantal couverts op basis van huishoudgrootte, let op het energielabel omdat dit apparaat vaak dagelijks draait, en houd rekening met geluidsniveau als de vaatwasser in of naast een leefruimte staat. Check ook of de beschikbare programma's aansluiten bij je daadwerkelijke gebruik.</p>
+""",
+}
+
+MAGNETRON_GUIDE = {
+    'slug': 'magnetron-kopen-waar-op-letten',
+    'title': 'Magnetron kopen: vermogen, inhoud en functies uitgelegd',
+    'excerpt': 'Van simpel opwarmen tot combimagnetrons met grill en hetelucht — wat de specificaties van een magnetron echt betekenen.',
+    'category_slug': 'magnetrons',
+    'content': """
+<p>Magnetrons variëren sterk in prijs en functionaliteit — van eenvoudige opwarmmodellen tot combimagnetrons die ook grillen en bakken. De juiste keuze hangt vooral af van waarvoor je het apparaat wilt gebruiken.</p>
+
+<h2>Vermogen: hoe sneller, hoe hoger</h2>
+<p>Het vermogen van een magnetron wordt uitgedrukt in watt, meestal tussen de 700 en 1000+ watt. Hoe hoger het vermogen, hoe sneller eten wordt opgewarmd of bereid. Voor dagelijks opwarmen van etensresten volstaat 700-800 watt ruimschoots; voor snel en gelijkmatig koken kies je beter voor 900 watt of meer.</p>
+
+<h2>Inhoud</h2>
+<p>De inhoud wordt uitgedrukt in liters, meestal tussen de 17 en 30+ liter. Een kleine magnetron (17-20 liter) is voldoende voor opwarmen van borden en kommen; wil je ook grotere schalen of een hele kip kunnen bereiden, kies dan voor 25 liter of meer.</p>
+
+<h2>Type: solo, grill of combi</h2>
+<ul>
+    <li><strong>Solo-magnetron:</strong> alleen de basisfunctie, opwarmen en ontdooien</li>
+    <li><strong>Grillmagnetron:</strong> heeft ook een grillelement voor bijvoorbeeld gegratineerde gerechten of krokante toppings</li>
+    <li><strong>Combimagnetron:</strong> combineert magnetron, grill én hetelucht (convectie), waardoor je het apparaat ook als volwaardige oven kunt gebruiken</li>
+</ul>
+<p>Een combimagnetron is aanzienlijk duurder maar veel veelzijdiger — handig als je weinig aanrechtruimte hebt en geen aparte oven wilt.</p>
+
+<h2>Inbouw versus vrijstaand</h2>
+<p>Net als bij ovens en koelkasten zijn er inbouw- en vrijstaande magnetrons. Inbouwmodellen zien er strakker uit en besparen aanrechtruimte, maar zijn minder flexibel qua formaat en duurder dan vrijstaande modellen.</p>
+
+<h2>Bediening: draaiknop of digitaal display</h2>
+<p>Eenvoudigere magnetrons hebben een mechanische draaiknop voor tijd en vermogen, wat intuïtief en snel is voor dagelijks gebruik. Uitgebreidere modellen hebben een digitaal display met voorgeprogrammeerde functies (bijvoorbeeld automatisch ontdooien op basis van gewicht). Dit is vooral comfort — het zegt niets over de daadwerkelijke bereidingskwaliteit, dus laat dit niet je enige afwegingspunt zijn.</p>
+
+<h2>Draaiplateau: glas of keramiek</h2>
+<p>Vrijwel alle magnetrons hebben een draaiplateau dat zorgt voor gelijkmatige verwarming. Let bij vervanging of aankoop op de diameter, zeker als je vaak grotere schalen gebruikt — een groter plateau biedt meer flexibiliteit maar vraagt ook om een ruimere binnenkant.</p>
+
+<h2>Kort samengevat</h2>
+<p>Bepaal eerst of je alleen wilt opwarmen (solo volstaat) of ook echt wilt koken en bakken (kies dan voor een combimagnetron), en stem het vermogen en de inhoud af op je huishoudgrootte en gebruiksdoel.</p>
+""",
+}
+
+OVEN_GUIDE = {
+    'slug': 'oven-kopen-complete-gids',
+    'title': 'Oven kopen: de complete gids',
+    'excerpt': 'Hetelucht versus boven-onderwarmte, inhoud, energielabel en pyrolyse-reiniging uitgelegd.',
+    'category_slug': 'ovens',
+    'content': """
+<p>Een oven gaat vaak lang mee, dus is het de moeite waard om even stil te staan bij de belangrijkste verschillen voordat je een keuze maakt.</p>
+
+<h2>Hetelucht (convectie) versus boven-onderwarmte</h2>
+<p>Bij <strong>boven-onderwarmte</strong> komt de warmte van boven en onder de gerechten, zonder actieve luchtcirculatie — traditioneel en geschikt voor bijvoorbeeld gebak dat gelijkmatig moet rijzen. Bij <strong>hetelucht</strong> circuleert een ventilator de warme lucht door de hele ovenruimte, wat zorgt voor een gelijkmatigere temperatuur en vaak kortere bereidingstijden, en waardoor je op meerdere niveaus tegelijk kunt bakken zonder dat smaken zich vermengen. De meeste moderne ovens bieden beide standen.</p>
+
+<h2>Inhoud</h2>
+<p>De inhoud wordt uitgedrukt in liters, meestal tussen de 50 en 75 liter voor standaard inbouwovens. Grotere gezinnen of wie vaak grote gerechten (zoals een hele kalkoen) bereidt, heeft baat bij een ruimere oven.</p>
+
+<h2>Energielabel</h2>
+<p>Ook ovens hebben een energielabel, van A tot G. Het verschil in verbruik tussen klassen is bij een oven relatief kleiner dan bij bijvoorbeeld een koelkast, maar telt bij regelmatig gebruik alsnog op — zie onze <a href="/gidsen/energielabel-witgoed-uitgelegd">algemene uitleg over energielabels</a>.</p>
+
+<h2>Pyrolyse- of katalytische reiniging</h2>
+<p>Sommige ovens hebben een zelfreinigingsfunctie. Bij <strong>pyrolyse</strong> verhit de oven zichzelf tot een zeer hoge temperatuur, waardoor vuil verast tot as die je simpelweg uitveegt — effectief, maar verbruikt tijdens de reinigingscyclus relatief veel stroom. <strong>Katalytische</strong> reiniging gebruikt een speciale binnenwand die vet tijdens normaal gebruik geleidelijk afbreekt, minder krachtig maar ook minder energie-intensief.</p>
+
+<h2>Inbouw versus vrijstaand</h2>
+<p>Inbouwovens zijn ontworpen om in een keukenkast te passen en ogen strakker, maar zijn minder flexibel in formaat en duurder dan vrijstaande fornuizen met geïntegreerde oven.</p>
+
+<h2>Stoomondersteuning: vochtiger en gezonder bereiden</h2>
+<p>Sommige (vaak duurdere) ovens hebben een stoomfunctie, waarbij tijdens het bakken of braden vocht wordt toegevoegd. Dit voorkomt uitdroging van vlees en groenten, en zorgt bijvoorbeeld voor knapperiger brood met een luchtiger binnenkant. Voor wie regelmatig bakt of vlees bereidt, is dit een waardevolle toevoeging; voor incidenteel gebruik weegt de meerprijs vaak niet op tegen het voordeel.</p>
+
+<h2>Aantal bakniveaus en toebehoren</h2>
+<p>Let bij het vergelijken ook op het aantal bakniveaus en het meegeleverde toebehoren (bakplaten, grillrooster, braadslede). Een oven met meer niveaus geeft flexibiliteit om op meerdere hoogtes tegelijk te bakken, vooral relevant in combinatie met hetelucht.</p>
+
+<h2>Kort samengevat</h2>
+<p>Kies hetelucht als je op meerdere niveaus tegelijk wilt bakken, stem de inhoud af op je huishoudgrootte, en overweeg pyrolysereiniging als gemak zwaarder weegt dan het iets hogere energieverbruik tijdens het reinigen. Bak je regelmatig brood of vlees, dan is stoomondersteuning het overwegen waard.</p>
+""",
+}
+
+STOFZUIGER_GUIDE = {
+    'slug': 'stofzuiger-kopen-waar-op-letten',
+    'title': 'Stofzuiger kopen: zak, zakloos of robot?',
+    'excerpt': 'De belangrijkste verschillen tussen stofzuigertypen, en waar je op moet letten qua vermogen, filters en actieradius.',
+    'category_slug': 'stofzuigers',
+    'content': """
+<p>Het aanbod aan stofzuigers is inmiddels groot: van traditionele modellen met stofzak tot draadloze steelstofzuigers en volautomatische robotstofzuigers. Welk type het beste past, hangt vooral af van je woning en persoonlijke voorkeur.</p>
+
+<h2>Met stofzak of zakloos</h2>
+<p>Stofzuigers met een <strong>stofzak</strong> zijn vaak hygiënischer bij het legen (je gooit de hele zak weg zonder stofcontact) en hebben doorgaans een goede filtering, maar je hebt terugkerende kosten voor nieuwe zakken. <strong>Zakloze</strong> stofzuigers besparen die kosten en tonen direct hoeveel vuil is opgezogen, maar het legen van het stofreservoir kan stof verspreiden en vereist regelmatig schoonmaken van filters.</p>
+
+<h2>Steelstofzuiger versus traditionele stofzuiger</h2>
+<p>Draadloze steelstofzuigers zijn licht, wendbaar en handig voor snel gebruik, maar de accuduur (meestal 20-60 minuten) kan beperkend zijn bij grotere woningen. Traditionele stofzuigers met snoer hebben onbeperkte gebruiksduur en vaak meer zuigkracht, maar zijn minder wendbaar en zwaarder om te dragen.</p>
+
+<h2>Robotstofzuiger: gemak, met wat kanttekeningen</h2>
+<p>Een robotstofzuiger stofzuigt automatisch volgens een schema, wat vooral prettig is voor onderhoudsstofzuigen tussen grondige beurten door. Let op: robotstofzuigers zijn minder geschikt als enige stofzuiger in huis — ze hebben moeite met hoge drempels, veel obstakels, of hoeken, en zijn typisch een aanvulling op (niet vervanging van) een reguliere stofzuiger.</p>
+
+<h2>Vermogen en zuigkracht</h2>
+<p>Let niet alleen op het opgenomen vermogen in watt (dat zegt vooral iets over energieverbruik), maar vooral op de daadwerkelijke zuigkracht, vaak uitgedrukt in Air Watt (AW) of kPa in de specificaties. Een hoger AW-getal duidt op effectievere reiniging, vooral merkbaar op tapijt.</p>
+
+<h2>Filters voor huisstofallergie</h2>
+<p>Heb je huisstofallergie, let dan op een HEPA-filter. Deze vangt fijnstof en allergenen effectiever af dan standaardfilters, wat een merkbaar verschil kan maken in luchtkwaliteit.</p>
+
+<h2>Geschikt voor huisdieren?</h2>
+<p>Heb je huisdieren, kijk dan specifiek naar modellen die geadverteerd worden met een dierenhaar-borstel of speciaal mondstuk voor haren op tapijt en meubels. Standaard borstels raken sneller verstopt met haren, wat de zuigkracht op termijn vermindert. Sommige fabrikanten bieden speciale "pet"-varianten van hun stofzuigers met een aangepaste borstelrol hiervoor.</p>
+
+<h2>Actieradius en accessoires</h2>
+<p>Bij een stofzuiger met snoer bepaalt de snoerlengte plus de lengte van de slang je actieradius zonder te hoeven verplaatsen naar een ander stopcontact — praktisch bij grotere woningen. Kijk ook naar meegeleverde hulpstukken zoals een kierenzuiger, meubelborstel of mondstuk voor harde vloeren, die het gebruiksgemak sterk kunnen beïnvloeden.</p>
+
+<h2>Kort samengevat</h2>
+<p>Kies stofzak voor gemak bij legen en goede filtering, zakloos om terugkerende kosten te besparen, een steelstofzuiger voor wendbaarheid bij kleinere woningen, en overweeg een robotstofzuiger als aanvulling — niet als vervanging — voor onderhoudsstofzuigen tussendoor. Heb je huisdieren of huisstofallergie, let dan specifiek op de borstel respectievelijk het filtersysteem.</p>
+""",
+}
+
 
 def seed():
     app = create_app()
 
     with app.app_context():
-        all_guides = [WASMACHINE_GUIDE, KOELKAST_GUIDE, ENERGY_LABEL_GUIDE, WASMACHINE_COMPARISON_GUIDE]
+        all_guides = [
+            WASMACHINE_GUIDE, KOELKAST_GUIDE, ENERGY_LABEL_GUIDE, WASMACHINE_COMPARISON_GUIDE,
+            DROGER_GUIDE, WASDROOGCOMBI_GUIDE, VAATWASSER_GUIDE, MAGNETRON_GUIDE, OVEN_GUIDE, STOFZUIGER_GUIDE,
+        ]
 
         for guide_data in all_guides:
             Guide.query.filter_by(slug=guide_data['slug']).delete()

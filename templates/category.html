@@ -114,6 +114,10 @@
                         {% if product.is_example %}
                         <span class="badge-example badge-example-block">{{ t('product.example_badge') }}</span>
                         {% endif %}
+                        <label class="compare-label">
+                            <input type="checkbox" class="compare-checkbox" data-product-id="{{ product.id }}" data-product-title="{{ product.title }}">
+                            {{ t('product.compare_label') }}
+                        </label>
                         <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-buy">{{ product.get_button_text() }}</a>
                     </div>
                 </article>

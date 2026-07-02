@@ -16,16 +16,21 @@ from models import db, Category, Guide
 
 BLOG_POSTS = [
     {
-        'slug': 'nieuwe-energielabels-2026-wat-verandert-er',
-        'title': 'Wat verandert er in 2026 aan de energielabels voor witgoed?',
-        'excerpt': 'Kort nieuws: fabrikanten schuiven steeds vaker op naar de zuinigste labelklassen. Wat betekent dat voor jouw volgende aankoop?',
+        'slug': 'witgoedmarkt-nieuws-2026-reparatierecht-smart-inbouw',
+        'title': 'Witgoedmarkt 2026: reparatierecht, slimme apparaten en meer luxe inbouw',
+        'excerpt': 'Drie actuele ontwikkelingen in de witgoedmarkt: het nieuwe Europese reparatierecht, de opmars van slimme apparaten en een duidelijke verschuiving naar luxe inbouwapparatuur.',
         'category_slug': None,
         'content': """
-<p>Sinds de herziening van de Europese energielabels zien we bij steeds meer nieuwe modellen dat fabrikanten actief richting de zuinigste klassen (A en A met extra procenten eronder) ontwikkelen. Waar een paar jaar geleden klasse C of D bij wasmachines nog heel gewoon was, verschuift het aanbod merkbaar naar zuiniger.</p>
+<p>De witgoedmarkt verandert dit jaar op een paar duidelijke punten. We zetten de belangrijkste ontwikkelingen op een rij.</p>
 
-<p>Voor kopers is dit goed nieuws: meer keuze in zuinige modellen betekent vaak ook scherpere prijzen in die categorie, omdat de zuinige klasse niet langer alleen voor het duurste topsegment is weggelegd. Twijfel je nog over hoe je het energielabel moet lezen? Check onze <a href="/gidsen/energielabel-witgoed-uitgelegd">uitgebreide uitleg over energielabels</a>.</p>
+<h2>Recht op Reparatie vanaf juli 2026</h2>
+<p>Vanaf juli 2026 treedt nieuwe Europese wetgeving in werking die consumenten een wettelijk recht geeft om grote huishoudelijke apparaten, zoals wasmachines en vaatwassers, te laten repareren in plaats van ze meteen te vervangen. Doel is de levensduur van apparaten te verlengen en de hoeveelheid elektronisch afval te verminderen. Een neveneffect: de markt voor refurbished en outlet-witgoed groeit mee, doordat meer consumenten bewust kiezen voor een gerepareerd, goedkoper tweedehands model in plaats van meteen nieuw te kopen.</p>
 
-<p>We houden dit soort ontwikkelingen bij en delen updates zodra er weer iets relevants verandert.</p>
+<h2>Slimme apparaten: op weg naar 30% van de huishoudens</h2>
+<p>Uit consumentenonderzoek van Multiscope blijkt dat inmiddels ongeveer 30% van de Nederlandse huishoudens minstens één slim huishoudelijk apparaat bezit. De robotstofzuiger is met 12% het populairst, gevolgd door de slimme wasmachine of droger (9%) en de slimme vaatwasser (6%). De belangrijkste reden die kopers noemen is gemak: op afstand bedienen, plannen en monitoren via een app.</p>
+
+<h2>Meer luxe inbouw, minder vrijstaand</h2>
+<p>Cijfers van branchevereniging APPLiA Nederland laten zien dat het totale verkoopvolume van witgoed licht daalt, maar dat kopers wel vaker voor luxere, ingebouwde apparatuur kiezen. Er werd voor circa €1,7 miljard aan inbouwapparatuur verkocht, een stijging van 3%, mede gedreven door een actievere huizenmarkt. Vrijstaande apparaten daalden juist met 2%. Ook opvallend: kopers kiezen vaker voor grotere capaciteit, zoals wasmachines vanaf 9 kg en Amerikaanse koelkasten. Wil je weten waar je op moet letten bij een grotere wasmachine? Bekijk onze <a href="/gidsen/wasmachine-kopen-waar-op-letten">koopgids voor wasmachines</a>.</p>
 """,
     },
     {

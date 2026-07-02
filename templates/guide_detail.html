@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ guide.title }} | WitgoedAanbod.nl{% endblock %}
+{% block meta_description %}{{ guide.excerpt }}{% endblock %}
+
+{% block content %}
+<div class="container legal-page">
+    <nav class="breadcrumbs">
+        <a href="/">Home</a> /
+        <a href="/gidsen">{{ t('guides.title') }}</a> /
+        <span>{{ guide.title }}</span>
+    </nav>
+
+    <h1>{{ guide.title }}</h1>
+
+    <div class="legal-content">
+        {{ guide.content|safe }}
+    </div>
+
+    {% if guide.category %}
+    <p style="margin-top: 32px;">
+        <a href="/category/{{ guide.category.slug }}" class="btn-primary">{{ guide.category.name }} bekijken →</a>
+    </p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -15,6 +15,7 @@ TRANSLATIONS = {
         'nav.privacy': 'Privacy',
         'nav.disclaimer': 'Disclaimer',
         'nav.contact': 'Contact',
+        'nav.guides': 'Gidsen',
 
         # Category nav (also reused in footer)
         'nav.wasmachines': 'Wasmachines',
@@ -88,6 +89,13 @@ TRANSLATIONS = {
         'search.back_home': 'Terug naar home',
         'product.affiliate_disclosure': 'WitgoedAanbod.nl is deelnemer aan het bol partnerprogramma. Als je via deze link iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.',
 
+        # Guides
+        'guides.title': 'Koopgidsen',
+        'guides.intro': 'Praktisch advies om de juiste keuze te maken, geschreven door WitgoedAanbod.nl.',
+        'guides.read_more': 'Lees de gids →',
+        'category.guide_teaser': 'Koopgids',
+        'category.guide_teaser_cta': 'Lees onze gids',
+
         # Homepage
         'home.hero_title': 'Vergelijk Witgoed & Huishoudapparaten',
         'home.hero_text': 'Vind de beste deals op wasmachines, drogers, koelkasten en meer. Kijk en vergelijk.',
@@ -112,6 +120,7 @@ TRANSLATIONS = {
         'nav.privacy': 'Privacy',
         'nav.disclaimer': 'Disclaimer',
         'nav.contact': 'Contact',
+        'nav.guides': 'Guides',
 
         'nav.wasmachines': 'Washing Machines',
         'nav.drogers': 'Dryers',
@@ -177,6 +186,12 @@ TRANSLATIONS = {
         'search.no_results_text': 'Try a different search term or browse our categories.',
         'search.back_home': 'Back to home',
         'product.affiliate_disclosure': 'WitgoedAanbod.nl participates in the bol affiliate program. If you buy something through this link, we may earn a small commission, at no extra cost to you.',
+
+        'guides.title': 'Buying Guides',
+        'guides.intro': 'Practical advice to help you choose, written by WitgoedAanbod.nl.',
+        'guides.read_more': 'Read the guide →',
+        'category.guide_teaser': 'Buying Guide',
+        'category.guide_teaser_cta': 'Read our guide',
 
         'home.hero_title': 'Compare Appliances & Household Devices',
         'home.hero_text': 'Find the best deals on washing machines, dryers, refrigerators and more. Look and compare.',

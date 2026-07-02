@@ -20,6 +20,14 @@
         {% endif %}
     </header>
 
+    {% if category_guide %}
+    <a href="/gidsen/{{ category_guide.slug }}" class="guide-teaser">
+        <span class="guide-teaser-label">{{ t('category.guide_teaser') }}</span>
+        <strong>{{ category_guide.title }}</strong>
+        <span class="guide-teaser-cta">{{ t('category.guide_teaser_cta') }} →</span>
+    </a>
+    {% endif %}
+
     <!-- Filters Sidebar -->
     <div class="category-layout">
         <aside class="filters-sidebar">

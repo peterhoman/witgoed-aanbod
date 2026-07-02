@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect
-from models import Category, Product
+from models import Category, Product, Guide
 from sqlalchemy import or_
 from filter_helpers import compute_brand_facet, compute_spec_facets, parse_spec_filters
 
@@ -12,6 +12,18 @@ def set_language(lang):
     if lang in ('nl', 'en'):
         response.set_cookie('lang', lang, max_age=60 * 60 * 24 * 365)
     return response
+
+
+@main_bp.route('/gidsen')
+def guides():
+    all_guides = Guide.query.order_by(Guide.created_at.desc()).all()
+    return render_template('guides.html', guides=all_guides)
+
+
+@main_bp.route('/gidsen/<slug>')
+def guide_detail(slug):
+    guide = Guide.query.filter_by(slug=slug).first_or_404()
+    return render_template('guide_detail.html', guide=guide)
 
 
 @main_bp.route('/')
@@ -53,6 +65,7 @@ def category(slug):
         q = q.order_by(Product.price.desc())
 
     products = q.paginate(page=page, per_page=24)
+    category_guide = Guide.query.filter_by(category_id=category.id).first()
 
     return render_template(
         'category.html',
@@ -66,4 +79,5 @@ def category(slug):
         min_price=min_price,
         max_price=max_price,
         selected_sort=sort,
+        category_guide=category_guide,
     )

@@ -3,7 +3,7 @@ SEO routes (sitemap, robots.txt)
 """
 
 from flask import Blueprint, render_template_string, current_app
-from models import Product, Category
+from models import Product, Category, Guide
 from datetime import datetime
 
 seo_bp = Blueprint('seo', __name__)
@@ -37,6 +37,15 @@ def sitemap():
             'loc': f"{current_app.config['SITE_URL']}/product/{product.slug}",
             'lastmod': product.updated_at.isoformat() if product.updated_at else datetime.utcnow().isoformat(),
             'priority': '0.6'
+        })
+
+    # Guides
+    guides = Guide.query.all()
+    for guide in guides:
+        sitemap_entries.append({
+            'loc': f"{current_app.config['SITE_URL']}/gidsen/{guide.slug}",
+            'lastmod': guide.created_at.isoformat() if guide.created_at else datetime.utcnow().isoformat(),
+            'priority': '0.7'
         })
 
     # Legal pages

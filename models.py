@@ -119,3 +119,20 @@ class AIContent(db.Model):
 
     def __repr__(self):
         return f'<AIContent {self.content_type}>'
+
+
+class Guide(db.Model):
+    __tablename__ = 'guides'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    slug = db.Column(db.String(200), nullable=False, unique=True)
+    excerpt = db.Column(db.String(300))
+    content = db.Column(db.Text, nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    category = db.relationship('Category', backref='guides')
+
+    def __repr__(self):
+        return f'<Guide {self.title}>'

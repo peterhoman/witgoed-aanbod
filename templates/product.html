@@ -22,6 +22,9 @@
         <div class="product-details">
             <h1>{{ product.title }}</h1>
             <p class="brand">{{ product.brand or 'Merk onbekend' }}</p>
+            {% if product.is_example %}
+            <span class="badge-example">Voorbeeldproduct — nog niet automatisch gesynchroniseerd</span>
+            {% endif %}
 
             <div class="price-section">
                 <span class="price-large">€{{ "%.2f"|format(product.price) }}</span>

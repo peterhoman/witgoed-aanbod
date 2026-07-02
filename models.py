@@ -48,6 +48,7 @@ class Product(db.Model):
     specs = db.Column(db.JSON)
 
     is_available = db.Column(db.Boolean, default=True)
+    is_example = db.Column(db.Boolean, default=False)
     slug = db.Column(db.String(255), nullable=False)
 
     last_synced = db.Column(db.DateTime, default=datetime.utcnow)

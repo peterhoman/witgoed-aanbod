@@ -289,6 +289,8 @@ def sync_products():
 
             logger.info(f"[*] Found {len(search_results)} results for {category_name}")
 
+            category_real_products_synced = 0
+
             for result in search_results:
                 try:
                     ean = result.get('ean') or result.get('id')
@@ -336,6 +338,7 @@ def sync_products():
                         product.is_available = True
                         product.last_synced = datetime.utcnow()
                         total_updated += 1
+                        category_real_products_synced += 1
                         logger.debug(f"[+] Updated: {title}")
                     else:
                         product = Product(
@@ -355,6 +358,7 @@ def sync_products():
                         product.affiliate_url = product.generate_short_affiliate_url(bitly_client, site_id='1528790')
                         db.session.add(product)
                         total_synced += 1
+                        category_real_products_synced += 1
                         logger.debug(f"[+] Added: {title}")
 
                 except Exception as e:
@@ -364,6 +368,12 @@ def sync_products():
 
             db.session.commit()
             logger.info(f"[+] {category_name}: {len(search_results)} checked")
+
+            if category_real_products_synced > 0:
+                removed = Product.query.filter_by(category_id=category.id, is_example=True).delete()
+                if removed:
+                    db.session.commit()
+                    logger.info(f"[+] {category_name}: removed {removed} example product(s), real data now available")
 
         sync_log.finished_at = datetime.utcnow()
         sync_log.products_synced = total_synced

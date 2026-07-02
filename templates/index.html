@@ -51,6 +51,24 @@
         </div>
     </section>
 
+    <!-- Latest Blog Posts -->
+    {% if latest_blog_posts %}
+    <section class="featured-section">
+        <h2>{{ t('home.blog_title') }}</h2>
+        <div class="product-grid">
+            {% for post in latest_blog_posts %}
+            <article class="product-card">
+                <div class="product-info">
+                    <h3><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h3>
+                    <p class="excerpt">{{ post.excerpt }}</p>
+                    <a href="/blog/{{ post.slug }}" class="btn-primary">{{ t('blog.read_more') }}</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
     <!-- Categories Preview -->
     <section class="categories-section">
         <h2>{{ t('home.categories_title') }}</h2>

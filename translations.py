@@ -100,6 +100,12 @@ TRANSLATIONS = {
         'category.guide_teaser': 'Koopgids',
         'category.guide_teaser_cta': 'Lees onze gids',
 
+        # Blog
+        'blog.title': 'Blog & Nieuws',
+        'blog.intro': 'Nieuwtjes over witgoed en uitgelichte producten, elke week bijgewerkt.',
+        'blog.read_more': 'Lees meer →',
+        'home.blog_title': 'Laatste nieuws',
+
         # Homepage
         'home.hero_title': 'Vergelijk Witgoed & Huishoudapparaten',
         'home.hero_text': 'Vind de beste deals op wasmachines, drogers, koelkasten en meer. Kijk en vergelijk.',
@@ -200,6 +206,11 @@ TRANSLATIONS = {
         'guides.read_more': 'Read the guide →',
         'category.guide_teaser': 'Buying Guide',
         'category.guide_teaser_cta': 'Read our guide',
+
+        'blog.title': 'Blog & News',
+        'blog.intro': 'Appliance news and featured products, updated weekly.',
+        'blog.read_more': 'Read more →',
+        'home.blog_title': 'Latest news',
 
         'home.hero_title': 'Compare Appliances & Household Devices',
         'home.hero_text': 'Find the best deals on washing machines, dryers, refrigerators and more. Look and compare.',

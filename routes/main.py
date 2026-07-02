@@ -16,7 +16,7 @@ def set_language(lang):
 
 @main_bp.route('/gidsen')
 def guides():
-    all_guides = Guide.query.order_by(Guide.created_at.desc()).all()
+    all_guides = Guide.query.filter_by(post_type='guide').order_by(Guide.created_at.desc()).all()
     return render_template('guides.html', guides=all_guides)
 
 
@@ -26,11 +26,24 @@ def guide_detail(slug):
     return render_template('guide_detail.html', guide=guide)
 
 
+@main_bp.route('/blog')
+def blog():
+    posts = Guide.query.filter_by(post_type='blog').order_by(Guide.created_at.desc()).all()
+    return render_template('blog.html', posts=posts)
+
+
+@main_bp.route('/blog/<slug>')
+def blog_detail(slug):
+    post = Guide.query.filter_by(slug=slug, post_type='blog').first_or_404()
+    return render_template('guide_detail.html', guide=post)
+
+
 @main_bp.route('/')
 def index():
     featured_products = Product.query.filter_by(is_available=True).limit(12).all()
     categories = Category.query.filter_by(parent_id=None).all()
-    return render_template('index.html', featured_products=featured_products, categories=categories)
+    latest_blog_posts = Guide.query.filter_by(post_type='blog').order_by(Guide.created_at.desc()).limit(3).all()
+    return render_template('index.html', featured_products=featured_products, categories=categories, latest_blog_posts=latest_blog_posts)
 
 
 @main_bp.route('/category/<slug>')
@@ -65,7 +78,7 @@ def category(slug):
         q = q.order_by(Product.price.desc())
 
     products = q.paginate(page=page, per_page=24)
-    category_guide = Guide.query.filter_by(category_id=category.id).first()
+    category_guide = Guide.query.filter_by(category_id=category.id, post_type='guide').first()
 
     return render_template(
         'category.html',

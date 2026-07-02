@@ -130,6 +130,7 @@ class Guide(db.Model):
     excerpt = db.Column(db.String(300))
     content = db.Column(db.Text, nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
+    post_type = db.Column(db.String(20), default='guide')  # 'guide' (koopgids) or 'blog' (nieuwsbericht)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     category = db.relationship('Category', backref='guides')

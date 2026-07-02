@@ -14,6 +14,48 @@ Safe to re-run: existing guides (matched by slug) are replaced.
 from app import create_app
 from models import db, Category, Guide
 
+BLOG_POSTS = [
+    {
+        'slug': 'nieuwe-energielabels-2026-wat-verandert-er',
+        'title': 'Wat verandert er in 2026 aan de energielabels voor witgoed?',
+        'excerpt': 'Kort nieuws: fabrikanten schuiven steeds vaker op naar de zuinigste labelklassen. Wat betekent dat voor jouw volgende aankoop?',
+        'category_slug': None,
+        'content': """
+<p>Sinds de herziening van de Europese energielabels zien we bij steeds meer nieuwe modellen dat fabrikanten actief richting de zuinigste klassen (A en A met extra procenten eronder) ontwikkelen. Waar een paar jaar geleden klasse C of D bij wasmachines nog heel gewoon was, verschuift het aanbod merkbaar naar zuiniger.</p>
+
+<p>Voor kopers is dit goed nieuws: meer keuze in zuinige modellen betekent vaak ook scherpere prijzen in die categorie, omdat de zuinige klasse niet langer alleen voor het duurste topsegment is weggelegd. Twijfel je nog over hoe je het energielabel moet lezen? Check onze <a href="/gidsen/energielabel-witgoed-uitgelegd">uitgebreide uitleg over energielabels</a>.</p>
+
+<p>We houden dit soort ontwikkelingen bij en delen updates zodra er weer iets relevants verandert.</p>
+""",
+    },
+    {
+        'slug': 'uitgelicht-aeg-powercare-universaldose',
+        'title': 'Uitgelicht: AEG PowerCare UniversalDose, de wasmachine die zelf doseert',
+        'excerpt': 'Deze maand lichten we een product uit dat opvalt door zijn automatische wasmiddeldosering: de AEG LR8686UC4 8000 PowerCare UniversalDose.',
+        'category_slug': 'wasmachines',
+        'content': """
+<p>Elke maand lichten we een product uit dat opvalt binnen zijn categorie. Deze keer: de <strong>AEG LR8686UC4 8000 PowerCare UniversalDose</strong>.</p>
+
+<p>Wat deze wasmachine onderscheidt, is de automatische wasmiddeldosering: je vult een voorraadhouder met wasmiddel, en de machine bepaalt zelf de juiste hoeveelheid per wasbeurt op basis van vulgewicht en programma. Dat scheelt niet alleen gedoe met doseerbakjes, maar voorkomt ook over- of onderdosering — vaak de oorzaak van slecht wasresultaat of onnodig wasmiddelverbruik.</p>
+
+<p>Daarnaast scoort dit model met energielabel A (tot 40% zuiniger dan wettelijk vereist) opvallend goed op verbruik. We hebben het model uitgebreider besproken in onze <a href="/gidsen/beste-wasmachines-vergeleken">vergelijking van drie populaire wasmachines</a>.</p>
+""",
+    },
+    {
+        'slug': 'koelkast-instellen-voor-de-zomer',
+        'title': 'Zomertip: zo stel je je koelkast optimaal in tijdens warme dagen',
+        'excerpt': 'Bij hogere kamertemperaturen moet je koelkast harder werken. Een paar simpele aanpassingen houden je energieverbruik binnen de perken.',
+        'category_slug': 'koelkasten',
+        'content': """
+<p>Bij warm weer moet je koelkast harder werken om dezelfde binnentemperatuur te behouden, wat het energieverbruik tijdelijk kan verhogen. Een paar simpele gewoontes helpen om dat binnen de perken te houden.</p>
+
+<p>Zet de koelkast niet naast een warmtebron zoals de oven of in direct zonlicht — dat dwingt de compressor onnodig hard te werken. Laat ook voldoende ruimte vrij achter en rond het apparaat voor luchtcirculatie; ingebouwde modellen hebben hier vaak een minimale ventilatieruimte voor die je niet moet dichtzetten.</p>
+
+<p>Vermijd daarnaast het te lang openhouden van de deur, en laat warm eten eerst even afkoelen op het aanrecht voordat je het in de koelkast zet. Meer weten over waar je op moet letten bij de aanschaf van een nieuwe koelkast? Bekijk onze <a href="/gidsen/koelkast-kopen-complete-gids">complete koopgids</a>.</p>
+""",
+    },
+]
+
 WASMACHINE_GUIDE = {
     'slug': 'wasmachine-kopen-waar-op-letten',
     'title': 'Wasmachine kopen: waar moet je op letten?',
@@ -393,12 +435,31 @@ def seed():
                 excerpt=guide_data['excerpt'],
                 content=guide_data['content'].strip(),
                 category_id=category.id if category else None,
+                post_type='guide',
             )
             db.session.add(guide)
             print(f"[+] Added guide: {guide_data['title']}")
 
+        for post_data in BLOG_POSTS:
+            Guide.query.filter_by(slug=post_data['slug']).delete()
+
+            category = None
+            if post_data['category_slug']:
+                category = Category.query.filter_by(slug=post_data['category_slug']).first()
+
+            post = Guide(
+                title=post_data['title'],
+                slug=post_data['slug'],
+                excerpt=post_data['excerpt'],
+                content=post_data['content'].strip(),
+                category_id=category.id if category else None,
+                post_type='blog',
+            )
+            db.session.add(post)
+            print(f"[+] Added blog post: {post_data['title']}")
+
         db.session.commit()
-        print(f"\n[+] {len(all_guides)} guides seeded successfully")
+        print(f"\n[+] {len(all_guides)} guides + {len(BLOG_POSTS)} blog posts seeded successfully")
 
 
 if __name__ == '__main__':

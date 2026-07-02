@@ -40,12 +40,21 @@ def sitemap():
         })
 
     # Guides
-    guides = Guide.query.all()
+    guides = Guide.query.filter_by(post_type='guide').all()
     for guide in guides:
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/gidsen/{guide.slug}",
             'lastmod': guide.created_at.isoformat() if guide.created_at else datetime.utcnow().isoformat(),
             'priority': '0.7'
+        })
+
+    # Blog posts
+    blog_posts = Guide.query.filter_by(post_type='blog').all()
+    for post in blog_posts:
+        sitemap_entries.append({
+            'loc': f"{current_app.config['SITE_URL']}/blog/{post.slug}",
+            'lastmod': post.created_at.isoformat() if post.created_at else datetime.utcnow().isoformat(),
+            'priority': '0.6'
         })
 
     # Legal pages

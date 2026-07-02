@@ -7,7 +7,11 @@
 <div class="container legal-page">
     <nav class="breadcrumbs">
         <a href="/">Home</a> /
+        {% if guide.post_type == 'blog' %}
+        <a href="/blog">{{ t('blog.title') }}</a> /
+        {% else %}
         <a href="/gidsen">{{ t('guides.title') }}</a> /
+        {% endif %}
         <span>{{ guide.title }}</span>
     </nav>
 

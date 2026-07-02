@@ -1,7 +1,27 @@
 from flask import Flask, render_template, request, redirect, g
 from config import config
 from translations import translate
+from sqlalchemy import inspect, text
 import os
+
+
+def _ensure_guides_post_type_column(db):
+    """
+    db.create_all() only creates missing tables, it never alters existing
+    ones. The 'guides' table predates the post_type column, so on a
+    database that already has it, add the column here at startup instead
+    of relying on a manual migration step run after deploy (which raced
+    with Railway's health check and failed the deploy).
+    """
+    inspector = inspect(db.engine)
+    if 'guides' not in inspector.get_table_names():
+        return
+    columns = [c['name'] for c in inspector.get_columns('guides')]
+    if 'post_type' not in columns:
+        with db.engine.connect() as conn:
+            conn.execute(text("ALTER TABLE guides ADD COLUMN post_type VARCHAR(20) DEFAULT 'guide'"))
+            conn.commit()
+
 
 def create_app(config_name=None):
     if config_name is None:
@@ -15,6 +35,7 @@ def create_app(config_name=None):
 
     with app.app_context():
         db.create_all()
+        _ensure_guides_post_type_column(db)
 
     # Register blueprints
     from routes.main import main_bp

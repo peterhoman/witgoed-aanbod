@@ -167,13 +167,13 @@ class BolAPI:
 
         params = {
             "country-code": "NL",
-            "search": query,
+            "search-term": query,
             "limit": limit
         }
 
         try:
             response = requests.get(
-                f"{self.base_url}/search",
+                f"{self.base_url}/products/search",
                 headers=self.get_headers(),
                 params=params,
                 timeout=15
@@ -184,6 +184,7 @@ class BolAPI:
 
             if response.status_code == 200:
                 return response.json().get('products', [])
+            logger.error(f"[!] Search failed for '{query}': {response.status_code} {response.text[:300]}")
             return []
 
         except Exception as e:

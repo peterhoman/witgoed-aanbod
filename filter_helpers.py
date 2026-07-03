@@ -7,6 +7,20 @@ in isolation with plain lists of objects that have `.brand` and `.specs`.
 
 from collections import Counter, defaultdict
 
+# Specs die bol.com wel meelevert maar die niemand gebruikt om op te
+# filteren: verpakkingsmaten/-gewicht (niet hetzelfde als het gewicht van
+# het product zelf), interne artikelcodes, handleidingtaal, en de ruwe
+# fabrikant-registratienaam (soms letterlijk een e-mailadres als waarde).
+_EXCLUDED_SPEC_KEYS = {'fabrikant naam', 'taal handleiding'}
+_EXCLUDED_SPEC_KEYWORDS = ('verpakking', 'mpn')
+
+
+def _is_excluded_spec(key):
+    key_lower = key.lower()
+    if key_lower in _EXCLUDED_SPEC_KEYS:
+        return True
+    return any(kw in key_lower for kw in _EXCLUDED_SPEC_KEYWORDS)
+
 
 def compute_brand_facet(products):
     """Return a list of {'value': brand, 'count': n} sorted by count desc, then name."""
@@ -31,7 +45,7 @@ def compute_spec_facets(products, max_filters=6, max_options=10):
     for product in products:
         specs = product.specs or {}
         for key, value in specs.items():
-            if not value:
+            if not value or _is_excluded_spec(key):
                 continue
             key_frequency[key] += 1
             value_counts[key][value] += 1

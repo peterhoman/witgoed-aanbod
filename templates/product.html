@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ product.title }} | WitgoedAanbod.nl{% endblock %}
-{% block meta_description %}{{ product.ai_meta_description or product.description[:160] }}{% endblock %}
+{% block meta_description %}{{ product.ai_meta_description or (product.description or product.title)[:160] }}{% endblock %}
 
 {% block content %}
 <div class="container product-detail">
@@ -36,10 +36,12 @@
             </div>
 
             <!-- Product Description -->
+            {% if product.ai_description or product.description %}
             <div class="description-section">
                 <h2>{{ t('product.description_title') }}</h2>
                 <p>{{ product.ai_description or product.description }}</p>
             </div>
+            {% endif %}
 
             <!-- Specifications -->
             {% if product.specs %}

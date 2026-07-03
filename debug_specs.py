@@ -47,8 +47,8 @@ def main():
     print(list(data.keys()))
 
     print()
-    print("=== Ruwe 'specifications' ===")
-    print(json.dumps(data.get('specifications', 'GEEN specifications-sleutel aanwezig'), indent=2, ensure_ascii=False))
+    print("=== Ruwe 'specificationGroups' ===")
+    print(json.dumps(data.get('specificationGroups', 'GEEN specificationGroups-sleutel aanwezig'), indent=2, ensure_ascii=False))
 
 
 if __name__ == '__main__':

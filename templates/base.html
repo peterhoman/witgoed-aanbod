@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{% block meta_description %}Vergelijk witgoed: wasmachines, drogers, koelkasten en meer. Vind de beste deals op bol{% endblock %}">
+    <meta name="description" content="{% block meta_description %}Vergelijk witgoed en huishoudapparaten en vind de beste deals bij toonaangevende winkels.{% endblock %}">
     <meta property="og:image" content="{% block og_image %}/static/img/og-image.png{% endblock %}">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ config.SITE_URL }}">
+    <meta property="og:url" content="{{ request.url }}">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ request.url }}">
     <title>{% block title %}WitgoedAanbod.nl - Vergelijk Witgoed{% endblock %}</title>

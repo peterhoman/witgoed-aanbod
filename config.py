@@ -27,8 +27,13 @@ class Config:
     # Site config
     SITE_NAME = os.getenv('SITE_NAME', 'WitgoedAanbod.nl')
     # Met www: de site redirect non-www naar www, dus sitemap-/og-URLs
-    # zonder www kosten zoekmachines een extra redirect per pagina
-    SITE_URL = os.getenv('SITE_URL', 'https://www.witgoedaanbod.nl')
+    # zonder www kosten zoekmachines een extra redirect per pagina.
+    # Sanitizer: knip alles vóór "http" weg — de Railway-variabele bevatte
+    # na een copy-paste een keer ",=https://..." waardoor og:url en sitemap
+    # kapotte URLs kregen.
+    _site_url = os.getenv('SITE_URL', 'https://www.witgoedaanbod.nl').strip()
+    _http_idx = _site_url.find('http')
+    SITE_URL = _site_url[_http_idx:].rstrip('/') if _http_idx >= 0 else 'https://www.witgoedaanbod.nl'
 
     # Sync
     SYNC_INTERVAL = 6  # hours

@@ -81,17 +81,6 @@ class Product(db.Model):
             return short_url or long_url
         return long_url
 
-    def get_button_text(self):
-        """Get dynamic button text based on retailer"""
-        if self.retailer == 'bol':
-            return 'Bekijk op bol'
-        elif self.retailer == 'coolblue':
-            return 'Bekijk bij Coolblue'
-        elif self.retailer == 'mediamarkt':
-            return 'Bekijk bij MediaMarkt'
-        else:
-            return f'Bekijk bij {self.retailer.capitalize()}'
-
     def __repr__(self):
         return f'<Product {self.title}>'
 

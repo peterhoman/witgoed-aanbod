@@ -48,7 +48,7 @@
                 <tr>
                     <td></td>
                     {% for product in products %}
-                    <td><a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-buy">{{ product.get_button_text() }}</a></td>
+                    <td><a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-buy">{{ t('product.view_offer') }}</a></td>
                     {% endfor %}
                 </tr>
             </tbody>

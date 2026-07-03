@@ -759,9 +759,31 @@ section h2 {
 }
 
 .compare-full-table th {
+    position: relative;
     text-align: center;
     padding: 16px;
     vertical-align: top;
+}
+
+.compare-remove-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--gray);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.compare-remove-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
 }
 
 .compare-product-image {

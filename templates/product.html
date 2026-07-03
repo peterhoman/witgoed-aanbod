@@ -49,14 +49,20 @@
 
             <!-- Specifications -->
             {% if product.specs %}
-            <div class="specs-section">
+            <div class="specs-section{% if product.specs|length > 8 %} specs-collapsed{% endif %}" id="specs-section">
                 <h2>{{ t('product.specs_title') }}</h2>
                 <dl>
                     {% for key, value in product.specs.items() %}
-                    <dt>{{ key }}</dt>
-                    <dd>{{ value }}</dd>
+                    <dt{% if loop.index > 8 %} class="spec-extra"{% endif %}>{{ key }}</dt>
+                    <dd{% if loop.index > 8 %} class="spec-extra"{% endif %}>{{ value }}</dd>
                     {% endfor %}
                 </dl>
+                {% if product.specs|length > 8 %}
+                <button type="button" class="specs-toggle" id="specs-toggle"
+                        data-more="{{ t('product.show_more') }}" data-less="{{ t('product.show_less') }}">
+                    &#9660; {{ t('product.show_more') }}
+                </button>
+                {% endif %}
             </div>
             {% endif %}
 
@@ -127,5 +133,19 @@
         "availability": "https://schema.org/{% if product.is_available %}InStock{% else %}OutOfStock{% endif %}"
     }
 }
+</script>
+
+<script>
+(function() {
+    var toggle = document.getElementById('specs-toggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', function() {
+        var section = document.getElementById('specs-section');
+        var collapsed = section.classList.toggle('specs-collapsed');
+        this.innerHTML = collapsed
+            ? '&#9660; ' + this.dataset.more
+            : '&#9650; ' + this.dataset.less;
+    });
+})();
 </script>
 {% endblock %}

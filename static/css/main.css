@@ -234,6 +234,29 @@ body {
     }
 }
 
+/* Specificaties inklappen op de productpagina (zoals bol.com):
+   eerste 8 zichtbaar, rest achter een Toon meer-knop */
+.specs-collapsed .spec-extra {
+    display: none;
+}
+
+.specs-toggle {
+    margin-top: 12px;
+    padding: 8px 20px;
+    background: #fff;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    border-radius: var(--radius);
+    font-weight: 700;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.specs-toggle:hover {
+    background: var(--secondary-light);
+}
+
 /* Van-prijzen (doorgestreept) + kortingsbadge */
 .price-old {
     color: var(--gray);

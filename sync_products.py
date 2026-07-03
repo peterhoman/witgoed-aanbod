@@ -276,7 +276,7 @@ MIN_PRICES = {
     'koelkasten': 130,
     'vaatwassers': 150,
     'magnetrons': 50,
-    'ovens': 100,
+    'ovens': 50,  # laag genoeg voor airfryers, hoog genoeg om accessoires te weren
     'stofzuigers': 50,
 }
 
@@ -294,6 +294,8 @@ EXCLUDE_KEYWORDS = [
     'vershoudbak', 'voedselcontainer', 'lunchbox',
     # Zwembad-/spa-stofzuigers zijn geen huishoudstofzuigers
     'zwembad', ' spa ',
+    # Airfryer-accessoires (bakpapier, siliconen mandjes, accessoiresets)
+    'accessoire', 'bakpapier', 'siliconen',
 ]
 
 # De v1-zoekresultaten bevatten geen merkveld; herken het merk uit de titel.
@@ -360,32 +362,53 @@ def sync_products():
         total_updated = 0
         total_errors = 0
 
+        # (slug, weergavenaam, zoektermen). De weergavenaam wordt ook naar de
+        # database gesynct (kopje op de categoriepagina); zoektermen worden
+        # na elkaar doorzocht en op EAN ontdubbeld, in volgorde van prioriteit.
         categories = [
-            ('Wasmachines', 'wasmachines'),
-            ('Drogers', 'drogers'),
-            ('Wasdroogcombinaties', 'wasdroogcombinaties'),
-            ('Koelkasten', 'koelkasten'),
-            ('Vaatwassers', 'vaatwassers'),
-            ('Magnetrons', 'magnetrons'),
-            ('Ovens', 'ovens'),
-            ('Stofzuigers', 'stofzuigers'),
+            ('wasmachines', 'Wasmachines', ['Wasmachines']),
+            ('drogers', 'Drogers', ['Drogers']),
+            ('wasdroogcombinaties', 'Wasdroogcombinaties', ['Wasdroogcombinaties']),
+            ('koelkasten', 'Koelkasten', ['Koelkasten']),
+            ('vaatwassers', 'Vaatwassers', ['Vaatwassers']),
+            ('magnetrons', 'Magnetrons', ['Magnetrons']),
+            ('ovens', 'Ovens & Airfryers', ['Oven', 'Airfryer', 'Inbouwoven']),
+            ('stofzuigers', 'Stofzuigers', ['Stofzuigers']),
         ]
 
-        for category_name, category_slug in categories:
-            logger.info(f"[*] Searching products for {category_name}...")
+        for category_slug, display_name, search_terms in categories:
+            logger.info(f"[*] Searching products for {display_name}...")
 
             category = Category.query.filter_by(slug=category_slug).first()
             if not category:
-                logger.warning(f"[!] Category {category_name} not found in database")
+                logger.warning(f"[!] Category {display_name} not found in database")
                 continue
 
-            search_results = api.search_products(category_name, limit=SEARCH_LIMITS.get(category_slug, DEFAULT_SEARCH_LIMIT))
+            if category.name != display_name:
+                category.name = display_name
+                db.session.commit()
+                logger.info(f"[+] Categorienaam bijgewerkt naar '{display_name}'")
+
+            limit = SEARCH_LIMITS.get(category_slug, DEFAULT_SEARCH_LIMIT)
+            search_results = []
+            merged_eans = set()
+            for term in search_terms:
+                if len(search_results) >= limit:
+                    break
+                for item in api.search_products(term, limit=limit):
+                    item_ean = str(item.get('ean') or '')
+                    if not item_ean or item_ean in merged_eans:
+                        continue
+                    merged_eans.add(item_ean)
+                    search_results.append(item)
+                    if len(search_results) >= limit:
+                        break
 
             if not search_results:
-                logger.warning(f"[*] No products found for {category_name}")
+                logger.warning(f"[*] No products found for {display_name}")
                 continue
 
-            logger.info(f"[*] Found {len(search_results)} results for {category_name}")
+            logger.info(f"[*] Found {len(search_results)} results for {display_name}")
 
             category_real_products_synced = 0
             seen_eans = set()
@@ -485,7 +508,7 @@ def sync_products():
                     continue
 
             db.session.commit()
-            logger.info(f"[+] {category_name}: {len(search_results)} checked, {category_real_products_synced} kept")
+            logger.info(f"[+] {display_name}: {len(search_results)} checked, {category_real_products_synced} kept")
 
             if category_real_products_synced > 0:
                 removed = Product.query.filter_by(category_id=category.id, is_example=True).delete()
@@ -498,7 +521,7 @@ def sync_products():
                 ).delete(synchronize_session=False)
                 if removed or stale:
                     db.session.commit()
-                    logger.info(f"[+] {category_name}: removed {removed} example product(s) and {stale} stale/filtered product(s)")
+                    logger.info(f"[+] {display_name}: removed {removed} example product(s) and {stale} stale/filtered product(s)")
 
         sync_log.finished_at = datetime.utcnow()
         sync_log.products_synced = total_synced

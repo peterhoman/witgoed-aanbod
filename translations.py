@@ -24,7 +24,7 @@ TRANSLATIONS = {
         'nav.koelkasten': 'Koelkasten',
         'nav.vaatwassers': 'Vaatwassers',
         'nav.magnetrons': 'Magnetrons',
-        'nav.ovens': 'Ovens',
+        'nav.ovens': 'Ovens & Airfryers',
         'nav.stofzuigers': 'Stofzuigers',
 
         # Footer
@@ -138,7 +138,7 @@ TRANSLATIONS = {
         'nav.koelkasten': 'Refrigerators',
         'nav.vaatwassers': 'Dishwashers',
         'nav.magnetrons': 'Microwaves',
-        'nav.ovens': 'Ovens',
+        'nav.ovens': 'Ovens & Air Fryers',
         'nav.stofzuigers': 'Vacuum Cleaners',
 
         'footer.about_title': 'About WitgoedAanbod',

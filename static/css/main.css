@@ -462,6 +462,19 @@ body {
     width: 100%;
 }
 
+/* Links met een knop-klasse moeten hun witte knoptekst houden, ook
+   binnen .product-info waar de algemene linkregel (blauwe tekst) anders
+   wint op specificiteit — dat gaf blauw-op-blauw ("Lees meer" bij blogs) */
+.product-info a.btn-primary,
+a.btn-primary {
+    color: white;
+}
+
+.product-info a.btn-buy,
+a.btn-buy {
+    color: white;
+}
+
 .btn-primary:hover {
     background: var(--primary-dark);
 }

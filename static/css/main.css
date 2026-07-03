@@ -689,19 +689,30 @@ section h2 {
 }
 
 .compare-bar {
-    position: sticky;
-    bottom: 0;
+    /* fixed i.p.v. sticky: moet meteen zichtbaar zijn zodra je 1 product
+       aanvinkt, ongeacht scrollpositie (net als bol.com's eigen
+       "Vergelijk artikelen"-widget rechtsonder) — sticky binnenin <main>
+       werd pas zichtbaar als je helemaal naar de onderkant scrolde. */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    max-width: 300px;
     background: var(--dark);
     color: white;
-    padding: 14px 20px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 500;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border-radius: var(--radius);
+}
+
+.compare-bar-header {
     display: flex;
     align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-    z-index: 200;
-    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.2);
-    border-radius: var(--radius) var(--radius) 0 0;
-    margin-top: 20px;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .compare-bar-count {
@@ -710,7 +721,6 @@ section h2 {
 }
 
 .compare-bar-items {
-    flex: 1;
     font-size: 13px;
     color: #ccc;
     overflow: hidden;
@@ -719,9 +729,10 @@ section h2 {
 }
 
 .compare-bar-cta {
-    width: auto;
+    width: 100%;
     padding: 10px 20px;
     white-space: nowrap;
+    text-align: center;
 }
 
 .compare-bar-clear {
@@ -732,6 +743,15 @@ section h2 {
     cursor: pointer;
     line-height: 1;
     padding: 0 4px;
+}
+
+@media (max-width: 480px) {
+    .compare-bar {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        max-width: none;
+    }
 }
 
 .compare-wrapper {

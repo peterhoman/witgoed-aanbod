@@ -163,16 +163,17 @@ document.addEventListener('DOMContentLoaded', function() {
             bar = document.createElement('div');
             bar.id = 'compare-bar';
             bar.className = 'compare-bar';
-            const anchor = document.getElementById('compare-bar-anchor');
-            (anchor || document.body).appendChild(bar);
+            document.body.appendChild(bar);
         }
 
         const ids = list.map(item => item.id).join(',');
         bar.innerHTML =
-            '<span class="compare-bar-count">Vergelijk (' + list.length + '/' + MAX_COMPARE + ')</span>' +
+            '<div class="compare-bar-header">' +
+                '<span class="compare-bar-count">Vergelijk (' + list.length + '/' + MAX_COMPARE + ')</span>' +
+                '<button type="button" class="compare-bar-clear" title="Wis vergelijking">&times;</button>' +
+            '</div>' +
             '<span class="compare-bar-items">' + list.map(item => item.title.substring(0, 30)).join(' vs. ') + '</span>' +
-            '<a href="/vergelijk?ids=' + ids + '" class="btn-buy compare-bar-cta">Vergelijk nu →</a>' +
-            '<button type="button" class="compare-bar-clear" title="Wis vergelijking">&times;</button>';
+            '<a href="/vergelijk?ids=' + ids + '" class="btn-buy compare-bar-cta">Vergelijk nu →</a>';
 
         bar.querySelector('.compare-bar-clear').addEventListener('click', function() {
             saveCompareList([]);

@@ -221,33 +221,37 @@ class BolAPI:
 
 
 def extract_specs(prod_data):
-    """Normalize Bol.com API 'specifications' field into a flat {name: value} dict.
+    """Normalize Bol.com Marketing Catalog API v1 'specificationGroups' into
+    a flat {name: value} dict.
 
-    The Marketing Catalog API groups specifications, e.g.:
-    "specifications": [{"values": [{"key": "Vulgewicht", "value": "9 kg"}, ...]}, ...]
-
-    This is defensive since the exact shape should be reconfirmed against a
-    live API response once Bol.com API access is approved.
+    Confirmed live shape (via debug_specs.py against a real product):
+    "specificationGroups": [
+        {"title": "...", "specifications": [
+            {"key": "...", "name": "...", "values": ["...", ...]}
+        ]}
+    ]
+    'key' is the English machine label, 'name' the Dutch display label,
+    'values' is always a LIST (joined here with ', ' for display) even
+    when it holds a single value.
     """
     specs = {}
-    raw_specs = prod_data.get('specifications', [])
+    groups = prod_data.get('specificationGroups', [])
+    if not isinstance(groups, list):
+        return specs
 
-    if isinstance(raw_specs, dict):
-        return {str(k): str(v) for k, v in raw_specs.items() if v}
-
-    if isinstance(raw_specs, list):
-        for group in raw_specs:
-            if not isinstance(group, dict):
+    for group in groups:
+        if not isinstance(group, dict):
+            continue
+        for item in group.get('specifications', []):
+            if not isinstance(item, dict):
                 continue
-            values = group.get('values', group.get('specifications', []))
-            if isinstance(values, list):
-                for item in values:
-                    if not isinstance(item, dict):
-                        continue
-                    key = item.get('key') or item.get('name')
-                    value = item.get('value')
-                    if key and value:
-                        specs[str(key)] = str(value)
+            label = item.get('name') or item.get('key')
+            values = item.get('values')
+            if not label or not values or str(label).strip().upper() == 'EAN':
+                continue
+            value = ', '.join(str(v) for v in values) if isinstance(values, list) else str(values)
+            if value:
+                specs[str(label)] = value
 
     return specs
 

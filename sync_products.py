@@ -251,6 +251,52 @@ def extract_specs(prod_data):
     return specs
 
 
+# Zoeken op term ("Wasmachines") levert ook wasmiddel, doseerbollen,
+# textielverf enz. op. Twee vangnetten, zelfde aanpak als bewezen in
+# bol-affiliate-page: een minimumprijs per categorie plus een
+# uitsluitlijst met accessoire-woorden in de titel.
+MIN_PRICES = {
+    'wasmachines': 150,
+    'drogers': 150,
+    'wasdroogcombinaties': 300,
+    'koelkasten': 130,
+    'vaatwassers': 150,
+    'magnetrons': 50,
+    'ovens': 100,
+    'stofzuigers': 50,
+}
+
+EXCLUDE_KEYWORDS = [
+    'tablet', 'wasmiddel', 'reinig', 'ontkalk', 'lijm', 'verf', 'pods',
+    'doseer', 'wasbol', 'hoes', 'slang', 'stofzuigerzak', 'geurbooster',
+    'wasparfum', 'verhoger', 'onderstel', 'trillingsdemper', 'wasmand',
+    'droogrek', 'strijkplank', 'wasverzachter', 'capsule', 'navulling',
+    'magnetronschaal', 'ovenschaal', 'bakplaat', 'ovenwant', 'wasstrips',
+    'stapelkit', 'tussenstuk', 'afvoerslang', 'aanvoerslang', 'filterzak',
+]
+
+# De v1-zoekresultaten bevatten geen merkveld; herken het merk uit de titel.
+KNOWN_BRANDS = [
+    'Samsung', 'LG', 'Bosch', 'Siemens', 'AEG', 'Miele', 'Whirlpool', 'Beko',
+    'Haier', 'Hisense', 'Indesit', 'Bauknecht', 'Zanussi', 'Electrolux',
+    'Inventum', 'CHiQ', 'Sharp', 'Candy', 'Hoover', 'Etna', 'ATAG', 'Smeg',
+    'Liebherr', 'Dyson', 'Philips', 'Rowenta', 'Nilfisk', 'Tefal', 'Bissell',
+    'Panasonic', 'Exquisit', 'Salora', 'Tomado', 'Princess', 'TriStar',
+    'Blaupunkt', 'Grundig', 'Gorenje', 'Pelgrim', 'Boretti', 'Frilec',
+    'Bomann', 'Severin', 'Medion', 'Vestfrost', 'Scandomestic', 'Karcher',
+    'Kärcher', 'Shark', 'Rooboost', 'Eufy', 'iRobot', 'Roborock', 'Ecovacs',
+]
+
+
+def guess_brand(title):
+    """Herken een bekend merk in de producttitel (heel woord, hoofdletterongevoelig)."""
+    import re
+    for brand in KNOWN_BRANDS:
+        if re.search(rf'\b{re.escape(brand)}\b', title, re.IGNORECASE):
+            return brand
+    return None
+
+
 def sync_products():
     """Main sync function - fetches products from Bol.com Marketing Catalog API"""
     app = create_app()
@@ -309,7 +355,7 @@ def sync_products():
                 logger.warning(f"[!] Category {category_name} not found in database")
                 continue
 
-            search_results = api.search_products(category_name, limit=100)
+            search_results = api.search_products(category_name, limit=60)
 
             if not search_results:
                 logger.warning(f"[*] No products found for {category_name}")
@@ -318,11 +364,20 @@ def sync_products():
             logger.info(f"[*] Found {len(search_results)} results for {category_name}")
 
             category_real_products_synced = 0
+            seen_eans = set()
+            min_price = MIN_PRICES.get(category_slug, 0)
 
             for result in search_results:
                 try:
                     ean = result.get('ean') or result.get('id')
                     if not ean:
+                        continue
+
+                    # Accessoires (wasmiddel, doseerbollen, verf...) op titel
+                    # weren vóór de dure detail-call
+                    result_title = (result.get('title') or '').lower()
+                    if any(kw in result_title for kw in EXCLUDE_KEYWORDS):
+                        logger.debug(f"[-] Skipped accessory: {result.get('title')}")
                         continue
 
                     logger.debug(f"[*] Fetching details for EAN: {ean}")
@@ -348,10 +403,12 @@ def sync_products():
                         image_url = images[0].get('url', '')
 
                     specs = extract_specs(prod_data)
-                    brand = specs.get('Merk') or prod_data.get('brand')
+                    brand = specs.get('Merk') or prod_data.get('brand') or guess_brand(title)
 
-                    if price <= 0:
-                        # geen koopbaar aanbod — niet tonen als "op voorraad" met €0.00
+                    if price < min_price:
+                        # geen koopbaar aanbod, of te goedkoop om een echt
+                        # apparaat te zijn (accessoireprijs) — overslaan
+                        logger.debug(f"[-] Skipped (price {price} < {min_price}): {title}")
                         continue
 
                     slug = f"{title[:50].lower().replace(' ', '-').replace('/', '-')}-{ean}"
@@ -392,19 +449,28 @@ def sync_products():
                         category_real_products_synced += 1
                         logger.debug(f"[+] Added: {title}")
 
+                    seen_eans.add(str(ean))
+
                 except Exception as e:
                     logger.error(f"[!] Error processing product: {e}")
                     total_errors += 1
                     continue
 
             db.session.commit()
-            logger.info(f"[+] {category_name}: {len(search_results)} checked")
+            logger.info(f"[+] {category_name}: {len(search_results)} checked, {category_real_products_synced} kept")
 
             if category_real_products_synced > 0:
                 removed = Product.query.filter_by(category_id=category.id, is_example=True).delete()
-                if removed:
+                # Ruim ook eerder gesyncte producten op die niet meer door de
+                # filters komen (bv. de accessoires uit de eerste sync-run)
+                stale = Product.query.filter(
+                    Product.category_id == category.id,
+                    Product.is_example == False,
+                    ~Product.ean.in_(seen_eans),
+                ).delete(synchronize_session=False)
+                if removed or stale:
                     db.session.commit()
-                    logger.info(f"[+] {category_name}: removed {removed} example product(s), real data now available")
+                    logger.info(f"[+] {category_name}: removed {removed} example product(s) and {stale} stale/filtered product(s)")
 
         sync_log.finished_at = datetime.utcnow()
         sync_log.products_synced = total_synced

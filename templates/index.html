@@ -18,6 +18,13 @@
         <img src="{{ url_for('static', filename='img/mascot.png') }}" alt="" class="hero-mascot">
     </section>
 
+    <!-- USP bar -->
+    <div class="usp-bar">
+        <span class="usp-item">&#10003; {{ t('home.usp1') }}</span>
+        <span class="usp-item">&#10003; {{ t('home.usp2') }}</span>
+        <span class="usp-item">&#10003; {{ t('home.usp3') }}</span>
+    </div>
+
     <!-- Categories Carousel -->
     <section class="categories-section">
         <h2>{{ t('home.categories_title') }}</h2>
@@ -52,7 +59,7 @@
                     <h3><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
                     <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
                     <div class="product-meta">
-                        <span class="price">€{{ "%.2f"|format(product.price) }}</span>
+                        <span class="price">€ {{ product.price|euro }}</span>
                         {% if product.is_available %}
                         <span class="availability available">{{ t('product.in_stock') }}</span>
                         {% else %}

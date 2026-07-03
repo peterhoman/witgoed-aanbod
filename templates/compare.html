@@ -34,7 +34,7 @@
                 <tr>
                     <td><strong>Prijs</strong></td>
                     {% for product in products %}
-                    <td class="price">€{{ "%.2f"|format(product.price) }}</td>
+                    <td class="price">€ {{ product.price|euro }}</td>
                     {% endfor %}
                 </tr>
                 {% for key in spec_keys %}

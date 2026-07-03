@@ -27,7 +27,7 @@
             {% endif %}
 
             <div class="price-section">
-                <span class="price-large">€{{ "%.2f"|format(product.price) }}</span>
+                <span class="price-large">€ {{ product.price|euro }}</span>
                 {% if product.is_available %}
                 <span class="availability available">{{ t('product.in_stock') }}</span>
                 {% else %}
@@ -82,7 +82,7 @@
                     <h3><a href="/product/{{ related.slug }}">{{ related.title }}</a></h3>
                     <p class="brand">{{ related.brand or t('product.brand_unknown') }}</p>
                     <div class="product-meta">
-                        <span class="price">€{{ "%.2f"|format(related.price) }}</span>
+                        <span class="price">€ {{ related.price|euro }}</span>
                         {% if related.is_available %}
                         <span class="availability available">{{ t('product.in_stock') }}</span>
                         {% endif %}

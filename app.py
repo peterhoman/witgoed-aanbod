@@ -70,6 +70,15 @@ def create_app(config_name=None):
             return translate(key, g.get('lang', 'nl'), **kwargs)
         return {'t': t, 'current_lang': g.get('lang', 'nl')}
 
+    @app.template_filter('euro')
+    def euro_filter(value):
+        """Nederlandse prijsnotatie: 1299.5 -> '1.299,50' (komma, puntjes voor duizendtallen)."""
+        try:
+            formatted = f"{float(value):,.2f}"
+        except (TypeError, ValueError):
+            return value
+        return formatted.replace(",", " ").replace(".", ",").replace(" ", ".")
+
     @app.errorhandler(404)
     def not_found(e):
         return render_template('404.html'), 404

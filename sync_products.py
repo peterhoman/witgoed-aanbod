@@ -255,6 +255,15 @@ def extract_specs(prod_data):
 # textielverf enz. op. Twee vangnetten, zelfde aanpak als bewezen in
 # bol-affiliate-page: een minimumprijs per categorie plus een
 # uitsluitlijst met accessoire-woorden in de titel.
+# Hoeveel zoekresultaten per categorie worden opgehaald (vóór filtering).
+# Hoofdcategorieën wat ruimer; na de prijs-/trefwoordfilters blijft daar
+# grofweg de helft tot twee derde van over op de site.
+SEARCH_LIMITS = {
+    'wasmachines': 150,
+    'koelkasten': 150,
+}
+DEFAULT_SEARCH_LIMIT = 100
+
 MIN_PRICES = {
     'wasmachines': 150,
     'drogers': 150,
@@ -355,7 +364,7 @@ def sync_products():
                 logger.warning(f"[!] Category {category_name} not found in database")
                 continue
 
-            search_results = api.search_products(category_name, limit=60)
+            search_results = api.search_products(category_name, limit=SEARCH_LIMITS.get(category_slug, DEFAULT_SEARCH_LIMIT))
 
             if not search_results:
                 logger.warning(f"[*] No products found for {category_name}")

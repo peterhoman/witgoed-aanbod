@@ -43,7 +43,24 @@ def index():
     featured_products = Product.query.filter_by(is_available=True).limit(12).all()
     categories = Category.query.filter_by(parent_id=None).all()
     latest_blog_posts = Guide.query.filter_by(post_type='blog').order_by(Guide.created_at.desc()).limit(3).all()
-    return render_template('index.html', featured_products=featured_products, categories=categories, latest_blog_posts=latest_blog_posts)
+
+    # Geen aparte categorie-afbeeldingen in het model; gebruik de foto van
+    # een echt product uit die categorie als representatief plaatje voor
+    # de carousel op de homepage.
+    category_cards = []
+    for cat in categories:
+        sample_product = Product.query.filter_by(category_id=cat.id, is_available=True).first()
+        category_cards.append({
+            'category': cat,
+            'image_url': sample_product.image_url if sample_product else None,
+        })
+
+    return render_template(
+        'index.html',
+        featured_products=featured_products,
+        category_cards=category_cards,
+        latest_blog_posts=latest_blog_posts,
+    )
 
 
 @main_bp.route('/category/<slug>')

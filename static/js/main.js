@@ -201,6 +201,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 })();
 
+// ============================================
+// CATEGORIES CAROUSEL (homepage)
+// ============================================
+document.querySelectorAll('.carousel').forEach(function(carousel) {
+    const track = carousel.querySelector('.carousel-track');
+    const left = carousel.querySelector('.carousel-arrow-left');
+    const right = carousel.querySelector('.carousel-arrow-right');
+    if (!track || !left || !right) return;
+
+    const scrollAmount = () => track.clientWidth * 0.8;
+    left.addEventListener('click', () => track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' }));
+    right.addEventListener('click', () => track.scrollBy({ left: scrollAmount(), behavior: 'smooth' }));
+});
+
 // Smooth scroll behavior (fallback for older browsers)
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {

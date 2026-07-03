@@ -17,6 +17,27 @@
         </div>
     </section>
 
+    <!-- Categories Carousel -->
+    <section class="categories-section">
+        <h2>{{ t('home.categories_title') }}</h2>
+        <div class="carousel">
+            <button type="button" class="carousel-arrow carousel-arrow-left" aria-label="Vorige">&#10094;</button>
+            <div class="carousel-track">
+                {% for card in category_cards %}
+                <a href="/category/{{ card.category.slug }}" class="carousel-card">
+                    <div class="carousel-card-image">
+                        {% if card.image_url %}
+                        <img src="{{ card.image_url }}" alt="{{ card.category.name }}" loading="lazy">
+                        {% endif %}
+                    </div>
+                    <span class="carousel-card-label">{{ card.category.name }}</span>
+                </a>
+                {% endfor %}
+            </div>
+            <button type="button" class="carousel-arrow carousel-arrow-right" aria-label="Volgende">&#10095;</button>
+        </div>
+    </section>
+
     <!-- Featured Products -->
     <section class="featured-section">
         <h2>{{ t('home.featured_title') }}</h2>
@@ -47,19 +68,6 @@
                     <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-buy">{{ product.get_button_text() }}</a>
                 </div>
             </article>
-            {% endfor %}
-        </div>
-    </section>
-
-    <!-- Categories Preview -->
-    <section class="categories-section">
-        <h2>{{ t('home.categories_title') }}</h2>
-        <div class="categories-grid">
-            {% for category in categories %}
-            <a href="/category/{{ category.slug }}" class="category-card">
-                <h3>{{ category.name }}</h3>
-                <p>{{ category.description or t('home.categories_discover') }}</p>
-            </a>
             {% endfor %}
         </div>
     </section>

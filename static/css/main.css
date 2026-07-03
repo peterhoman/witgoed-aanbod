@@ -493,36 +493,91 @@ section h2 {
     padding: 16px 0;
 }
 
-.categories-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+.carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.category-card {
-    background: linear-gradient(135deg, #F8F9FA 0%, #E0E7FF 100%);
-    padding: 32px;
-    border-radius: var(--radius);
+.carousel-track {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    padding: 4px 2px 12px;
+    flex: 1;
+    /* scrollbar zoveel mogelijk wegwerken, pijlknoppen zijn de bediening */
+    scrollbar-width: none;
+}
+
+.carousel-track::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-card {
+    scroll-snap-align: start;
+    flex: 0 0 160px;
     text-decoration: none;
     color: var(--dark);
-    transition: transform 0.3s, box-shadow 0.3s;
-    border: 1px solid var(--border);
+    transition: transform 0.2s;
 }
 
-.category-card:hover {
+.carousel-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 144, 218, 0.2);
 }
 
-.category-card h3 {
-    font-size: 20px;
-    font-weight: 700;
+.carousel-card-image {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: var(--light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
     margin-bottom: 12px;
 }
 
-.category-card p {
-    color: var(--gray);
+.carousel-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 20px;
+}
+
+.carousel-card-label {
+    display: block;
+    text-align: center;
+    font-weight: 700;
     font-size: 14px;
+    color: var(--primary);
+}
+
+.carousel-arrow {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--dark);
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.carousel-arrow:hover {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+@media (max-width: 600px) {
+    .carousel-arrow {
+        display: none;
+    }
 }
 
 .info-grid {

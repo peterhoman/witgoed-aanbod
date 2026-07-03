@@ -7,6 +7,7 @@ import os
 import requests
 import base64
 import time
+from urllib.parse import quote_plus
 from datetime import datetime, timedelta
 from app import create_app
 from models import db, Product, Category, SyncLog
@@ -421,7 +422,11 @@ def sync_products():
                         continue
 
                     slug = f"{title[:50].lower().replace(' ', '-').replace('/', '-')}-{ean}"
-                    bol_url = f"https://www.bol.com/nl/p/{ean}/"
+                    # De echte productpagina-URL zit in de API-respons ('url');
+                    # zelf bol.com/nl/p/{ean} opbouwen gaf een 404 op de knop.
+                    # Uiterste fallback: een bol-zoekpagina op de titel.
+                    bol_url = (prod_data.get('url') or result.get('url')
+                               or f"https://www.bol.com/nl/nl/s/?searchtext={quote_plus(title)}")
 
                     if product:
                         product.title = title

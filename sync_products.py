@@ -164,34 +164,59 @@ class BolAPI:
             return None
 
     def search_products(self, query, limit=100):
-        """Search products by query (for discovery, not for sync)"""
+        """Search products by query via GET /products/search.
+
+        v1 pagineert met page-size/page (niet "limit") en levert de lijst
+        onder de sleutel "results". include-image/include-offer zorgen dat
+        elk zoekresultaat direct bruikbaar is als de losse detail-call
+        niets oplevert.
+        """
         self._refresh_token_if_needed()
 
-        params = {
-            "country-code": "NL",
-            "search-term": query,
-            "limit": limit
-        }
+        results = []
+        page = 1
+        while len(results) < limit:
+            params = {
+                "country-code": "NL",
+                "search-term": query,
+                "include-image": "true",
+                "include-offer": "true",
+                "sort": "POPULARITY",
+                "page-size": 50,
+                "page": page,
+            }
+            try:
+                response = requests.get(
+                    f"{self.base_url}/products/search",
+                    headers=self.get_headers(),
+                    params=params,
+                    timeout=15
+                )
 
-        try:
-            response = requests.get(
-                f"{self.base_url}/products/search",
-                headers=self.get_headers(),
-                params=params,
-                timeout=15
-            )
+                if self._handle_rate_limit(response):
+                    continue  # 429: opnieuw dezelfde pagina proberen
 
-            if self._handle_rate_limit(response):
-                return self.search_products(query, limit)
+                if response.status_code == 404:
+                    break  # "Page N is not available" — geen resultaten meer
 
-            if response.status_code == 200:
-                return response.json().get('products', [])
-            logger.error(f"[!] Search failed for '{query}': {response.status_code} {response.text[:300]}")
-            return []
+                if response.status_code != 200:
+                    logger.error(f"[!] Search failed for '{query}': {response.status_code} {response.text[:300]}")
+                    break
 
-        except Exception as e:
-            logger.error(f"[!] Search error for '{query}': {e}")
-            return []
+                data = response.json()
+                page_items = data.get('results', data.get('products', []))
+                if not page_items:
+                    break
+                results.extend(page_items)
+                if len(page_items) < 50:
+                    break
+                page += 1
+
+            except Exception as e:
+                logger.error(f"[!] Search error for '{query}': {e}")
+                break
+
+        return results[:limit]
 
 
 def extract_specs(prod_data):
@@ -301,39 +326,42 @@ def sync_products():
                         continue
 
                     logger.debug(f"[*] Fetching details for EAN: {ean}")
-                    prod_data = api.fetch_product(ean)
-
-                    if not prod_data:
-                        total_errors += 1
-                        continue
+                    # Detail-call voor specs; lukt die niet, dan is het
+                    # zoekresultaat zelf (met include-image/include-offer)
+                    # genoeg om het product op te voeren.
+                    prod_data = api.fetch_product(ean) or result
 
                     product = Product.query.filter_by(ean=ean).first()
 
                     title = prod_data.get('title', 'Unknown')
                     price = 0
                     image_url = ''
-                    rating = 0
 
-                    if 'offers' in prod_data and prod_data['offers']:
-                        offer = prod_data['offers'][0]
-                        price = float(offer.get('price', 0) or 0)
+                    # v1 gebruikt 'offer'/'image' (enkelvoud, object); wees
+                    # tolerant voor een eventuele 'offers'/'images'-lijstvorm
+                    offers = prod_data.get('offers') or ([prod_data['offer']] if prod_data.get('offer') else [])
+                    if offers:
+                        price = float(offers[0].get('price', 0) or 0)
 
-                    if 'images' in prod_data and prod_data['images']:
-                        image_url = prod_data['images'][0].get('url', '')
-
-                    if 'rating' in prod_data:
-                        rating = float(prod_data['rating'].get('score', 0) or 0)
+                    images = prod_data.get('images') or ([prod_data['image']] if prod_data.get('image') else [])
+                    if images:
+                        image_url = images[0].get('url', '')
 
                     specs = extract_specs(prod_data)
+                    brand = specs.get('Merk') or prod_data.get('brand')
+
+                    if price <= 0:
+                        # geen koopbaar aanbod — niet tonen als "op voorraad" met €0.00
+                        continue
 
                     slug = f"{title[:50].lower().replace(' ', '-').replace('/', '-')}-{ean}"
                     bol_url = f"https://www.bol.com/nl/p/{ean}/"
 
                     if product:
                         product.title = title
+                        product.brand = brand or product.brand
                         product.price = price
                         product.image_url = image_url
-                        product.rating = rating
                         product.bol_url = bol_url
                         product.retailer = 'bol'
                         product.specs = specs
@@ -347,9 +375,9 @@ def sync_products():
                         product = Product(
                             ean=ean,
                             title=title,
+                            brand=brand,
                             price=price,
                             image_url=image_url,
-                            rating=rating,
                             bol_url=bol_url,
                             category_id=category.id,
                             slug=slug,

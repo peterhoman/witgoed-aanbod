@@ -287,6 +287,9 @@ EXCLUDE_KEYWORDS = [
     'droogrek', 'strijkplank', 'wasverzachter', 'capsule', 'navulling',
     'magnetronschaal', 'ovenschaal', 'bakplaat', 'ovenwant', 'wasstrips',
     'stapelkit', 'tussenstuk', 'afvoerslang', 'aanvoerslang', 'filterzak',
+    # Pannen/kookgerei matcht op "ovens" via woorden als "ovenbestendig"
+    'pannenset', 'kookset', 'steelpan', 'kookpan', 'braadpan', 'koekenpan',
+    'afgietsysteem', 'wokpan',
 ]
 
 # De v1-zoekresultaten bevatten geen merkveld; herken het merk uit de titel.

@@ -30,6 +30,12 @@ def create_app(config_name=None):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
 
+    # Achter Railway's proxy ziet Flask intern http-verkeer, waardoor
+    # request.url (en dus de canonical-tags op elke pagina) http:// werd.
+    # ProxyFix laat Flask de X-Forwarded-Proto/-Host headers respecteren.
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
     from models import db, Category, Product, SyncLog, AIContent
     db.init_app(app)
 

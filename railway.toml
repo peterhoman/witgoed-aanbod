@@ -2,6 +2,9 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "gunicorn wsgi:app"
+# 1 proces (dus 1 APScheduler, geen dubbele syncs) met 8 threads zodat
+# gelijktijdige bezoekers niet op elkaar hoeven te wachten — met de
+# standaard sync-worker verwerkte de site maar 1 request tegelijk.
+startCommand = "gunicorn --threads 8 --timeout 60 wsgi:app"
 healthcheckPath = "/"
 healthcheckTimeout = 5

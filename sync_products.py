@@ -292,6 +292,8 @@ EXCLUDE_KEYWORDS = [
     'afgietsysteem', 'wokpan',
     # Vershoudbakjes matchen op "magnetrons" via "magnetronbestendig"
     'vershoudbak', 'voedselcontainer', 'lunchbox',
+    # Zwembad-/spa-stofzuigers zijn geen huishoudstofzuigers
+    'zwembad', ' spa ',
 ]
 
 # De v1-zoekresultaten bevatten geen merkveld; herken het merk uit de titel.
@@ -304,6 +306,9 @@ KNOWN_BRANDS = [
     'Blaupunkt', 'Grundig', 'Gorenje', 'Pelgrim', 'Boretti', 'Frilec',
     'Bomann', 'Severin', 'Medion', 'Vestfrost', 'Scandomestic', 'Karcher',
     'Kärcher', 'Shark', 'Rooboost', 'Eufy', 'iRobot', 'Roborock', 'Ecovacs',
+    'Heinner', 'Safecourt', 'KitchenBrothers', 'Samako', 'Cecotec', 'Domo',
+    'Wiggo', 'Schneider', 'Telefunken', 'Nedis', 'MOA', 'Turbotronic',
+    'Cosori', 'Ninja', 'Instant', 'Ariete', 'Solis', 'Fritel', 'Duux',
 ]
 
 

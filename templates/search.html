@@ -73,7 +73,9 @@
                     <div class="product-info">
                         <h3><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
                         <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
+                        {% if product.description %}
                         <p class="excerpt">{{ product.description[:100] }}...</p>
+                        {% endif %}
                         <div class="product-meta">
                             <span class="price">€{{ "%.2f"|format(product.price) }}</span>
                             {% if product.is_available %}

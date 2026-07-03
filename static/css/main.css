@@ -175,10 +175,33 @@ body {
 .hero {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: white;
-    padding: 60px 0;
-    text-align: center;
+    padding: 60px 40px;
     margin: 24px 0;
     border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+}
+
+.hero-content {
+    text-align: center;
+    flex: 1;
+}
+
+.hero-mascot {
+    flex-shrink: 0;
+    height: 220px;
+    width: auto;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 48px 20px;
+    }
+    .hero-mascot {
+        display: none;
+    }
 }
 
 .hero-content h1 {

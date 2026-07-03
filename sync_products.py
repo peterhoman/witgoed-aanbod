@@ -22,7 +22,9 @@ class BolAPI:
     def __init__(self, client_id, client_secret):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.base_url = "https://api.bol.com/marketing/catalog/v4"
+        # v1, niet v4: het werkende bol-affiliate-page-project draait op v1 en
+        # v4 gaf op dit account overal 403 "Unauthorized Request"
+        self.base_url = "https://api.bol.com/marketing/catalog/v1"
         self.token_url = "https://login.bol.com/token"
         self.token = None
         self.token_expires = None

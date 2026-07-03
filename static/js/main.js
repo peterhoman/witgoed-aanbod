@@ -189,8 +189,15 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        syncCheckboxes();
-        renderCompareBar();
+        if (window.location.pathname === '/vergelijk') {
+            // Vergelijking bekeken = klaar. Keuze legen zodat je niet later,
+            // op een heel andere pagina, tegen "max 3" aanloopt met
+            // producten die je niet meer kunt terugvinden of uitvinken.
+            saveCompareList([]);
+        } else {
+            syncCheckboxes();
+            renderCompareBar();
+        }
     });
 })();
 

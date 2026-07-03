@@ -54,7 +54,8 @@ def search():
 
     return render_template('search.html', results=results.items, pagination=results,
                          query=query, categories=categories, selected_category=category_filter,
-                         available_brands=available_brands, selected_brands=brand_filter)
+                         available_brands=available_brands, selected_brands=brand_filter,
+                         min_price=min_price, max_price=max_price)
 
 
 @products_bp.route('/vergelijk')

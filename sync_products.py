@@ -290,6 +290,8 @@ EXCLUDE_KEYWORDS = [
     # Pannen/kookgerei matcht op "ovens" via woorden als "ovenbestendig"
     'pannenset', 'kookset', 'steelpan', 'kookpan', 'braadpan', 'koekenpan',
     'afgietsysteem', 'wokpan',
+    # Vershoudbakjes matchen op "magnetrons" via "magnetronbestendig"
+    'vershoudbak', 'voedselcontainer', 'lunchbox',
 ]
 
 # De v1-zoekresultaten bevatten geen merkveld; herken het merk uit de titel.

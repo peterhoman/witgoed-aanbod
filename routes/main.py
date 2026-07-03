@@ -40,8 +40,18 @@ def blog_detail(slug):
 
 @main_bp.route('/')
 def index():
-    featured_products = Product.query.filter_by(is_available=True).limit(12).all()
     categories = Category.query.filter_by(parent_id=None).all()
+
+    # 1 product per categorie (goedkoopste, sluit aan bij "laagste prijzen"),
+    # zodat de homepage de breedte van de site laat zien i.p.v. willekeurig
+    # meerdere producten uit dezelfde categorie.
+    featured_products = []
+    for cat in categories[:5]:
+        cheapest = (Product.query.filter_by(category_id=cat.id, is_available=True)
+                    .order_by(Product.price.asc()).first())
+        if cheapest:
+            featured_products.append(cheapest)
+
     latest_blog_posts = Guide.query.filter_by(post_type='blog').order_by(Guide.created_at.desc()).limit(3).all()
 
     # Geen aparte categorie-afbeeldingen in het model; gebruik de foto van

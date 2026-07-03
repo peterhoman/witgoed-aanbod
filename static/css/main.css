@@ -286,16 +286,19 @@ body {
 .product-image {
     width: 100%;
     height: 200px;
-    object-fit: cover;
     overflow: hidden;
-    background: var(--light);
+    background: #fff;
     display: block;
+    padding: 8px;
 }
 
 .product-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    /* contain i.p.v. cover: bol-productfoto's zijn staand formaat en
+       werden anders bijgesneden, waardoor maar een deel van het
+       apparaat zichtbaar was */
+    object-fit: contain;
 }
 
 .product-info {

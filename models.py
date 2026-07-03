@@ -1,4 +1,5 @@
 from datetime import datetime
+from urllib.parse import quote
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -56,17 +57,18 @@ class Product(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def generate_affiliate_url(self, site_id='1528790'):
-        """Generate Bol.com affiliate tracking URL"""
-        base_url = "https://partner.bol.com/click/click"
-        params = {
-            't': 'url',
-            's': site_id,
-            'url': self.bol_url,
-            'f': 'api',
-            'subid': f'product-{self.ean}'
-        }
-        query_string = '&'.join(f'{k}={v}' for k, v in params.items())
-        return f"{base_url}?{query_string}"
+        """Generate Bol.com affiliate tracking URL.
+
+        Format bevestigd via affiliate.bol.com/nl/handleiding/tracking-url/
+        en identiek aan het bewezen bol-affiliate-page/affiliate_link.py:
+        de product-URL moet volledig percent-encoded als url-parameter mee,
+        en f= (promotietype) is verplicht.
+        """
+        return (
+            "https://partner.bol.com/click/click"
+            f"?t=url&s={site_id}&url={quote(self.bol_url or '', safe='')}"
+            f"&f=api&subid={quote(f'product-{self.ean}')}"
+        )
 
     def generate_short_affiliate_url(self, bitly_client, site_id='1528790'):
         """Generate and shorten affiliate tracking URL using Bit.ly"""

@@ -34,6 +34,9 @@ class Product(db.Model):
     ai_meta_description = db.Column(db.String(160))
 
     price = db.Column(db.Float, nullable=False)
+    # bol's adviesprijs ("van-prijs"); alleen gevuld als die hoger is dan
+    # de actuele prijs, zodat er een echte korting te tonen valt
+    strikethrough_price = db.Column(db.Float, nullable=True)
     image_url = db.Column(db.String(500))
     bol_url = db.Column(db.String(500), nullable=False)
     affiliate_url = db.Column(db.String(500))

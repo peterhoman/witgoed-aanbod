@@ -23,6 +23,19 @@ def _ensure_guides_post_type_column(db):
             conn.commit()
 
 
+def _ensure_products_strikethrough_column(db):
+    """Zelfde boot-migratiepatroon: voeg de van-prijs-kolom toe aan een
+    bestaande products-tabel (db.create_all() wijzigt geen bestaande tabellen)."""
+    inspector = inspect(db.engine)
+    if 'products' not in inspector.get_table_names():
+        return
+    columns = [c['name'] for c in inspector.get_columns('products')]
+    if 'strikethrough_price' not in columns:
+        with db.engine.connect() as conn:
+            conn.execute(text("ALTER TABLE products ADD COLUMN strikethrough_price FLOAT"))
+            conn.commit()
+
+
 def create_app(config_name=None):
     if config_name is None:
         config_name = os.getenv('FLASK_ENV', 'development')
@@ -42,6 +55,7 @@ def create_app(config_name=None):
     with app.app_context():
         db.create_all()
         _ensure_guides_post_type_column(db)
+        _ensure_products_strikethrough_column(db)
 
     # Register blueprints
     from routes.main import main_bp

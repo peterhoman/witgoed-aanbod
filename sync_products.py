@@ -442,8 +442,14 @@ def sync_products():
                     # v1 gebruikt 'offer'/'image' (enkelvoud, object); wees
                     # tolerant voor een eventuele 'offers'/'images'-lijstvorm
                     offers = prod_data.get('offers') or ([prod_data['offer']] if prod_data.get('offer') else [])
+                    strikethrough = None
                     if offers:
                         price = float(offers[0].get('price', 0) or 0)
+                        raw_st = float(offers[0].get('strikethroughPrice', 0) or 0)
+                        # alleen een echte korting tonen (van-prijs boven de
+                        # actuele prijs); bol levert het veld niet altijd
+                        if raw_st > price > 0:
+                            strikethrough = raw_st
 
                     images = prod_data.get('images') or ([prod_data['image']] if prod_data.get('image') else [])
                     if images:
@@ -469,6 +475,7 @@ def sync_products():
                         product.title = title
                         product.brand = brand or product.brand
                         product.price = price
+                        product.strikethrough_price = strikethrough
                         product.image_url = image_url
                         product.bol_url = bol_url
                         product.retailer = 'bol'
@@ -485,6 +492,7 @@ def sync_products():
                             title=title,
                             brand=brand,
                             price=price,
+                            strikethrough_price=strikethrough,
                             image_url=image_url,
                             bol_url=bol_url,
                             category_id=category.id,

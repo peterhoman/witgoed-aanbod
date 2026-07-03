@@ -105,6 +105,10 @@
                         <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
                         <div class="product-meta">
                             <span class="price">€ {{ product.price|euro }}</span>
+                        {% if product.strikethrough_price %}
+                        <span class="price-old">€ {{ product.strikethrough_price|euro }}</span>
+                        <span class="discount-badge">-{{ ((1 - product.price / product.strikethrough_price) * 100)|round|int }}%</span>
+                        {% endif %}
                             {% if product.is_available %}
                             <span class="availability available">{{ t('product.in_stock') }}</span>
                             {% else %}

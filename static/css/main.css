@@ -2,6 +2,36 @@
    WITGOEDAANBOD.NL - Modern 2027 Design
    ============================================ */
 
+/* Nunito: zelf gehost (geen Google-CDN i.v.m. AVG/privacy) */
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/nunito-400.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/nunito-600.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../fonts/nunito-700.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url('../fonts/nunito-800.woff2') format('woff2');
+}
+
 :root {
     --primary: #0090DA;
     --primary-dark: #0072AD;
@@ -30,7 +60,7 @@ html {
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     line-height: 1.6;
     color: var(--dark);
     background: #fff;
@@ -202,6 +232,59 @@ body {
     .hero-mascot {
         display: none;
     }
+}
+
+/* Van-prijzen (doorgestreept) + kortingsbadge */
+.price-old {
+    color: var(--gray);
+    text-decoration: line-through;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.discount-badge {
+    background: var(--danger);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.price-old-large {
+    font-size: 17px;
+}
+
+.discount-badge-large {
+    font-size: 14px;
+    padding: 4px 10px;
+}
+
+/* Blogkaarten: gekleurde bovenrand + label-chip zodat ze zich
+   onderscheiden van productkaarten (waren kale tekst-op-wit) */
+.product-card.blog-card {
+    border-top: 4px solid var(--secondary);
+}
+
+.blog-chip {
+    display: inline-block;
+    align-self: flex-start;
+    background: var(--secondary-light);
+    color: var(--secondary);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+
+.blog-card .product-info h3 {
+    /* blogtitels zijn zinnen; 3 regels i.p.v. de 2 van productkaarten */
+    -webkit-line-clamp: 3;
+    min-height: auto;
 }
 
 .usp-bar {
@@ -380,6 +463,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
     margin-bottom: 12px;
 }
 

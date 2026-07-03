@@ -28,6 +28,10 @@
 
             <div class="price-section">
                 <span class="price-large">€ {{ product.price|euro }}</span>
+                {% if product.strikethrough_price %}
+                <span class="price-old price-old-large">€ {{ product.strikethrough_price|euro }}</span>
+                <span class="discount-badge discount-badge-large">-{{ ((1 - product.price / product.strikethrough_price) * 100)|round|int }}%</span>
+                {% endif %}
                 {% if product.is_available %}
                 <span class="availability available">{{ t('product.in_stock') }}</span>
                 {% else %}
@@ -83,6 +87,9 @@
                     <p class="brand">{{ related.brand or t('product.brand_unknown') }}</p>
                     <div class="product-meta">
                         <span class="price">€ {{ related.price|euro }}</span>
+                        {% if related.strikethrough_price %}
+                        <span class="price-old">€ {{ related.strikethrough_price|euro }}</span>
+                        {% endif %}
                         {% if related.is_available %}
                         <span class="availability available">{{ t('product.in_stock') }}</span>
                         {% endif %}

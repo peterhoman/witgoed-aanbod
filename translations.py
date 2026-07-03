@@ -104,6 +104,7 @@ TRANSLATIONS = {
         'blog.title': 'Blog & Nieuws',
         'blog.intro': 'Nieuwtjes over witgoed en uitgelichte producten, elke week bijgewerkt.',
         'blog.read_more': 'Lees meer →',
+        'blog.chip': 'Nieuws',
         'home.blog_title': 'Laatste nieuws',
 
         # Homepage
@@ -213,6 +214,7 @@ TRANSLATIONS = {
         'blog.title': 'Blog & News',
         'blog.intro': 'Appliance news and featured products, updated weekly.',
         'blog.read_more': 'Read more →',
+        'blog.chip': 'News',
         'home.blog_title': 'Latest news',
 
         'home.usp1': 'Prices updated daily',

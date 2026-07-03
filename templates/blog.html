@@ -10,8 +10,9 @@
 
     <div class="product-grid" style="margin-top: 24px;">
         {% for post in posts %}
-        <article class="product-card">
+        <article class="product-card blog-card">
             <div class="product-info">
+                <span class="blog-chip">{{ t('blog.chip') }}</span>
                 <h3><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h3>
                 <p class="excerpt">{{ post.excerpt }}</p>
                 <a href="/blog/{{ post.slug }}" class="btn-primary">{{ t('blog.read_more') }}</a>

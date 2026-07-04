@@ -146,7 +146,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const list = getCompareList();
         const ids = list.map(item => item.id);
         document.querySelectorAll('.compare-checkbox').forEach(function(checkbox) {
-            checkbox.checked = ids.includes(parseInt(checkbox.dataset.productId, 10));
+            const checked = ids.includes(parseInt(checkbox.dataset.productId, 10));
+            checkbox.checked = checked;
+            const label = checkbox.closest('.compare-label');
+            if (label) label.classList.toggle('is-checked', checked);
         });
     }
 

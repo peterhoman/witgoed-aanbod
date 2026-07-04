@@ -896,17 +896,41 @@ section h2 {
    ============================================ */
 
 .compare-label {
+    /* opvallend blokje i.p.v. grijs regeltje: vergelijken is de
+       kernfunctie van de site en moet direct in het oog springen */
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     font-size: 13px;
-    color: var(--gray);
+    font-weight: 700;
+    color: var(--primary);
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 10px;
     margin-bottom: 10px;
     cursor: pointer;
+    user-select: none;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.compare-label:hover {
+    border-color: var(--primary);
+    background: var(--secondary-light);
+}
+
+.compare-label:has(input:checked),
+.compare-label.is-checked {
+    border-color: var(--primary);
+    background: var(--secondary-light);
 }
 
 .compare-label input[type="checkbox"] {
     accent-color: var(--primary);
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+    cursor: pointer;
 }
 
 .compare-bar {

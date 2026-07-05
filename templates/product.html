@@ -135,6 +135,18 @@
 }
 </script>
 
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "{{ config.SITE_URL }}/"},
+        {"@type": "ListItem", "position": 2, "name": "{{ product.category.name }}", "item": "{{ config.SITE_URL }}/category/{{ product.category.slug }}"},
+        {"@type": "ListItem", "position": 3, "name": "{{ product.title[:60] }}"}
+    ]
+}
+</script>
+
 <script>
 (function() {
     var toggle = document.getElementById('specs-toggle');

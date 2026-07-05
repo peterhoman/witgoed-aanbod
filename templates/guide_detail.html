@@ -27,4 +27,18 @@
     </p>
     {% endif %}
 </div>
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "{{ guide.title }}",
+    "description": "{{ guide.excerpt }}",
+    "datePublished": "{{ guide.created_at.strftime('%Y-%m-%d') if guide.created_at }}",
+    "inLanguage": "nl-NL",
+    "author": {"@type": "Organization", "name": "WitgoedAanbod.nl"},
+    "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl", "url": "{{ config.SITE_URL }}/"},
+    "mainEntityOfPage": "{{ request.url }}"
+}
+</script>
 {% endblock %}

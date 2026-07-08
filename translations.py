@@ -82,6 +82,15 @@ TRANSLATIONS = {
         'product.view_offer': 'Bekijk aanbieding',
         'product.show_more': 'Toon meer',
         'product.show_less': 'Toon minder',
+
+        # Aanbiedingen / meerdere winkels
+        'offer.best_price': 'Beste prijs',
+        'offer.lowest_badge': 'Laagste prijs',
+        'offer.from': 'vanaf',
+        'offer.at_shops': 'bij {count} winkels',
+        'offer.compare_cta': 'Vergelijk prijzen',
+        'offer.view_at': 'Bekijk bij {retailer}',
+
         'compare.title': 'Vergelijk producten',
         'compare.empty': 'Geen producten geselecteerd om te vergelijken. Ga naar een categorie en vink "Vergelijk" aan bij maximaal 3 producten.',
         'compare.property': 'Eigenschap',
@@ -198,6 +207,15 @@ TRANSLATIONS = {
         'product.view_offer': 'View offer',
         'product.show_more': 'Show more',
         'product.show_less': 'Show less',
+
+        # Offers / multiple shops
+        'offer.best_price': 'Best price',
+        'offer.lowest_badge': 'Lowest price',
+        'offer.from': 'from',
+        'offer.at_shops': 'at {count} shops',
+        'offer.compare_cta': 'Compare prices',
+        'offer.view_at': 'View at {retailer}',
+
         'compare.title': 'Compare products',
         'compare.empty': 'No products selected to compare. Go to a category and check "Compare" on up to 3 products.',
         'compare.property': 'Property',

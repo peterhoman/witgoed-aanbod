@@ -1,0 +1,50 @@
+{# Herbruikbaar productkaartje voor categorie-, zoek- en homepagina.
+   Importeer met context zodat t() en config beschikbaar zijn:
+   {% from '_macros.html' import product_card with context %}
+
+   Toont de laagste prijs over alle winkels ("vanaf € …" bij meerdere winkels),
+   het aantal winkels, en een knop die bij meerdere winkels naar de
+   productpagina leidt (vergelijken) en bij één winkel direct naar die winkel. #}
+{% macro product_card(product, show_excerpt=false) %}
+{% set best = product.best_offer %}
+<article class="product-card">
+    <a href="/product/{{ product.slug }}" class="product-image">
+        <img src="{{ product.image_url }}" alt="{{ product.title }}" loading="lazy">
+    </a>
+    <div class="product-info">
+        <h3><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
+        <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
+        {% if show_excerpt and product.description %}
+        <p class="excerpt">{{ product.description[:100] }}...</p>
+        {% endif %}
+        <div class="product-meta">
+            <span class="price">
+                {% if product.retailer_count > 1 %}<small class="price-from">{{ t('offer.from') }}</small> {% endif %}€ {{ product.lowest_price|euro }}
+            </span>
+            {% if best and best.strikethrough_price %}
+            <span class="price-old">€ {{ best.strikethrough_price|euro }}</span>
+            <span class="discount-badge">-{{ ((1 - best.price / best.strikethrough_price) * 100)|round|int }}%</span>
+            {% endif %}
+            {% if product.retailer_count > 1 %}
+            <span class="shops-count">{{ t('offer.at_shops', count=product.retailer_count) }}</span>
+            {% elif product.is_available %}
+            <span class="availability available">{{ t('product.in_stock') }}</span>
+            {% else %}
+            <span class="availability unavailable">{{ t('product.out_of_stock') }}</span>
+            {% endif %}
+        </div>
+        {% if product.is_example %}
+        <span class="badge-example badge-example-block">{{ t('product.example_badge') }}</span>
+        {% endif %}
+        <label class="compare-label">
+            <input type="checkbox" class="compare-checkbox" data-product-id="{{ product.id }}" data-product-title="{{ product.title }}">
+            {{ t('product.compare_label') }}
+        </label>
+        {% if product.retailer_count > 1 %}
+        <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('offer.compare_cta') }}</a>
+        {% else %}
+        <a href="{{ best.link if best else (product.affiliate_url or product.bol_url) }}" target="_blank" rel="nofollow sponsored" class="btn-buy">{{ t('product.view_offer') }}</a>
+        {% endif %}
+    </div>
+</article>
+{% endmacro %}

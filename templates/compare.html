@@ -34,7 +34,10 @@
                 <tr>
                     <td><strong>Prijs</strong></td>
                     {% for product in products %}
-                    <td class="price">€ {{ product.price|euro }}</td>
+                    <td class="price">
+                        {% if product.retailer_count > 1 %}<small class="price-from">{{ t('offer.from') }}</small> {% endif %}€ {{ product.lowest_price|euro }}
+                        {% if product.retailer_count > 1 %}<br><small class="shops-count">{{ t('offer.at_shops', count=product.retailer_count) }}</small>{% endif %}
+                    </td>
                     {% endfor %}
                 </tr>
                 {% for key in spec_keys %}
@@ -48,7 +51,14 @@
                 <tr>
                     <td></td>
                     {% for product in products %}
-                    <td><a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-buy">{{ t('product.view_offer') }}</a></td>
+                    <td>
+                        {% if product.retailer_count > 1 %}
+                        <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('offer.compare_cta') }}</a>
+                        {% else %}
+                        {% set best = product.best_offer %}
+                        <a href="{{ best.link if best else (product.affiliate_url or product.bol_url) }}" target="_blank" rel="nofollow sponsored" class="btn-buy">{{ t('product.view_offer') }}</a>
+                        {% endif %}
+                    </td>
                     {% endfor %}
                 </tr>
             </tbody>

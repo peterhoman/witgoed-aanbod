@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from '_macros.html' import product_card with context %}
 
 {% block title %}Zoekresultaten: {{ query }} | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}Zoekresultaten voor '{{ query }}' op WitgoedAanbod.nl. Vergelijk prijzen en specs.{% endblock %}
@@ -66,38 +67,7 @@
             {% if results %}
             <div class="product-grid">
                 {% for product in results %}
-                <article class="product-card">
-                    <a href="/product/{{ product.slug }}" class="product-image">
-                        <img src="{{ product.image_url }}" alt="{{ product.title }}" loading="lazy">
-                    </a>
-                    <div class="product-info">
-                        <h3><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
-                        <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
-                        {% if product.description %}
-                        <p class="excerpt">{{ product.description[:100] }}...</p>
-                        {% endif %}
-                        <div class="product-meta">
-                            <span class="price">€ {{ product.price|euro }}</span>
-                        {% if product.strikethrough_price %}
-                        <span class="price-old">€ {{ product.strikethrough_price|euro }}</span>
-                        <span class="discount-badge">-{{ ((1 - product.price / product.strikethrough_price) * 100)|round|int }}%</span>
-                        {% endif %}
-                            {% if product.is_available %}
-                            <span class="availability available">{{ t('product.in_stock') }}</span>
-                            {% else %}
-                            <span class="availability unavailable">{{ t('product.out_of_stock') }}</span>
-                            {% endif %}
-                        </div>
-                        {% if product.is_example %}
-                        <span class="badge-example badge-example-block">{{ t('product.example_badge') }}</span>
-                        {% endif %}
-                        <label class="compare-label">
-                            <input type="checkbox" class="compare-checkbox" data-product-id="{{ product.id }}" data-product-title="{{ product.title }}">
-                            {{ t('product.compare_label') }}
-                        </label>
-                        <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" class="btn-buy">{{ t('product.view_offer') }}</a>
-                    </div>
-                </article>
+                {{ product_card(product, show_excerpt=true) }}
                 {% endfor %}
             </div>
 

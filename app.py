@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, g
 from config import config
 from translations import translate
 from sqlalchemy import inspect, text
+from datetime import datetime
 import os
 
 
@@ -36,6 +37,44 @@ def _ensure_products_strikethrough_column(db):
             conn.commit()
 
 
+def _backfill_offers_from_products(db):
+    """Fase 1 (multi-winkel): tot nu toe stond prijs/link/voorraad rechtstreeks
+    op elke products-rij (alleen Bol). Zet die één-op-één om naar een rij in de
+    nieuwe offers-tabel (winkel = product.retailer, standaard 'bol'), zodat de
+    site straks meerdere winkels per apparaat aankan.
+
+    Veilig en herhaalbaar: dit VERWIJDERT of WIJZIGT geen enkel bestaand
+    product; het maakt alleen een ontbrekende aanbieding aan. Draait die winkel
+    voor dit product al in de offers-tabel, dan slaat het over.
+    """
+    from models import Product, Offer
+    inspector = inspect(db.engine)
+    tables = inspector.get_table_names()
+    if 'offers' not in tables or 'products' not in tables:
+        return
+
+    # Alleen backfillen zolang er producten zijn zonder enige aanbieding; scheelt
+    # werk bij elke herstart zodra alles is omgezet.
+    existing_product_ids = {row[0] for row in db.session.query(Offer.product_id).distinct()}
+    created = 0
+    for product in Product.query.all():
+        if product.id in existing_product_ids:
+            continue
+        db.session.add(Offer(
+            product_id=product.id,
+            retailer=product.retailer or 'bol',
+            price=product.price,
+            strikethrough_price=product.strikethrough_price,
+            url=product.bol_url,
+            affiliate_url=product.affiliate_url,
+            is_available=product.is_available,
+            last_synced=product.last_synced or datetime.utcnow(),
+        ))
+        created += 1
+    if created:
+        db.session.commit()
+
+
 def create_app(config_name=None):
     if config_name is None:
         config_name = os.getenv('FLASK_ENV', 'development')
@@ -56,6 +95,7 @@ def create_app(config_name=None):
         db.create_all()
         _ensure_guides_post_type_column(db)
         _ensure_products_strikethrough_column(db)
+        _backfill_offers_from_products(db)
 
     # Register blueprints
     from routes.main import main_bp

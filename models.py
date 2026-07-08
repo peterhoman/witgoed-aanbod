@@ -4,6 +4,19 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+# Weergavenaam per winkel (retailer-code -> label op de site). Nieuwe winkels
+# (bijv. 'coolblue') hier toevoegen zodra ze meedoen.
+RETAILER_LABELS = {
+    'bol': 'Bol.com',
+    'mediamarkt': 'MediaMarkt',
+    'coolblue': 'Coolblue',
+}
+
+
+def retailer_label(code):
+    """Nette weergavenaam voor een winkel-code; valt terug op de code zelf."""
+    return RETAILER_LABELS.get((code or '').lower(), code)
+
 class Category(db.Model):
     __tablename__ = 'categories'
 
@@ -59,6 +72,36 @@ class Product(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # Aanbiedingen per winkel voor dit apparaat (Bol, MediaMarkt, ...). Verwijder
+    # je een product, dan gaan zijn aanbiedingen mee (cascade). Zie Offer.
+    offers = db.relationship('Offer', backref='product', lazy='select',
+                             cascade='all, delete-orphan')
+
+    @property
+    def available_offers(self):
+        """Leverbare aanbiedingen, goedkoopste eerst; bij gelijke prijs op
+        winkelnaam zodat geen enkele winkel structureel wordt voorgetrokken."""
+        return sorted((o for o in self.offers if o.is_available),
+                      key=lambda o: (o.price, o.retailer or ''))
+
+    @property
+    def best_offer(self):
+        """De goedkoopste leverbare aanbieding, of None."""
+        offers = self.available_offers
+        return offers[0] if offers else None
+
+    @property
+    def lowest_price(self):
+        """Laagste leverbare prijs; valt terug op de oude products.price zodat
+        pagina's blijven werken zolang er nog geen aanbiedingen zijn ingevuld."""
+        best = self.best_offer
+        return best.price if best else self.price
+
+    @property
+    def retailer_count(self):
+        """Aantal winkels met een leverbare aanbieding voor dit apparaat."""
+        return len(self.available_offers)
+
     def generate_affiliate_url(self, site_id='1528790'):
         """Generate Bol.com affiliate tracking URL.
 
@@ -83,6 +126,52 @@ class Product(db.Model):
 
     def __repr__(self):
         return f'<Product {self.title}>'
+
+
+class Offer(db.Model):
+    """Eén aanbieding van één winkel voor één apparaat (Product).
+
+    Fase 1 van de multi-winkel-uitbreiding: prijs, links en voorraad hoorden
+    voorheen rechtstreeks op de products-rij (alleen Bol). Die informatie
+    verhuist naar deze tabel, zodat hetzelfde apparaat meerdere aanbieders kan
+    hebben (Bol, MediaMarkt, later Coolblue) op één productpagina.
+    """
+    __tablename__ = 'offers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    retailer = db.Column(db.String(50), nullable=False, default='bol')
+
+    price = db.Column(db.Float, nullable=False)
+    # winkel-adviesprijs ("van-prijs"); alleen gevuld bij een echte korting
+    strikethrough_price = db.Column(db.Float, nullable=True)
+
+    url = db.Column(db.String(500))            # productpagina bij de winkel
+    affiliate_url = db.Column(db.String(500))  # tracking-/deeplink naar de winkel
+
+    is_available = db.Column(db.Boolean, default=True)
+    last_synced = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Per winkel hooguit één aanbieding per apparaat.
+    __table_args__ = (
+        db.UniqueConstraint('product_id', 'retailer', name='uq_offer_product_retailer'),
+    )
+
+    @property
+    def retailer_name(self):
+        """Nette weergavenaam, bijv. 'bol' -> 'Bol.com'."""
+        return retailer_label(self.retailer)
+
+    @property
+    def link(self):
+        """De klik-URL: bij voorkeur de affiliate-/trackinglink, anders de
+        gewone winkel-URL."""
+        return self.affiliate_url or self.url
+
+    def __repr__(self):
+        return f'<Offer {self.retailer} €{self.price}>'
 
 
 class SyncLog(db.Model):

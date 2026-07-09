@@ -63,8 +63,11 @@ WITGOED_CATEGORY_PATHS = {
 }
 
 # Binnen die takken bepaalt de producttitel in welke categorie van de site het
-# apparaat hoort. Volgorde is belangrijk: een wasdroogcombinatie bevat zowel
-# "was" als "droog" en moet niet als wasmachine of droger eindigen.
+# apparaat hoort. Het EERSTE passende patroon wint, dus de volgorde is bepalend:
+#  - een wasdroogcombinatie bevat zowel "was" als "droog";
+#  - een fornuis heet vaak "Fornuis met oven", een kookplaat "Inductiekookplaat
+#    met ovenaansluiting" - beide moeten vóór het ovenpatroon staan;
+#  - een afzuigkap kan "voor inductiekookplaat" in de titel hebben.
 CATEGORY_PATTERNS = [
     ('wasdroogcombinaties', r'was[-\s]?droog|wasdroogcombinatie|washer[-\s]?dryer'),
     ('wasmachines', r'wasmachine|wasautomaat'),
@@ -72,6 +75,12 @@ CATEGORY_PATTERNS = [
     ('koelkasten', r'koelkast|koel[-\s]?vries|vrieskast|vriezer|wijnklimaatkast|wijnkoelkast'),
     ('vaatwassers', r'vaatwas'),
     ('magnetrons', r'magnetron'),
+    ('afzuigkappen', r'afzuigkap|dampkap|wasemkap'),
+    ('fornuizen', r'fornuis'),
+    ('kookplaten', r'kookplaat|kookveld|kooktoestel'),
+    # "volautomatisch" bewust niet als los woord: te algemeen. Elke echte
+    # koffiemachine bevat "koffie" of "espresso" in de titel.
+    ('koffiemachines', r'koffie|espresso|senseo|nespresso|dolce gusto|percolator|cafetiere'),
     ('ovens', r'\boven\b|inbouwoven|combi[-\s]?oven|stoomoven|bakoven|airfryer|heteluchtfriteuse'),
     ('stofzuigers', r'stofzuiger|kruimeldief'),
 ]

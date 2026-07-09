@@ -266,6 +266,7 @@ def extract_specs(prod_data):
 SEARCH_LIMITS = {
     'wasmachines': 150,
     'koelkasten': 150,
+    'koffiemachines': 150,
 }
 DEFAULT_SEARCH_LIMIT = 100
 
@@ -278,6 +279,12 @@ MIN_PRICES = {
     'magnetrons': 50,
     'ovens': 50,  # laag genoeg voor airfryers, hoog genoeg om accessoires te weren
     'stofzuigers': 50,
+    # laag genoeg voor een eenvoudig koffiezetapparaat, hoog genoeg om pads,
+    # bonen en melkkannetjes buiten de deur te houden
+    'koffiemachines': 40,
+    'fornuizen': 200,
+    'kookplaten': 100,
+    'afzuigkappen': 80,
 }
 
 EXCLUDE_KEYWORDS = [
@@ -296,6 +303,19 @@ EXCLUDE_KEYWORDS = [
     'zwembad', ' spa ',
     # Airfryer-accessoires (bakpapier, siliconen mandjes, accessoiresets)
     'accessoire', 'bakpapier', 'siliconen',
+    # Koffie: verbruiksartikelen en toebehoren matchen op "koffie"/"espresso"
+    'koffiebonen', 'koffiepad', 'koffiecup', 'koffiefilter', 'koffiemolen',
+    'melkkan', 'melkopschuimer', 'espressokop', 'koffiekop', 'koffiemok',
+    # Losse melkopschuimers dragen een merknaam ("Senseo Milk Twister") en
+    # zouden anders als koffiemachine tellen. Let op: modellen met "& Milk"
+    # (Nespresso Citiz & Milk) zijn wél machines - die niet weren.
+    'milk twister', 'milk frother',
+    'waterfilter', 'reinigingstablet', 'koffiezetkan', 'thermoskan',
+    # Afzuigkap-/kookplaatonderdelen matchen op "afzuigkap"/"kookplaat".
+    # Let op: niet filteren op 'recirculatie' of 'motorloos' - dat zijn
+    # eigenschappen van echte afzuigkappen, geen accessoires.
+    'vetfilter', 'koolstoffilter', 'recirculatiefilter', 'recirculatieset',
+    'kookplaatbeschermer', 'afdekplaat', 'wokring', 'pannendrager',
 ]
 
 # De v1-zoekresultaten bevatten geen merkveld; herken het merk uit de titel.
@@ -374,6 +394,11 @@ def sync_products():
             ('magnetrons', 'Magnetrons', ['Magnetrons']),
             ('ovens', 'Ovens & Airfryers', ['Oven', 'Airfryer', 'Inbouwoven']),
             ('stofzuigers', 'Stofzuigers', ['Stofzuigers']),
+            ('koffiemachines', 'Koffiemachines',
+             ['Koffiemachine', 'Espressomachine', 'Koffiezetapparaat']),
+            ('fornuizen', 'Fornuizen', ['Fornuis']),
+            ('kookplaten', 'Kookplaten', ['Kookplaat', 'Inductiekookplaat']),
+            ('afzuigkappen', 'Afzuigkappen', ['Afzuigkap']),
         ]
 
         for category_slug, display_name, search_terms in categories:

@@ -26,6 +26,10 @@ TRANSLATIONS = {
         'nav.magnetrons': 'Magnetrons',
         'nav.ovens': 'Ovens & Airfryers',
         'nav.stofzuigers': 'Stofzuigers',
+        'nav.koffiemachines': 'Koffiemachines',
+        'nav.fornuizen': 'Fornuizen',
+        'nav.kookplaten': 'Kookplaten',
+        'nav.afzuigkappen': 'Afzuigkappen',
 
         # Footer
         'footer.about_title': 'Over WitgoedAanbod',
@@ -158,6 +162,10 @@ TRANSLATIONS = {
         'nav.magnetrons': 'Microwaves',
         'nav.ovens': 'Ovens & Air Fryers',
         'nav.stofzuigers': 'Vacuum Cleaners',
+        'nav.koffiemachines': 'Coffee Machines',
+        'nav.fornuizen': 'Cookers',
+        'nav.kookplaten': 'Hobs',
+        'nav.afzuigkappen': 'Cooker Hoods',
 
         'footer.about_title': 'About WitgoedAanbod',
         'footer.about_text': 'WitgoedAanbod.nl helps you find the best products online. Compare prices, specifications and reviews.',

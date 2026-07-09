@@ -74,6 +74,35 @@ def _backfill_offers_from_products(db):
         db.session.commit()
 
 
+def _ensure_categories(db):
+    """Voeg ontbrekende categorieën toe.
+
+    init_db.py draait alleen met de hand; op Railway is er niemand die dat doet.
+    Nieuwe categorieën horen daarom hier, in hetzelfde boot-migratiepatroon als
+    de kolommen hierboven. Bestaande categorieën worden niet aangeraakt: de
+    Bol-sync werkt hun naam bij (bijv. 'Ovens & Airfryers').
+    """
+    from models import Category
+    inspector = inspect(db.engine)
+    if 'categories' not in inspector.get_table_names():
+        return
+
+    nieuw = [
+        ('koffiemachines', 'Koffiemachines',
+         'Vergelijk volautomaten, espressomachines en koffiezetapparaten'),
+        ('fornuizen', 'Fornuizen', 'Vergelijk gasfornuizen en inductiefornuizen'),
+        ('kookplaten', 'Kookplaten', 'Vergelijk inductie-, keramische en gaskookplaten'),
+        ('afzuigkappen', 'Afzuigkappen', 'Vergelijk afzuigkappen voor elke keuken'),
+    ]
+    toegevoegd = 0
+    for slug, naam, omschrijving in nieuw:
+        if not Category.query.filter_by(slug=slug).first():
+            db.session.add(Category(slug=slug, name=naam, description=omschrijving))
+            toegevoegd += 1
+    if toegevoegd:
+        db.session.commit()
+
+
 def create_app(config_name=None):
     if config_name is None:
         config_name = os.getenv('FLASK_ENV', 'development')
@@ -94,6 +123,7 @@ def create_app(config_name=None):
         db.create_all()
         _ensure_guides_post_type_column(db)
         _ensure_products_strikethrough_column(db)
+        _ensure_categories(db)
         _backfill_offers_from_products(db)
 
     # Register blueprints

@@ -5,6 +5,7 @@ Runs sync every 6 hours
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from sync_products import sync_products
+from sync_mediamarkt import sync_mediamarkt
 import os
 
 scheduler = BackgroundScheduler()
@@ -27,8 +28,19 @@ def start_scheduler():
         replace_existing=True
     )
 
+    # De MediaMarkt-feed verandert trager en is fors groter; 2x per dag volstaat.
+    mediamarkt_interval = int(os.getenv('MEDIAMARKT_SYNC_INTERVAL', 12))
+    scheduler.add_job(
+        sync_mediamarkt,
+        'interval',
+        hours=mediamarkt_interval,
+        id='mediamarkt_sync_job',
+        name='MediaMarkt Product Sync',
+        replace_existing=True
+    )
+
     scheduler.start()
-    print(f"[+] Scheduler started - sync every {sync_interval} hours")
+    print(f"[+] Scheduler started - Bol every {sync_interval}h, MediaMarkt every {mediamarkt_interval}h")
 
 def stop_scheduler():
     """Stop the scheduler"""

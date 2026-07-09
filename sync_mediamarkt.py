@@ -1,0 +1,348 @@
+"""
+MediaMarkt productfeed sync (via Tradedoubler)
+
+Haalt de MediaMarkt-productfeed op, filtert het witgoed eruit en zet per
+apparaat een MediaMarkt-aanbieding (Offer) in de database. Bestaat het
+apparaat al door de Bol-sync, dan wordt het via de EAN-streepjescode aan
+datzelfde product gekoppeld; anders komt er een nieuw product bij met
+MediaMarkt als enige aanbieder.
+
+De affiliate-link hoeven we niet zelf op te bouwen: de feed levert per
+product een kant-en-klare Tradedoubler-deeplink (productUrl) met onze
+source-ID er al in verwerkt.
+"""
+
+import os
+import re
+import requests
+from datetime import datetime
+from app import create_app
+from models import db, Product, Category, Offer, SyncLog
+from sync_products import EXCLUDE_KEYWORDS, MIN_PRICES, guess_brand
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+RETAILER = 'mediamarkt'
+BASE_URL = "https://api.tradedoubler.com/1.0"
+
+# De hoofdfeed (hele MediaMarkt-catalogus, ~12.000 producten).
+MAIN_FEED_ID = 23056
+
+# Aanvullende categoriefeeds. Die zijn grotendeels een deelverzameling van de
+# hoofdfeed, maar niet volledig: ze worden op een ander moment ververst,
+# waardoor er tientallen producten (vooral stofzuigers) alleen hierin staan.
+# Ontdubbeling gebeurt op EAN, dus overlap is ongevaarlijk.
+EXTRA_FEED_IDS = [
+    50615,  # Koelkasten
+    50619,  # Wassen en drogen
+    50622,  # Stofzuigers
+]
+
+# products.json geeft nooit meer dan 1000 resultaten terug (offset >= 1000
+# levert een HTTP 400). Voor de hoofdfeed gebruiken we daarom het
+# productsUnlimited-endpoint, dat de complete feed in één keer levert.
+PAGE_SIZE = 100
+MAX_PAGES = 10
+
+# MediaMarkt's eigen categorie-indeling is één niveau diep. Al het witgoed zit
+# in deze drie takken; de rest (Computer, Gaming, Telefonie, Tv, ...) valt
+# hiermee meteen af.
+WITGOED_CATEGORY_PATHS = {
+    'Grote keukenapparatuur',
+    'Kleine keukenapparatuur',
+    'Huishouden',
+}
+
+# Binnen die takken bepaalt de producttitel in welke categorie van de site het
+# apparaat hoort. Volgorde is belangrijk: een wasdroogcombinatie bevat zowel
+# "was" als "droog" en moet niet als wasmachine of droger eindigen.
+CATEGORY_PATTERNS = [
+    ('wasdroogcombinaties', r'was[-\s]?droog|wasdroogcombinatie|washer[-\s]?dryer'),
+    ('wasmachines', r'wasmachine|wasautomaat'),
+    ('drogers', r'droger|droogkast|droogautomaat'),
+    ('koelkasten', r'koelkast|koel[-\s]?vries|vrieskast|vriezer|wijnklimaatkast|wijnkoelkast'),
+    ('vaatwassers', r'vaatwas'),
+    ('magnetrons', r'magnetron'),
+    ('ovens', r'\boven\b|inbouwoven|combi[-\s]?oven|stoomoven|bakoven|airfryer|heteluchtfriteuse'),
+    ('stofzuigers', r'stofzuiger|kruimeldief'),
+]
+
+
+def classify(title):
+    """Bepaal in welke categorie van de site dit apparaat hoort, of None."""
+    for slug, pattern in CATEGORY_PATTERNS:
+        if re.search(pattern, title, re.IGNORECASE):
+            return slug
+    return None
+
+
+def _get_field(product, name):
+    """Waarde uit de losse 'fields'-lijst van de feed (category_path, from_price...)."""
+    for field in product.get('fields', []):
+        if field.get('name') == name:
+            return field.get('value')
+    return None
+
+
+def _parse_price(value):
+    """'179.00 EUR' of '143.99' -> 179.0 / 143.99; onbruikbaar -> None."""
+    if not value:
+        return None
+    match = re.search(r'[\d.]+', str(value))
+    if not match:
+        return None
+    try:
+        return float(match.group())
+    except ValueError:
+        return None
+
+
+def fetch_full_feed(token, feed_id):
+    """Hele feed in één keer (alleen de hoofdfeed ondersteunt dit endpoint)."""
+    url = f"{BASE_URL}/productsUnlimited.json;fid={feed_id}"
+    response = requests.get(url, params={'token': token}, timeout=300)
+    response.raise_for_status()
+    response.encoding = 'utf-8'
+    return response.json().get('products', [])
+
+
+def fetch_paged_feed(token, feed_id):
+    """Kleine feeds (< 1000 producten) pagina voor pagina."""
+    products = []
+    for page in range(1, MAX_PAGES + 1):
+        url = f"{BASE_URL}/products.json;page={page};pageSize={PAGE_SIZE};fid={feed_id}"
+        response = requests.get(url, params={'token': token}, timeout=60)
+        response.raise_for_status()
+        response.encoding = 'utf-8'
+        batch = response.json().get('products', [])
+        products.extend(batch)
+        if len(batch) < PAGE_SIZE:
+            break
+    return products
+
+
+def collect_feed_products(token):
+    """Alle feeds ophalen en ontdubbelen op EAN (hoofdfeed heeft voorrang)."""
+    by_ean = {}
+
+    logger.info(f"[*] Hoofdfeed {MAIN_FEED_ID} ophalen...")
+    for product in fetch_full_feed(token, MAIN_FEED_ID):
+        ean = str(product.get('identifiers', {}).get('ean') or '')
+        if ean:
+            by_ean.setdefault(ean, product)
+    logger.info(f"[+] Hoofdfeed: {len(by_ean)} producten")
+
+    for feed_id in EXTRA_FEED_IDS:
+        before = len(by_ean)
+        try:
+            extra = fetch_paged_feed(token, feed_id)
+        except requests.exceptions.RequestException as e:
+            # Een aanvullende feed is een bonus, geen voorwaarde: de hoofdfeed
+            # bevat het overgrote deel. Val niet om op een tijdelijke storing.
+            logger.warning(f"[!] Aanvullende feed {feed_id} overgeslagen: {e}")
+            continue
+        for product in extra:
+            ean = str(product.get('identifiers', {}).get('ean') or '')
+            if ean:
+                by_ean.setdefault(ean, product)
+        logger.info(f"[+] Feed {feed_id}: {len(extra)} producten, {len(by_ean) - before} nieuw")
+
+    return by_ean
+
+
+def parse_offer(product):
+    """Prijs, voorraad en affiliate-link uit een feedproduct halen."""
+    offers = product.get('offers') or []
+    if not offers:
+        return None
+    offer = offers[0]
+
+    history = offer.get('priceHistory') or []
+    if not history:
+        return None
+    price = _parse_price(history[0].get('price', {}).get('value'))
+    if not price or price <= 0:
+        return None
+
+    # from_price is MediaMarkt's adviesprijs; alleen tonen als er echt een
+    # korting is (zelfde regel als bij de Bol-sync).
+    advies = _parse_price(_get_field(product, 'from_price'))
+    strikethrough = advies if advies and advies > price else None
+
+    # 'inStock' is een AANTAL, geen ja/nee. Alles boven 0 is leverbaar.
+    try:
+        in_stock = int(offer.get('inStock') or 0)
+    except (TypeError, ValueError):
+        in_stock = 0
+    available = in_stock > 0 or offer.get('availability') == 'in stock'
+
+    return {
+        'price': price,
+        'strikethrough_price': strikethrough,
+        'affiliate_url': offer.get('productUrl'),
+        'is_available': available,
+    }
+
+
+def sync_mediamarkt():
+    """Hoofdfunctie: feed ophalen, filteren en aanbiedingen bijwerken."""
+    app = create_app()
+
+    with app.app_context():
+        token = os.getenv('TRADEDOUBLER_TOKEN')
+        if not token:
+            logger.error("[!] TRADEDOUBLER_TOKEN ontbreekt - MediaMarkt-sync overgeslagen")
+            return
+
+        sync_log = SyncLog(started_at=datetime.utcnow())
+        db.session.add(sync_log)
+        db.session.flush()
+        logger.info(f"[+] MediaMarkt-sync gestart (Log ID: {sync_log.id})")
+
+        try:
+            feed_products = collect_feed_products(token)
+        except requests.exceptions.RequestException as e:
+            logger.error(f"[!] Feed ophalen mislukt: {e}")
+            sync_log.finished_at = datetime.utcnow()
+            sync_log.errors = str(e)
+            db.session.commit()
+            return
+
+        categories = {c.slug: c for c in Category.query.all()}
+        added = updated = skipped = 0
+        seen_product_ids = set()
+
+        for ean, feed_product in feed_products.items():
+            title = (feed_product.get('name') or '').strip()
+            if not title:
+                continue
+
+            # Producten uit de aanvullende categoriefeeds zijn al voorgefilterd
+            # en hoeven niet in de drie witgoed-takken van de hoofdfeed te zitten.
+            category_path = _get_field(feed_product, 'category_path')
+            from_extra_feed = feed_product.get('offers', [{}])[0].get('feedId') != MAIN_FEED_ID
+            if category_path not in WITGOED_CATEGORY_PATHS and not from_extra_feed:
+                continue
+
+            lowered = title.lower()
+            if any(keyword in lowered for keyword in EXCLUDE_KEYWORDS):
+                skipped += 1
+                continue
+
+            category_slug = classify(title)
+            if not category_slug:
+                continue
+            category = categories.get(category_slug)
+            if not category:
+                logger.warning(f"[!] Categorie {category_slug} bestaat niet in de database")
+                continue
+
+            offer_data = parse_offer(feed_product)
+            if not offer_data:
+                continue
+            if offer_data['price'] < MIN_PRICES.get(category_slug, 0):
+                # te goedkoop voor een echt apparaat - vrijwel zeker een accessoire
+                skipped += 1
+                continue
+
+            product = Product.query.filter_by(ean=ean).first()
+            if not product:
+                product = Product(
+                    ean=ean,
+                    title=title,
+                    brand=feed_product.get('brand') or guess_brand(title),
+                    description=feed_product.get('description'),
+                    price=offer_data['price'],
+                    strikethrough_price=offer_data['strikethrough_price'],
+                    image_url=(feed_product.get('productImage') or {}).get('url', ''),
+                    # products.bol_url is NOT NULL en bestaat alleen voor de
+                    # Bol-sync. Een product dat alleen bij MediaMarkt bestaat
+                    # heeft geen Bol-pagina; de knoppen op de site komen uit de
+                    # aanbiedingen, niet uit dit veld.
+                    bol_url='',
+                    category_id=category.id,
+                    subcategory=category_path,
+                    slug=f"{title[:50].lower().replace(' ', '-').replace('/', '-')}-{ean}",
+                    retailer=RETAILER,
+                    specs={},
+                    is_available=offer_data['is_available'],
+                    last_synced=datetime.utcnow(),
+                )
+                db.session.add(product)
+                db.session.flush()  # product.id nodig voor de aanbieding
+                added += 1
+            else:
+                # Bestaat het apparaat al (meestal via Bol), dan laten we titel,
+                # foto en specs met rust: dat is de identiteit van het product,
+                # niet de aanbieding.
+                updated += 1
+
+            offer = Offer.query.filter_by(product_id=product.id, retailer=RETAILER).first()
+            if not offer:
+                offer = Offer(product_id=product.id, retailer=RETAILER)
+                db.session.add(offer)
+
+            offer.price = offer_data['price']
+            offer.strikethrough_price = offer_data['strikethrough_price']
+            offer.url = offer_data['affiliate_url']
+            offer.affiliate_url = offer_data['affiliate_url']
+            offer.is_available = offer_data['is_available']
+            offer.last_synced = datetime.utcnow()
+
+            seen_product_ids.add(product.id)
+
+        db.session.commit()
+
+        removed_offers, removed_products = _cleanup(seen_product_ids)
+
+        # Prijs en voorraad van het product afleiden uit de aanbiedingen, zodat
+        # het prijsfilter en de sortering de goedkoopste winkel volgen.
+        for product in Product.query.filter(Product.id.in_(seen_product_ids)).all():
+            product.refresh_pricing()
+        db.session.commit()
+
+        sync_log.finished_at = datetime.utcnow()
+        sync_log.products_synced = added
+        sync_log.products_updated = updated
+        sync_log.products_hidden = removed_products
+        db.session.commit()
+
+        logger.info("[+] MediaMarkt-sync klaar")
+        logger.info(f"    - Nieuwe producten (alleen MediaMarkt): {added}")
+        logger.info(f"    - Gekoppeld aan bestaand product: {updated}")
+        logger.info(f"    - Overgeslagen (accessoire/te goedkoop): {skipped}")
+        logger.info(f"    - Verlopen aanbiedingen verwijderd: {removed_offers}")
+        logger.info(f"    - Producten verwijderd (nergens meer te koop): {removed_products}")
+
+
+def _cleanup(seen_product_ids):
+    """Aanbiedingen weghalen die niet meer in de feed staan, en producten die
+    daardoor bij geen enkele winkel meer te koop zijn."""
+    stale = Offer.query.filter(
+        Offer.retailer == RETAILER,
+        ~Offer.product_id.in_(seen_product_ids) if seen_product_ids else True,
+    ).all()
+
+    orphan_candidates = {offer.product_id for offer in stale}
+    for offer in stale:
+        db.session.delete(offer)
+    db.session.commit()
+
+    removed_products = 0
+    for product_id in orphan_candidates:
+        product = db.session.get(Product, product_id)
+        # Alleen producten opruimen die wij hebben aangemaakt: een Bol-product
+        # zonder aanbiedingen is een probleem van de Bol-sync, niet van ons.
+        if product and not product.offers and product.retailer == RETAILER:
+            db.session.delete(product)
+            removed_products += 1
+    if removed_products:
+        db.session.commit()
+
+    return len(stale), removed_products
+
+
+if __name__ == '__main__':
+    sync_mediamarkt()

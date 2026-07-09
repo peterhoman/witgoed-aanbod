@@ -102,6 +102,20 @@ class Product(db.Model):
         """Aantal winkels met een leverbare aanbieding voor dit apparaat."""
         return len(self.available_offers)
 
+    def refresh_pricing(self):
+        """Zet price/strikethrough_price/is_available gelijk aan de beste
+        aanbieding. De categorie- en zoekpagina's filteren en sorteren op de
+        SQL-kolom products.price, niet op de aanbiedingen; zonder deze stap
+        zou een goedkopere MediaMarkt-prijs wel op de productpagina staan maar
+        niet meetellen in het prijsfilter."""
+        best = self.best_offer
+        if best:
+            self.price = best.price
+            self.strikethrough_price = best.strikethrough_price
+            self.is_available = True
+        else:
+            self.is_available = False
+
     def generate_affiliate_url(self, site_id='1528790'):
         """Generate Bol.com affiliate tracking URL.
 

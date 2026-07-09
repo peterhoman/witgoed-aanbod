@@ -10,7 +10,7 @@ import time
 from urllib.parse import quote_plus
 from datetime import datetime, timedelta
 from app import create_app
-from models import db, Product, Category, SyncLog
+from models import db, Product, Category, Offer, SyncLog
 from bitly_helper import get_bitly_client
 import logging
 
@@ -504,9 +504,27 @@ def sync_products():
                         )
                         product.affiliate_url = product.generate_short_affiliate_url(bitly_client, site_id='1528790')
                         db.session.add(product)
+                        db.session.flush()  # product.id nodig voor de aanbieding
                         total_synced += 1
                         category_real_products_synced += 1
                         logger.debug(f"[+] Added: {title}")
+
+                    # Sinds de multi-winkel-uitbreiding staan prijs en link ook
+                    # als aanbieding in de offers-tabel; daar leest de site uit.
+                    offer = Offer.query.filter_by(product_id=product.id, retailer='bol').first()
+                    if not offer:
+                        offer = Offer(product_id=product.id, retailer='bol')
+                        db.session.add(offer)
+                    offer.price = price
+                    offer.strikethrough_price = strikethrough
+                    offer.url = bol_url
+                    offer.affiliate_url = product.affiliate_url
+                    offer.is_available = True
+                    offer.last_synced = datetime.utcnow()
+
+                    # Kan een goedkopere MediaMarkt-aanbieding hebben; products.price
+                    # moet de laagste prijs volgen (prijsfilter/sortering).
+                    product.refresh_pricing()
 
                     seen_eans.add(str(ean))
 
@@ -519,15 +537,36 @@ def sync_products():
             logger.info(f"[+] {display_name}: {len(search_results)} checked, {category_real_products_synced} kept")
 
             if category_real_products_synced > 0:
-                removed = Product.query.filter_by(category_id=category.id, is_example=True).delete()
-                # Ruim ook eerder gesyncte producten op die niet meer door de
-                # filters komen (bv. de accessoires uit de eerste sync-run)
-                stale = Product.query.filter(
+                # Per stuk verwijderen (niet bulk): alleen zo ruimt de cascade
+                # ook de bijbehorende aanbiedingen op.
+                examples = Product.query.filter_by(category_id=category.id, is_example=True).all()
+                for example in examples:
+                    db.session.delete(example)
+                removed = len(examples)
+
+                # Producten die Bol niet meer aanbiedt (of die niet meer door de
+                # filters komen) verliezen hun Bol-aanbieding. Staat hetzelfde
+                # apparaat nog bij een andere winkel, dan blijft het product
+                # gewoon bestaan met die winkel; anders valt het weg.
+                stale = 0
+                dropped = Product.query.filter(
                     Product.category_id == category.id,
                     Product.is_example == False,
                     ~Product.ean.in_(seen_eans),
-                ).delete(synchronize_session=False)
-                if removed or stale:
+                ).all()
+                for product in dropped:
+                    for offer in list(product.offers):
+                        if offer.retailer == 'bol':
+                            db.session.delete(offer)
+                            product.offers.remove(offer)
+                    if not product.offers:
+                        db.session.delete(product)
+                        stale += 1
+                    else:
+                        product.retailer = product.offers[0].retailer
+                        product.refresh_pricing()
+
+                if removed or stale or dropped:
                     db.session.commit()
                     logger.info(f"[+] {display_name}: removed {removed} example product(s) and {stale} stale/filtered product(s)")
 

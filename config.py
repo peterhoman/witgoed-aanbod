@@ -18,6 +18,9 @@ class Config:
     BOL_CLIENT_SECRET = os.getenv('BOL_CLIENT_SECRET')
     BOL_PARTNER_ID = os.getenv('BOL_PARTNER_ID')
 
+    # MediaMarkt productfeed via Tradedoubler (source ID 3490179, programma 262336)
+    TRADEDOUBLER_TOKEN = os.getenv('TRADEDOUBLER_TOKEN')
+
     # Claude API
     ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
 

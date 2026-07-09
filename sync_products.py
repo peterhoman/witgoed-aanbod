@@ -8,9 +8,9 @@ import requests
 import base64
 import time
 from urllib.parse import quote_plus
-from datetime import datetime, timedelta
+from datetime import timedelta
 from app import create_app
-from models import db, Product, Category, Offer, SyncLog
+from models import db, Product, Category, Offer, SyncLog, utcnow
 from bitly_helper import get_bitly_client
 import logging
 
@@ -53,7 +53,7 @@ class BolAPI:
             data = response.json()
             self.token = data.get('access_token')
             expires_in = data.get('expires_in', 299)
-            self.token_expires = datetime.utcnow() + timedelta(seconds=expires_in - 10)
+            self.token_expires = utcnow() + timedelta(seconds=expires_in - 10)
             logger.info("[+] Authenticated successfully with Marketing Catalog API")
             return True
         except requests.exceptions.RequestException as e:
@@ -62,7 +62,7 @@ class BolAPI:
 
     def _refresh_token_if_needed(self):
         """Refresh token if expired"""
-        if self.token_expires and datetime.utcnow() >= self.token_expires:
+        if self.token_expires and utcnow() >= self.token_expires:
             logger.info("[*] Token expired, refreshing...")
             self.authenticate()
 
@@ -335,7 +335,7 @@ def sync_products():
             logger.error("[!] Missing Bol.com credentials. Set BOL_CLIENT_ID and BOL_CLIENT_SECRET")
             return
 
-        sync_log = SyncLog(started_at=datetime.utcnow())
+        sync_log = SyncLog(started_at=utcnow())
         db.session.add(sync_log)
         db.session.flush()
 
@@ -352,7 +352,7 @@ def sync_products():
 
         if not api.authenticate():
             logger.error("[!] Failed to authenticate with Bol.com")
-            sync_log.finished_at = datetime.utcnow()
+            sync_log.finished_at = utcnow()
             sync_log.products_synced = 0
             sync_log.products_updated = 0
             db.session.commit()
@@ -482,7 +482,7 @@ def sync_products():
                         product.specs = specs
                         product.affiliate_url = product.generate_short_affiliate_url(bitly_client, site_id='1528790')
                         product.is_available = True
-                        product.last_synced = datetime.utcnow()
+                        product.last_synced = utcnow()
                         total_updated += 1
                         category_real_products_synced += 1
                         logger.debug(f"[+] Updated: {title}")
@@ -500,7 +500,7 @@ def sync_products():
                             retailer='bol',
                             specs=specs,
                             is_available=True,
-                            last_synced=datetime.utcnow()
+                            last_synced=utcnow()
                         )
                         product.affiliate_url = product.generate_short_affiliate_url(bitly_client, site_id='1528790')
                         db.session.add(product)
@@ -520,7 +520,7 @@ def sync_products():
                     offer.url = bol_url
                     offer.affiliate_url = product.affiliate_url
                     offer.is_available = True
-                    offer.last_synced = datetime.utcnow()
+                    offer.last_synced = utcnow()
 
                     # Kan een goedkopere MediaMarkt-aanbieding hebben; products.price
                     # moet de laagste prijs volgen (prijsfilter/sortering).
@@ -570,7 +570,7 @@ def sync_products():
                     db.session.commit()
                     logger.info(f"[+] {display_name}: removed {removed} example product(s) and {stale} stale/filtered product(s)")
 
-        sync_log.finished_at = datetime.utcnow()
+        sync_log.finished_at = utcnow()
         sync_log.products_synced = total_synced
         sync_log.products_updated = total_updated
         db.session.commit()

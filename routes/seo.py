@@ -3,8 +3,7 @@ SEO routes (sitemap, robots.txt)
 """
 
 from flask import Blueprint, render_template_string, current_app
-from models import Product, Category, Guide
-from datetime import datetime
+from models import Product, Category, Guide, utcnow
 
 seo_bp = Blueprint('seo', __name__)
 
@@ -19,7 +18,7 @@ def sitemap():
     # Homepage
     sitemap_entries.append({
         'loc': f"{current_app.config['SITE_URL']}/",
-        'lastmod': datetime.utcnow().isoformat(),
+        'lastmod': utcnow().isoformat(),
         'priority': '1.0'
     })
 
@@ -27,7 +26,7 @@ def sitemap():
     for category in categories:
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}",
-            'lastmod': datetime.utcnow().isoformat(),
+            'lastmod': utcnow().isoformat(),
             'priority': '0.8'
         })
 
@@ -35,7 +34,7 @@ def sitemap():
     for product in products:
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/product/{product.slug}",
-            'lastmod': product.updated_at.isoformat() if product.updated_at else datetime.utcnow().isoformat(),
+            'lastmod': product.updated_at.isoformat() if product.updated_at else utcnow().isoformat(),
             'priority': '0.6'
         })
 
@@ -44,7 +43,7 @@ def sitemap():
     for guide in guides:
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/gidsen/{guide.slug}",
-            'lastmod': guide.created_at.isoformat() if guide.created_at else datetime.utcnow().isoformat(),
+            'lastmod': guide.created_at.isoformat() if guide.created_at else utcnow().isoformat(),
             'priority': '0.7'
         })
 
@@ -53,7 +52,7 @@ def sitemap():
     for post in blog_posts:
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/blog/{post.slug}",
-            'lastmod': post.created_at.isoformat() if post.created_at else datetime.utcnow().isoformat(),
+            'lastmod': post.created_at.isoformat() if post.created_at else utcnow().isoformat(),
             'priority': '0.6'
         })
 
@@ -62,7 +61,7 @@ def sitemap():
     for page in legal_pages:
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/{page}",
-            'lastmod': datetime.utcnow().isoformat(),
+            'lastmod': utcnow().isoformat(),
             'priority': '0.5'
         })
 

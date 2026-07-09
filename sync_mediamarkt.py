@@ -18,9 +18,8 @@ import json
 import os
 import re
 import requests
-from datetime import datetime
 from app import create_app
-from models import db, Product, Category, Offer, SyncLog
+from models import db, Product, Category, Offer, SyncLog, utcnow
 from sync_products import EXCLUDE_KEYWORDS, MIN_PRICES, guess_brand
 import logging
 
@@ -230,7 +229,7 @@ def sync_mediamarkt():
             logger.error("[!] TRADEDOUBLER_TOKEN ontbreekt - MediaMarkt-sync overgeslagen")
             return
 
-        sync_log = SyncLog(started_at=datetime.utcnow())
+        sync_log = SyncLog(started_at=utcnow())
         db.session.add(sync_log)
         db.session.flush()
         logger.info(f"[+] MediaMarkt-sync gestart (Log ID: {sync_log.id})")
@@ -239,7 +238,7 @@ def sync_mediamarkt():
             feed_products = collect_feed_products(token)
         except requests.exceptions.RequestException as e:
             logger.error(f"[!] Feed ophalen mislukt: {e}")
-            sync_log.finished_at = datetime.utcnow()
+            sync_log.finished_at = utcnow()
             sync_log.errors = str(e)
             db.session.commit()
             return
@@ -295,7 +294,7 @@ def sync_mediamarkt():
                     retailer=RETAILER,
                     specs={},
                     is_available=record['is_available'],
-                    last_synced=datetime.utcnow(),
+                    last_synced=utcnow(),
                 )
                 db.session.add(product)
                 db.session.flush()  # product.id nodig voor de aanbieding
@@ -316,7 +315,7 @@ def sync_mediamarkt():
             offer.url = record['affiliate_url']
             offer.affiliate_url = record['affiliate_url']
             offer.is_available = record['is_available']
-            offer.last_synced = datetime.utcnow()
+            offer.last_synced = utcnow()
 
             seen_product_ids.add(product.id)
 
@@ -330,7 +329,7 @@ def sync_mediamarkt():
             product.refresh_pricing()
         db.session.commit()
 
-        sync_log.finished_at = datetime.utcnow()
+        sync_log.finished_at = utcnow()
         sync_log.products_synced = added
         sync_log.products_updated = updated
         sync_log.products_hidden = removed_products

@@ -1,8 +1,20 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from urllib.parse import quote
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+
+
+def utcnow():
+    """Huidige UTC-tijd zonder tijdzone-informatie.
+
+    Vervangt datetime.utcnow(), dat sinds Python 3.12 een DeprecationWarning
+    geeft. Het resultaat is bewust 'naief' (zonder tijdzone): alle bestaande
+    kolommen zijn DateTime zonder tijdzone en alle opgeslagen waarden zijn
+    UTC. Een tijdzone-bewuste waarde zou Postgres laten omrekenen naar de
+    serverzone en de tijden in de database stilletjes verschuiven.
+    """
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 # Weergavenaam per winkel (retailer-code -> label op de site). Nieuwe winkels
 # (bijv. 'coolblue') hier toevoegen zodra ze meedoen.
@@ -68,9 +80,9 @@ class Product(db.Model):
     is_example = db.Column(db.Boolean, default=False)
     slug = db.Column(db.String(255), nullable=False)
 
-    last_synced = db.Column(db.DateTime, default=datetime.utcnow)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_synced = db.Column(db.DateTime, default=utcnow)
+    created_at = db.Column(db.DateTime, default=utcnow)
+    updated_at = db.Column(db.DateTime, default=utcnow, onupdate=utcnow)
 
     # Aanbiedingen per winkel voor dit apparaat (Bol, MediaMarkt, ...). Verwijder
     # je een product, dan gaan zijn aanbiedingen mee (cascade). Zie Offer.
@@ -164,9 +176,9 @@ class Offer(db.Model):
     affiliate_url = db.Column(db.String(500))  # tracking-/deeplink naar de winkel
 
     is_available = db.Column(db.Boolean, default=True)
-    last_synced = db.Column(db.DateTime, default=datetime.utcnow)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_synced = db.Column(db.DateTime, default=utcnow)
+    created_at = db.Column(db.DateTime, default=utcnow)
+    updated_at = db.Column(db.DateTime, default=utcnow, onupdate=utcnow)
 
     # Per winkel hooguit één aanbieding per apparaat.
     __table_args__ = (
@@ -192,7 +204,7 @@ class SyncLog(db.Model):
     __tablename__ = 'sync_logs'
 
     id = db.Column(db.Integer, primary_key=True)
-    started_at = db.Column(db.DateTime, default=datetime.utcnow)
+    started_at = db.Column(db.DateTime, default=utcnow)
     finished_at = db.Column(db.DateTime)
     products_synced = db.Column(db.Integer, default=0)
     products_updated = db.Column(db.Integer, default=0)
@@ -212,7 +224,7 @@ class AIContent(db.Model):
     content = db.Column(db.Text, nullable=False)
     tokens_used = db.Column(db.Integer)
     cost = db.Column(db.Float)
-    generated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    generated_at = db.Column(db.DateTime, default=utcnow)
 
     def __repr__(self):
         return f'<AIContent {self.content_type}>'
@@ -228,7 +240,7 @@ class Guide(db.Model):
     content = db.Column(db.Text, nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
     post_type = db.Column(db.String(20), default='guide')  # 'guide' (koopgids) or 'blog' (nieuwsbericht)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utcnow)
 
     category = db.relationship('Category', backref='guides')
 

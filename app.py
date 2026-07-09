@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, g
 from config import config
 from translations import translate
 from sqlalchemy import inspect, text
-from datetime import datetime
 import os
 
 
@@ -47,7 +46,7 @@ def _backfill_offers_from_products(db):
     product; het maakt alleen een ontbrekende aanbieding aan. Draait die winkel
     voor dit product al in de offers-tabel, dan slaat het over.
     """
-    from models import Product, Offer
+    from models import Product, Offer, utcnow
     inspector = inspect(db.engine)
     tables = inspector.get_table_names()
     if 'offers' not in tables or 'products' not in tables:
@@ -68,7 +67,7 @@ def _backfill_offers_from_products(db):
             url=product.bol_url,
             affiliate_url=product.affiliate_url,
             is_available=product.is_available,
-            last_synced=product.last_synced or datetime.utcnow(),
+            last_synced=product.last_synced or utcnow(),
         ))
         created += 1
     if created:

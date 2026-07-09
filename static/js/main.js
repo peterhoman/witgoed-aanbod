@@ -2,72 +2,141 @@
 // WITGOEDAANBOD.NL - Main JS
 // ============================================
 
-// Cookie Consent Modal
+// ============================================
+// COOKIE-TOESTEMMING
+//
+// Uitgangspunt (AVG): niets dat niet strikt noodzakelijk is, mag laden vóór
+// de bezoeker toestemming geeft. Wegklikken is géén toestemming, dus het
+// kruisje en een klik buiten het venster tellen als weigeren.
+//
+// De site zelf plaatst op dit moment alleen de toestemming zelf (localStorage)
+// en de taalkeuze. Analytics staat klaar achter loadAnalytics() maar wordt
+// pas geladen als daar toestemming voor is. De affiliate-tracking van
+// Bol.com en MediaMarkt/Tradedoubler start pas op hun eigen domein, nadat de
+// bezoeker zelf op een aanbieding klikt en onze site verlaat.
+// ============================================
+const CONSENT_KEY = 'cookie-consent';
+// Ophogen zodra de tekst of de categorieën wijzigen: bezoekers met een oude
+// keuze wordt dan opnieuw om toestemming gevraagd.
+const CONSENT_VERSION = 2;
+
+function getConsent() {
+    try {
+        const stored = JSON.parse(localStorage.getItem(CONSENT_KEY));
+        if (!stored || stored.version !== CONSENT_VERSION) return null;
+        return stored;
+    } catch (e) {
+        return null;
+    }
+}
+
+function loadAnalytics() {
+    // Analytics staat nu niet aan. Zetten we het aan, dan hoort de laadcode
+    // hier - en dus alleen ná toestemming.
+    if (!window.GA_MEASUREMENT_ID) return;
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.GA_MEASUREMENT_ID;
+    document.head.appendChild(script);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', window.GA_MEASUREMENT_ID, { anonymize_ip: true });
+}
+
+function applyConsent(consent) {
+    if (consent && consent.analytics) {
+        loadAnalytics();
+    }
+}
+
+// Meteen toepassen, nog vóór DOMContentLoaded: een terugkerende bezoeker die
+// eerder ja zei, hoeft niet op de rest van de pagina te wachten.
+applyConsent(getConsent());
+
 document.addEventListener('DOMContentLoaded', function() {
     const cookieModal = document.getElementById('cookie-banner');
     const cookieAccept = document.getElementById('cookie-accept');
     const cookieReject = document.getElementById('cookie-reject');
+    const cookieSave = document.getElementById('cookie-save');
     const cookieClose = document.getElementById('cookie-close');
     const cookieAnalytics = document.getElementById('cookie-analytics');
     const cookieMarketing = document.getElementById('cookie-marketing');
+    const cookieSettingsLink = document.getElementById('cookie-settings-link');
 
-    function showCookieModal() {
-        if (!localStorage.getItem('cookie-consent')) {
-            cookieModal.classList.remove('hidden');
-        }
+    if (!cookieModal) return;
+
+    function openModal() {
+        const consent = getConsent();
+        if (cookieAnalytics) cookieAnalytics.checked = !!(consent && consent.analytics);
+        if (cookieMarketing) cookieMarketing.checked = !!(consent && consent.marketing);
+        cookieModal.classList.remove('hidden');
     }
 
-    function saveCookieConsent(analytics = false, marketing = false) {
+    function saveCookieConsent(analytics, marketing) {
         const consent = {
+            version: CONSENT_VERSION,
             essential: true,
-            analytics: analytics,
-            marketing: marketing,
+            analytics: !!analytics,
+            marketing: !!marketing,
             date: new Date().toISOString()
         };
-        localStorage.setItem('cookie-consent', JSON.stringify(consent));
+        localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
         cookieModal.classList.add('hidden');
-
-        if (analytics) {
-            loadAnalytics();
-        }
+        applyConsent(consent);
     }
 
-    function loadAnalytics() {
-        // Load Google Analytics or other tracking
-        console.log('[Analytics] Tracking enabled');
+    // Alleen tonen zolang er geen (geldige) keuze is gemaakt.
+    if (!getConsent()) {
+        openModal();
     }
 
-    // Show modal on first visit
-    showCookieModal();
-
-    // Accept all
     if (cookieAccept) {
         cookieAccept.addEventListener('click', function() {
             saveCookieConsent(true, true);
         });
     }
 
-    // Reject (essential only)
+    if (cookieSave) {
+        cookieSave.addEventListener('click', function() {
+            saveCookieConsent(cookieAnalytics && cookieAnalytics.checked,
+                              cookieMarketing && cookieMarketing.checked);
+        });
+    }
+
+    // Weigeren, het kruisje en een klik naast het venster doen hetzelfde:
+    // alleen essentiële cookies. Wegklikken mag nooit als "ja" gelden.
     if (cookieReject) {
         cookieReject.addEventListener('click', function() {
             saveCookieConsent(false, false);
         });
     }
 
-    // Close button
     if (cookieClose) {
         cookieClose.addEventListener('click', function() {
-            cookieModal.classList.add('hidden');
+            saveCookieConsent(false, false);
         });
     }
 
-    // Close on outside click
     cookieModal.addEventListener('click', function(e) {
         if (e.target === cookieModal) {
-            cookieModal.classList.add('hidden');
+            saveCookieConsent(false, false);
         }
     });
 
+    // Toestemming later wijzigen of intrekken (link in de voettekst).
+    if (cookieSettingsLink) {
+        cookieSettingsLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal();
+        });
+    }
+});
+
+// De rest staat bewust in een eigen blok: de cookiecode hierboven stopt als
+// er geen banner op de pagina staat, en dat mag lazy loading en de
+// prijsfilters niet meeslepen.
+document.addEventListener('DOMContentLoaded', function() {
     // Lazy loading images
     if ('IntersectionObserver' in window) {
         const imageObserver = new IntersectionObserver((entries, observer) => {

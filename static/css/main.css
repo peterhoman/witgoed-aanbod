@@ -1520,12 +1520,15 @@ section h2 {
 
 .cookie-buttons {
     display: flex;
+    flex-wrap: wrap;
     gap: 12px;
     margin-top: 24px;
 }
 
 .cookie-buttons button {
-    flex: 1;
+    /* drie knoppen (weigeren / keuze opslaan / alles accepteren): laat ze
+       afbreken in plaats van de tekst te pletten */
+    flex: 1 1 160px;
     padding: 12px 24px;
     font-size: 14px;
     font-weight: 600;

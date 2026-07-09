@@ -40,15 +40,9 @@
                     </td>
                     {% endfor %}
                 </tr>
-                {% for key in spec_keys %}
-                <tr>
-                    <td><strong>{{ key }}</strong></td>
-                    {% for product in products %}
-                    <td>{{ product.specs.get(key, '—') }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-                <tr>
+                {# Knoppen bewust vlak onder de prijs: de specificatietabel is lang,
+                   onderaan zag de bezoeker ze pas na veel scrollen. #}
+                <tr class="compare-cta-row">
                     <td></td>
                     {% for product in products %}
                     <td>
@@ -61,6 +55,14 @@
                     </td>
                     {% endfor %}
                 </tr>
+                {% for key in spec_keys %}
+                <tr>
+                    <td><strong>{{ key }}</strong></td>
+                    {% for product in products %}
+                    <td>{{ product.specs.get(key, '—') }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

@@ -417,17 +417,20 @@ def sync_products():
             limit = SEARCH_LIMITS.get(category_slug, DEFAULT_SEARCH_LIMIT)
             search_results = []
             merged_eans = set()
+            # Elke zoekterm krijgt zijn eigen zoekopdracht van `limit` resultaten.
+            # Eerder gold `limit` voor de hele categorie samen, waardoor de eerste
+            # term de teller volmaakte en de volgende termen nooit werden
+            # doorzocht: bij 'ovens' leverde "Oven" al 100 resultaten op, zodat er
+            # nooit naar "Airfryer" of "Inbouwoven" is gezocht. Na filtering bleven
+            # daar 9 producten over, want de meeste ovenresultaten zijn schalen en
+            # wanten. Ontdubbeling gebeurt op EAN, dus overlap is ongevaarlijk.
             for term in search_terms:
-                if len(search_results) >= limit:
-                    break
                 for item in api.search_products(term, limit=limit):
                     item_ean = str(item.get('ean') or '')
                     if not item_ean or item_ean in merged_eans:
                         continue
                     merged_eans.add(item_ean)
                     search_results.append(item)
-                    if len(search_results) >= limit:
-                        break
 
             if not search_results:
                 logger.warning(f"[*] No products found for {display_name}")

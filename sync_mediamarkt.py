@@ -12,6 +12,9 @@ product een kant-en-klare Tradedoubler-deeplink (productUrl) met onze
 source-ID er al in verwerkt.
 """
 
+import gc
+import io
+import json
 import os
 import re
 import requests
@@ -45,6 +48,11 @@ EXTRA_FEED_IDS = [
 # productsUnlimited-endpoint, dat de complete feed in één keer levert.
 PAGE_SIZE = 100
 MAX_PAGES = 10
+
+# Levert een sync minder dan dit deel van de bekende aanbiedingen op, dan gaan
+# we ervan uit dat de feed hapert en ruimen we niets op. MediaMarkt haalt
+# geregeld producten uit de verkoop, maar nooit de helft in één keer.
+MIN_FEED_RATIO = 0.5
 
 # MediaMarkt's eigen categorie-indeling is één niveau diep. Al het witgoed zit
 # in deze drie takken; de rest (Computer, Gaming, Telefonie, Tv, ...) valt
@@ -100,12 +108,17 @@ def _parse_price(value):
 
 
 def fetch_full_feed(token, feed_id):
-    """Hele feed in één keer (alleen de hoofdfeed ondersteunt dit endpoint)."""
+    """Hele feed in één keer (alleen de hoofdfeed ondersteunt dit endpoint).
+
+    De feed is ~31 MB. Rechtstreeks uit de netwerkstroom lezen scheelt het
+    dubbel in geheugen houden van de ruwe tekst; deze sync draait in hetzelfde
+    proces als de website.
+    """
     url = f"{BASE_URL}/productsUnlimited.json;fid={feed_id}"
-    response = requests.get(url, params={'token': token}, timeout=300)
-    response.raise_for_status()
-    response.encoding = 'utf-8'
-    return response.json().get('products', [])
+    with requests.get(url, params={'token': token}, timeout=300, stream=True) as response:
+        response.raise_for_status()
+        response.raw.decode_content = True
+        return json.load(io.TextIOWrapper(response.raw, encoding='utf-8')).get('products', [])
 
 
 def fetch_paged_feed(token, feed_id):
@@ -123,16 +136,69 @@ def fetch_paged_feed(token, feed_id):
     return products
 
 
+def normalize(product, from_main_feed):
+    """Zet een feedproduct om in het handjevol velden dat wij nodig hebben.
+
+    De hoofdfeed bevat 12.000+ producten met lange beschrijvingen; die hele
+    structuur vasthouden kost ruim 80 MB. Alleen het nodige overhouden houdt
+    het geheugengebruik van de webserver laag.
+    """
+    ean = str((product.get('identifiers') or {}).get('ean') or '')
+    title = (product.get('name') or '').strip()
+    if not ean or not title:
+        return None
+
+    offers = product.get('offers') or []
+    if not offers:
+        return None
+    offer = offers[0]
+
+    history = offer.get('priceHistory') or []
+    if not history:
+        return None
+    price = _parse_price((history[0].get('price') or {}).get('value'))
+    if not price or price <= 0:
+        return None
+
+    # from_price is MediaMarkt's adviesprijs; alleen tonen als er echt een
+    # korting is (zelfde regel als bij de Bol-sync).
+    advies = _parse_price(_get_field(product, 'from_price'))
+
+    # 'inStock' is een AANTAL, geen ja/nee. Alles boven 0 is leverbaar.
+    try:
+        in_stock = int(offer.get('inStock') or 0)
+    except (TypeError, ValueError):
+        in_stock = 0
+
+    return {
+        'ean': ean,
+        'title': title,
+        'brand': product.get('brand'),
+        'description': product.get('description'),
+        'image_url': (product.get('productImage') or {}).get('url', ''),
+        'category_path': _get_field(product, 'category_path'),
+        'price': price,
+        'strikethrough_price': advies if advies and advies > price else None,
+        'affiliate_url': offer.get('productUrl'),
+        'is_available': in_stock > 0 or offer.get('availability') == 'in stock',
+        'from_main_feed': from_main_feed,
+    }
+
+
 def collect_feed_products(token):
-    """Alle feeds ophalen en ontdubbelen op EAN (hoofdfeed heeft voorrang)."""
+    """Alle feeds ophalen, uitdunnen en ontdubbelen op EAN (hoofdfeed eerst)."""
     by_ean = {}
 
     logger.info(f"[*] Hoofdfeed {MAIN_FEED_ID} ophalen...")
-    for product in fetch_full_feed(token, MAIN_FEED_ID):
-        ean = str(product.get('identifiers', {}).get('ean') or '')
-        if ean:
-            by_ean.setdefault(ean, product)
-    logger.info(f"[+] Hoofdfeed: {len(by_ean)} producten")
+    raw = fetch_full_feed(token, MAIN_FEED_ID)
+    logger.info(f"[+] Hoofdfeed: {len(raw)} producten ontvangen")
+    for product in raw:
+        record = normalize(product, from_main_feed=True)
+        if record:
+            by_ean.setdefault(record['ean'], record)
+    # De ruwe feed mag meteen weg; hij is veruit het grootste object in geheugen.
+    del raw
+    gc.collect()
 
     for feed_id in EXTRA_FEED_IDS:
         before = len(by_ean)
@@ -144,46 +210,14 @@ def collect_feed_products(token):
             logger.warning(f"[!] Aanvullende feed {feed_id} overgeslagen: {e}")
             continue
         for product in extra:
-            ean = str(product.get('identifiers', {}).get('ean') or '')
-            if ean:
-                by_ean.setdefault(ean, product)
+            record = normalize(product, from_main_feed=False)
+            if record:
+                by_ean.setdefault(record['ean'], record)
         logger.info(f"[+] Feed {feed_id}: {len(extra)} producten, {len(by_ean) - before} nieuw")
+        del extra
 
+    gc.collect()
     return by_ean
-
-
-def parse_offer(product):
-    """Prijs, voorraad en affiliate-link uit een feedproduct halen."""
-    offers = product.get('offers') or []
-    if not offers:
-        return None
-    offer = offers[0]
-
-    history = offer.get('priceHistory') or []
-    if not history:
-        return None
-    price = _parse_price(history[0].get('price', {}).get('value'))
-    if not price or price <= 0:
-        return None
-
-    # from_price is MediaMarkt's adviesprijs; alleen tonen als er echt een
-    # korting is (zelfde regel als bij de Bol-sync).
-    advies = _parse_price(_get_field(product, 'from_price'))
-    strikethrough = advies if advies and advies > price else None
-
-    # 'inStock' is een AANTAL, geen ja/nee. Alles boven 0 is leverbaar.
-    try:
-        in_stock = int(offer.get('inStock') or 0)
-    except (TypeError, ValueError):
-        in_stock = 0
-    available = in_stock > 0 or offer.get('availability') == 'in stock'
-
-    return {
-        'price': price,
-        'strikethrough_price': strikethrough,
-        'affiliate_url': offer.get('productUrl'),
-        'is_available': available,
-    }
 
 
 def sync_mediamarkt():
@@ -214,16 +248,12 @@ def sync_mediamarkt():
         added = updated = skipped = 0
         seen_product_ids = set()
 
-        for ean, feed_product in feed_products.items():
-            title = (feed_product.get('name') or '').strip()
-            if not title:
-                continue
+        for ean, record in feed_products.items():
+            title = record['title']
 
             # Producten uit de aanvullende categoriefeeds zijn al voorgefilterd
             # en hoeven niet in de drie witgoed-takken van de hoofdfeed te zitten.
-            category_path = _get_field(feed_product, 'category_path')
-            from_extra_feed = feed_product.get('offers', [{}])[0].get('feedId') != MAIN_FEED_ID
-            if category_path not in WITGOED_CATEGORY_PATHS and not from_extra_feed:
+            if record['from_main_feed'] and record['category_path'] not in WITGOED_CATEGORY_PATHS:
                 continue
 
             lowered = title.lower()
@@ -239,10 +269,7 @@ def sync_mediamarkt():
                 logger.warning(f"[!] Categorie {category_slug} bestaat niet in de database")
                 continue
 
-            offer_data = parse_offer(feed_product)
-            if not offer_data:
-                continue
-            if offer_data['price'] < MIN_PRICES.get(category_slug, 0):
+            if record['price'] < MIN_PRICES.get(category_slug, 0):
                 # te goedkoop voor een echt apparaat - vrijwel zeker een accessoire
                 skipped += 1
                 continue
@@ -252,22 +279,22 @@ def sync_mediamarkt():
                 product = Product(
                     ean=ean,
                     title=title,
-                    brand=feed_product.get('brand') or guess_brand(title),
-                    description=feed_product.get('description'),
-                    price=offer_data['price'],
-                    strikethrough_price=offer_data['strikethrough_price'],
-                    image_url=(feed_product.get('productImage') or {}).get('url', ''),
+                    brand=record['brand'] or guess_brand(title),
+                    description=record['description'],
+                    price=record['price'],
+                    strikethrough_price=record['strikethrough_price'],
+                    image_url=record['image_url'],
                     # products.bol_url is NOT NULL en bestaat alleen voor de
                     # Bol-sync. Een product dat alleen bij MediaMarkt bestaat
                     # heeft geen Bol-pagina; de knoppen op de site komen uit de
                     # aanbiedingen, niet uit dit veld.
                     bol_url='',
                     category_id=category.id,
-                    subcategory=category_path,
+                    subcategory=record['category_path'],
                     slug=f"{title[:50].lower().replace(' ', '-').replace('/', '-')}-{ean}",
                     retailer=RETAILER,
                     specs={},
-                    is_available=offer_data['is_available'],
+                    is_available=record['is_available'],
                     last_synced=datetime.utcnow(),
                 )
                 db.session.add(product)
@@ -284,11 +311,11 @@ def sync_mediamarkt():
                 offer = Offer(product_id=product.id, retailer=RETAILER)
                 db.session.add(offer)
 
-            offer.price = offer_data['price']
-            offer.strikethrough_price = offer_data['strikethrough_price']
-            offer.url = offer_data['affiliate_url']
-            offer.affiliate_url = offer_data['affiliate_url']
-            offer.is_available = offer_data['is_available']
+            offer.price = record['price']
+            offer.strikethrough_price = record['strikethrough_price']
+            offer.url = record['affiliate_url']
+            offer.affiliate_url = record['affiliate_url']
+            offer.is_available = record['is_available']
             offer.last_synced = datetime.utcnow()
 
             seen_product_ids.add(product.id)
@@ -320,9 +347,26 @@ def sync_mediamarkt():
 def _cleanup(seen_product_ids):
     """Aanbiedingen weghalen die niet meer in de feed staan, en producten die
     daardoor bij geen enkele winkel meer te koop zijn."""
+    bestaand = Offer.query.filter_by(retailer=RETAILER).count()
+
+    # Veiligheidsklep. Komt de feed door een storing leeg of half terug, dan zou
+    # blind opruimen het hele MediaMarkt-aanbod van de site vegen. Bij een
+    # verdachte terugval slaan we het opruimen over: verouderde prijzen zijn
+    # minder erg dan een lege site, en de volgende sync (over 12 uur) herstelt
+    # het vanzelf.
+    if bestaand and len(seen_product_ids) < bestaand * MIN_FEED_RATIO:
+        logger.error(
+            f"[!] Feed leverde maar {len(seen_product_ids)} van de {bestaand} bekende "
+            f"aanbiedingen; opruimen overgeslagen om dataverlies te voorkomen."
+        )
+        return 0, 0
+
+    if not seen_product_ids:
+        return 0, 0
+
     stale = Offer.query.filter(
         Offer.retailer == RETAILER,
-        ~Offer.product_id.in_(seen_product_ids) if seen_product_ids else True,
+        ~Offer.product_id.in_(seen_product_ids),
     ).all()
 
     orphan_candidates = {offer.product_id for offer in stale}

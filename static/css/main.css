@@ -228,6 +228,7 @@ body {
 .hero-content {
     text-align: center;
     flex: 1;
+    min-width: 0;
 }
 
 .hero-mascot {
@@ -358,6 +359,7 @@ body {
 
 .hero-search input {
     flex: 1;
+    min-width: 0;
     padding: 14px;
     border: none;
     border-radius: var(--radius);

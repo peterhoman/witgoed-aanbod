@@ -6,6 +6,7 @@ Runs sync every 6 hours
 from apscheduler.schedulers.background import BackgroundScheduler
 from sync_products import sync_products
 from sync_mediamarkt import sync_mediamarkt
+from sync_coolblue import sync_coolblue
 import os
 
 scheduler = BackgroundScheduler()
@@ -39,8 +40,21 @@ def start_scheduler():
         replace_existing=True
     )
 
+    # De Coolblue-feed is klein (~4 MB) maar verandert ook maar een paar keer
+    # per dag; zelfde ritme als MediaMarkt.
+    coolblue_interval = int(os.getenv('COOLBLUE_SYNC_INTERVAL', 12))
+    scheduler.add_job(
+        sync_coolblue,
+        'interval',
+        hours=coolblue_interval,
+        id='coolblue_sync_job',
+        name='Coolblue Product Sync',
+        replace_existing=True
+    )
+
     scheduler.start()
-    print(f"[+] Scheduler started - Bol every {sync_interval}h, MediaMarkt every {mediamarkt_interval}h")
+    print(f"[+] Scheduler started - Bol every {sync_interval}h, MediaMarkt every "
+          f"{mediamarkt_interval}h, Coolblue every {coolblue_interval}h")
 
 def stop_scheduler():
     """Stop the scheduler"""

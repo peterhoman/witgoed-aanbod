@@ -21,6 +21,9 @@ class Config:
     # MediaMarkt productfeed via Tradedoubler (source ID 3490179, programma 262336)
     TRADEDOUBLER_TOKEN = os.getenv('TRADEDOUBLER_TOKEN')
 
+    # Coolblue productfeed via Awin (publisher 2969655, advertiser 85161)
+    AWIN_FEED_APIKEY = os.getenv('AWIN_FEED_APIKEY')
+
     # Claude API
     ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
 

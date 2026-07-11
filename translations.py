@@ -45,7 +45,7 @@ TRANSLATIONS = {
 
         # Cookie modal
         'cookie.title': 'Cookie-instellingen',
-        'cookie.intro': 'Op onze eigen pagina\'s plaatsen wij alleen noodzakelijke cookies. Klik je op een aanbieding, dan ga je naar Bol.com of MediaMarkt; die partijen kunnen je bezoek volgen om onze commissie te bepalen. Lees meer in ons',
+        'cookie.intro': 'Op onze eigen pagina\'s plaatsen wij alleen noodzakelijke cookies. Klik je op een aanbieding, dan ga je naar Bol.com, MediaMarkt of Coolblue; die partijen kunnen je bezoek volgen om onze commissie te bepalen. Lees meer in ons',
         'cookie.policy_link': 'cookiebeleid',
         'cookie.essential_title': 'Noodzakelijke cookies',
         'cookie.essential_desc': 'Nodig om de site te laten werken: onthoudt je taalkeuze en deze cookiekeuze. Deze kun je niet uitzetten.',
@@ -109,7 +109,7 @@ TRANSLATIONS = {
         'search.no_results_title': 'Geen resultaten gevonden',
         'search.no_results_text': 'Probeer een ander zoekwoord of bekijk onze categorieën.',
         'search.back_home': 'Terug naar home',
-        'product.affiliate_disclosure': 'WitgoedAanbod.nl is deelnemer aan het bol partnerprogramma. Als je via deze link iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.',
+        'product.affiliate_disclosure': 'WitgoedAanbod.nl is deelnemer aan de partnerprogramma\'s van de getoonde winkels. Als je via deze links iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.',
 
         # Guides
         'guides.title': 'Koopgidsen',
@@ -179,7 +179,7 @@ TRANSLATIONS = {
         'footer.copyright': '© 2026 WitgoedAanbod.nl participates in an affiliate partner program. If you buy something through our links, we may earn a small commission, at no extra cost to you.',
 
         'cookie.title': 'Cookie settings',
-        'cookie.intro': 'On our own pages we only place necessary cookies. When you click an offer you go to Bol.com or MediaMarkt; those parties may track your visit to determine our commission. Read more in our',
+        'cookie.intro': 'On our own pages we only place necessary cookies. When you click an offer you go to Bol.com, MediaMarkt or Coolblue; those parties may track your visit to determine our commission. Read more in our',
         'cookie.policy_link': 'cookie policy',
         'cookie.essential_title': 'Necessary cookies',
         'cookie.essential_desc': 'Needed for the site to work: they remember your language and this cookie choice. These cannot be switched off.',
@@ -239,7 +239,7 @@ TRANSLATIONS = {
         'search.no_results_title': 'No results found',
         'search.no_results_text': 'Try a different search term or browse our categories.',
         'search.back_home': 'Back to home',
-        'product.affiliate_disclosure': 'WitgoedAanbod.nl participates in the bol affiliate program. If you buy something through this link, we may earn a small commission, at no extra cost to you.',
+        'product.affiliate_disclosure': 'WitgoedAanbod.nl participates in the affiliate programs of the stores shown. If you buy something through these links, we may earn a small commission, at no extra cost to you.',
 
         'guides.title': 'Buying Guides',
         'guides.intro': 'Practical advice to help you choose, written by WitgoedAanbod.nl.',

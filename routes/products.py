@@ -1,8 +1,67 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, current_app
 from models import Product, Category
 from sqlalchemy import or_
 
 products_bp = Blueprint('products', __name__)
+
+
+def _product_structured_data(product):
+    """Schema.org Product + AggregateOffer voor rich results in Google.
+
+    De EAN gaat mee als gtin13: daarmee kan Google het apparaat koppelen aan
+    zijn productkennisgraaf en prijzen/winkels in de zoekresultaten tonen —
+    voor een prijsvergelijker de belangrijkste SEO-bouwsteen.
+    """
+    site_url = current_app.config['SITE_URL']
+    offers = product.available_offers
+
+    data = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        'name': product.title,
+        'url': f"{site_url}/product/{product.slug}",
+    }
+    if product.image_url:
+        data['image'] = product.image_url
+    if product.brand:
+        data['brand'] = {'@type': 'Brand', 'name': product.brand}
+    ean = (product.ean or '').strip()
+    if len(ean) == 13 and ean.isdigit():
+        data['gtin13'] = ean
+    description = product.ai_description or product.description
+    if description:
+        data['description'] = description[:500]
+
+    if offers:
+        prices = [o.price for o in offers]
+        data['offers'] = {
+            '@type': 'AggregateOffer',
+            'priceCurrency': 'EUR',
+            'lowPrice': min(prices),
+            'highPrice': max(prices),
+            'offerCount': len(offers),
+            'offers': [{
+                '@type': 'Offer',
+                'price': o.price,
+                'priceCurrency': 'EUR',
+                'availability': 'https://schema.org/InStock',
+                'url': o.link,
+                'seller': {'@type': 'Organization', 'name': o.retailer_name},
+            } for o in offers],
+        }
+
+    breadcrumbs = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+            {'@type': 'ListItem', 'position': 1, 'name': 'Home',
+             'item': f"{site_url}/"},
+            {'@type': 'ListItem', 'position': 2, 'name': product.category.name,
+             'item': f"{site_url}/category/{product.category.slug}"},
+            {'@type': 'ListItem', 'position': 3, 'name': product.title},
+        ],
+    }
+    return [data, breadcrumbs]
 
 
 @products_bp.route('/product/<slug>')
@@ -15,7 +74,9 @@ def product_detail(slug):
         Product.is_available == True
     ).limit(6).all()
 
-    return render_template('product.html', product=product, related_products=related_products)
+    return render_template('product.html', product=product,
+                           related_products=related_products,
+                           structured_data=_product_structured_data(product))
 
 
 @products_bp.route('/search')

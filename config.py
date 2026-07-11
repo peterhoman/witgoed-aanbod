@@ -41,6 +41,13 @@ class Config:
     _http_idx = _site_url.find('http')
     SITE_URL = _site_url[_http_idx:].rstrip('/') if _http_idx >= 0 else 'https://www.witgoedaanbod.nl'
 
+    # Google Search Console: de content-waarde van de meta-verificatietag
+    # (uit "HTML-tag"-verificatie). Geen geheim: deze waarde staat bewust
+    # publiek in de <head> van elke pagina.
+    GOOGLE_SITE_VERIFICATION = os.getenv(
+        'GOOGLE_SITE_VERIFICATION',
+        'COofXmEszNdA-IHG93N1pRBjNRGpWOlWw0kJoWrLRBc')
+
     # Sync
     SYNC_INTERVAL = 6  # hours
 

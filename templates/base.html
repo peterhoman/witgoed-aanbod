@@ -20,6 +20,10 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     {% block extra_css %}{% endblock %}
+    {% if config.GOOGLE_SITE_VERIFICATION %}
+    <meta name="google-site-verification" content="{{ config.GOOGLE_SITE_VERIFICATION }}">
+    {% endif %}
+    {% block structured_data %}{% endblock %}
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",

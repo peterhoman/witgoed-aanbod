@@ -10,7 +10,7 @@ import time
 from urllib.parse import quote_plus
 from datetime import timedelta
 from app import create_app
-from models import db, Product, Category, Offer, SyncLog, utcnow
+from models import db, Product, Category, Offer, SyncLog, utcnow, log_price
 from bitly_helper import get_bitly_client
 import logging
 
@@ -549,6 +549,7 @@ def sync_products():
                     offer.affiliate_url = product.affiliate_url
                     offer.is_available = True
                     offer.last_synced = utcnow()
+                    log_price(product.id, 'bol', price)
 
                     # Kan een goedkopere MediaMarkt-aanbieding hebben; products.price
                     # moet de laagste prijs volgen (prijsfilter/sortering).

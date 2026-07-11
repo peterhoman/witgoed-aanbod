@@ -3,6 +3,13 @@
 
 {% block title %}{{ product.title }} | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}{{ product.ai_meta_description or (product.description or product.title)[:160] }}{% endblock %}
+{% block og_image %}{{ product.image_url or '/static/img/og-image.png' }}{% endblock %}
+
+{% block structured_data %}
+{% for blob in structured_data %}
+<script type="application/ld+json">{{ blob | tojson }}</script>
+{% endfor %}
+{% endblock %}
 
 {% block content %}
 <div class="container product-detail">
@@ -105,40 +112,9 @@
     {% endif %}
 </div>
 
-<!-- Schema.org Product Schema -->
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org/",
-    "@type": "Product",
-    "name": "{{ product.title }}",
-    "description": "{{ product.description or product.title }}",
-    "image": "{{ product.image_url }}",
-    "brand": {
-        "@type": "Brand",
-        "name": "{{ product.brand or 'Onbekend' }}"
-    },
-    "offers": {
-        "@type": "AggregateOffer",
-        "priceCurrency": "EUR",
-        "lowPrice": "{{ product.lowest_price }}",
-        "highPrice": "{{ (product.available_offers|map(attribute='price')|max) if product.available_offers else product.price }}",
-        "offerCount": {{ product.retailer_count or 1 }},
-        "availability": "https://schema.org/InStock"
-    }
-}
-</script>
-
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-        {"@type": "ListItem", "position": 1, "name": "Home", "item": "{{ config.SITE_URL }}/"},
-        {"@type": "ListItem", "position": 2, "name": "{{ product.category.name }}", "item": "{{ config.SITE_URL }}/category/{{ product.category.slug }}"},
-        {"@type": "ListItem", "position": 3, "name": "{{ product.title[:60] }}"}
-    ]
-}
-</script>
+<!-- Schema.org Product/BreadcrumbList JSON-LD staat in de <head>
+     (block structured_data), gevuld vanuit routes/products.py: veilig
+     geëscapet via tojson en met alle winkelaanbiedingen erin. -->
 
 <script>
 (function() {

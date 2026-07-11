@@ -200,6 +200,52 @@ class Offer(db.Model):
         return f'<Offer {self.retailer} €{self.price}>'
 
 
+class PriceHistory(db.Model):
+    """Prijsverloop per apparaat per winkel.
+
+    Er komt alleen een rij bij wanneer de prijs daadwerkelijk verandert
+    (of bij de allereerste waarneming), niet bij elke sync. Zo blijft de
+    tabel compact en is het verloop als traptreden-grafiek te tekenen:
+    elke rij geldt vanaf recorded_at tot de volgende rij.
+
+    Dit is de basis voor 'laagste prijs ooit', prijsgrafieken en later
+    prijsalerts — de eigen data die deze site onderscheidt van de winkels.
+    """
+    __tablename__ = 'price_history'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer,
+                           db.ForeignKey('products.id', ondelete='CASCADE'),
+                           nullable=False, index=True)
+    retailer = db.Column(db.String(50), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    recorded_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+
+    __table_args__ = (
+        db.Index('ix_price_history_product_retailer', 'product_id', 'retailer'),
+    )
+
+    def __repr__(self):
+        return f'<PriceHistory {self.retailer} €{self.price} @ {self.recorded_at:%Y-%m-%d}>'
+
+
+def log_price(product_id, retailer, price):
+    """Schrijf een prijspunt weg als de prijs afwijkt van de laatst bekende.
+
+    Aanroepen vanuit de winkel-syncs nadat de aanbieding is bijgewerkt; de
+    aanroeper commit zelf (dit voegt alleen toe aan de sessie).
+    """
+    if price is None:
+        return
+    last = (PriceHistory.query
+            .filter_by(product_id=product_id, retailer=retailer)
+            .order_by(PriceHistory.recorded_at.desc())
+            .first())
+    if last is None or last.price != price:
+        db.session.add(PriceHistory(product_id=product_id,
+                                    retailer=retailer, price=price))
+
+
 class SyncLog(db.Model):
     __tablename__ = 'sync_logs'
 

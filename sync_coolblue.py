@@ -18,7 +18,7 @@ import os
 import re
 import requests
 from app import create_app
-from models import db, Product, Category, Offer, SyncLog, utcnow
+from models import db, Product, Category, Offer, SyncLog, utcnow, log_price
 from sync_products import EXCLUDE_KEYWORDS, MIN_PRICES, guess_brand
 import logging
 
@@ -249,6 +249,8 @@ def sync_coolblue():
             offer.affiliate_url = record['affiliate_url']
             offer.is_available = record['is_available']
             offer.last_synced = utcnow()
+            if record['is_available']:
+                log_price(product.id, RETAILER, record['price'])
 
             seen_product_ids.add(product.id)
 

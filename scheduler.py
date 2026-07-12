@@ -3,6 +3,8 @@ APScheduler Configuration
 Runs sync every 6 hours
 """
 
+from datetime import datetime, timedelta, timezone
+
 from apscheduler.schedulers.background import BackgroundScheduler
 from sync_products import sync_products
 from sync_mediamarkt import sync_mediamarkt
@@ -11,12 +13,42 @@ import os
 
 scheduler = BackgroundScheduler()
 
-def start_scheduler():
-    """Start the background scheduler (only once)"""
+def start_scheduler(app=None):
+    """Start the background scheduler (only once).
+
+    De eerstvolgende run wordt verankerd aan de laatste échte sync in de
+    database (offers.last_synced) in plaats van aan de processtart. Een
+    'interval'-job vuurt namelijk pas ná het hele interval, en elke deploy
+    of herstart reset die klok — waardoor bij een paar deploys per dag de
+    syncs stilletjes dagen konden uitblijven. Is een sync achterstallig,
+    dan draait hij nu binnen enkele minuten na de start (gestaffeld, zodat
+    de drie syncs elkaar niet overlappen).
+    """
     # Don't start if already running
     if scheduler.running:
         print("[*] Scheduler already running")
         return
+
+    def eerste_run(retailer, interval_uren, offset_min):
+        # Tijdzone-bewust rekenen: de database bewaart naïeve UTC-tijden,
+        # maar APScheduler interpreteert naïeve datetimes in de LOKALE zone.
+        # Zonder expliciete UTC-markering zou een achterstallige run op een
+        # niet-UTC-machine als "gemist" worden weggeschoven naar +interval.
+        from models import db, Offer
+        laatst = None
+        if app is not None:
+            try:
+                with app.app_context():
+                    laatst = (db.session.query(db.func.max(Offer.last_synced))
+                              .filter(Offer.retailer == retailer).scalar())
+            except Exception as e:
+                print(f"[!] Kon laatste sync van {retailer} niet bepalen: {e}")
+        nu = datetime.now(timezone.utc)
+        if laatst is not None:
+            laatst = laatst.replace(tzinfo=timezone.utc)
+        if laatst is None or laatst + timedelta(hours=interval_uren) <= nu:
+            return nu + timedelta(minutes=offset_min)  # achterstallig: zo draaien
+        return laatst + timedelta(hours=interval_uren)
 
     sync_interval = int(os.getenv('SYNC_INTERVAL', 6))
 
@@ -26,7 +58,8 @@ def start_scheduler():
         hours=sync_interval,
         id='bol_sync_job',
         name='Bol.com Product Sync',
-        replace_existing=True
+        replace_existing=True,
+        next_run_time=eerste_run('bol', sync_interval, 2),
     )
 
     # De MediaMarkt-feed verandert trager en is fors groter; 2x per dag volstaat.
@@ -37,7 +70,8 @@ def start_scheduler():
         hours=mediamarkt_interval,
         id='mediamarkt_sync_job',
         name='MediaMarkt Product Sync',
-        replace_existing=True
+        replace_existing=True,
+        next_run_time=eerste_run('mediamarkt', mediamarkt_interval, 20),
     )
 
     # De Coolblue-feed is klein (~4 MB) maar verandert ook maar een paar keer
@@ -49,10 +83,13 @@ def start_scheduler():
         hours=coolblue_interval,
         id='coolblue_sync_job',
         name='Coolblue Product Sync',
-        replace_existing=True
+        replace_existing=True,
+        next_run_time=eerste_run('coolblue', coolblue_interval, 35),
     )
 
     scheduler.start()
+    for job in scheduler.get_jobs():
+        print(f"[+] {job.name}: eerstvolgende run {job.next_run_time}")
     print(f"[+] Scheduler started - Bol every {sync_interval}h, MediaMarkt every "
           f"{mediamarkt_interval}h, Coolblue every {coolblue_interval}h")
 

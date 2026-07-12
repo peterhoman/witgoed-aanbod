@@ -10,7 +10,7 @@ app = create_app()
 if os.getenv('FLASK_ENV') == 'production':
     from scheduler import start_scheduler
     try:
-        start_scheduler()
+        start_scheduler(app)
     except Exception as e:
         print(f"[!] Scheduler start error: {e}")
 

@@ -75,10 +75,12 @@ def product_detail(slug):
     ).limit(6).all()
 
     from price_chart import build_price_history
+    from energy_costs import bereken_energiekosten
     return render_template('product.html', product=product,
                            related_products=related_products,
                            structured_data=_product_structured_data(product),
-                           price_history=build_price_history(product))
+                           price_history=build_price_history(product),
+                           energiekosten=bereken_energiekosten(product))
 
 
 @products_bp.route('/search')

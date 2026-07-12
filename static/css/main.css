@@ -1190,6 +1190,49 @@ section h2 {
     line-height: 1.5;
 }
 
+/* --- Stroomkosten (uit energielabel-specs) --- */
+.energy-costs-section {
+    margin: 28px 0;
+}
+
+.energy-costs-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.energy-costs-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.energy-label-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 15px;
+    /* achtergrond- en tekstkleur per energielabel-letter via inline style */
+}
+
+.energy-costs-main {
+    font-size: 15px;
+}
+
+.energy-costs-sub {
+    color: var(--gray);
+    font-size: 13px;
+    margin-left: 6px;
+}
+
+.energy-costs-note {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--gray);
+    line-height: 1.5;
+}
+
 /* --- Prijsverloop (grafiek + laagste-prijs-badge + wijzigingstabel) --- */
 .price-history-section {
     margin: 28px 0;

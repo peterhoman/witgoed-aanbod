@@ -70,6 +70,26 @@
                 <p class="affiliate-disclosure"><small>{{ t('product.affiliate_disclosure') }}</small></p>
             </div>
 
+            <!-- Stroomkosten: berekend uit de energielabel-specs -->
+            {% if energiekosten %}
+            <div class="energy-costs-section">
+                <h2>Stroomkosten</h2>
+                <div class="energy-costs-row">
+                    {% if energiekosten.label %}
+                    <span class="energy-label-badge"
+                          style="background:{{ energiekosten.label_kleur }};color:{{ energiekosten.label_tekstkleur }}">{{ energiekosten.label }}</span>
+                    {% endif %}
+                    <span class="energy-costs-main">
+                        &plusmn; <strong>&euro; {{ energiekosten.jaar_kosten }} per jaar</strong>
+                        <span class="energy-costs-sub">(&euro; {{ energiekosten.vijf_jaar_kosten }} over 5 jaar)</span>
+                    </span>
+                </div>
+                <p class="energy-costs-note">Schatting: {{ energiekosten.jaar_kwh }} kWh per jaar
+                    ({{ energiekosten.basis }}) &times; &euro; {{ energiekosten.stroomprijs }} per kWh.
+                    Handig om modellen te vergelijken; je werkelijke verbruik hangt af van gebruik en tarief.</p>
+            </div>
+            {% endif %}
+
             <!-- Prijsverloop: eigen meetdata, verschijnt zodra er historie is -->
             {% if price_history %}
             <div class="price-history-section">

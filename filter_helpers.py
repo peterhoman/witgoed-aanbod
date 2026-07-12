@@ -18,6 +18,16 @@ _EXCLUDED_SPEC_KEYS = {'fabrikant naam', 'taal handleiding', 'merk'}
 # dus zinloos om op te filteren; maakte de zijbalk alleen maar langer.
 _EXCLUDED_SPEC_KEYWORDS = ('verpakking', 'mpn', 'model')
 
+# Filters waar bezoekers echt op zoeken krijgen voorrang: die komen direct
+# na het merkblok, ook als andere specs vaker voorkomen. De waarden van deze
+# filters sorteren we alfabetisch (energielabel A t/m G) i.p.v. op aantal.
+_PRIORITY_SPEC_KEYWORDS = ('energielabel',)
+
+
+def _is_priority_spec(key):
+    key_lower = key.lower()
+    return any(kw in key_lower for kw in _PRIORITY_SPEC_KEYWORDS)
+
 
 def _is_excluded_spec(key):
     key_lower = key.lower()
@@ -54,14 +64,18 @@ def compute_spec_facets(products, max_filters=6, max_options=10):
             key_frequency[key] += 1
             value_counts[key][value] += 1
 
-    top_keys = [key for key, _ in key_frequency.most_common(max_filters)]
+    ordered = [key for key, _ in key_frequency.most_common()]
+    priority = [key for key in ordered if _is_priority_spec(key)]
+    rest = [key for key in ordered if key not in priority]
+    top_keys = (priority + rest)[:max_filters]
 
     facets = []
     for key in top_keys:
-        options = [
-            {'value': value, 'count': count}
-            for value, count in value_counts[key].most_common(max_options)
-        ]
+        counted = value_counts[key].most_common(max_options)
+        if _is_priority_spec(key):
+            # energielabel: A boven G is logischer dan "meeste eerst"
+            counted = sorted(counted, key=lambda vc: vc[0])
+        options = [{'value': value, 'count': count} for value, count in counted]
         facets.append({'key': key, 'options': options})
 
     return facets

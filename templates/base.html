@@ -11,8 +11,12 @@
     <meta property="og:url" content="{{ request.url }}">
     <meta property="og:site_name" content="WitgoedAanbod.nl">
     <meta property="og:locale" content="nl_NL">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="{{ request.url }}">
+    <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
+    {# Canonical zonder querystring: filter-, sorteer- en paginaparameters
+       (?brand=&sort=&page=) zijn varianten van dezelfde pagina. Met
+       request.url kreeg elke filtercombinatie een eigen canonical en zou
+       Google duizenden near-duplicates moeten crawlen. #}
+    <link rel="canonical" href="{{ request.base_url }}">
     <title>{% block title %}WitgoedAanbod.nl - Vergelijk Witgoed{% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">

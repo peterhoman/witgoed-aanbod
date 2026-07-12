@@ -3,6 +3,9 @@
 
 {% block title %}Zoekresultaten: {{ query }} | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}Zoekresultaten voor '{{ query }}' op WitgoedAanbod.nl. Vergelijk prijzen en specs.{% endblock %}
+{# Interne zoekresultaten horen niet in Google (thin content, oneindig
+   veel varianten); follow zodat gevonden productlinks wel meetellen. #}
+{% block robots %}noindex, follow{% endblock %}
 
 {% block content %}
 <div class="container search-page">

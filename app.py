@@ -116,7 +116,7 @@ def create_app(config_name=None):
     from werkzeug.middleware.proxy_fix import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-    from models import db, Category, Product, SyncLog, AIContent
+    from models import db, Category, Product, SyncLog, AIContent, Guide
     db.init_app(app)
 
     with app.app_context():
@@ -125,6 +125,10 @@ def create_app(config_name=None):
         _ensure_products_strikethrough_column(db)
         _ensure_categories(db)
         _backfill_offers_from_products(db)
+        # Nieuwe koopgidsen publiceren zichzelf bij de eerstvolgende deploy;
+        # bestaande gidsen worden nooit overschreven (zie guides_content.py).
+        from guides_content import ensure_new_guides
+        ensure_new_guides(db, Category, Guide)
 
     # Register blueprints
     from routes.main import main_bp

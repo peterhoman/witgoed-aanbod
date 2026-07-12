@@ -14,10 +14,15 @@ def _category_meta_description(category, products):
     fragment onderscheidend en klikwaardiger.
     """
     count = len(products)
-    brands = []
+    # Merken ontdubbelen zonder hoofdlettergevoeligheid: de feeds leveren
+    # hetzelfde merk in verschillende schrijfwijzen ("AEG" naast "Aeg"),
+    # wat anders dubbel in de meta-description belandt.
+    brands, seen = [], set()
     for p in products:
-        if p.brand and p.brand not in brands:
-            brands.append(p.brand)
+        key = (p.brand or '').strip().lower()
+        if key and key not in seen:
+            seen.add(key)
+            brands.append(p.brand.strip())
         if len(brands) == 3:
             break
     prices = [p.lowest_price for p in products if p.lowest_price]

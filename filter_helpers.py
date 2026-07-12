@@ -11,7 +11,9 @@ from collections import Counter, defaultdict
 # filteren: verpakkingsmaten/-gewicht (niet hetzelfde als het gewicht van
 # het product zelf), interne artikelcodes, handleidingtaal, en de ruwe
 # fabrikant-registratienaam (soms letterlijk een e-mailadres als waarde).
-_EXCLUDED_SPEC_KEYS = {'fabrikant naam', 'taal handleiding'}
+# 'merk' staat er ook in: de zijbalk heeft al een eigen merkfilter (op
+# products.brand); de spec-variant verscheen als tweede "Merk"-blok.
+_EXCLUDED_SPEC_KEYS = {'fabrikant naam', 'taal handleiding', 'merk'}
 _EXCLUDED_SPEC_KEYWORDS = ('verpakking', 'mpn')
 
 

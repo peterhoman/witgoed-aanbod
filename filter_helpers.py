@@ -14,7 +14,9 @@ from collections import Counter, defaultdict
 # 'merk' staat er ook in: de zijbalk heeft al een eigen merkfilter (op
 # products.brand); de spec-variant verscheen als tweede "Merk"-blok.
 _EXCLUDED_SPEC_KEYS = {'fabrikant naam', 'taal handleiding', 'merk'}
-_EXCLUDED_SPEC_KEYWORDS = ('verpakking', 'mpn')
+# 'model' (en varianten als modelnaam/modelnummer) is per product uniek en
+# dus zinloos om op te filteren; maakte de zijbalk alleen maar langer.
+_EXCLUDED_SPEC_KEYWORDS = ('verpakking', 'mpn', 'model')
 
 
 def _is_excluded_spec(key):

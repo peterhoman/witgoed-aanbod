@@ -74,9 +74,11 @@ def product_detail(slug):
         Product.is_available == True
     ).limit(6).all()
 
+    from price_chart import build_price_history
     return render_template('product.html', product=product,
                            related_products=related_products,
-                           structured_data=_product_structured_data(product))
+                           structured_data=_product_structured_data(product),
+                           price_history=build_price_history(product))
 
 
 @products_bp.route('/search')

@@ -70,6 +70,42 @@
                 <p class="affiliate-disclosure"><small>{{ t('product.affiliate_disclosure') }}</small></p>
             </div>
 
+            <!-- Prijsverloop: eigen meetdata, verschijnt zodra er historie is -->
+            {% if price_history %}
+            <div class="price-history-section">
+                <h2>Prijsverloop</h2>
+                <p class="price-history-lowest">
+                    Laagste prijs sinds {{ price_history.sinds }}:
+                    <strong>&euro; {{ price_history.laagste_prijs }}</strong>
+                    {% if price_history.laagste_is_nu %}
+                    <span class="price-history-badge">nu de laagste prijs</span>
+                    {% endif %}
+                </p>
+                {% if price_history.svg %}
+                {{ price_history.svg | safe }}
+                {% if price_history.legenda | length > 1 %}
+                <ul class="price-history-legend">
+                    {% for reeks in price_history.legenda %}
+                    <li><span class="legend-dot" style="background:{{ reeks.kleur }}"></span>
+                        {{ reeks.winkel }} (&euro; {{ reeks.prijs_nu }})</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endif %}
+                <details class="price-history-table">
+                    <summary>Alle prijswijzigingen ({{ price_history.tabel | length }})</summary>
+                    <table>
+                        <thead><tr><th>Datum</th><th>Winkel</th><th>Prijs</th></tr></thead>
+                        <tbody>
+                            {% for rij in price_history.tabel %}
+                            <tr><td>{{ rij.datum }}</td><td>{{ rij.winkel }}</td><td>&euro; {{ rij.prijs }}</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </details>
+            </div>
+            {% endif %}
+
             <!-- Product Description -->
             {% if product.ai_description or product.description %}
             <div class="description-section">

@@ -1190,6 +1190,82 @@ section h2 {
     line-height: 1.5;
 }
 
+/* --- Prijsverloop (grafiek + laagste-prijs-badge + wijzigingstabel) --- */
+.price-history-section {
+    margin: 28px 0;
+}
+
+.price-history-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.price-history-lowest {
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.price-history-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    background: #e6f4ea;
+    color: #006300;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.price-history-legend {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    padding: 0;
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: var(--dark);
+}
+
+.legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.price-history-table {
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.price-history-table summary {
+    cursor: pointer;
+    color: var(--gray);
+}
+
+.price-history-table table {
+    margin-top: 8px;
+    border-collapse: collapse;
+    min-width: 260px;
+}
+
+.price-history-table th,
+.price-history-table td {
+    text-align: left;
+    padding: 4px 18px 4px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.price-history-table th {
+    font-weight: 600;
+    color: var(--gray);
+    font-size: 12px;
+}
+
 /* --- Aanbiedingen per winkel (meerdere winkels per product) --- */
 .offers-section {
     margin: 16px 0 24px;

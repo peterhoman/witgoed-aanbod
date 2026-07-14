@@ -6,6 +6,11 @@ logger = logging.getLogger(__name__)
 legal_bp = Blueprint('legal', __name__)
 
 
+@legal_bp.route('/over-ons')
+def over_ons():
+    return render_template('legal/over_ons.html')
+
+
 @legal_bp.route('/privacy')
 def privacy():
     return render_template('legal/privacy.html')

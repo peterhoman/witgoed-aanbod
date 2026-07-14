@@ -68,7 +68,7 @@ def sitemap():
         })
 
     # Legal pages
-    legal_pages = ['privacy', 'disclaimer', 'cookies', 'voorwaarden', 'contact']
+    legal_pages = ['over-ons', 'privacy', 'disclaimer', 'cookies', 'voorwaarden', 'contact']
     for page in legal_pages:
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/{page}",

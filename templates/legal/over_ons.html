@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Over ons | WitgoedAanbod.nl{% endblock %}
+{% block meta_description %}WitgoedAanbod.nl is een initiatief van Avantius uit Sassenheim, al ruim 20 jaar actief in huishoudelijke artikelen. Lees wie we zijn, hoe de vergelijker werkt en hoe we geld verdienen.{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "WitgoedAanbod.nl",
+    "url": "{{ config.SITE_URL }}/",
+    "parentOrganization": {
+        "@type": "Organization",
+        "name": "Avantius",
+        "url": "https://www.avantius.nl/",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "J.J.v. Rhijnstraat 27",
+            "postalCode": "2171 PT",
+            "addressLocality": "Sassenheim",
+            "addressCountry": "NL"
+        }
+    },
+    "sameAs": ["https://www.avantius.nl/"]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container legal-page">
+    <h1>Over WitgoedAanbod.nl</h1>
+
+    <div class="legal-content">
+        <h2>Wie zijn wij?</h2>
+        <p>WitgoedAanbod.nl is een initiatief van <a href="https://www.avantius.nl/" target="_blank" rel="noopener"><strong>Avantius</strong></a> uit Sassenheim — een familiebedrijf dat al <strong>ruim 20 jaar</strong> actief is in huishoudelijke artikelen en woonaccessoires, met een eigen winkel en webshop. Witgoed en huishouden zijn ons dagelijks werk; wij weten uit ervaring hoe lastig het is om bij een grote aankoop zoals een wasmachine of koelkast zeker te weten dat je niet te veel betaalt.</p>
+
+        <h2>Waarom deze site?</h2>
+        <p>De prijzen van witgoed verschillen per winkel en veranderen voortdurend — soms meerdere keren per dag. Wie niet vergelijkt, betaalt al snel tientallen euro's te veel. Daarom bouwden we WitgoedAanbod.nl: één plek waar je per apparaat direct ziet wat het bij de grote Nederlandse winkels kost, zonder zelf alle webshops langs te hoeven.</p>
+
+        <h2>Hoe werkt de vergelijker?</h2>
+        <ul>
+            <li><strong>Actuele prijzen:</strong> we verversen de prijzen van Bol, Coolblue en MediaMarkt meerdere keren per dag, volledig automatisch via hun officiële productfeeds. We werken eraan om meer winkels aan te sluiten.</li>
+            <li><strong>Prijshistorie:</strong> per apparaat houden we bij hoe de prijs zich ontwikkelt, zodat je ziet of de "aanbieding" van vandaag echt een goede prijs is.</li>
+            <li><strong>Stroomkosten:</strong> bij apparaten met energielabel-gegevens rekenen we uit wat het apparaat per jaar aan stroom kost — bij witgoed vaak belangrijker dan het prijsverschil tussen winkels.</li>
+            <li><strong>Eerlijke volgorde:</strong> de goedkoopste leverbare aanbieding staat altijd bovenaan. Winkels kunnen hun positie bij ons niet kopen.</li>
+        </ul>
+
+        <h2>Hoe verdienen wij geld?</h2>
+        <p>Volledig transparant: als je via een knop op onze site bij een winkel koopt, ontvangen wij daarvoor een kleine commissie van die winkel. <strong>Jij betaalt daardoor nooit meer</strong> — de prijs is exact dezelfde als wanneer je rechtstreeks naar de winkel was gegaan. De commissie heeft geen invloed op de volgorde van de aanbiedingen: de laagste prijs staat bovenaan, ongeacht welke winkel dat is.</p>
+
+        <h2>Contact</h2>
+        <p>Vragen, een foutje gespot of een suggestie? We horen het graag via het <a href="/contact">contactformulier</a>.</p>
+        <p>
+            <strong>Avantius</strong> (WitgoedAanbod.nl)<br>
+            J.J.v. Rhijnstraat 27<br>
+            2171 PT Sassenheim<br>
+            KvK: 87572508<br>
+            BTW: NL864334503B01
+        </p>
+    </div>
+</div>
+{% endblock %}

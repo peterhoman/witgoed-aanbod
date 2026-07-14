@@ -60,6 +60,46 @@ def _category_structured_data(category, page_products):
     return [item_list, breadcrumbs]
 
 
+@main_bp.route('/api/sync-status')
+def sync_status():
+    """Diagnose-overzicht van de syncs (alleen-lezen, geen gevoelige data).
+
+    Railway-logs zijn vanuit de ontwikkelomgeving niet bereikbaar; dit
+    endpoint maakt zichtbaar of de scheduler jobs heeft ingepland, wanneer
+    de laatste syncs draaiden en of de prijshistorie zich vult. Staat in
+    robots.txt onder Disallow /api/.
+    """
+    from flask import jsonify
+    from models import db, Offer, PriceHistory, SyncLog
+
+    jobs = []
+    try:
+        from scheduler import scheduler
+        jobs = [{'naam': j.name, 'volgende_run': str(j.next_run_time)}
+                for j in scheduler.get_jobs()]
+    except Exception as e:
+        jobs = [{'fout': str(e)}]
+
+    logs = (SyncLog.query.order_by(SyncLog.started_at.desc()).limit(5).all())
+    laatste_sync_per_winkel = {
+        r: str(db.session.query(db.func.max(Offer.last_synced))
+               .filter(Offer.retailer == r).scalar())
+        for r in ('bol', 'mediamarkt', 'coolblue')
+    }
+    return jsonify({
+        'scheduler_jobs': jobs,
+        'laatste_synclogs': [{
+            'gestart': str(l.started_at),
+            'klaar': str(l.finished_at),
+            'synced': l.products_synced,
+            'updated': l.products_updated,
+            'fouten': (l.errors or '')[:300],
+        } for l in logs],
+        'laatste_sync_per_winkel': laatste_sync_per_winkel,
+        'prijshistorie_rijen': PriceHistory.query.count(),
+    })
+
+
 @main_bp.route('/set-language/<lang>')
 def set_language(lang):
     response = redirect(request.referrer or '/')

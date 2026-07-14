@@ -3,11 +3,14 @@ import os
 
 app = create_app()
 
-# Start scheduler only in production. Geen WERKZEUG_RUN_MAIN-check: die
-# variabele bestaat alleen onder de Flask dev-reloader, nooit onder gunicorn,
-# waardoor de scheduler in productie stilletjes nooit startte. Gunicorn draait
-# hier met 1 worker (Procfile/railway.toml), dus geen dubbele schedulers.
-if os.getenv('FLASK_ENV') == 'production':
+# Start de scheduler in productie. Niet alleen op FLASK_ENV vertrouwen:
+# /api/sync-status liet zien dat die variabele op Railway ontbreekt,
+# waardoor er nooit een sync was ingepland (scheduler_jobs: []) en alle
+# syncs ooit handmatig bleken. Railway injecteert zelf altijd
+# RAILWAY_ENVIRONMENT; lokaal (python wsgi.py / dev-server) blijven
+# beide leeg en start er dus geen scheduler. Gunicorn draait hier met
+# 1 worker (Procfile/railway.toml), dus geen dubbele schedulers.
+if os.getenv('FLASK_ENV') == 'production' or os.getenv('RAILWAY_ENVIRONMENT'):
     from scheduler import start_scheduler
     try:
         start_scheduler(app)

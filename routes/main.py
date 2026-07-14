@@ -86,7 +86,12 @@ def sync_status():
                .filter(Offer.retailer == r).scalar())
         for r in ('bol', 'mediamarkt', 'coolblue')
     }
+    import os
     return jsonify({
+        'omgeving': {
+            'flask_env': os.getenv('FLASK_ENV'),
+            'railway_environment': os.getenv('RAILWAY_ENVIRONMENT'),
+        },
         'scheduler_jobs': jobs,
         'laatste_synclogs': [{
             'gestart': str(l.started_at),

@@ -1190,6 +1190,16 @@ section h2 {
     line-height: 1.5;
 }
 
+/* --- Uitlegvideo (homepage) --- */
+.video-section {
+    margin-top: 40px;
+}
+
+.video-section h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
 /* --- Stroomkosten (uit energielabel-specs) --- */
 .energy-costs-section {
     margin: 28px 0;

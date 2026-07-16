@@ -17,6 +17,68 @@ aangesloten winkels zelf niet bieden.
 
 NEW_GUIDES = [
     {
+        'slug': 'beste-vaatwasser-2026',
+        'title': 'De 5 beste vaatwassers van 2026',
+        'excerpt': 'Van de smalle budgetkoop (45 cm) tot de zelfdoserende topper: de vijf beste vaatwassers van dit moment — inbouw én vrijstaand, gekozen op couverts, geluidsniveau en energielabel. Met video.',
+        'category_slug': 'vaatwassers',
+        'content': """
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "De 5 beste vaatwassers van 2026 — koopgids",
+    "description": "De vijf beste vaatwassers van dit moment voor elke keuken, inbouw en vrijstaand, gekozen op couverts, geluidsniveau en energielabel. Alle prijzen komen van WitgoedAanbod.nl.",
+    "thumbnailUrl": "https://i.ytimg.com/vi/GJi9W8Xpqas/hqdefault.jpg",
+    "uploadDate": "2026-07-16",
+    "embedUrl": "https://www.youtube-nocookie.com/embed/GJi9W8Xpqas",
+    "contentUrl": "https://www.youtube.com/watch?v=GJi9W8Xpqas",
+    "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl"}
+}
+</script>
+<p>Een vaatwasser uitzoeken is lastiger dan het lijkt: inbouw of vrijstaand, tien of vijftien couverts, en stil genoeg voor een open keuken? Wij zochten het uit. Dit zijn de vijf beste vaatwassers van dit moment, van zo'n &euro; 370 tot ruim &euro; 1.200. We letten op het <strong>aantal couverts</strong> (hoeveel vaat er in &eacute;&eacute;n keer in kan), het <strong>geluidsniveau</strong> (in een open keuken wil je onder de 45 dB blijven), het <strong>energielabel</strong> en natuurlijk of hij past: <strong>vrijstaand of inbouw</strong>.</p>
+
+<p>Liever kijken dan lezen? Hier is de video-versie:</p>
+<div style="position:relative;width:100%;max-width:800px;margin:0 auto 24px;aspect-ratio:16/9;">
+    <iframe
+        src="https://www.youtube-nocookie.com/embed/GJi9W8Xpqas"
+        title="De 5 beste vaatwassers van 2026 — koopgids"
+        style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px;"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>De top 5 met actuele prijzen</h2>
+<!--productkaart ean=4002516915669 rank=1 label="De beste: energielabel A, doseert zelf"-->
+<!--productkaart ean=4242005417421 rank=2 label="De stilste: 40 dB, volledig integreerbaar"-->
+<!--productkaart ean=8003437611865 rank=3 label="De gezinsvriend: 14 couverts, vrijstaand"-->
+<!--productkaart ean=8690842609008 rank=4 label="Beste betaalbare inbouw: 15 couverts"-->
+<!--productkaart ean=8712876150315 rank=5 label="Kleine keuken: 45 cm breed, 10 couverts"-->
+
+<h2>1. Miele G 7040 AutoDos — de beste</h2>
+<p>Energielabel A — de zuinigste van deze lijst — en hij doseert zijn wasmiddel automatisch met een PowerDisk die je maar af en toe hoeft te vervangen. Leuk detail: wij vonden deze machine bij twee webshops met &euro; 16 prijsverschil — vergelijken loont dus zeker in deze prijsklasse. Bekijk de actuele prijzen van de <a href="/product/miele-g-7040-sc-autodos---vrijstaande-vaatwasser-s-4002516915669">Miele G 7040 SC AutoDos</a>.</p>
+
+<h2>2. Bosch SMV6ZCX13 — de stilste</h2>
+<p>40 dB: je hoort hem nauwelijks, zelfs tijdens het thuiswerken niet. Een volledig ge&iuml;ntegreerde inbouwmachine met 14 couverts en energielabel B, en dankzij PerfectDry komt je vaat &eacute;cht droog uit de machine. Bekijk de actuele prijs van de <a href="/product/bosch-smv6zcx13e-4242005417421">Bosch SMV6ZCX13E</a>.</p>
+
+<h2>3. Whirlpool WFC 3C34 — de gezinsvriend</h2>
+<p>14 couverts en dankzij FlexiSpace flexibel in te delen, dus ook je pannen kunnen er gewoon bij. Een vrijstaande machine die veel aankan, voor een verrassend nette prijs. Bekijk de actuele prijs van de <a href="/product/whirlpool-wfc-3c34-ap-x-vaatwasser---vrijstaand-14-8003437611865">Whirlpool WFC 3C34</a>.</p>
+
+<h2>4. Beko BDIN38560 — de beste betaalbare inbouw</h2>
+<p>15 couverts — de grootste capaciteit van deze top 5 — en met 42 dB netjes stil. De CornerIntense-sproeiarm komt ook in de hoeken van de machine, waar gewone sproeiarmen weleens wat laten staan. Bekijk de actuele prijs van de <a href="/product/beko-bdin38560c---inbouwvaatwasser---cornerintense-8690842609008">Beko BDIN38560C</a>.</p>
+
+<h2>5. Inventum VVW4530 — de redder van de kleine keuken</h2>
+<p>Slechts 45 cm breed en toch passen er 10 couverts in. Voor een- of tweepersoonshuishoudens (of als tweede vaatwasser) heb je vaak niet meer nodig — en het is ook nog eens de goedkoopste van deze lijst. Bekijk de actuele prijs van de <a href="/product/inventum-vvw4530aw-smalle-vaatwasser---10-couverts-8712876150315">Inventum VVW4530AW</a>.</p>
+
+<h2>Zo kies je uit deze vijf</h2>
+<p>Voor elke keuken zit er &eacute;&eacute;n tussen: van de compacte Inventum tot de zelfdoserende Miele. Wil je weten waar alle specificaties voor staan — couverts, programma's, bestekla — lees dan onze <a href="/gidsen/vaatwasser-kopen-complete-gids">complete vaatwasser-koopgids</a>, en waarom het energielabel bij een dagelijks draaiend apparaat extra telt lees je in de <a href="/gidsen/energielabel-witgoed-uitgelegd">energielabel-uitleg</a>.</p>
+
+<p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/vaatwassers">categorie vaatwassers</a> zie je van al deze machines de actuele prijs bij de grote webshops, m&eacute;t prijsverloop per apparaat — zo koop je op het juiste moment.</p>
+""",
+    },
+    {
         'slug': 'beste-droger-2026',
         'title': 'De 5 beste drogers van 2026',
         'excerpt': 'Van de beste budgetkoop (±€499) tot de zuinigste topper met energielabel B: de vijf beste warmtepompdrogers van dit moment, gekozen op vulgewicht, geluidsniveau en energielabel — met video.',

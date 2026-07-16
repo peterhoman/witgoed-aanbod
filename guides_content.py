@@ -17,6 +17,68 @@ aangesloten winkels zelf niet bieden.
 
 NEW_GUIDES = [
     {
+        'slug': 'beste-koelkast-2026',
+        'title': 'De 5 beste koelkasten van 2026',
+        'excerpt': 'Vijf winnaars voor elk huishouden — van compact tafelmodel tot Amerikaanse blikvanger — mét wat elke koelkast per jaar aan stroom kost. Met video.',
+        'category_slug': 'koelkasten',
+        'content': """
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "De 5 beste koelkasten van 2026 — koopgids",
+    "description": "De vijf beste koelkasten van dit moment voor elk huishouden, van tafelmodel tot Amerikaanse koelkast — met per model het jaarlijkse stroomverbruik. Alle prijzen komen van WitgoedAanbod.nl.",
+    "thumbnailUrl": "https://i.ytimg.com/vi/-wLFTVQpy3A/hqdefault.jpg",
+    "uploadDate": "2026-07-16",
+    "embedUrl": "https://www.youtube-nocookie.com/embed/-wLFTVQpy3A",
+    "contentUrl": "https://www.youtube.com/watch?v=-wLFTVQpy3A",
+    "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl"}
+}
+</script>
+<p>Een koelkast staat 24 uur per dag aan, zo'n vijftien jaar lang. Daarmee is het sluipende stroomverbruik n&eacute;t zo belangrijk als de aanschafprijs — en precies daar kijken we in deze koopgids naar. Dit zijn de vijf beste koelkasten van dit moment, voor elk huishouden &eacute;&eacute;n: van tafelmodel tot Amerikaanse blikvanger. We letten op de <strong>inhoud</strong> (liters), het <strong>geluid</strong> (een koelkast hoor je dag en nacht) en vooral het <strong>jaarlijkse stroomverbruik</strong> — reken gemiddeld zo'n &euro; 0,30 per kilowattuur, of lees onze <a href="/gidsen/stroomverbruik-koelkast-per-jaar">uitleg over het stroomverbruik van koelkasten</a>.</p>
+
+<p>Liever kijken dan lezen? Hier is de video-versie:</p>
+<div style="position:relative;width:100%;max-width:800px;margin:0 auto 24px;aspect-ratio:16/9;">
+    <iframe
+        src="https://www.youtube-nocookie.com/embed/-wLFTVQpy3A"
+        title="De 5 beste koelkasten van 2026 — koopgids"
+        style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px;"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>De top 5 met actuele prijzen</h2>
+<!--productkaart ean=8592344700514 rank=1 label="De blikvanger: Amerikaans, 559 liter"-->
+<!--productkaart ean=4242005517169 rank=2 label="Inbouw: bespaart tot &euro;640 over de levensduur"-->
+<!--productkaart ean=4242005254330 rank=3 label="D&eacute; gezins-allrounder: 337 l, VitaFresh"-->
+<!--productkaart ean=8592344703225 rank=4 label="Beste compacte combi: 231 l, No Frost"-->
+<!--productkaart ean=8712876501681 rank=5 label="Tafelmodel: &plusmn; &euro;33 stroom per jaar"-->
+
+<h2>1. CHiQ Amerikaanse koelkast (559 l) — de blikvanger</h2>
+<p>Maar liefst 559 liter, No Frost en plek voor de boodschappen van een heel gezin — voor ruim &euro; 600, waar Amerikaanse koelkasten normaal ver boven de duizend zitten. Wel eerlijk: 362 kWh per jaar is ruim &euro; 100 aan stroom. Grote koelkast, groter verbruik — dat is de afweging. Bekijk de actuele prijs van de <a href="/product/chiq-fss559nei42d---amerikaanse-koelkast---559-lit-8592344700514">CHiQ FSS559NEI42D</a>.</p>
+
+<h2>2. Bosch KIN86 — inbouw die zichzelf deels terugverdient</h2>
+<p>Voor wie de koelkast liever niet z&iacute;et: hij verdwijnt naadloos in het keukenblok en is z&oacute; zuinig dat je volgens Bosch tot &euro; 640 aan energiekosten bespaart over de levensduur. De duurste van deze lijst, maar wel eentje die zichzelf deels terugverdient. Bekijk de actuele prijs van de <a href="/product/bosch-kin86adb0-4242005517169">Bosch KIN86ADB0</a>.</p>
+
+<h2>3. Bosch KGE398 Serie 6 — d&eacute; allrounder voor gezinnen</h2>
+<p>337 liter, 60 cm breed — hij past in elke keuken — en het VitaFresh-systeem regelt automatisch de luchtvochtigheid zodat groente en fruit langer vers blijven. Degelijkheid waar je vijftien jaar plezier van hebt. Bekijk de actuele prijs van de <a href="/product/bosch-kge398ibp---koel-vriescombinatie-breedte-60--4242005254330">Bosch KGE398IBP</a>.</p>
+
+<h2>4. CHiQ koel-vriescombinatie (231 l) — beste compacte combi</h2>
+<p>Volwaardig koelen &eacute;n vriezen m&eacute;t No Frost (dus nooit meer ontdooien) voor nog geen &euro; 400 — ideaal voor een- en tweepersoonshuishoudens. Let w&eacute;l op het energielabel E: zo'n &euro; 80 aan stroom per jaar. Goedkoop in aanschaf, gemiddeld in verbruik. Bekijk de actuele prijs van de <a href="/product/chiq-fbm228ne4de---koel-vriescombinatie---231-lite-8592344703225">CHiQ FBM228NE4DE</a>.</p>
+
+<h2>5. Tomado TRT4702 — de redder van de kleine ruimte</h2>
+<p>Tachtig liter m&eacute;t vriesvak, en hij verbruikt maar 110 kWh per jaar — omgerekend zo'n &euro; 33 aan stroom. Perfect voor de studentenkamer, het kantoor of als bijzetkoelkast, en met ruim &euro; 160 ook nog eens de goedkoopste van de lijst. Bekijk de actuele prijs van de <a href="/product/tomado-trt4702w---tafelmodel-koelkast---80-liter---8712876501681">Tomado TRT4702W</a>.</p>
+
+<h2>Zo kies je uit deze vijf</h2>
+<p>Voor elk huishouden &eacute;&eacute;n: van de compacte Tomado tot de Amerikaanse CHiQ. Twijfel je nog over inhoud, No Frost of inbouw versus vrijstaand? Lees dan onze <a href="/gidsen/koelkast-kopen-complete-gids">complete koelkast-koopgids</a>. En omdat een koelkast nooit uitstaat: reken v&oacute;&oacute;r de aankoop even het stroomverbruik na met onze <a href="/gidsen/stroomverbruik-koelkast-per-jaar">verbruiksgids</a> — het verschil tussen twee modellen loopt over vijftien jaar flink op.</p>
+
+<p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/koelkasten">categorie koelkasten</a> zie je van al deze modellen de actuele prijs bij de grote webshops, m&eacute;t prijsverloop per apparaat — zo koop je op het juiste moment.</p>
+""",
+    },
+    {
         'slug': 'beste-vaatwasser-2026',
         'title': 'De 5 beste vaatwassers van 2026',
         'excerpt': 'Van de smalle budgetkoop (45 cm) tot de zelfdoserende topper: de vijf beste vaatwassers van dit moment — inbouw én vrijstaand, gekozen op couverts, geluidsniveau en energielabel. Met video.',

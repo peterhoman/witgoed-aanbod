@@ -28,10 +28,10 @@ NEW_GUIDES = [
     "@type": "VideoObject",
     "name": "De 5 beste drogers van 2026 — koopgids",
     "description": "De vijf beste warmtepompdrogers van dit moment voor elk budget, gekozen op vulgewicht, geluidsniveau en energielabel. Alle prijzen komen van WitgoedAanbod.nl.",
-    "thumbnailUrl": "https://i.ytimg.com/vi/5a9pOXMM97A/hqdefault.jpg",
+    "thumbnailUrl": "https://i.ytimg.com/vi/VTuSkXh8FkI/hqdefault.jpg",
     "uploadDate": "2026-07-16",
-    "embedUrl": "https://www.youtube-nocookie.com/embed/5a9pOXMM97A",
-    "contentUrl": "https://www.youtube.com/watch?v=5a9pOXMM97A",
+    "embedUrl": "https://www.youtube-nocookie.com/embed/VTuSkXh8FkI",
+    "contentUrl": "https://www.youtube.com/watch?v=VTuSkXh8FkI",
     "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl"}
 }
 </script>
@@ -40,7 +40,7 @@ NEW_GUIDES = [
 <p>Liever kijken dan lezen? Hier is de video-versie:</p>
 <div style="position:relative;width:100%;max-width:800px;margin:0 auto 24px;aspect-ratio:16/9;">
     <iframe
-        src="https://www.youtube-nocookie.com/embed/5a9pOXMM97A"
+        src="https://www.youtube-nocookie.com/embed/VTuSkXh8FkI"
         title="De 5 beste drogers van 2026 — koopgids"
         style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px;"
         loading="lazy"

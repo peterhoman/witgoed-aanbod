@@ -589,7 +589,11 @@ def sync_products():
                             db.session.delete(offer)
                             product.offers.remove(offer)
                     if not product.offers:
-                        db.session.delete(product)
+                        # Niet verwijderen maar "tijdelijk niet leverbaar":
+                        # gidsen en video's linken naar deze pagina's en een
+                        # 404 breekt die links, terwijl het apparaat vaak
+                        # gewoon terugkomt in de feed.
+                        product.refresh_pricing()  # zet is_available op False
                         stale += 1
                     else:
                         product.retailer = product.offers[0].retailer

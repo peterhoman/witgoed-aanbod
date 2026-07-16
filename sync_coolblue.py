@@ -310,10 +310,12 @@ def _cleanup(seen_product_ids):
     removed_products = 0
     for product_id in orphan_candidates:
         product = db.session.get(Product, product_id)
-        # Alleen producten opruimen die wij hebben aangemaakt: een Bol- of
-        # MediaMarkt-product zonder aanbiedingen is een probleem van die syncs.
+        # Producten zonder aanbiedingen niet meer verwijderen maar als
+        # "tijdelijk niet leverbaar" markeren: koopgidsen en YouTube-video's
+        # linken naar productpagina's, en een 404 breekt die links (en de
+        # commissie) terwijl het apparaat vaak gewoon terugkomt in de feed.
         if product and not product.offers and product.retailer == RETAILER:
-            db.session.delete(product)
+            product.refresh_pricing()  # zet is_available op False
             removed_products += 1
     if removed_products:
         db.session.commit()

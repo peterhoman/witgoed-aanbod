@@ -66,7 +66,10 @@ def _product_structured_data(product):
 
 @products_bp.route('/product/<slug>')
 def product_detail(slug):
-    product = Product.query.filter_by(slug=slug, is_available=True).first_or_404()
+    # Ook niet-leverbare producten tonen (met "tijdelijk niet leverbaar"):
+    # gidsen en YouTube-video's linken hierheen, en een 404 breekt die links
+    # terwijl het apparaat vaak gewoon terugkomt in de winkel-feeds.
+    product = Product.query.filter_by(slug=slug).first_or_404()
 
     related_products = Product.query.filter(
         Product.category_id == product.category_id,

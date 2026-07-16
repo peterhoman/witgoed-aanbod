@@ -4,6 +4,10 @@
 {% block title %}{{ product.title }} | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}{{ product.ai_meta_description or (product.description or product.title)[:160] }}{% endblock %}
 {% block og_image %}{{ product.image_url or '/static/img/og-image.png' }}{% endblock %}
+{# Niet-leverbare producten uit de index houden (soft-404-risico), maar de
+   links op de pagina blijven volgbaar; komt het product terug, dan wordt
+   de pagina vanzelf weer index,follow. #}
+{% block robots %}{% if product.is_available %}index, follow{% else %}noindex, follow{% endif %}{% endblock %}
 
 {% block structured_data %}
 {% for blob in structured_data %}
@@ -34,8 +38,21 @@
             <span class="badge-example">{{ t('product.example_badge_detail') }}</span>
             {% endif %}
 
+            {% if not product.is_available %}
+            <!-- Tijdelijk niet leverbaar: geen dode koopknoppen, wel alternatieven -->
+            <div class="unavailable-notice">
+                <strong>Tijdelijk niet leverbaar</strong>
+                <p>Dit apparaat is op dit moment bij geen van onze aangesloten winkels
+                   leverbaar. Zodra het terugkomt, zie je hier direct weer de actuele
+                   prijzen.</p>
+                <a href="/category/{{ product.category.slug }}" class="btn-primary unavailable-btn">
+                    Bekijk vergelijkbare {{ product.category.name|lower }} &rarr;</a>
+            </div>
+            {% endif %}
+
             <!-- Aanbiedingen per winkel: laagste bovenaan, neutraal weergegeven -->
             {% set offers = product.available_offers %}
+            {% if product.is_available %}
             <div class="offers-section">
                 <div class="offers-best-bar">
                     <span class="offers-best-label">{{ t('offer.best_price') }}</span>
@@ -69,6 +86,7 @@
 
                 <p class="affiliate-disclosure"><small>{{ t('product.affiliate_disclosure') }}</small></p>
             </div>
+            {% endif %}
 
             <!-- Stroomkosten: berekend uit de energielabel-specs -->
             {% if energiekosten %}

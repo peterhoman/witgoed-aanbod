@@ -17,6 +17,75 @@ aangesloten winkels zelf niet bieden.
 
 NEW_GUIDES = [
     {
+        'slug': 'beste-droger-2026',
+        'title': 'De 5 beste drogers van 2026',
+        'excerpt': 'Van de beste budgetkoop (±€499) tot de zuinigste topper met energielabel B: de vijf beste warmtepompdrogers van dit moment, gekozen op vulgewicht, geluidsniveau en energielabel — met video.',
+        'category_slug': 'drogers',
+        'content': """
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "De 5 beste drogers van 2026 — koopgids",
+    "description": "De vijf beste warmtepompdrogers van dit moment voor elk budget, gekozen op vulgewicht, geluidsniveau en energielabel. Alle prijzen komen van WitgoedAanbod.nl.",
+    "thumbnailUrl": "https://i.ytimg.com/vi/5a9pOXMM97A/hqdefault.jpg",
+    "uploadDate": "2026-07-16",
+    "embedUrl": "https://www.youtube-nocookie.com/embed/5a9pOXMM97A",
+    "contentUrl": "https://www.youtube.com/watch?v=5a9pOXMM97A",
+    "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl"}
+}
+</script>
+<p>Een droger kopen? Dan wil je er &eacute;&eacute;n die zuinig is, want een droger is van nature een stroomvreter. Wij zochten uit welke hun geld echt waard zijn: dit zijn de vijf beste drogers van dit moment, van zo'n &euro; 500 tot ruim &euro; 1.000. E&eacute;n ding vooraf: bijna elke goede droger is tegenwoordig een <strong>warmtepompdroger</strong> — die hergebruikt zijn eigen warmte en verbruikt daardoor veel minder stroom dan een oude condensdroger (waarom precies lees je in onze gids <a href="/gidsen/warmtepompdroger-of-condensdroger">warmtepompdroger of condensdroger</a>). Verder letten we op het <strong>vulgewicht</strong>, het <strong>geluidsniveau</strong> (een droger draait vaak 's avonds) en het <strong>energielabel</strong>.</p>
+
+<p>Liever kijken dan lezen? Hier is de video-versie:</p>
+<div style="position:relative;width:100%;max-width:800px;margin:0 auto 24px;aspect-ratio:16/9;">
+    <iframe
+        src="https://www.youtube-nocookie.com/embed/5a9pOXMM97A"
+        title="De 5 beste drogers van 2026 — koopgids"
+        style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px;"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>De top 5 in het kort</h2>
+<table class="comparison-table">
+    <thead>
+        <tr><th>#</th><th>Model</th><th>Vulgewicht</th><th>Sterkste punt</th><th>Voor wie</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>1</td><td>Bosch WQH246</td><td>9 kg</td><td>Energielabel B, stilste (59 dB)</td><td>Wie veel droogt</td></tr>
+        <tr><td>2</td><td>LG RHX5010</td><td>10 kg</td><td>De grootste trommel</td><td>Grote gezinnen</td></tr>
+        <tr><td>3</td><td>Samsung 5000-serie</td><td>9 kg</td><td>Degelijke middenklasser</td><td>Vertrouwd merk, nette prijs</td></tr>
+        <tr><td>4</td><td>Beko RecycledDry</td><td>9 kg</td><td>Prijs-kwaliteit</td><td>Gezinnen met budget</td></tr>
+        <tr><td>5</td><td>Hisense DH3S802</td><td>8 kg</td><td>Compleet voor een instapprijs</td><td>Budgetkopers</td></tr>
+    </tbody>
+</table>
+
+<h2>1. Bosch WQH246 — de beste: energielabel B en de stilste</h2>
+<p>De enige van deze lijst met <strong>energielabel B</strong> — zuiniger vind je ze nauwelijks — en met 59 dB ook nog eens de stilste. Auto Dry zorgt dat hij nooit langer droogt dan nodig, dus je kleding gaat langer mee. Duurder in aanschaf, maar elke droogbeurt goedkoper: wie veel droogt, verdient het verschil terug (reken het na met onze <a href="/gidsen/energielabel-witgoed-uitgelegd">energielabel-uitleg</a>). Bekijk de actuele prijs van de <a href="/product/bosch-wqh246clnl---warmtepomdroger-9-kg-59-db-ener-4242005522118">Bosch WQH246CLNL</a>.</p>
+
+<h2>2. LG RHX5010 — de grootste</h2>
+<p>10 kg vulgewicht, de grootste van deze top 5: een tweepersoons dekbedovertrek of de weekwas van een groot gezin gaat er in &eacute;&eacute;n keer in. En met 62 dB is hij ook nog eens relatief stil. Voor wie nooit meer in twee rondes wil drogen. Bekijk de actuele prijs van de <a href="/product/lg-rhx5010thb---warmtepompdroger-10-62-energielabe-8806096717677">LG RHX5010THB</a>.</p>
+
+<h2>3. Samsung 5000-serie — de degelijke middenklasser</h2>
+<p>9 kg vulgewicht en een inverter-motor die zuiniger werkt en langer meegaat. Een degelijke middenklasser van een vertrouwd merk, voor een nette prijs. Bekijk het actuele <a href="/category/drogers?brand=Samsung">Samsung-drogeraanbod in onze vergelijker</a>.</p>
+
+<h2>4. Beko RecycledDry — beste prijs-kwaliteit</h2>
+<p>Voor net iets meer dan de budgetkoop krijg je een trommel van 9 kg — ideaal voor gezinnen. De EcoGentle-technologie droogt je was extra voorzichtig, zodat ook fijne kleding veilig de droger in kan. Bekijk het actuele <a href="/category/drogers?brand=Beko">Beko-drogeraanbod in onze vergelijker</a>.</p>
+
+<h2>5. Hisense DH3S802 — de beste koop rond &euro; 500</h2>
+<p>8 kg vulgewicht en Auto Dry: sensoren meten hoe vochtig je was is en stoppen precies op tijd — dat spaart stroom &eacute;n je kleding. Ook handig: het Allergy Care-programma voor wie gevoelig is voor huisstofmijt. Een complete droger voor een instapprijs. Bekijk de actuele prijs van de <a href="/product/hisense-dh3s802bw3---warmtepompdroger-8-kg-64-db-e-6901101829627">Hisense DH3S802BW3</a>.</p>
+
+<h2>Zo kies je uit deze vijf</h2>
+<p>Voor elk huishouden zit er &eacute;&eacute;n tussen: van de voordelige Hisense tot de zuinige Bosch. Twijfel je nog over het type of wil je weten waar de specificaties voor staan? Lees dan onze <a href="/gidsen/droger-kopen-waar-op-letten">complete droger-koopgids</a> en de vergelijking <a href="/gidsen/warmtepompdroger-of-condensdroger">warmtepompdroger of condensdroger</a>.</p>
+
+<p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/drogers">categorie drogers</a> zie je van al deze drogers de actuele prijs bij de grote webshops, m&eacute;t prijsverloop per apparaat — zo koop je op het juiste moment.</p>
+""",
+    },
+    {
         'slug': 'beste-wasmachine-2026',
         'title': 'De 5 beste wasmachines van 2026',
         'excerpt': 'Van een degelijke budgetkoop tot de onverwoestbare nummer 1: de vijf beste wasmachines van dit moment, gekozen op vulgewicht, toerental, energielabel en prijs — met video.',

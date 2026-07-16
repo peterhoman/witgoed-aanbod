@@ -14,6 +14,75 @@ aangesloten winkels zelf niet bieden.
 
 NEW_GUIDES = [
     {
+        'slug': 'beste-wasmachine-2026',
+        'title': 'De 5 beste wasmachines van 2026',
+        'excerpt': 'Van een degelijke budgetkoop tot de onverwoestbare nummer 1: de vijf beste wasmachines van dit moment, gekozen op vulgewicht, toerental, energielabel en prijs — met video.',
+        'category_slug': 'wasmachines',
+        'content': """
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "De 5 beste wasmachines van 2026 — koopgids",
+    "description": "De vijf beste wasmachines van dit moment voor elk budget, gekozen op vulgewicht, toerental, energielabel en prijs. Alle prijzen komen van WitgoedAanbod.nl.",
+    "thumbnailUrl": "https://i.ytimg.com/vi/3eyfGDGUzVk/hqdefault.jpg",
+    "uploadDate": "2026-07-16",
+    "embedUrl": "https://www.youtube-nocookie.com/embed/3eyfGDGUzVk",
+    "contentUrl": "https://www.youtube.com/watch?v=3eyfGDGUzVk",
+    "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl"}
+}
+</script>
+<p>Een nieuwe wasmachine kopen is niet makkelijk: honderden modellen, prijzen die dagelijks veranderen en elke winkel roept dat hij de goedkoopste is. Daarom hebben we het uitgezocht. Dit zijn de vijf beste wasmachines van dit moment, voor elk budget van zo'n &euro; 400 tot ruim &euro; 1.000. We hebben op vier dingen gelet: het <strong>vulgewicht</strong> (hoeveel was er in &eacute;&eacute;n keer in kan), het <strong>toerental</strong> (hoe droog je was uit de machine komt), het <strong>energielabel</strong> (wat hij je per jaar aan stroom kost) en natuurlijk de <strong>prijs</strong>.</p>
+
+<p>Liever kijken dan lezen? Hier is de video-versie:</p>
+<div style="position:relative;width:100%;max-width:800px;margin:0 auto 24px;aspect-ratio:16/9;">
+    <iframe
+        src="https://www.youtube-nocookie.com/embed/3eyfGDGUzVk"
+        title="De 5 beste wasmachines van 2026 — koopgids"
+        style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px;"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>De top 5 in het kort</h2>
+<table class="comparison-table">
+    <thead>
+        <tr><th>#</th><th>Model</th><th>Vulgewicht</th><th>Sterkste punt</th><th>Voor wie</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>1</td><td>Miele W1 WEB 368 PowerWash</td><td>8 kg</td><td>Wasresultaat &amp; levensduur</td><td>Wie &eacute;&eacute;n keer goed wil kopen</td></tr>
+        <tr><td>2</td><td>AEG LR86 PowerCare UniversalDose</td><td>10 kg</td><td>Automatische dosering</td><td>Grote huishoudens, gemak</td></tr>
+        <tr><td>3</td><td>Siemens WG46 (1600 rpm)</td><td>9 kg</td><td>Extra droog uit de trommel</td><td>Veel &amp; snel wassen</td></tr>
+        <tr><td>4</td><td>Bosch Serie 6 WGG244</td><td>9 kg</td><td>Prijs-kwaliteit</td><td>Gezinnen</td></tr>
+        <tr><td>5</td><td>Beko B1B764 SteamCure</td><td>7 kg</td><td>Veel waar voor weinig</td><td>1-2 personen, budget</td></tr>
+    </tbody>
+</table>
+
+<h2>1. Miele W1 WEB 368 WCS PowerWash — de beste</h2>
+<p>Niet de grootste van de lijst (8 kg), wel de beste. PowerWash mengt water en wasmiddel vooraf en sproeit het diep in de vezels: schoner wasgoed, ook op korte programma's. En Miele bouwt zijn machines om twintig jaar mee te gaan — duurder in aanschaf, maar per jaar gerekend waarschijnlijk de goedkoopste machine die je kunt kopen. Bekijk de actuele prijs van de <a href="/product/miele-web-368-wcs-powerwash-4002516896067">Miele WEB 368 WCS PowerWash</a>.</p>
+
+<h2>2. AEG LR86 PowerCare UniversalDose — de slimste</h2>
+<p>Met 10 kg vulgewicht de grootste van deze top 5, en hij doseert zijn wasmiddel automatisch: jij vult het reservoir, de machine bepaalt per wasbeurt precies hoeveel er nodig is. Dat bespaart wasmiddel en is beter voor je kleding. Bekijk de actuele prijs van de <a href="/product/aeg-lr86power-powercare-universaldose-7333394121017">AEG LR86 PowerCare UniversalDose</a>, of lees waarom we deze UniversalDose-techniek eerder al uitlichtten in onze <a href="/gidsen/beste-wasmachines-vergeleken">wasmachine-vergelijking</a>.</p>
+
+<h2>3. Siemens WG46 — de krachtpatser</h2>
+<p>9 kg vulgewicht en 1600 toeren: dat hoge toerental slingert veel meer water uit je was, waardoor de droger daarna korter hoeft te draaien — dat scheelt tijd &eacute;n stroom. Met 73 dB is hij bij het centrifugeren bovendien netjes stil. Voor grote gezinnen die veel en snel wassen. Bekijk de actuele prijs van de <a href="/product/siemens-wg46g2zwnl---wasmachine-9-kg-1600-rpm-73-d-4242003979389">Siemens WG46G2ZWNL</a>.</p>
+
+<h2>4. Bosch Serie 6 WGG244 — beste prijs-kwaliteit voor gezinnen</h2>
+<p>9 kg vulgewicht voor onder de &euro; 600. Stil, zuinig (energielabel A) en dankzij Iron Assist komen overhemden met minder kreukels uit de trommel. Een machine waar je jaren op kunt bouwen. Bekijk de actuele prijs van de <a href="/product/bosch-wgg244zonl-iron-assist-4242005445912">Bosch WGG244 Iron Assist</a>.</p>
+
+<h2>5. Beko B1B764 SteamCure — de beste koop onder &euro; 400</h2>
+<p>7 kg vulgewicht, 1400 toeren en energielabel A — dat zie je in deze prijsklasse bijna nooit. Met SteamCure fris je kleding tussendoor op met stoom, zodat je minder vaak hoeft te wassen. Perfect voor een- of tweepersoonshuishoudens die een degelijke, zuinige machine willen. Bekijk het actuele <a href="/category/wasmachines?brand=Beko">Beko-aanbod in onze wasmachine-vergelijker</a>.</p>
+
+<h2>Zo kies je uit deze vijf</h2>
+<p>Voor elk huishouden zit er &eacute;&eacute;n tussen: van de voordelige Beko tot de onverwoestbare Miele. Twijfel je over het juiste vulgewicht? Lees dan onze gids <a href="/gidsen/wasmachine-8-of-9-kg">wasmachine van 8 of 9 kg</a>. Wil je weten wat de specificaties precies betekenen, dan helpt de <a href="/gidsen/wasmachine-kopen-waar-op-letten">complete wasmachine-koopgids</a>, en waarom het energielabel zich terugverdient lees je in onze <a href="/gidsen/energielabel-witgoed-uitgelegd">uitleg over energielabels</a>.</p>
+
+<p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/wasmachines">categorie wasmachines</a> zie je van al deze machines de actuele prijs bij de grote webshops, m&eacute;t prijsverloop per apparaat — zo koop je op het juiste moment.</p>
+""",
+    },
+    {
         'slug': 'warmtepompdroger-of-condensdroger',
         'title': 'Warmtepompdroger of condensdroger: welke moet je kiezen?',
         'excerpt': 'Het prijsverschil lijkt groot, maar wie de stroomkosten meerekent komt bijna altijd bij de warmtepompdroger uit. We rekenen het voor.',

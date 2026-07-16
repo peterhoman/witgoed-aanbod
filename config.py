@@ -48,6 +48,14 @@ class Config:
     # zodat dat account zijn eigenaarschap verliest.
     GOOGLE_SITE_VERIFICATION = os.getenv('GOOGLE_SITE_VERIFICATION', '')
 
+    # TradeTracker site-verificatie (affiliatesite #512985): bewijst het
+    # eigendom van de site richting adverteerders. Geen geheim — staat
+    # bewust publiek in de <head>. TradeTracker hercontroleert periodiek,
+    # dus de tag moet blijven staan.
+    TRADETRACKER_SITE_VERIFICATION = os.getenv(
+        'TRADETRACKER_SITE_VERIFICATION',
+        '9aa380426ef441ac55aad81838ffa685fa5dcb2c')
+
     # Sync
     SYNC_INTERVAL = 6  # hours
 

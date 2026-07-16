@@ -27,6 +27,9 @@
     {% if config.GOOGLE_SITE_VERIFICATION %}
     <meta name="google-site-verification" content="{{ config.GOOGLE_SITE_VERIFICATION }}">
     {% endif %}
+    {% if config.TRADETRACKER_SITE_VERIFICATION %}
+    <meta name="tradetracker-site-verification" content="{{ config.TRADETRACKER_SITE_VERIFICATION }}">
+    {% endif %}
     {% block structured_data %}{% endblock %}
     <script type="application/ld+json">
     {

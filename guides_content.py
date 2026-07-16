@@ -53,8 +53,8 @@ NEW_GUIDES = [
 <h2>De top 5 met actuele prijzen</h2>
 <!--productkaart ean=4242005522118 rank=1 label="De beste: energielabel B en de stilste (59 dB)"-->
 <!--productkaart ean=8806096717677 rank=2 label="De grootste: 10 kg, relatief stil (62 dB)"-->
-<!--merkkaart merk=Samsung categorie=drogers naam="Samsung 5000-serie warmtepompdroger" rank=3 label="Degelijke middenklasser, 9 kg"-->
-<!--merkkaart merk=Beko categorie=drogers naam="Beko RecycledDry" rank=4 label="Beste prijs-kwaliteit, 9 kg"-->
+<!--productkaart ean=8806099109806 rank=3 label="Degelijke middenklasser (8 kg-uitvoering)"-->
+<!--productkaart ean=8690842722806 rank=4 label="Beste prijs-kwaliteit (8 kg-uitvoering)"-->
 <!--productkaart ean=6901101829627 rank=5 label="Beste koop rond de 500 euro, 8 kg"-->
 
 <h2>1. Bosch WQH246 — de beste: energielabel B en de stilste</h2>
@@ -64,10 +64,10 @@ NEW_GUIDES = [
 <p>10 kg vulgewicht, de grootste van deze top 5: een tweepersoons dekbedovertrek of de weekwas van een groot gezin gaat er in &eacute;&eacute;n keer in. En met 62 dB is hij ook nog eens relatief stil. Voor wie nooit meer in twee rondes wil drogen. Bekijk de actuele prijs van de <a href="/product/lg-rhx5010thb---warmtepompdroger-10-62-energielabe-8806096717677">LG RHX5010THB</a>.</p>
 
 <h2>3. Samsung 5000-serie — de degelijke middenklasser</h2>
-<p>9 kg vulgewicht en een inverter-motor die zuiniger werkt en langer meegaat. Een degelijke middenklasser van een vertrouwd merk, voor een nette prijs. Bekijk het actuele <a href="/category/drogers?brand=Samsung">Samsung-drogeraanbod in onze vergelijker</a>.</p>
+<p>Een inverter-motor die zuiniger werkt en langer meegaat: een degelijke middenklasser van een vertrouwd merk, voor een nette prijs. Wij vergelijken de 8 kg-uitvoering: bekijk de actuele prijs van de <a href="/product/samsung-dv80dg52b0aeen-8806099109806">Samsung DV80DG52B0 (5000-serie)</a>, of het volledige <a href="/category/drogers?brand=Samsung">Samsung-drogeraanbod</a> voor andere formaten.</p>
 
 <h2>4. Beko RecycledDry — beste prijs-kwaliteit</h2>
-<p>Voor net iets meer dan de budgetkoop krijg je een trommel van 9 kg — ideaal voor gezinnen. De EcoGentle-technologie droogt je was extra voorzichtig, zodat ook fijne kleding veilig de droger in kan. Bekijk het actuele <a href="/category/drogers?brand=Beko">Beko-drogeraanbod in onze vergelijker</a>.</p>
+<p>De RecycledDry-lijn combineert een scherpe prijs met de EcoGentle-technologie, die je was extra voorzichtig droogt zodat ook fijne kleding veilig de droger in kan. Wij vergelijken de 8 kg-uitvoering: bekijk de actuele prijs van de <a href="/product/beko-bm3t3823wmm-recycleddry---warmtepompdroger-8--8690842722806">Beko BM3T3823WMM RecycledDry</a>, of het volledige <a href="/category/drogers?brand=Beko">Beko-drogeraanbod</a>.</p>
 
 <h2>5. Hisense DH3S802 — de beste koop rond &euro; 500</h2>
 <p>8 kg vulgewicht en Auto Dry: sensoren meten hoe vochtig je was is en stoppen precies op tijd — dat spaart stroom &eacute;n je kleding. Ook handig: het Allergy Care-programma voor wie gevoelig is voor huisstofmijt. Een complete droger voor een instapprijs. Bekijk de actuele prijs van de <a href="/product/hisense-dh3s802bw3---warmtepompdroger-8-kg-64-db-e-6901101829627">Hisense DH3S802BW3</a>.</p>
@@ -117,7 +117,7 @@ NEW_GUIDES = [
 <!--productkaart ean=7333394121017 rank=2 label="De slimste: automatische dosering, 10 kg"-->
 <!--productkaart ean=4242003979389 rank=3 label="De krachtpatser: 1600 toeren, 9 kg"-->
 <!--productkaart ean=4242005445912 rank=4 label="Beste prijs-kwaliteit voor gezinnen, 9 kg"-->
-<!--merkkaart merk=Beko categorie=wasmachines naam="Beko B1W764 SteamCure" rank=5 label="Beste koop onder de 400 euro, 7 kg"-->
+<!--productkaart ean=8690842820250 rank=5 label="Beste koop onder de 400 euro, 7 kg"-->
 
 <h2>1. Miele W1 WEB 368 WCS PowerWash — de beste</h2>
 <p>Niet de grootste van de lijst (8 kg), wel de beste. PowerWash mengt water en wasmiddel vooraf en sproeit het diep in de vezels: schoner wasgoed, ook op korte programma's. En Miele bouwt zijn machines om twintig jaar mee te gaan — duurder in aanschaf, maar per jaar gerekend waarschijnlijk de goedkoopste machine die je kunt kopen. Bekijk de actuele prijs van de <a href="/product/miele-web-368-wcs-powerwash-4002516896067">Miele WEB 368 WCS PowerWash</a>.</p>
@@ -132,7 +132,7 @@ NEW_GUIDES = [
 <p>9 kg vulgewicht voor onder de &euro; 600. Stil, zuinig (energielabel A) en dankzij Iron Assist komen overhemden met minder kreukels uit de trommel. Een machine waar je jaren op kunt bouwen. Bekijk de actuele prijs van de <a href="/product/bosch-wgg244zonl-iron-assist-4242005445912">Bosch WGG244 Iron Assist</a>.</p>
 
 <h2>5. Beko B1W764 SteamCure — de beste koop onder &euro; 400</h2>
-<p>7 kg vulgewicht, 1400 toeren en energielabel A — dat zie je in deze prijsklasse bijna nooit. Met SteamCure fris je kleding tussendoor op met stoom, zodat je minder vaak hoeft te wassen. Perfect voor een- of tweepersoonshuishoudens die een degelijke, zuinige machine willen. Bekijk het actuele <a href="/category/wasmachines?brand=Beko">Beko-aanbod in onze wasmachine-vergelijker</a>.</p>
+<p>7 kg vulgewicht, 1400 toeren en energielabel A — dat zie je in deze prijsklasse bijna nooit. Met SteamCure fris je kleding tussendoor op met stoom, zodat je minder vaak hoeft te wassen. Perfect voor een- of tweepersoonshuishoudens die een degelijke, zuinige machine willen. Bekijk de actuele prijs van de <a href="/product/beko-b1w764w-be---steamcure-wasmachine-7-kg-1400-r-8690842820250">Beko B1W764 SteamCure</a> (ook <a href="/product/beko-b1w764bbbe-steamcure-8690842820267">in het zwart</a> leverbaar).</p>
 
 <h2>Zo kies je uit deze vijf</h2>
 <p>Voor elk huishouden zit er &eacute;&eacute;n tussen: van de voordelige Beko tot de onverwoestbare Miele. Twijfel je over het juiste vulgewicht? Lees dan onze gids <a href="/gidsen/wasmachine-8-of-9-kg">wasmachine van 8 of 9 kg</a>. Wil je weten wat de specificaties precies betekenen, dan helpt de <a href="/gidsen/wasmachine-kopen-waar-op-letten">complete wasmachine-koopgids</a>, en waarom het energielabel zich terugverdient lees je in onze <a href="/gidsen/energielabel-witgoed-uitgelegd">uitleg over energielabels</a>.</p>

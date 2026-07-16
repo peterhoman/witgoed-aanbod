@@ -77,9 +77,21 @@ def _render_merkkaart(match):
     a = _attrs(match.group(1))
     merk, categorie = a.get('merk', ''), a.get('categorie', '')
     url = f'/category/{categorie}?brand={merk}'
+    # Representatieve productfoto van hetzelfde merk in dezelfde categorie,
+    # zodat de kaart niet kaal is naast de kaarten mét product.
+    foto = None
+    voorbeeld = (Product.query
+                 .join(Product.category)
+                 .filter(Product.brand.ilike(merk),
+                         Product.is_available.is_(True),
+                         Product.image_url.isnot(None))
+                 .filter_by(slug=categorie)
+                 .first())
+    if voorbeeld:
+        foto = voorbeeld.image_url
     prijsregel = ('<span class="top-card-price">Actuele prijzen in de vergelijker</span>')
     return _kaart_html(a.get('rank', ''), a.get('label', ''), a.get('naam', merk),
-                       url, None, prijsregel, f'Bekijk {merk}-aanbod')
+                       url, foto, prijsregel, f'Bekijk {merk}-aanbod')
 
 
 def render_guide_content(content):

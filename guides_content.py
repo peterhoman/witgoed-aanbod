@@ -2,8 +2,11 @@
 
 Pure data + één idempotente ensure-functie, bewust zonder imports uit app
 of models (geen circulaire imports): app.py roept ensure_new_guides() aan
-bij het opstarten en geeft db/Category/Guide mee. Bestaande gidsen worden
-nooit overschreven — alleen ontbrekende slugs worden toegevoegd. De
+bij het opstarten en geeft db/Category/Guide mee. Voor de slugs in
+NEW_GUIDES is dít bestand de bron van de waarheid: ontbrekende gidsen
+worden toegevoegd én bestaande worden bijgewerkt zodra de tekst hier
+wijzigt (zo bereiken correcties, zoals een verkeerd modelnummer, ook
+productie). Gidsen die hier niet in staan blijven onaangeroerd; de
 volledige her-seed van al het oudere materiaal blijft in seed_guides.py.
 
 Deze gidsen mikken op longtail-zoekvragen ("warmtepompdroger of
@@ -55,9 +58,9 @@ NEW_GUIDES = [
     <tbody>
         <tr><td>1</td><td>Miele W1 WEB 368 PowerWash</td><td>8 kg</td><td>Wasresultaat &amp; levensduur</td><td>Wie &eacute;&eacute;n keer goed wil kopen</td></tr>
         <tr><td>2</td><td>AEG LR86 PowerCare UniversalDose</td><td>10 kg</td><td>Automatische dosering</td><td>Grote huishoudens, gemak</td></tr>
-        <tr><td>3</td><td>Siemens WG46 (1600 rpm)</td><td>9 kg</td><td>Extra droog uit de trommel</td><td>Veel &amp; snel wassen</td></tr>
+        <tr><td>3</td><td>Siemens WG46 iQ500 (1600 rpm)</td><td>9 kg</td><td>Extra droog uit de trommel</td><td>Veel &amp; snel wassen</td></tr>
         <tr><td>4</td><td>Bosch Serie 6 WGG244</td><td>9 kg</td><td>Prijs-kwaliteit</td><td>Gezinnen</td></tr>
-        <tr><td>5</td><td>Beko B1B764 SteamCure</td><td>7 kg</td><td>Veel waar voor weinig</td><td>1-2 personen, budget</td></tr>
+        <tr><td>5</td><td>Beko B1W764 SteamCure</td><td>7 kg</td><td>Veel waar voor weinig</td><td>1-2 personen, budget</td></tr>
     </tbody>
 </table>
 
@@ -67,13 +70,13 @@ NEW_GUIDES = [
 <h2>2. AEG LR86 PowerCare UniversalDose — de slimste</h2>
 <p>Met 10 kg vulgewicht de grootste van deze top 5, en hij doseert zijn wasmiddel automatisch: jij vult het reservoir, de machine bepaalt per wasbeurt precies hoeveel er nodig is. Dat bespaart wasmiddel en is beter voor je kleding. Bekijk de actuele prijs van de <a href="/product/aeg-lr86power-powercare-universaldose-7333394121017">AEG LR86 PowerCare UniversalDose</a>, of lees waarom we deze UniversalDose-techniek eerder al uitlichtten in onze <a href="/gidsen/beste-wasmachines-vergeleken">wasmachine-vergelijking</a>.</p>
 
-<h2>3. Siemens WG46 — de krachtpatser</h2>
+<h2>3. Siemens WG46 iQ500 — de krachtpatser</h2>
 <p>9 kg vulgewicht en 1600 toeren: dat hoge toerental slingert veel meer water uit je was, waardoor de droger daarna korter hoeft te draaien — dat scheelt tijd &eacute;n stroom. Met 73 dB is hij bij het centrifugeren bovendien netjes stil. Voor grote gezinnen die veel en snel wassen. Bekijk de actuele prijs van de <a href="/product/siemens-wg46g2zwnl---wasmachine-9-kg-1600-rpm-73-d-4242003979389">Siemens WG46G2ZWNL</a>.</p>
 
 <h2>4. Bosch Serie 6 WGG244 — beste prijs-kwaliteit voor gezinnen</h2>
 <p>9 kg vulgewicht voor onder de &euro; 600. Stil, zuinig (energielabel A) en dankzij Iron Assist komen overhemden met minder kreukels uit de trommel. Een machine waar je jaren op kunt bouwen. Bekijk de actuele prijs van de <a href="/product/bosch-wgg244zonl-iron-assist-4242005445912">Bosch WGG244 Iron Assist</a>.</p>
 
-<h2>5. Beko B1B764 SteamCure — de beste koop onder &euro; 400</h2>
+<h2>5. Beko B1W764 SteamCure — de beste koop onder &euro; 400</h2>
 <p>7 kg vulgewicht, 1400 toeren en energielabel A — dat zie je in deze prijsklasse bijna nooit. Met SteamCure fris je kleding tussendoor op met stoom, zodat je minder vaak hoeft te wassen. Perfect voor een- of tweepersoonshuishoudens die een degelijke, zuinige machine willen. Bekijk het actuele <a href="/category/wasmachines?brand=Beko">Beko-aanbod in onze wasmachine-vergelijker</a>.</p>
 
 <h2>Zo kies je uit deze vijf</h2>
@@ -200,28 +203,37 @@ NEW_GUIDES = [
 
 
 def ensure_new_guides(db, Category, Guide):
-    """Voeg gidsen uit NEW_GUIDES toe die nog niet in de database staan.
+    """Synchroniseer de gidsen uit NEW_GUIDES met de database.
 
-    Idempotent en niet-destructief: bestaande slugs blijven onaangeroerd,
-    zodat handmatige aanpassingen in productie nooit worden overschreven.
-    Geeft het aantal toegevoegde gidsen terug.
+    Idempotent: ontbrekende slugs worden toegevoegd; bestaat een slug al
+    maar wijkt titel, samenvatting of tekst af van deze broncode, dan
+    wordt de databaseversie bijgewerkt (de code is voor déze gidsen de
+    bron van de waarheid). Geeft het aantal gewijzigde gidsen terug.
     """
-    added = 0
+    changed = 0
     for data in NEW_GUIDES:
-        if Guide.query.filter_by(slug=data['slug']).first():
-            continue
         category = None
         if data['category_slug']:
             category = Category.query.filter_by(slug=data['category_slug']).first()
-        db.session.add(Guide(
-            title=data['title'],
-            slug=data['slug'],
-            excerpt=data['excerpt'],
-            content=data['content'].strip(),
-            category_id=category.id if category else None,
-            post_type='guide',
-        ))
-        added += 1
-    if added:
+
+        guide = Guide.query.filter_by(slug=data['slug']).first()
+        if guide is None:
+            db.session.add(Guide(
+                title=data['title'],
+                slug=data['slug'],
+                excerpt=data['excerpt'],
+                content=data['content'].strip(),
+                category_id=category.id if category else None,
+                post_type='guide',
+            ))
+            changed += 1
+        elif (guide.content != data['content'].strip()
+              or guide.title != data['title']
+              or guide.excerpt != data['excerpt']):
+            guide.title = data['title']
+            guide.excerpt = data['excerpt']
+            guide.content = data['content'].strip()
+            changed += 1
+    if changed:
         db.session.commit()
-    return added
+    return changed

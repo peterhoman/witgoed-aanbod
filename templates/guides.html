@@ -11,6 +11,15 @@
     <div class="product-grid" style="margin-top: 24px;">
         {% for guide in guides %}
         <article class="product-card">
+            {% set video_id = video_ids.get(guide.id) %}
+            {% if video_id %}
+            <a href="/gidsen/{{ guide.slug }}" class="guide-video-thumb">
+                <img src="https://i.ytimg.com/vi/{{ video_id }}/hqdefault.jpg"
+                     alt="Video: {{ guide.title }}" loading="lazy">
+                <span class="guide-video-play">&#9654;</span>
+                <span class="guide-video-badge">&#9654; Met video</span>
+            </a>
+            {% endif %}
             <div class="product-info">
                 <h3><a href="/gidsen/{{ guide.slug }}">{{ guide.title }}</a></h3>
                 <p class="excerpt">{{ guide.excerpt }}</p>

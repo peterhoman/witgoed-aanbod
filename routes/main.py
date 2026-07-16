@@ -113,10 +113,22 @@ def set_language(lang):
     return response
 
 
+def _guide_video_id(guide):
+    """YouTube-video-ID uit de gidstekst, of None als er geen video in zit.
+
+    Gebruikt voor de thumbnail + 'Met video'-badge in het gidsenoverzicht:
+    gidsen met video moeten daar opvallen tussen de tekstgidsen.
+    """
+    import re
+    m = re.search(r'youtube(?:-nocookie)?\.com/embed/([\w-]+)', guide.content or '')
+    return m.group(1) if m else None
+
+
 @main_bp.route('/gidsen')
 def guides():
     all_guides = Guide.query.filter_by(post_type='guide').order_by(Guide.created_at.desc()).all()
-    return render_template('guides.html', guides=all_guides)
+    video_ids = {g.id: _guide_video_id(g) for g in all_guides}
+    return render_template('guides.html', guides=all_guides, video_ids=video_ids)
 
 
 @main_bp.route('/gidsen/<slug>')

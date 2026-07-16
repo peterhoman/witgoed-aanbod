@@ -18,7 +18,7 @@
     <h1>{{ guide.title }}</h1>
 
     <div class="legal-content">
-        {{ guide.content|safe }}
+        {{ (rendered_content or guide.content)|safe }}
     </div>
 
     {% if guide.category %}

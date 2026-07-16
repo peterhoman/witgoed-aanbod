@@ -50,19 +50,12 @@ NEW_GUIDES = [
     </iframe>
 </div>
 
-<h2>De top 5 in het kort</h2>
-<table class="comparison-table">
-    <thead>
-        <tr><th>#</th><th>Model</th><th>Vulgewicht</th><th>Sterkste punt</th><th>Voor wie</th></tr>
-    </thead>
-    <tbody>
-        <tr><td>1</td><td>Bosch WQH246</td><td>9 kg</td><td>Energielabel B, stilste (59 dB)</td><td>Wie veel droogt</td></tr>
-        <tr><td>2</td><td>LG RHX5010</td><td>10 kg</td><td>De grootste trommel</td><td>Grote gezinnen</td></tr>
-        <tr><td>3</td><td>Samsung 5000-serie</td><td>9 kg</td><td>Degelijke middenklasser</td><td>Vertrouwd merk, nette prijs</td></tr>
-        <tr><td>4</td><td>Beko RecycledDry</td><td>9 kg</td><td>Prijs-kwaliteit</td><td>Gezinnen met budget</td></tr>
-        <tr><td>5</td><td>Hisense DH3S802</td><td>8 kg</td><td>Compleet voor een instapprijs</td><td>Budgetkopers</td></tr>
-    </tbody>
-</table>
+<h2>De top 5 met actuele prijzen</h2>
+<!--productkaart ean=4242005522118 rank=1 label="De beste: energielabel B en de stilste (59 dB)"-->
+<!--productkaart ean=8806096717677 rank=2 label="De grootste: 10 kg, relatief stil (62 dB)"-->
+<!--merkkaart merk=Samsung categorie=drogers naam="Samsung 5000-serie warmtepompdroger" rank=3 label="Degelijke middenklasser, 9 kg"-->
+<!--merkkaart merk=Beko categorie=drogers naam="Beko RecycledDry" rank=4 label="Beste prijs-kwaliteit, 9 kg"-->
+<!--productkaart ean=6901101829627 rank=5 label="Beste koop rond de 500 euro, 8 kg"-->
 
 <h2>1. Bosch WQH246 — de beste: energielabel B en de stilste</h2>
 <p>De enige van deze lijst met <strong>energielabel B</strong> — zuiniger vind je ze nauwelijks — en met 59 dB ook nog eens de stilste. Auto Dry zorgt dat hij nooit langer droogt dan nodig, dus je kleding gaat langer mee. Duurder in aanschaf, maar elke droogbeurt goedkoper: wie veel droogt, verdient het verschil terug (reken het na met onze <a href="/gidsen/energielabel-witgoed-uitgelegd">energielabel-uitleg</a>). Bekijk de actuele prijs van de <a href="/product/bosch-wqh246clnl---warmtepomdroger-9-kg-59-db-ener-4242005522118">Bosch WQH246CLNL</a>.</p>
@@ -119,19 +112,12 @@ NEW_GUIDES = [
     </iframe>
 </div>
 
-<h2>De top 5 in het kort</h2>
-<table class="comparison-table">
-    <thead>
-        <tr><th>#</th><th>Model</th><th>Vulgewicht</th><th>Sterkste punt</th><th>Voor wie</th></tr>
-    </thead>
-    <tbody>
-        <tr><td>1</td><td>Miele W1 WEB 368 PowerWash</td><td>8 kg</td><td>Wasresultaat &amp; levensduur</td><td>Wie &eacute;&eacute;n keer goed wil kopen</td></tr>
-        <tr><td>2</td><td>AEG LR86 PowerCare UniversalDose</td><td>10 kg</td><td>Automatische dosering</td><td>Grote huishoudens, gemak</td></tr>
-        <tr><td>3</td><td>Siemens WG46 iQ500 (1600 rpm)</td><td>9 kg</td><td>Extra droog uit de trommel</td><td>Veel &amp; snel wassen</td></tr>
-        <tr><td>4</td><td>Bosch Serie 6 WGG244</td><td>9 kg</td><td>Prijs-kwaliteit</td><td>Gezinnen</td></tr>
-        <tr><td>5</td><td>Beko B1W764 SteamCure</td><td>7 kg</td><td>Veel waar voor weinig</td><td>1-2 personen, budget</td></tr>
-    </tbody>
-</table>
+<h2>De top 5 met actuele prijzen</h2>
+<!--productkaart ean=4002516896067 rank=1 label="De beste: wasresultaat en levensduur"-->
+<!--productkaart ean=7333394121017 rank=2 label="De slimste: automatische dosering, 10 kg"-->
+<!--productkaart ean=4242003979389 rank=3 label="De krachtpatser: 1600 toeren, 9 kg"-->
+<!--productkaart ean=4242005445912 rank=4 label="Beste prijs-kwaliteit voor gezinnen, 9 kg"-->
+<!--merkkaart merk=Beko categorie=wasmachines naam="Beko B1W764 SteamCure" rank=5 label="Beste koop onder de 400 euro, 7 kg"-->
 
 <h2>1. Miele W1 WEB 368 WCS PowerWash — de beste</h2>
 <p>Niet de grootste van de lijst (8 kg), wel de beste. PowerWash mengt water en wasmiddel vooraf en sproeit het diep in de vezels: schoner wasgoed, ook op korte programma's. En Miele bouwt zijn machines om twintig jaar mee te gaan — duurder in aanschaf, maar per jaar gerekend waarschijnlijk de goedkoopste machine die je kunt kopen. Bekijk de actuele prijs van de <a href="/product/miele-web-368-wcs-powerwash-4002516896067">Miele WEB 368 WCS PowerWash</a>.</p>

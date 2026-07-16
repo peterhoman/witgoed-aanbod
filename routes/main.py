@@ -122,7 +122,9 @@ def guides():
 @main_bp.route('/gidsen/<slug>')
 def guide_detail(slug):
     guide = Guide.query.filter_by(slug=slug).first_or_404()
-    return render_template('guide_detail.html', guide=guide)
+    from guide_cards import render_guide_content
+    return render_template('guide_detail.html', guide=guide,
+                           rendered_content=render_guide_content(guide.content))
 
 
 @main_bp.route('/blog')

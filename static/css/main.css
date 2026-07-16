@@ -1190,6 +1190,85 @@ section h2 {
     line-height: 1.5;
 }
 
+/* --- Productkaarten in koopgidsen (toplijst met live prijzen) --- */
+.top-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin: 12px 0;
+    background: #fff;
+}
+
+.top-card-rank {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.top-card-img {
+    flex: 0 0 auto;
+    width: 84px;
+    height: 84px;
+    object-fit: contain;
+}
+
+.top-card-info {
+    flex: 1 1 200px;
+    min-width: 0;
+}
+
+.top-card-label {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    background: var(--secondary-light);
+    border-radius: 10px;
+    padding: 2px 10px;
+    margin-bottom: 4px;
+}
+
+.top-card-title {
+    display: block;
+    font-size: 15px;
+    line-height: 1.35;
+    margin-bottom: 4px;
+}
+
+.top-card-price {
+    font-size: 14px;
+}
+
+.top-card-price small {
+    color: var(--gray);
+}
+
+.top-card-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .top-card {
+        flex-wrap: wrap;
+    }
+    .top-card-btn {
+        flex-basis: 100%;
+        text-align: center;
+    }
+}
+
 /* --- Uitlegvideo (homepage) --- */
 .video-section {
     margin-top: 40px;

@@ -53,8 +53,8 @@ NEW_GUIDES = [
 <h2>De top 5 met actuele prijzen</h2>
 <!--productkaart ean=4242005522118 rank=1 label="De beste: energielabel B en de stilste (59 dB)"-->
 <!--productkaart ean=8806096717677 rank=2 label="De grootste: 10 kg, relatief stil (62 dB)"-->
-<!--productkaart ean=8806099109806 rank=3 label="Degelijke middenklasser (8 kg-uitvoering)"-->
-<!--productkaart ean=8690842722806 rank=4 label="Beste prijs-kwaliteit (8 kg-uitvoering)"-->
+<!--productkaart ean=8806099109806 rank=3 label="Degelijke middenklasser, 8 kg"-->
+<!--productkaart ean=8690842722806 rank=4 label="Beste prijs-kwaliteit, 8 kg"-->
 <!--productkaart ean=6901101829627 rank=5 label="Beste koop rond de 500 euro, 8 kg"-->
 
 <h2>1. Bosch WQH246 — de beste: energielabel B en de stilste</h2>
@@ -63,8 +63,8 @@ NEW_GUIDES = [
 <h2>2. LG RHX5010 — de grootste</h2>
 <p>10 kg vulgewicht, de grootste van deze top 5: een tweepersoons dekbedovertrek of de weekwas van een groot gezin gaat er in &eacute;&eacute;n keer in. En met 62 dB is hij ook nog eens relatief stil. Voor wie nooit meer in twee rondes wil drogen. Bekijk de actuele prijs van de <a href="/product/lg-rhx5010thb---warmtepompdroger-10-62-energielabe-8806096717677">LG RHX5010THB</a>.</p>
 
-<h2>3. Samsung 5000-serie — de degelijke middenklasser</h2>
-<p>Een inverter-motor die zuiniger werkt en langer meegaat: een degelijke middenklasser van een vertrouwd merk, voor een nette prijs. Wij vergelijken de 8 kg-uitvoering: bekijk de actuele prijs van de <a href="/product/samsung-dv80dg52b0aeen-8806099109806">Samsung DV80DG52B0 (5000-serie)</a>, of het volledige <a href="/category/drogers?brand=Samsung">Samsung-drogeraanbod</a> voor andere formaten.</p>
+<h2>3. Samsung DV80DG52 (5000-serie) — de degelijke middenklasser</h2>
+<p>8 kg vulgewicht en OptimalDry-sensoren die het droogproces bijsturen zodat je was niet langer draait dan nodig: een degelijke middenklasser van een vertrouwd merk, voor een nette prijs. Bekijk de actuele prijs van de <a href="/product/samsung-dv80dg52b0aeen-8806099109806">Samsung DV80DG52B0 (5000-serie)</a>, of het volledige <a href="/category/drogers?brand=Samsung">Samsung-drogeraanbod</a> voor andere formaten.</p>
 
 <h2>4. Beko RecycledDry — beste prijs-kwaliteit</h2>
 <p>De RecycledDry-lijn combineert een scherpe prijs met de EcoGentle-technologie, die je was extra voorzichtig droogt zodat ook fijne kleding veilig de droger in kan. Wij vergelijken de 8 kg-uitvoering: bekijk de actuele prijs van de <a href="/product/beko-bm3t3823wmm-recycleddry---warmtepompdroger-8--8690842722806">Beko BM3T3823WMM RecycledDry</a>, of het volledige <a href="/category/drogers?brand=Beko">Beko-drogeraanbod</a>.</p>

@@ -15,7 +15,7 @@ TRANSLATIONS = {
         'nav.privacy': 'Privacy',
         'nav.disclaimer': 'Disclaimer',
         'nav.contact': 'Contact',
-        'nav.guides': 'Gidsen',
+        'nav.guides': 'Koopgidsen',
 
         # Category nav (also reused in footer)
         'nav.wasmachines': 'Wasmachines',
@@ -154,7 +154,7 @@ TRANSLATIONS = {
         'nav.privacy': 'Privacy',
         'nav.disclaimer': 'Disclaimer',
         'nav.contact': 'Contact',
-        'nav.guides': 'Guides',
+        'nav.guides': 'Buying guides',
 
         'nav.wasmachines': 'Washing Machines',
         'nav.drogers': 'Dryers',

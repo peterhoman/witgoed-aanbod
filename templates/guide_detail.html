@@ -17,6 +17,10 @@
 
     <h1>{{ guide.title }}</h1>
 
+    <p class="guide-author">Door de redactie van <strong>WitgoedAanbod.nl</strong>
+        — onderdeel van Avantius, ruim 20 jaar actief in huishoudelijke apparaten
+        {%- if guide.created_at %} · gepubliceerd {{ guide.created_at.strftime('%d-%m-%Y') }}{% endif %}</p>
+
     <div class="legal-content">
         {{ (rendered_content or guide.content)|safe }}
     </div>
@@ -36,7 +40,9 @@
     "description": "{{ guide.excerpt }}",
     "datePublished": "{{ guide.created_at.strftime('%Y-%m-%d') if guide.created_at }}",
     "inLanguage": "nl-NL",
-    "author": {"@type": "Organization", "name": "WitgoedAanbod.nl"},
+    "author": {"@type": "Organization", "name": "WitgoedAanbod.nl",
+               "url": "{{ config.SITE_URL }}/over-ons",
+               "parentOrganization": {"@type": "Organization", "name": "Avantius"}},
     "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl", "url": "{{ config.SITE_URL }}/"},
     "mainEntityOfPage": "{{ request.url }}"
 }

@@ -51,11 +51,11 @@ NEW_GUIDES = [
 </div>
 
 <h2>De top 5 met actuele prijzen</h2>
-<!--productkaart ean=8592344700514 rank=1 label="De blikvanger: Amerikaans, 559 liter"-->
-<!--productkaart ean=4242005517169 rank=2 label="Inbouw: bespaart tot &euro;640 over de levensduur"-->
-<!--productkaart ean=4242005254330 rank=3 label="D&eacute; gezins-allrounder: 337 l, VitaFresh"-->
-<!--productkaart ean=8592344703225 rank=4 label="Beste compacte combi: 231 l, No Frost"-->
-<!--productkaart ean=8712876501681 rank=5 label="Tafelmodel: &plusmn; &euro;33 stroom per jaar"-->
+<!--productkaart ean=8592344700514 rank=1 label="De blikvanger: Amerikaans, 559 liter" pros="559 liter: voorraad voor een heel gezin|Scherpe prijs voor een Amerikaans model|No Frost" cons="Ruim 100 euro stroom per jaar"-->
+<!--productkaart ean=4242005517169 rank=2 label="Inbouw: bespaart tot &euro;640 over de levensduur" pros="Zeer zuinig: tot 640 euro besparing over de levensduur|Verdwijnt naadloos in het keukenblok" cons="Duurste van deze top 5"-->
+<!--productkaart ean=4242005254330 rank=3 label="D&eacute; gezins-allrounder: 337 l, VitaFresh" pros="VitaFresh houdt groente en fruit langer vers|337 liter en toch maar 60 cm breed" cons="Vriesdeel zonder volledige No Frost"-->
+<!--productkaart ean=8592344703225 rank=4 label="Beste compacte combi: 231 l, No Frost" pros="No Frost voor nog geen 400 euro|Compact: ideaal voor 1-2 personen" cons="Energielabel E: zo'n 80 euro stroom per jaar"-->
+<!--productkaart ean=8712876501681 rank=5 label="Tafelmodel: &plusmn; &euro;33 stroom per jaar" pros="Heel zuinig: circa 33 euro stroom per jaar|Goedkoopste van de lijst, met vriesvak" cons="80 liter: alleen voor kleine huishoudens"-->
 
 <h2>1. CHiQ Amerikaanse koelkast (559 l) — de blikvanger</h2>
 <p>Maar liefst 559 liter, No Frost en plek voor de boodschappen van een heel gezin — voor ruim &euro; 600, waar Amerikaanse koelkasten normaal ver boven de duizend zitten. Wel eerlijk: 362 kWh per jaar is ruim &euro; 100 aan stroom. Grote koelkast, groter verbruik — dat is de afweging. Bekijk de actuele prijs van de <a href="/product/chiq-fss559nei42d---amerikaanse-koelkast---559-lit-8592344700514">CHiQ FSS559NEI42D</a>.</p>
@@ -76,6 +76,26 @@ NEW_GUIDES = [
 <p>Voor elk huishouden &eacute;&eacute;n: van de compacte Tomado tot de Amerikaanse CHiQ. Twijfel je nog over inhoud, No Frost of inbouw versus vrijstaand? Lees dan onze <a href="/gidsen/koelkast-kopen-complete-gids">complete koelkast-koopgids</a>. En omdat een koelkast nooit uitstaat: reken v&oacute;&oacute;r de aankoop even het stroomverbruik na met onze <a href="/gidsen/stroomverbruik-koelkast-per-jaar">verbruiksgids</a> — het verschil tussen twee modellen loopt over vijftien jaar flink op.</p>
 
 <p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/koelkasten">categorie koelkasten</a> zie je van al deze modellen de actuele prijs bij de grote webshops, m&eacute;t prijsverloop per apparaat — zo koop je op het juiste moment.</p>
+
+<h2>Veelgestelde vragen</h2>
+<h3>Wat is de beste koelkast van 2026?</h3>
+<p>Dat hangt van je huishouden af — daarom kozen we per type een winnaar. De blikvanger is de CHiQ Amerikaanse koelkast (559 l), de zuinigste is de Bosch KIN86-inbouw, en d&eacute; gezins-allrounder is de Bosch KGE398 met VitaFresh.</p>
+<h3>Hoeveel stroom verbruikt een koelkast per jaar?</h3>
+<p>Een moderne, zuinige koelkast kost zo'n &euro; 30-75 per jaar aan stroom; oude of grote modellen al snel het dubbele. Reken het na met onze gids <a href="/gidsen/stroomverbruik-koelkast-per-jaar">stroomverbruik van een koelkast</a>.</p>
+<h3>Wat is No Frost?</h3>
+<p>No Frost voorkomt ijsvorming door lucht te laten circuleren, zodat je nooit meer hoeft te ontdooien. Het zit op de CHiQ-modellen uit deze top 5; bij modellen zonder No Frost ontdooi je het vriesvak een paar keer per jaar zelf.</p>
+<h3>Hoeveel liter inhoud heb ik nodig?</h3>
+<p>Tot 100 liter is een tafelmodel of bijzetkoelkast, 150-250 liter past bij 1-2 personen, 250-350 liter bij een gezin, en daarboven zit je in de categorie grote huishoudens en voorraadkopers.</p>
+<h3>Kan een koelkast in de garage of schuur?</h3>
+<p>Alleen als de klimaatklasse dat toelaat: buiten het opgegeven temperatuurbereik werkt een koelkast minder goed of zelfs niet. Check dit v&oacute;&oacute;r aankoop; meer hierover in onze <a href="/gidsen/koelkast-kopen-complete-gids">complete koelkast-koopgids</a>.</p>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Wat is de beste koelkast van 2026?","acceptedAnswer":{"@type":"Answer","text":"Dat hangt van je huishouden af — daarom kozen we per type een winnaar. De blikvanger is de CHiQ Amerikaanse koelkast (559 l), de zuinigste is de Bosch KIN86-inbouw, en dé gezins-allrounder is de Bosch KGE398 met VitaFresh."}},
+{"@type":"Question","name":"Hoeveel stroom verbruikt een koelkast per jaar?","acceptedAnswer":{"@type":"Answer","text":"Een moderne, zuinige koelkast kost zo'n €30-75 per jaar aan stroom; oude of grote modellen al snel het dubbele."}},
+{"@type":"Question","name":"Wat is No Frost?","acceptedAnswer":{"@type":"Answer","text":"No Frost voorkomt ijsvorming door lucht te laten circuleren, zodat je nooit meer hoeft te ontdooien. Bij modellen zonder No Frost ontdooi je het vriesvak een paar keer per jaar zelf."}},
+{"@type":"Question","name":"Hoeveel liter inhoud heb ik nodig?","acceptedAnswer":{"@type":"Answer","text":"Tot 100 liter is een tafelmodel of bijzetkoelkast, 150-250 liter past bij 1-2 personen, 250-350 liter bij een gezin, en daarboven zit je in de categorie grote huishoudens en voorraadkopers."}},
+{"@type":"Question","name":"Kan een koelkast in de garage of schuur?","acceptedAnswer":{"@type":"Answer","text":"Alleen als de klimaatklasse dat toelaat: buiten het opgegeven temperatuurbereik werkt een koelkast minder goed of zelfs niet. Check dit vóór aankoop."}}]}
+</script>
 """,
     },
     {
@@ -113,11 +133,11 @@ NEW_GUIDES = [
 </div>
 
 <h2>De top 5 met actuele prijzen</h2>
-<!--productkaart ean=4002516915669 rank=1 label="De beste: energielabel A, doseert zelf"-->
-<!--productkaart ean=4242005417421 rank=2 label="De stilste: 40 dB, volledig integreerbaar"-->
-<!--productkaart ean=8003437611865 rank=3 label="De gezinsvriend: 14 couverts, vrijstaand"-->
-<!--productkaart ean=8690842609008 rank=4 label="Beste betaalbare inbouw: 15 couverts"-->
-<!--productkaart ean=8712876150315 rank=5 label="Kleine keuken: 45 cm breed, 10 couverts"-->
+<!--productkaart ean=4002516915669 rank=1 label="De beste: energielabel A, doseert zelf" pros="Energielabel A: zuinigste van de lijst|AutoDos doseert het wasmiddel automatisch" cons="Hoogste aanschafprijs"-->
+<!--productkaart ean=4242005417421 rank=2 label="De stilste: 40 dB, volledig integreerbaar" pros="De stilste: 40 dB|PerfectDry: vaat komt echt droog uit de machine" cons="Inbouwmodel: montage in het keukenblok nodig"-->
+<!--productkaart ean=8003437611865 rank=3 label="De gezinsvriend: 14 couverts, vrijstaand" pros="14 couverts, flexibel in te delen met FlexiSpace|Verrassend nette prijs" cons="Alleen als vrijstaand model leverbaar"-->
+<!--productkaart ean=8690842609008 rank=4 label="Beste betaalbare inbouw: 15 couverts" pros="15 couverts: grootste capaciteit van de lijst|CornerIntense-sproeiarm komt ook in de hoeken" cons="Iets minder stil dan de nummer 2 (42 dB)"-->
+<!--productkaart ean=8712876150315 rank=5 label="Kleine keuken: 45 cm breed, 10 couverts" pros="Slechts 45 cm breed: past bijna overal|Goedkoopste van de lijst" cons="10 couverts: beperkte capaciteit"-->
 
 <h2>1. Miele G 7040 AutoDos — de beste</h2>
 <p>Energielabel A — de zuinigste van deze lijst — en hij doseert zijn wasmiddel automatisch met een PowerDisk die je maar af en toe hoeft te vervangen. Leuk detail: wij vonden deze machine bij twee webshops met &euro; 16 prijsverschil — vergelijken loont dus zeker in deze prijsklasse. Bekijk de actuele prijzen van de <a href="/product/miele-g-7040-sc-autodos---vrijstaande-vaatwasser-s-4002516915669">Miele G 7040 SC AutoDos</a>.</p>
@@ -138,6 +158,26 @@ NEW_GUIDES = [
 <p>Voor elke keuken zit er &eacute;&eacute;n tussen: van de compacte Inventum tot de zelfdoserende Miele. Wil je weten waar alle specificaties voor staan — couverts, programma's, bestekla — lees dan onze <a href="/gidsen/vaatwasser-kopen-complete-gids">complete vaatwasser-koopgids</a>, en waarom het energielabel bij een dagelijks draaiend apparaat extra telt lees je in de <a href="/gidsen/energielabel-witgoed-uitgelegd">energielabel-uitleg</a>.</p>
 
 <p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/vaatwassers">categorie vaatwassers</a> zie je van al deze machines de actuele prijs bij de grote webshops, m&eacute;t prijsverloop per apparaat — zo koop je op het juiste moment.</p>
+
+<h2>Veelgestelde vragen</h2>
+<h3>Wat is de beste vaatwasser van 2026?</h3>
+<p>De Miele G 7040 AutoDos is volgens ons de beste vaatwasser van dit moment: energielabel A en automatische wasmiddeldosering. De stilste keuze is de Bosch SMV6ZCX13 met slechts 40 dB.</p>
+<h3>Hoeveel couverts heb ik nodig?</h3>
+<p>10-12 couverts volstaat voor 1-2 personen, 12-14 past bij een gezin, en 15 couverts (zoals de Beko in deze lijst) is fijn voor grote huishoudens of wie graag pannen meewast.</p>
+<h3>Hoeveel dB is een stille vaatwasser?</h3>
+<p>Onder de 45 dB is stil genoeg voor een open keuken; rond de 40 dB (zoals de Bosch uit deze top 5) hoor je de machine nauwelijks nog.</p>
+<h3>Kies ik 45 of 60 cm breed?</h3>
+<p>60 cm is de standaard en biedt de meeste capaciteit. Een smalle 45 cm-vaatwasser (zoals de Inventum) is de oplossing voor kleine keukens of huishoudens van 1-2 personen.</p>
+<h3>Is een vaatwasser zuiniger dan handafwassen?</h3>
+<p>Meestal wel: een moderne vaatwasser gebruikt zo'n 9-10 liter water per beurt — vaak minder dan afwassen met de kraan open. Kijk wel naar het energielabel; zie onze <a href="/gidsen/energielabel-witgoed-uitgelegd">energielabel-uitleg</a>.</p>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Wat is de beste vaatwasser van 2026?","acceptedAnswer":{"@type":"Answer","text":"De Miele G 7040 AutoDos is volgens ons de beste vaatwasser van dit moment: energielabel A en automatische wasmiddeldosering. De stilste keuze is de Bosch SMV6ZCX13 met slechts 40 dB."}},
+{"@type":"Question","name":"Hoeveel couverts heb ik nodig?","acceptedAnswer":{"@type":"Answer","text":"10-12 couverts volstaat voor 1-2 personen, 12-14 past bij een gezin, en 15 couverts is fijn voor grote huishoudens of wie graag pannen meewast."}},
+{"@type":"Question","name":"Hoeveel dB is een stille vaatwasser?","acceptedAnswer":{"@type":"Answer","text":"Onder de 45 dB is stil genoeg voor een open keuken; rond de 40 dB hoor je de machine nauwelijks nog."}},
+{"@type":"Question","name":"Kies ik 45 of 60 cm breed?","acceptedAnswer":{"@type":"Answer","text":"60 cm is de standaard en biedt de meeste capaciteit. Een smalle 45 cm-vaatwasser is de oplossing voor kleine keukens of huishoudens van 1-2 personen."}},
+{"@type":"Question","name":"Is een vaatwasser zuiniger dan handafwassen?","acceptedAnswer":{"@type":"Answer","text":"Meestal wel: een moderne vaatwasser gebruikt zo'n 9-10 liter water per beurt — vaak minder dan afwassen met de kraan open."}}]}
+</script>
 """,
     },
     {
@@ -175,11 +215,11 @@ NEW_GUIDES = [
 </div>
 
 <h2>De top 5 met actuele prijzen</h2>
-<!--productkaart ean=4242005522118 rank=1 label="De beste: energielabel B en de stilste (59 dB)"-->
-<!--productkaart ean=8806096717677 rank=2 label="De grootste: 10 kg, relatief stil (62 dB)"-->
-<!--productkaart ean=8806099109806 rank=3 label="Degelijke middenklasser, 8 kg"-->
-<!--productkaart ean=8690842722806 rank=4 label="Beste prijs-kwaliteit, 8 kg"-->
-<!--productkaart ean=6901101829627 rank=5 label="Beste koop rond de 500 euro, 8 kg"-->
+<!--productkaart ean=4242005522118 rank=1 label="De beste: energielabel B en de stilste (59 dB)" pros="Energielabel B: de zuinigste van de lijst|Stilste: 59 dB|Auto Dry droogt nooit langer dan nodig" cons="Duurste van deze top 5"-->
+<!--productkaart ean=8806096717677 rank=2 label="De grootste: 10 kg, relatief stil (62 dB)" pros="10 kg: dekbedovertrek in één beurt|Relatief stil (62 dB)" cons="Verbruikt meer dan de nummer 1 (energielabel C)"-->
+<!--productkaart ean=8806099109806 rank=3 label="Degelijke middenklasser, 8 kg" pros="OptimalDry-sensoren stoppen precies op tijd|Vertrouwd merk voor een nette prijs" cons="8 kg: kleiner dan de top 2"-->
+<!--productkaart ean=8690842722806 rank=4 label="Beste prijs-kwaliteit, 8 kg" pros="Scherpe prijs|EcoGentle: zacht voor fijne was" cons="Energielabel D: hogere stroomkosten"-->
+<!--productkaart ean=6901101829627 rank=5 label="Beste koop rond de 500 euro, 8 kg" pros="Complete droger voor een instapprijs|Allergy Care-programma tegen huisstofmijt" cons="Minder stil (64 dB)"-->
 
 <h2>1. Bosch WQH246 — de beste: energielabel B en de stilste</h2>
 <p>De enige van deze lijst met <strong>energielabel B</strong> — zuiniger vind je ze nauwelijks — en met 59 dB ook nog eens de stilste. Auto Dry zorgt dat hij nooit langer droogt dan nodig, dus je kleding gaat langer mee. Duurder in aanschaf, maar elke droogbeurt goedkoper: wie veel droogt, verdient het verschil terug (reken het na met onze <a href="/gidsen/energielabel-witgoed-uitgelegd">energielabel-uitleg</a>). Bekijk de actuele prijs van de <a href="/product/bosch-wqh246clnl---warmtepomdroger-9-kg-59-db-ener-4242005522118">Bosch WQH246CLNL</a>.</p>
@@ -200,6 +240,26 @@ NEW_GUIDES = [
 <p>Voor elk huishouden zit er &eacute;&eacute;n tussen: van de voordelige Hisense tot de zuinige Bosch. Twijfel je nog over het type of wil je weten waar de specificaties voor staan? Lees dan onze <a href="/gidsen/droger-kopen-waar-op-letten">complete droger-koopgids</a> en de vergelijking <a href="/gidsen/warmtepompdroger-of-condensdroger">warmtepompdroger of condensdroger</a>.</p>
 
 <p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/drogers">categorie drogers</a> zie je van al deze drogers de actuele prijs bij de grote webshops, m&eacute;t prijsverloop per apparaat — zo koop je op het juiste moment.</p>
+
+<h2>Veelgestelde vragen</h2>
+<h3>Wat is de beste droger van 2026?</h3>
+<p>De Bosch WQH246 is volgens ons de beste droger van dit moment: energielabel B (zuiniger vind je ze nauwelijks) en met 59 dB ook de stilste. De beste budgetkoop is de Hisense DH3S802, rond de &euro; 500.</p>
+<h3>Warmtepompdroger of condensdroger?</h3>
+<p>Voor vrijwel iedereen die minstens twee keer per week droogt: de warmtepompdroger. Die verbruikt grofweg een derde van de stroom van een condensdroger. De volledige rekensom staat in onze gids <a href="/gidsen/warmtepompdroger-of-condensdroger">warmtepompdroger of condensdroger</a>.</p>
+<h3>Wat kost een droogbeurt aan stroom?</h3>
+<p>Met een warmtepompdroger zo'n &euro; 0,45 per beurt; met een oude condensdroger circa &euro; 1,20. Bij drie beurten per week scheelt dat al gauw ruim &euro; 100 per jaar.</p>
+<h3>Waarom droogt een warmtepompdroger langzamer?</h3>
+<p>Omdat hij op lagere temperatuur droogt: een beurt duurt 2 tot 3 uur. Dat is bewust — het is juist zachter voor je kleding, en per beurt goedkoper.</p>
+<h3>Welke maat droger heb ik nodig?</h3>
+<p>Kies een droger met een vulgewicht gelijk aan of iets groter dan je wasmachine, zodat een volle wasbeurt in &eacute;&eacute;n keer de droger in kan.</p>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Wat is de beste droger van 2026?","acceptedAnswer":{"@type":"Answer","text":"De Bosch WQH246 is volgens ons de beste droger van dit moment: energielabel B en met 59 dB ook de stilste. De beste budgetkoop is de Hisense DH3S802, rond de €500."}},
+{"@type":"Question","name":"Warmtepompdroger of condensdroger?","acceptedAnswer":{"@type":"Answer","text":"Voor vrijwel iedereen die minstens twee keer per week droogt: de warmtepompdroger. Die verbruikt grofweg een derde van de stroom van een condensdroger."}},
+{"@type":"Question","name":"Wat kost een droogbeurt aan stroom?","acceptedAnswer":{"@type":"Answer","text":"Met een warmtepompdroger zo'n €0,45 per beurt; met een oude condensdroger circa €1,20. Bij drie beurten per week scheelt dat al gauw ruim €100 per jaar."}},
+{"@type":"Question","name":"Waarom droogt een warmtepompdroger langzamer?","acceptedAnswer":{"@type":"Answer","text":"Omdat hij op lagere temperatuur droogt: een beurt duurt 2 tot 3 uur. Dat is bewust — het is juist zachter voor je kleding, en per beurt goedkoper."}},
+{"@type":"Question","name":"Welke maat droger heb ik nodig?","acceptedAnswer":{"@type":"Answer","text":"Kies een droger met een vulgewicht gelijk aan of iets groter dan je wasmachine, zodat een volle wasbeurt in één keer de droger in kan."}}]}
+</script>
 """,
     },
     {
@@ -237,11 +297,11 @@ NEW_GUIDES = [
 </div>
 
 <h2>De top 5 met actuele prijzen</h2>
-<!--productkaart ean=4002516896067 rank=1 label="De beste: wasresultaat en levensduur"-->
-<!--productkaart ean=7333394121017 rank=2 label="De slimste: automatische dosering, 10 kg"-->
-<!--productkaart ean=4242003979389 rank=3 label="De krachtpatser: 1600 toeren, 9 kg"-->
-<!--productkaart ean=4242005445912 rank=4 label="Beste prijs-kwaliteit voor gezinnen, 9 kg"-->
-<!--productkaart ean=8690842820250 rank=5 label="Beste koop onder de 400 euro, 7 kg"-->
+<!--productkaart ean=4002516896067 rank=1 label="De beste: wasresultaat en levensduur" pros="PowerWash wast schoner, ook op korte programma's|Gebouwd om 20 jaar mee te gaan" cons="Hoogste aanschafprijs van deze lijst"-->
+<!--productkaart ean=7333394121017 rank=2 label="De slimste: automatische dosering, 10 kg" pros="Doseert wasmiddel automatisch|Grootste trommel van de lijst (10 kg)" cons="Fors duurder dan de middenklasse"-->
+<!--productkaart ean=4242003979389 rank=3 label="De krachtpatser: 1600 toeren, 9 kg" pros="1600 toeren: was komt extra droog uit de trommel|Netjes stil bij centrifugeren (73 dB)" cons="Hoog toerental is zwaarder voor kwetsbaar textiel"-->
+<!--productkaart ean=4242005445912 rank=4 label="Beste prijs-kwaliteit voor gezinnen, 9 kg" pros="9 kg vulgewicht voor onder de 600 euro|Iron Assist: minder kreukels in overhemden" cons="Geen automatische wasmiddeldosering"-->
+<!--productkaart ean=8690842820250 rank=5 label="Beste koop onder de 400 euro, 7 kg" pros="Energielabel A in de budgetklasse|SteamCure: kleding opfrissen met stoom" cons="7 kg is krap voor grote gezinnen"-->
 
 <h2>1. Miele W1 WEB 368 WCS PowerWash — de beste</h2>
 <p>Niet de grootste van de lijst (8 kg), wel de beste. PowerWash mengt water en wasmiddel vooraf en sproeit het diep in de vezels: schoner wasgoed, ook op korte programma's. En Miele bouwt zijn machines om twintig jaar mee te gaan — duurder in aanschaf, maar per jaar gerekend waarschijnlijk de goedkoopste machine die je kunt kopen. Bekijk de actuele prijs van de <a href="/product/miele-web-368-wcs-powerwash-4002516896067">Miele WEB 368 WCS PowerWash</a>.</p>
@@ -262,6 +322,26 @@ NEW_GUIDES = [
 <p>Voor elk huishouden zit er &eacute;&eacute;n tussen: van de voordelige Beko tot de onverwoestbare Miele. Twijfel je over het juiste vulgewicht? Lees dan onze gids <a href="/gidsen/wasmachine-8-of-9-kg">wasmachine van 8 of 9 kg</a>. Wil je weten wat de specificaties precies betekenen, dan helpt de <a href="/gidsen/wasmachine-kopen-waar-op-letten">complete wasmachine-koopgids</a>, en waarom het energielabel zich terugverdient lees je in onze <a href="/gidsen/energielabel-witgoed-uitgelegd">uitleg over energielabels</a>.</p>
 
 <p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/wasmachines">categorie wasmachines</a> zie je van al deze machines de actuele prijs bij de grote webshops, m&eacute;t prijsverloop per apparaat — zo koop je op het juiste moment.</p>
+
+<h2>Veelgestelde vragen</h2>
+<h3>Wat is de beste wasmachine van 2026?</h3>
+<p>De Miele W1 WEB 368 PowerWash is volgens ons de beste wasmachine van dit moment: het beste wasresultaat en gebouwd om twintig jaar mee te gaan. Zoek je de beste prijs-kwaliteit, dan is de Bosch Serie 6 WGG244 de slimste keuze.</p>
+<h3>Hoeveel kg vulgewicht heb ik nodig?</h3>
+<p>Als vuistregel: 7 kg volstaat voor 1-2 personen, 8-9 kg past bij een gezin, en 10 kg of meer is handig voor grote gezinnen of wie beddengoed in &eacute;&eacute;n beurt wil wassen. Lees ook onze gids <a href="/gidsen/wasmachine-8-of-9-kg">wasmachine van 8 of 9 kg</a>.</p>
+<h3>Welk toerental moet mijn wasmachine hebben?</h3>
+<p>1400 toeren is voor vrijwel iedereen de goede middenweg. Kies 1600 toeren als je was extra droog uit de trommel wilt, bijvoorbeeld omdat de droger dan korter hoeft te draaien.</p>
+<h3>Wat kost een goede wasmachine?</h3>
+<p>In deze top 5 loopt het van zo'n &euro; 400 (Beko B1W764) tot ruim &euro; 1.000 (Miele). Prijzen veranderen dagelijks; op deze pagina zie je altijd de actuele laagste prijs per machine.</p>
+<h3>Hoe belangrijk is het energielabel bij een wasmachine?</h3>
+<p>Belangrijker dan het lijkt: een zuinige machine bespaart over een levensduur van 10-15 jaar al snel honderden euro's aan stroom. In onze <a href="/gidsen/energielabel-witgoed-uitgelegd">energielabel-uitleg</a> lees je hoe je dat narekent.</p>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Wat is de beste wasmachine van 2026?","acceptedAnswer":{"@type":"Answer","text":"De Miele W1 WEB 368 PowerWash is volgens ons de beste wasmachine van dit moment: het beste wasresultaat en gebouwd om twintig jaar mee te gaan. Zoek je de beste prijs-kwaliteit, dan is de Bosch Serie 6 WGG244 de slimste keuze."}},
+{"@type":"Question","name":"Hoeveel kg vulgewicht heb ik nodig?","acceptedAnswer":{"@type":"Answer","text":"Als vuistregel: 7 kg volstaat voor 1-2 personen, 8-9 kg past bij een gezin, en 10 kg of meer is handig voor grote gezinnen of wie beddengoed in één beurt wil wassen."}},
+{"@type":"Question","name":"Welk toerental moet mijn wasmachine hebben?","acceptedAnswer":{"@type":"Answer","text":"1400 toeren is voor vrijwel iedereen de goede middenweg. Kies 1600 toeren als je was extra droog uit de trommel wilt, bijvoorbeeld omdat de droger dan korter hoeft te draaien."}},
+{"@type":"Question","name":"Wat kost een goede wasmachine?","acceptedAnswer":{"@type":"Answer","text":"In deze top 5 loopt het van zo'n €400 (Beko B1W764) tot ruim €1.000 (Miele). Prijzen veranderen dagelijks; op witgoedaanbod.nl zie je altijd de actuele laagste prijs per machine."}},
+{"@type":"Question","name":"Hoe belangrijk is het energielabel bij een wasmachine?","acceptedAnswer":{"@type":"Answer","text":"Belangrijker dan het lijkt: een zuinige machine bespaart over een levensduur van 10-15 jaar al snel honderden euro's aan stroom."}}]}
+</script>
 """,
     },
     {

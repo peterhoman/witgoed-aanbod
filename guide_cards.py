@@ -8,18 +8,22 @@ live uit de database komen in plaats van hardgecodeerd.
 
 Twee varianten:
 
-  <!--productkaart ean=4242005522118 rank=1 label="De beste"-->
+  <!--productkaart ean=4242005522118 rank=1 label="De beste" pros="Energielabel B|Stilste: 59 dB" cons="Duurste van de lijst"-->
       Kaart op basis van een apparaat in de database (EAN). Toont foto,
       titel, laagste prijs + aantal winkels en een knop naar de
       productpagina. Is het apparaat (tijdelijk) niet leverbaar, dan
       wordt de kaart stilletjes overgeslagen: liever geen kaart dan een
-      dode knop.
+      dode knop. Optionele pros/cons (gescheiden met |) verschijnen als
+      plus- en minpunten op de kaart en worden verzameld tot Pros & Cons
+      structured data (Google's rich result voor redactionele reviews) —
+      zichtbare tekst en schema blijven zo automatisch synchroon.
 
   <!--merkkaart merk=Samsung categorie=drogers naam="Samsung 5000-serie" rank=3 label="Middenklasser"-->
       Kaart zonder specifiek apparaat; de knop wijst naar het merkfilter
       in de categorie. Voor modellen uit een video die (nog) niet exact
       op de site staan.
 """
+import json
 import re
 from html import escape
 
@@ -40,9 +44,15 @@ def _euro(bedrag):
     return s[:-3] if s.endswith(',00') else s
 
 
-def _kaart_html(rank, label, titel, url, foto, prijsregel, knoptekst):
+def _kaart_html(rank, label, titel, url, foto, prijsregel, knoptekst,
+                pros=(), cons=()):
     foto_html = (f'<img src="{escape(foto, quote=True)}" alt="{escape(titel, quote=True)}" '
                  f'loading="lazy" class="top-card-img">' if foto else '')
+    notes = ''
+    if pros or cons:
+        items = ''.join(f'<span class="note-pro">&#10003; {escape(p)}</span>' for p in pros)
+        items += ''.join(f'<span class="note-con">&minus; {escape(c)}</span>' for c in cons)
+        notes = f'<div class="top-card-notes">{items}</div>'
     return (
         f'<div class="top-card">'
         f'<span class="top-card-rank">{rank}</span>'
@@ -51,26 +61,36 @@ def _kaart_html(rank, label, titel, url, foto, prijsregel, knoptekst):
         f'<span class="top-card-label">{escape(label)}</span>'
         f'<strong class="top-card-title">{escape(titel)}</strong>'
         f'{prijsregel}'
+        f'{notes}'
         f'</div>'
         f'<a href="{escape(url, quote=True)}" class="btn-primary top-card-btn">{escape(knoptekst)} &rarr;</a>'
         f'</div>'
     )
 
 
-def _render_productkaart(match):
+def _split_notes(waarde):
+    return tuple(s.strip() for s in (waarde or '').split('|') if s.strip())
+
+
+def _render_productkaart(match, verzameld=None):
     a = _attrs(match.group(1))
     product = Product.query.filter_by(ean=a.get('ean', ''), is_available=True).first()
     if product is None:
         return ''  # niet (meer) leverbaar: kaart weglaten in plaats van dode knop
     prijs = product.lowest_price
     winkels = product.retailer_count
+    pros, cons = _split_notes(a.get('pros')), _split_notes(a.get('cons'))
+    if verzameld is not None and (pros or cons):
+        verzameld.append({'titel': product.title,
+                          'url': f'/product/{product.slug}',
+                          'pros': pros, 'cons': cons})
     prijsregel = (f'<span class="top-card-price">Laagste prijs: '
                   f'<strong>&euro; {_euro(prijs)}</strong>'
                   + (f' <small>bij {winkels} winkels</small>' if winkels > 1 else '')
                   + '</span>')
     return _kaart_html(a.get('rank', ''), a.get('label', ''), product.title,
                        f'/product/{product.slug}', product.image_url,
-                       prijsregel, 'Bekijk alle prijzen')
+                       prijsregel, 'Bekijk alle prijzen', pros, cons)
 
 
 def _render_merkkaart(match):
@@ -94,10 +114,43 @@ def _render_merkkaart(match):
                        url, foto, prijsregel, f'Bekijk {merk}-aanbod')
 
 
+def _notes_itemlist(notes):
+    return {'@type': 'ItemList',
+            'itemListElement': [{'@type': 'ListItem', 'position': i, 'name': n}
+                                for i, n in enumerate(notes, 1)]}
+
+
+def _pros_cons_schema(verzameld):
+    """ItemList van Products met review + positive/negativeNotes.
+
+    Google's Pros & Cons-rich-result geldt alleen voor redactionele
+    reviewpagina's (zoals onze gidsen); de teksten komen uit dezelfde
+    kaart-attributen die zichtbaar op de pagina staan.
+    """
+    items = []
+    for i, p in enumerate(verzameld, 1):
+        review = {'@type': 'Review',
+                  'author': {'@type': 'Organization', 'name': 'WitgoedAanbod.nl'}}
+        if p['pros']:
+            review['positiveNotes'] = _notes_itemlist(p['pros'])
+        if p['cons']:
+            review['negativeNotes'] = _notes_itemlist(p['cons'])
+        items.append({'@type': 'ListItem', 'position': i,
+                      'item': {'@type': 'Product', 'name': p['titel'],
+                               'url': p['url'], 'review': review}})
+    data = {'@context': 'https://schema.org', '@type': 'ItemList',
+            'itemListElement': items}
+    return ('<script type="application/ld+json">'
+            + json.dumps(data, ensure_ascii=False) + '</script>')
+
+
 def render_guide_content(content):
     """Vervang kaart-placeholders in gidstekst door gerenderde kaarten."""
     if '<!--productkaart' not in content and '<!--merkkaart' not in content:
         return content
-    content = _PRODUCTKAART.sub(_render_productkaart, content)
+    verzameld = []
+    content = _PRODUCTKAART.sub(lambda m: _render_productkaart(m, verzameld), content)
     content = _MERKKAART.sub(_render_merkkaart, content)
+    if verzameld:
+        content += _pros_cons_schema(verzameld)
     return content

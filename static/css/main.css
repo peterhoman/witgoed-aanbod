@@ -1323,6 +1323,29 @@ section h2 {
     white-space: nowrap;
 }
 
+.top-card-notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 14px;
+    margin-top: 6px;
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.top-card-notes .note-pro {
+    color: #006300;
+}
+
+.top-card-notes .note-con {
+    color: #a04000;
+}
+
+.guide-author {
+    font-size: 13px;
+    color: var(--gray);
+    margin: -6px 0 18px;
+}
+
 /* Binnen gidspagina's (.legal-content) wint de algemene linkkleur en de
    100%-breedte van .btn-primary anders van de kaartknop: dat gaf een
    paginabrede knop met blauw-op-blauwe tekst. Deze specifiekere regels

@@ -77,6 +77,10 @@ NEW_GUIDES = [
 
 <p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/koelkasten">categorie koelkasten</a> zie je van al deze modellen de actuele prijs bij de grote webshops, m&eacute;t prijsverloop per apparaat — zo koop je op het juiste moment.</p>
 
+<h2>Zo kiezen wij de beste koelkasten</h2>
+<p>Onze vergelijker volgt dagelijks het koelkastaanbod van meerdere grote Nederlandse webshops. Omdat een koelkast 24/7 aanstaat, wegen wij naast inhoud en geluidsniveau vooral het <strong>jaarlijkse stroomverbruik</strong> mee — de kWh-cijfers in deze gids komen uit de offici&euml;le energielabel-gegevens per model, en met de vuistregel van &euro; 0,30 per kWh rekenen we ze om naar euro's per jaar. Per huishoudtype (van studentenkamer tot groot gezin) kozen we &eacute;&eacute;n winnaar.</p>
+<p><strong>Winkels kunnen hun positie in onze lijsten niet kopen.</strong> De kaartprijzen komen live uit de vergelijker en de goedkoopste leverbare aanbieding staat altijd bovenaan; onze commissie verandert jouw prijs niet en weegt niet mee in de volgorde (<a href="/over-ons">over onze werkwijze</a>). Bij structurele veranderingen in aanbod of prijzen werken we deze lijst bij.</p>
+
 <h2>Veelgestelde vragen</h2>
 <h3>Wat is de beste koelkast van 2026?</h3>
 <p>Dat hangt van je huishouden af — daarom kozen we per type een winnaar. De blikvanger is de CHiQ Amerikaanse koelkast (559 l), de zuinigste is de Bosch KIN86-inbouw, en d&eacute; gezins-allrounder is de Bosch KGE398 met VitaFresh.</p>
@@ -158,6 +162,10 @@ NEW_GUIDES = [
 <p>Voor elke keuken zit er &eacute;&eacute;n tussen: van de compacte Inventum tot de zelfdoserende Miele. Wil je weten waar alle specificaties voor staan — couverts, programma's, bestekla — lees dan onze <a href="/gidsen/vaatwasser-kopen-complete-gids">complete vaatwasser-koopgids</a>, en waarom het energielabel bij een dagelijks draaiend apparaat extra telt lees je in de <a href="/gidsen/energielabel-witgoed-uitgelegd">energielabel-uitleg</a>.</p>
 
 <p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/vaatwassers">categorie vaatwassers</a> zie je van al deze machines de actuele prijs bij de grote webshops, m&eacute;t prijsverloop per apparaat — zo koop je op het juiste moment.</p>
+
+<h2>Zo kiezen wij de beste vaatwassers</h2>
+<p>Onze vergelijker volgt dagelijks het vaatwasseraanbod van meerdere grote Nederlandse webshops, met actuele prijzen en prijsverloop per apparaat. Voor deze gids beoordeelden we op aantal couverts, geluidsniveau, energielabel &eacute;n inbouw versus vrijstaand — want de beste vaatwasser is vooral de vaatwasser die bij j&oacute;uw keuken past. Daarom kozen we per situatie een winnaar, van smalle keuken tot groot gezin.</p>
+<p><strong>Winkels kunnen hun positie in onze lijsten niet kopen.</strong> De kaartprijzen komen live uit de vergelijker en de goedkoopste leverbare aanbieding staat altijd bovenaan; onze commissie verandert jouw prijs niet en weegt niet mee in de volgorde (<a href="/over-ons">over onze werkwijze</a>). Bij structurele veranderingen in aanbod of prijzen werken we deze lijst bij.</p>
 
 <h2>Veelgestelde vragen</h2>
 <h3>Wat is de beste vaatwasser van 2026?</h3>
@@ -241,6 +249,10 @@ NEW_GUIDES = [
 
 <p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/drogers">categorie drogers</a> zie je van al deze drogers de actuele prijs bij de grote webshops, m&eacute;t prijsverloop per apparaat — zo koop je op het juiste moment.</p>
 
+<h2>Zo kiezen wij de beste drogers</h2>
+<p>Onze vergelijker volgt dagelijks het complete drogeraanbod van meerdere grote Nederlandse webshops, met per apparaat de actuele prijs &eacute;n het prijsverloop. Voor deze gids keken we naar drie meetbare criteria — vulgewicht, geluidsniveau en energielabel — omdat juist bij drogers het stroomverbruik het verschil maakt: een zuinig model verdient zijn meerprijs terug (dat rekenen we voor in onze <a href="/gidsen/warmtepompdroger-of-condensdroger">warmtepomp-vergelijking</a>). Per prijsklasse kozen we &eacute;&eacute;n winnaar.</p>
+<p><strong>Geen enkele winkel betaalt voor een positie in onze lijsten.</strong> De prijzen op de kaarten komen live uit onze vergelijker; de goedkoopste leverbare aanbieding staat altijd bovenaan. Wij verdienen een kleine commissie als je via onze knoppen koopt — dat verandert jouw prijs niet en be&iuml;nvloedt de ranglijst niet (<a href="/over-ons">over onze werkwijze</a>). Bij structurele wijzigingen in aanbod of prijs herzien we deze lijst.</p>
+
 <h2>Veelgestelde vragen</h2>
 <h3>Wat is de beste droger van 2026?</h3>
 <p>De Bosch WQH246 is volgens ons de beste droger van dit moment: energielabel B (zuiniger vind je ze nauwelijks) en met 59 dB ook de stilste. De beste budgetkoop is de Hisense DH3S802, rond de &euro; 500.</p>
@@ -322,6 +334,10 @@ NEW_GUIDES = [
 <p>Voor elk huishouden zit er &eacute;&eacute;n tussen: van de voordelige Beko tot de onverwoestbare Miele. Twijfel je over het juiste vulgewicht? Lees dan onze gids <a href="/gidsen/wasmachine-8-of-9-kg">wasmachine van 8 of 9 kg</a>. Wil je weten wat de specificaties precies betekenen, dan helpt de <a href="/gidsen/wasmachine-kopen-waar-op-letten">complete wasmachine-koopgids</a>, en waarom het energielabel zich terugverdient lees je in onze <a href="/gidsen/energielabel-witgoed-uitgelegd">uitleg over energielabels</a>.</p>
 
 <p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/wasmachines">categorie wasmachines</a> zie je van al deze machines de actuele prijs bij de grote webshops, m&eacute;t prijsverloop per apparaat — zo koop je op het juiste moment.</p>
+
+<h2>Zo kiezen wij de beste wasmachines</h2>
+<p>Deze top 5 komt niet uit de losse pols. Onze vergelijker volgt dagelijks honderden wasmachines bij meerdere grote Nederlandse webshops, inclusief het prijsverloop per apparaat. Voor deze gids selecteerden we op vier meetbare criteria — vulgewicht, toerental, energielabel en prijs — aangevuld met onderscheidende techniek zoals automatische dosering (AEG) en stoombehandeling (Beko), en kozen we bewust &eacute;&eacute;n winnaar per budget en huishoudtype.</p>
+<p>Belangrijk om te weten: <strong>geen enkele winkel betaalt voor een positie in onze lijsten.</strong> De prijzen op de kaarten hierboven komen live uit onze vergelijker en worden meerdere keren per dag ververst; de goedkoopste leverbare aanbieding staat altijd bovenaan. Wij verdienen een kleine commissie als je via onze knoppen koopt, maar dat verandert jouw prijs niet en be&iuml;nvloedt de volgorde niet — lees meer <a href="/over-ons">over onze werkwijze</a>. Verandert het aanbod of de prijsverhouding structureel, dan herzien we deze lijst.</p>
 
 <h2>Veelgestelde vragen</h2>
 <h3>Wat is de beste wasmachine van 2026?</h3>

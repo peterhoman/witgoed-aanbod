@@ -130,6 +130,10 @@ def create_app(config_name=None):
         # (zie guides_content.py, dekt ook het materiaal uit seed_guides.py).
         from guides_content import ensure_new_guides
         ensure_new_guides(db, Category, Guide)
+        # Handmatige foto-overrides (producten zonder feed-/Icecat-foto)
+        # meteen toepassen i.p.v. te wachten op de eerstvolgende sync.
+        from icecat import apply_manual_image_overrides
+        apply_manual_image_overrides(db, Product)
 
     # Register blueprints
     from routes.main import main_bp

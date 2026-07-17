@@ -474,6 +474,99 @@ NEW_GUIDES = [
 <p>Een moderne, zuinige koelkast kost € 30-50 per jaar aan stroom; een oude al snel het drievoudige. Zoek het werkelijke verbruik van je huidige apparaat op, reken de terugverdientijd uit, en laat die som — niet de leeftijd alleen — bepalen of vervangen loont. Meer weten over waar je bij een nieuwe koelkast op let, zoals inhoud, No Frost en klimaatklasse? Lees onze <a href="/gidsen/koelkast-kopen-complete-gids">complete koelkast-koopgids</a>, bekijk de <a href="/gidsen/energielabel-witgoed-uitgelegd">uitleg over energielabels</a>, of vergelijk direct prijzen in de <a href="/category/koelkasten">categorie koelkasten</a>.</p>
 """,
     },
+    {
+        'slug': 'beste-oven-2026',
+        'title': 'De 5 beste ovens & airfryers van 2026',
+        'excerpt': 'Van een compacte airfryer tot een complete inbouwoven en een modern inductiefornuis: de vijf beste ovens, airfryers en fornuizen van dit moment — met video.',
+        'category_slug': 'ovens',
+        'content': """
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "De 5 beste ovens & airfryers van 2026 — koopgids",
+    "description": "De vijf beste ovens, airfryers en fornuizen van dit moment voor elk budget en gebruiksdoel. Alle prijzen komen van WitgoedAanbod.nl.",
+    "thumbnailUrl": "https://i.ytimg.com/vi/dNSCssZma5g/hqdefault.jpg",
+    "uploadDate": "2026-07-17T20:00:00+02:00",
+    "embedUrl": "https://www.youtube-nocookie.com/embed/dNSCssZma5g",
+    "contentUrl": "https://www.youtube.com/watch?v=dNSCssZma5g",
+    "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl"}
+}
+</script>
+<p>Een nieuwe oven kies je niet zomaar: inbouwoven, vrijstaand fornuis of airfryer? Wat het beste past hangt af van hoev&eacute;el je kookt &mdash; en van je budget. We hebben op vier dingen gelet: <strong>inhoud</strong> (hoeveel er in &eacute;&eacute;n keer in kan), <strong>functies</strong> (airfryer-stand, pizzastand, inductie), het <strong>energielabel</strong> en natuurlijk de <strong>prijs</strong>. Dit zijn de vijf beste ovens, airfryers en fornuizen van dit moment, van &eacute;&eacute;n van &euro; 89 tot een compleet fornuis van &euro; 793.</p>
+
+<p>Liever kijken dan lezen? Hier is de video-versie:</p>
+<div style="position:relative;width:100%;max-width:800px;margin:0 auto 24px;aspect-ratio:16/9;">
+    <iframe
+        src="https://www.youtube-nocookie.com/embed/dNSCssZma5g"
+        title="De 5 beste ovens & airfryers van 2026 | WitgoedAanbod.nl"
+        style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px;"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<h2>De top 5 met actuele prijzen</h2>
+<!--productkaart ean=4002516658726 rank=1 label="De beste: bouwkwaliteit en capaciteit" pros="Hetelucht Plus bakt op 2 niveaus tegelijk, vaak zonder voorverwarmen|Emaille binnenkant: eenvoudig schoon te maken" cons="Geen airfryer- of pizzastand"-->
+<!--productkaart ean=4242005041312 rank=2 label="Het beste fornuis: inductie + 3D-hetelucht" pros="Inductie: snel en nauwkeurig regelbaar, 4 kookzones|3D Hetelucht verdeelt de warmte gelijkmatig door de oven" cons="Vereist een 2-fasenaansluiting (7,6 kW): check dit vooraf"-->
+<!--productkaart ean=8715393362100 rank=3 label="De veelzijdigste: airfryer- en pizzastand in één oven" pros="AirCrisp-stand: frituren zonder extra olie, in dezelfde oven|Snel voorverwarmen: 200 °C in 5 minuten" cons="Geen stoomfunctie"-->
+<!--productkaart ean=8720389034329 rank=4 label="De beste airfryer: ruim en veelzijdig" pros="7,2 liter: ruim genoeg voor een compleet gezinsdiner|12 programma's en automatisch uitschakelen" cons="Geen stoomfunctie zoals de duurdere Philips-series"-->
+<!--productkaart ean=8720389035074 rank=5 label="Beste koop onder € 100" pros="Ruim onder de € 100, toch 6,2 liter inhoud|Automatisch uitschakelen en warmhoudfunctie" cons="Maar 2 programma's, geen automatisch kookprogramma"-->
+
+<h2>1. Miele H 2465 B &mdash; de beste inbouwoven</h2>
+<p>Energielabel A+ en 76 liter inhoud: de grootste inbouwoven van deze vijf. Met boven- en onderwarmte, een grillstand en een optie voor intensief bakken kun je alle kanten op, maar het is de <strong>Hetelucht Plus</strong>-stand die hem onderscheidt: daarmee bak je op twee schuifhoogten tegelijk, met een gelijkmatig resultaat en in de meeste gevallen zonder voorverwarmen. De emaille binnenkant maakt schoonmaken bovendien eenvoudig. Bekijk de actuele prijs van de <a href="/product/miele-h-2465-b-inbouw-oven---inhoud-76-l-4002516658726">Miele H 2465 B</a>.</p>
+
+<h2>2. Bosch HLN39A050U Serie 4 &mdash; het beste fornuis</h2>
+<p>Een compleet vrijstaand fornuis met inductiekookplaat: vier kookzones die snel en nauwkeurig regelbaar zijn, gecombineerd met een oven met <strong>3D Hetelucht</strong> voor een gelijkmatige warmteverdeling. Energieklasse A en 60 cm breed, dus een directe vervanger voor een bestaand fornuis. Let wel op de aansluiting: dit model vraagt een 2-fasenaansluiting van 7,6 kW, dus check dat vooraf bij je meterkast. Bekijk de actuele prijs van de <a href="/product/bosch-hln39a050u---serie-4---fornuis---vrijstaande-4242005041312">Bosch HLN39A050U</a>.</p>
+
+<h2>3. ETNA OM916MZ &mdash; de veelzijdigste inbouwoven</h2>
+<p>77 liter inhoud, 12 ovenfuncties en 22 automatische programma&rsquo;s: deze ETNA combineert een volwaardige inbouwoven met een <strong>AirCrisp</strong>-stand waarmee je zonder extra olie frituurt, &eacute;n een pizzastand die tot 350&nbsp;&deg;C verwarmt. De snel-voorverwarmen-functie brengt de oven binnen 5 minuten op 200&nbsp;&deg;C, en dankzij hydrolytische reiniging (water en stoom) week je aangekoekt vuil simpel los. Wel jammer: een stoomfunctie ontbreekt. Bekijk de actuele prijs van de <a href="/product/etna-om916mz-inbouw-oven---nishoogte-60-cm-inhoud--8715393362100">ETNA OM916MZ</a>.</p>
+
+<h2>4. Philips 3000 series NA342/00 &mdash; de beste airfryer</h2>
+<p>Met 7,2 liter inhoud is dit de ruimste losse airfryer van de vijf &mdash; genoeg voor een compleet gezinsdiner in &eacute;&eacute;n keer. 12 programma&rsquo;s, automatisch uitschakelen en een warmhoudfunctie maken hem ook in dagelijks gebruik prettig. Bekijk de actuele prijs van de <a href="/product/philips-3000-series---na342-00---airfryer---7,2l-8720389034329">Philips 3000 series NA342/00</a>.</p>
+
+<h2>5. Philips 2000 serie NA231/00 &mdash; beste koop onder &euro; 100</h2>
+<p>Ruim onder de &euro; 100 en toch 6,2 liter inhoud: de instapper van deze lijst. Eenvoudiger dan de 3000-serie (2 programma&rsquo;s in plaats van 12, geen automatisch kookprogramma), maar met automatisch uitschakelen en een warmhoudfunctie heb je alles wat je voor dagelijks gebruik nodig hebt. Bekijk de actuele prijs van de <a href="/product/philips-2000-serie---na231-00---heteluchtfriteuse--8720389035074">Philips 2000 serie NA231/00</a>.</p>
+
+<h2>Zo kies je uit deze vijf</h2>
+<ul>
+    <li><strong>Groot gezin, veel bakken:</strong> de Miele, vanwege de 76 liter inhoud en Hetelucht Plus.</li>
+    <li><strong>Fornuis vervangen:</strong> de Bosch, een compleet inductiefornuis met oven in &eacute;&eacute;n toestel.</li>
+    <li><strong>Airfryer &eacute;n oven in &eacute;&eacute;n apparaat:</strong> de ETNA, met AirCrisp- en pizzastand.</li>
+    <li><strong>Dagelijks frituren voor het gezin:</strong> de Philips 3000, vanwege de 7,2 liter inhoud.</li>
+    <li><strong>Eerste airfryer, klein budget:</strong> de Philips 2000, ruim onder de &euro; 100.</li>
+</ul>
+<p>Twijfel je tussen een inbouwoven en een vrijstaand fornuis, of wil je weten wat het energielabel bij een oven precies betekent? Lees dan onze <a href="/gidsen/oven-kopen-complete-gids">complete oven-koopgids</a> en onze <a href="/gidsen/energielabel-witgoed-uitgelegd">uitleg over energielabels</a>.</p>
+
+<p><strong>Let op: prijzen veranderen dagelijks.</strong> In onze <a href="/category/ovens">categorie ovens &amp; airfryers</a> en <a href="/category/fornuizen">categorie fornuizen</a> zie je van al deze apparaten de actuele prijs bij de grote webshops, m&eacute;t prijsverloop &mdash; zo koop je op het juiste moment.</p>
+
+<h2>Zo kiezen wij de beste ovens, airfryers en fornuizen</h2>
+<p>Deze top 5 komt niet uit de losse pols. Onze vergelijker volgt dagelijks honderden ovens, airfryers en fornuizen bij meerdere grote Nederlandse webshops, inclusief het prijsverloop per apparaat. Voor deze gids selecteerden we op vier meetbare criteria &mdash; inhoud, functies, energielabel en prijs &mdash; en kozen we bewust &eacute;&eacute;n winnaar per type keuken en gebruiksdoel.</p>
+<p>Belangrijk om te weten: <strong>geen enkele winkel betaalt voor een positie in onze lijsten.</strong> De prijzen op de kaarten hierboven komen live uit onze vergelijker en worden meerdere keren per dag ververst; de goedkoopste leverbare aanbieding staat altijd bovenaan. Wij verdienen een kleine commissie als je via onze knoppen koopt, maar dat verandert jouw prijs niet en be&iuml;nvloedt de volgorde niet &mdash; lees meer <a href="/over-ons">over onze werkwijze</a>. Verandert het aanbod of de prijsverhouding structureel, dan herzien we deze lijst.</p>
+
+<h2>Veelgestelde vragen</h2>
+<h3>Wat is de beste oven van 2026?</h3>
+<p>De Miele H 2465 B is volgens ons de beste inbouwoven van dit moment: 76 liter inhoud, energielabel A+ en de Hetelucht Plus-stand voor bakken op twee niveaus tegelijk.</p>
+<h3>Wat is de beste airfryer in deze lijst?</h3>
+<p>De Philips 3000 series NA342/00, met 7,2 liter de ruimste losse airfryer van de vijf. Zoek je de beste koop onder &euro; 100, dan is de Philips 2000 serie NA231/00 de slimste keuze.</p>
+<h3>Moet ik voor inductie of gas kiezen bij een fornuis?</h3>
+<p>Inductie is sneller en nauwkeuriger regelbaar en meestal zuiniger, maar vraagt inductiegeschikt kookgerei en vaak een zwaardere elektrische aansluiting (bij de Bosch in deze lijst bijvoorbeeld 2 fasen, 7,6 kW). Gas blijft een prima, minder aansluiting-gevoelige keuze als je daar al op bent aangesloten.</p>
+<h3>Wat is het verschil tussen een airfryer en een oven met een airfryer-stand?</h3>
+<p>Een losse airfryer is compacter en sneller op temperatuur, handig voor dagelijkse porties. Een oven met airfryer-stand (zoals de ETNA in deze lijst) combineert dat gemak met de capaciteit van een volledige oven, praktisch als je vaker voor het hele gezin kookt.</p>
+<h3>Wat kost een goede oven, airfryer of fornuis?</h3>
+<p>In deze top 5 loopt het van zo'n &euro; 89 (Philips 2000-airfryer) tot &euro; 793 (Bosch-fornuis). Prijzen veranderen dagelijks; op deze pagina zie je altijd de actuele laagste prijs per apparaat.</p>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Wat is de beste oven van 2026?","acceptedAnswer":{"@type":"Answer","text":"De Miele H 2465 B is volgens ons de beste inbouwoven van dit moment: 76 liter inhoud, energielabel A+ en de Hetelucht Plus-stand voor bakken op twee niveaus tegelijk."}},
+{"@type":"Question","name":"Wat is de beste airfryer in deze lijst?","acceptedAnswer":{"@type":"Answer","text":"De Philips 3000 series NA342/00, met 7,2 liter de ruimste losse airfryer van de vijf. Zoek je de beste koop onder €100, dan is de Philips 2000 serie NA231/00 de slimste keuze."}},
+{"@type":"Question","name":"Moet ik voor inductie of gas kiezen bij een fornuis?","acceptedAnswer":{"@type":"Answer","text":"Inductie is sneller en nauwkeuriger regelbaar en meestal zuiniger, maar vraagt inductiegeschikt kookgerei en vaak een zwaardere elektrische aansluiting. Gas blijft een prima, minder aansluiting-gevoelige keuze als je daar al op bent aangesloten."}},
+{"@type":"Question","name":"Wat is het verschil tussen een airfryer en een oven met een airfryer-stand?","acceptedAnswer":{"@type":"Answer","text":"Een losse airfryer is compacter en sneller op temperatuur, handig voor dagelijkse porties. Een oven met airfryer-stand combineert dat gemak met de capaciteit van een volledige oven."}},
+{"@type":"Question","name":"Wat kost een goede oven, airfryer of fornuis?","acceptedAnswer":{"@type":"Answer","text":"In deze top 5 loopt het van zo'n €89 (Philips 2000-airfryer) tot €793 (Bosch-fornuis). Prijzen veranderen dagelijks; op witgoedaanbod.nl zie je altijd de actuele laagste prijs per apparaat."}}]}
+</script>
+""",
+    },
 ]
 
 

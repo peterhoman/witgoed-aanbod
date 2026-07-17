@@ -27,7 +27,19 @@
         {% endif %}
     </header>
 
-    {% if category_guide %}
+    {% if video_id %}
+    <a href="/gidsen/{{ category_guide.slug }}" class="category-video-teaser">
+        <span class="category-video-teaser-thumb">
+            <img src="https://i.ytimg.com/vi/{{ video_id }}/hqdefault.jpg" alt="Video: {{ category_guide.title }}" loading="lazy">
+            <span class="guide-video-play">&#9654;</span>
+        </span>
+        <span class="category-video-teaser-info">
+            <span class="guide-teaser-label">{{ t('category.video_teaser') }}</span>
+            <strong>{{ category_guide.title }}</strong>
+            <span class="guide-teaser-cta">{{ t('category.guide_teaser_cta') }} →</span>
+        </span>
+    </a>
+    {% elif category_guide %}
     <a href="/gidsen/{{ category_guide.slug }}" class="guide-teaser">
         <span class="guide-teaser-label">{{ t('category.guide_teaser') }}</span>
         <strong>{{ category_guide.title }}</strong>

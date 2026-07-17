@@ -248,7 +248,20 @@ def category(slug):
         q = q.order_by(Product.price.desc())
 
     products = q.paginate(page=page, per_page=24)
-    category_guide = Guide.query.filter_by(category_id=category.id, post_type='guide').first()
+
+    # Heeft deze categorie een videogids (bv. "beste wasmachine 2026"), dan
+    # krijgt die voorrang op de categoriepagina: een thumbnail met video
+    # trekt meer klikken dan een platte tekstlink, en bezoekers die aan het
+    # vergelijken zijn zien de video meteen. Zonder video valt dit terug op
+    # de gewone (eerste) koopgids van de categorie.
+    category_guides = Guide.query.filter_by(category_id=category.id, post_type='guide').order_by(Guide.created_at.desc()).all()
+    video_guide, video_id = None, None
+    for guide in category_guides:
+        vid = _guide_video_id(guide)
+        if vid:
+            video_guide, video_id = guide, vid
+            break
+    category_guide = video_guide or (category_guides[0] if category_guides else None)
 
     return render_template(
         'category.html',
@@ -263,6 +276,7 @@ def category(slug):
         max_price=max_price,
         selected_sort=sort,
         category_guide=category_guide,
+        video_id=video_id,
         meta_description=meta_description,
         structured_data=_category_structured_data(category, products.items),
     )

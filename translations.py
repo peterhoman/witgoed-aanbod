@@ -118,6 +118,7 @@ TRANSLATIONS = {
         'guides.intro': 'Praktisch advies om de juiste keuze te maken, geschreven door WitgoedAanbod.nl.',
         'guides.read_more': 'Lees de gids →',
         'category.guide_teaser': 'Koopgids',
+        'category.video_teaser': 'Videogids',
         'category.guide_teaser_cta': 'Lees onze gids',
 
         # Blog
@@ -250,6 +251,7 @@ TRANSLATIONS = {
         'guides.intro': 'Practical advice to help you choose, written by WitgoedAanbod.nl.',
         'guides.read_more': 'Read the guide →',
         'category.guide_teaser': 'Buying Guide',
+        'category.video_teaser': 'Video Guide',
         'category.guide_teaser_cta': 'Read our guide',
 
         'blog.title': 'Blog & News',

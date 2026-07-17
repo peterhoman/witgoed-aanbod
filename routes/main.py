@@ -1,9 +1,33 @@
+import time
+
 from flask import Blueprint, render_template, request, redirect, current_app
 from models import Category, Product, Guide
 from sqlalchemy import or_
 from filter_helpers import compute_brand_facet, compute_spec_facets, parse_spec_filters
 
 main_bp = Blueprint('main', __name__)
+
+# Filteropties en meta-description per categorie veranderen alleen bij een
+# sync, maar werden bij elk bezoek opnieuw berekend over álle producten in
+# de categorie (alle specs-JSON parsen) — goed voor ~0,7s extra TTFB op de
+# belangrijkste commerciële pagina's. Cache met korte TTL; gunicorn draait
+# met 1 worker dus een procescache volstaat.
+_FACET_CACHE = {}
+_FACET_TTL = 15 * 60  # seconden
+
+
+def _category_facets(category):
+    nu = time.time()
+    hit = _FACET_CACHE.get(category.id)
+    if hit and nu - hit[0] < _FACET_TTL:
+        return hit[1]
+    producten = Product.query.filter_by(category_id=category.id,
+                                        is_available=True).all()
+    data = (compute_brand_facet(producten),
+            compute_spec_facets(producten),
+            _category_meta_description(category, producten))
+    _FACET_CACHE[category.id] = (nu, data)
+    return data
 
 
 def _category_meta_description(category, products):
@@ -196,11 +220,8 @@ def category(slug):
     max_price = request.args.get('max_price', 10000, type=float)
     selected_specs = parse_spec_filters(request.args.getlist('spec'))
 
-    # Unfiltered set, used to compute facet options + counts (same approach
-    # as the existing available_brands in routes/products.py)
-    all_category_products = Product.query.filter_by(category_id=category.id, is_available=True).all()
-    brand_facet = compute_brand_facet(all_category_products)
-    spec_facets = compute_spec_facets(all_category_products)
+    # Filteropties + meta-description uit de cache (zie _category_facets)
+    brand_facet, spec_facets, meta_description = _category_facets(category)
 
     q = Product.query.filter_by(category_id=category.id, is_available=True)
     q = q.filter(Product.price.between(min_price, max_price))
@@ -233,6 +254,6 @@ def category(slug):
         max_price=max_price,
         selected_sort=sort,
         category_guide=category_guide,
-        meta_description=_category_meta_description(category, all_category_products),
+        meta_description=meta_description,
         structured_data=_category_structured_data(category, products.items),
     )

@@ -55,7 +55,7 @@ def _category_meta_description(category, products):
         parts.append(f"van o.a. {', '.join(brands)}")
     if prices:
         parts.append(f"al vanaf € {min(prices):.0f}".replace('.', ','))
-    tekst = ' '.join(parts) + ". Vind de laagste prijs bij Bol, Coolblue en MediaMarkt."
+    tekst = ' '.join(parts) + ". Vind de laagste prijs bij o.a. Bol, Coolblue, MediaMarkt en Expert."
     return tekst[:160]
 
 
@@ -108,7 +108,7 @@ def sync_status():
     laatste_sync_per_winkel = {
         r: str(db.session.query(db.func.max(Offer.last_synced))
                .filter(Offer.retailer == r).scalar())
-        for r in ('bol', 'mediamarkt', 'coolblue')
+        for r in ('bol', 'mediamarkt', 'coolblue', 'expert')
     }
     import os
     return jsonify({

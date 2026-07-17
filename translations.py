@@ -46,7 +46,7 @@ TRANSLATIONS = {
 
         # Cookie modal
         'cookie.title': 'Cookie-instellingen',
-        'cookie.intro': 'Op onze eigen pagina\'s plaatsen wij alleen noodzakelijke cookies. Klik je op een aanbieding, dan ga je naar Bol.com, MediaMarkt of Coolblue; die partijen kunnen je bezoek volgen om onze commissie te bepalen. Lees meer in ons',
+        'cookie.intro': 'Op onze eigen pagina\'s plaatsen wij alleen noodzakelijke cookies. Klik je op een aanbieding, dan ga je naar een aangesloten winkel zoals Bol.com, MediaMarkt, Coolblue of Expert; die partijen kunnen je bezoek volgen om onze commissie te bepalen. Lees meer in ons',
         'cookie.policy_link': 'cookiebeleid',
         'cookie.essential_title': 'Noodzakelijke cookies',
         'cookie.essential_desc': 'Nodig om de site te laten werken: onthoudt je taalkeuze en deze cookiekeuze. Deze kun je niet uitzetten.',
@@ -131,7 +131,7 @@ TRANSLATIONS = {
         'home.usp2': 'Onafhankelijk vergelijken',
         'home.usp3': 'Alle topmerken op één plek',
         'home.hero_title': 'Witgoed prijzen vergelijken',
-        'home.hero_text': 'Vergelijk de prijzen van wasmachines, drogers, koelkasten en meer bij Bol, Coolblue en MediaMarkt — en vind de laagste prijs.',
+        'home.hero_text': 'Vergelijk de prijzen van wasmachines, drogers, koelkasten en meer bij o.a. Bol, Coolblue, MediaMarkt en Expert — en vind de laagste prijs.',
         'home.hero_search_placeholder': 'Zoek een product...',
         'home.featured_title': 'Kijk en vergelijk: laagste prijzen, merken en levertijden',
         'home.categories_title': 'Populaire Categorieën',

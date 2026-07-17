@@ -29,7 +29,7 @@ NEW_GUIDES = [
     "name": "De 5 beste koelkasten van 2026 — koopgids",
     "description": "De vijf beste koelkasten van dit moment voor elk huishouden, van tafelmodel tot Amerikaanse koelkast — met per model het jaarlijkse stroomverbruik. Alle prijzen komen van WitgoedAanbod.nl.",
     "thumbnailUrl": "https://i.ytimg.com/vi/-wLFTVQpy3A/hqdefault.jpg",
-    "uploadDate": "2026-07-16",
+    "uploadDate": "2026-07-16T10:00:00+02:00",
     "embedUrl": "https://www.youtube-nocookie.com/embed/-wLFTVQpy3A",
     "contentUrl": "https://www.youtube.com/watch?v=-wLFTVQpy3A",
     "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl"}
@@ -115,7 +115,7 @@ NEW_GUIDES = [
     "name": "De 5 beste vaatwassers van 2026 — koopgids",
     "description": "De vijf beste vaatwassers van dit moment voor elke keuken, inbouw en vrijstaand, gekozen op couverts, geluidsniveau en energielabel. Alle prijzen komen van WitgoedAanbod.nl.",
     "thumbnailUrl": "https://i.ytimg.com/vi/GJi9W8Xpqas/hqdefault.jpg",
-    "uploadDate": "2026-07-16",
+    "uploadDate": "2026-07-16T10:00:00+02:00",
     "embedUrl": "https://www.youtube-nocookie.com/embed/GJi9W8Xpqas",
     "contentUrl": "https://www.youtube.com/watch?v=GJi9W8Xpqas",
     "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl"}
@@ -201,7 +201,7 @@ NEW_GUIDES = [
     "name": "De 5 beste drogers van 2026 — koopgids",
     "description": "De vijf beste warmtepompdrogers van dit moment voor elk budget, gekozen op vulgewicht, geluidsniveau en energielabel. Alle prijzen komen van WitgoedAanbod.nl.",
     "thumbnailUrl": "https://i.ytimg.com/vi/VTuSkXh8FkI/hqdefault.jpg",
-    "uploadDate": "2026-07-16",
+    "uploadDate": "2026-07-16T10:00:00+02:00",
     "embedUrl": "https://www.youtube-nocookie.com/embed/VTuSkXh8FkI",
     "contentUrl": "https://www.youtube.com/watch?v=VTuSkXh8FkI",
     "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl"}
@@ -287,7 +287,7 @@ NEW_GUIDES = [
     "name": "De 5 beste wasmachines van 2026 — koopgids",
     "description": "De vijf beste wasmachines van dit moment voor elk budget, gekozen op vulgewicht, toerental, energielabel en prijs. Alle prijzen komen van WitgoedAanbod.nl.",
     "thumbnailUrl": "https://i.ytimg.com/vi/3eyfGDGUzVk/hqdefault.jpg",
-    "uploadDate": "2026-07-16",
+    "uploadDate": "2026-07-16T10:00:00+02:00",
     "embedUrl": "https://www.youtube-nocookie.com/embed/3eyfGDGUzVk",
     "contentUrl": "https://www.youtube.com/watch?v=3eyfGDGUzVk",
     "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl"}

@@ -83,6 +83,14 @@ def classify(product_type, title):
     return None
 
 
+def _clean_image(value):
+    """Awin's 'noimage.gif'-placeholder telt niet als foto."""
+    url = (value or '').strip()
+    if not url or 'noimage' in url.lower():
+        return ''
+    return url
+
+
 def _parse_price(value):
     """'601' of '487.99' -> 601.0 / 487.99; onbruikbaar -> None."""
     if not value:
@@ -142,7 +150,10 @@ def normalize(row):
         'description': row.get('description'),
         # Sommige feedregels missen merchant_image_url; Awin's eigen kopie
         # (aw_image_url) is dan de reserve — anders een kapotte afbeelding.
-        'image_url': row.get('merchant_image_url') or row.get('aw_image_url') or '',
+        # Heeft Awin zelf ook geen foto, dan staat daar 'noimage.gif': geen
+        # foto opslaan, zodat de nette template-placeholder verschijnt.
+        'image_url': _clean_image(row.get('merchant_image_url'))
+                     or _clean_image(row.get('aw_image_url')) or '',
         'product_type': (row.get('product_type') or '').strip().lower(),
         'price': price,
         'strikethrough_price': advies if advies and advies > price else None,

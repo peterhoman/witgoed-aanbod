@@ -35,8 +35,8 @@ FEED_ID = 95930
 # Alleen de kolommen die we echt gebruiken; scheelt downloadgrootte.
 FEED_COLUMNS = [
     'ean', 'product_name', 'brand_name', 'description', 'merchant_image_url',
-    'aw_deep_link', 'merchant_deep_link', 'search_price', 'base_price',
-    'product_type', 'delivery_time', 'condition',
+    'aw_image_url', 'aw_deep_link', 'merchant_deep_link', 'search_price',
+    'base_price', 'product_type', 'delivery_time', 'condition',
 ]
 
 # Levert een sync minder dan dit deel van de bekende aanbiedingen op, dan gaan
@@ -140,7 +140,9 @@ def normalize(row):
         'title': title,
         'brand': (row.get('brand_name') or '').strip() or None,
         'description': row.get('description'),
-        'image_url': row.get('merchant_image_url') or '',
+        # Sommige feedregels missen merchant_image_url; Awin's eigen kopie
+        # (aw_image_url) is dan de reserve — anders een kapotte afbeelding.
+        'image_url': row.get('merchant_image_url') or row.get('aw_image_url') or '',
         'product_type': (row.get('product_type') or '').strip().lower(),
         'price': price,
         'strikethrough_price': advies if advies and advies > price else None,
@@ -235,7 +237,10 @@ def sync_coolblue():
             else:
                 # Bestaat het apparaat al (via Bol of MediaMarkt), dan laten we
                 # titel, foto en specs met rust: dat is de identiteit van het
-                # product, niet de aanbieding.
+                # product, niet de aanbieding. Uitzondering: een ontbrekende
+                # foto vullen we alsnog aan (kapotte afbeelding op de site).
+                if not product.image_url and record['image_url']:
+                    product.image_url = record['image_url']
                 updated += 1
 
             offer = Offer.query.filter_by(product_id=product.id, retailer=RETAILER).first()

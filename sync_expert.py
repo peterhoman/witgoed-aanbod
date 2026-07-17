@@ -55,10 +55,12 @@ def _feed_records(feed_url):
             van_prijs = float(van_prijs) if van_prijs else None
         except (TypeError, ValueError):
             van_prijs = None
+        images = p.get('images') or []
         records[str(ean)] = {
             'price': float(prijs),
             'strikethrough_price': van_prijs if (van_prijs and van_prijs > float(prijs)) else None,
             'url': url,
+            'image_url': images[0] if images else None,
         }
     return records
 
@@ -101,6 +103,10 @@ def sync_expert():
             offer.affiliate_url = record['url']  # feed-URL ís de trackinglink
             offer.is_available = True
             offer.last_synced = utcnow()
+            # Product-identiteit laten we met rust, behalve een ontbrekende
+            # foto: die vullen we aan (kapotte afbeelding op de site).
+            if not product.image_url and record['image_url']:
+                product.image_url = record['image_url']
             log_price(product.id, RETAILER, record['price'])
             product.refresh_pricing()
             seen_product_ids.add(product.id)

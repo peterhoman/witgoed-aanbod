@@ -311,7 +311,10 @@ def sync_mediamarkt():
             else:
                 # Bestaat het apparaat al (meestal via Bol), dan laten we titel,
                 # foto en specs met rust: dat is de identiteit van het product,
-                # niet de aanbieding.
+                # niet de aanbieding. Uitzondering: een ontbrekende foto vullen
+                # we alsnog aan (kapotte afbeelding op de site).
+                if not product.image_url and record['image_url']:
+                    product.image_url = record['image_url']
                 updated += 1
 
             offer = Offer.query.filter_by(product_id=product.id, retailer=RETAILER).first()

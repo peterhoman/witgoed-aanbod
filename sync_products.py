@@ -504,7 +504,9 @@ def sync_products():
                         product.brand = brand or product.brand
                         product.price = price
                         product.strikethrough_price = strikethrough
-                        product.image_url = image_url
+                        # Bol is de identiteitsbron, maar een lege Bol-foto mag
+                        # een eerder (via een andere winkel) gevulde foto niet wissen.
+                        product.image_url = image_url or product.image_url
                         product.bol_url = bol_url
                         product.retailer = 'bol'
                         product.specs = specs

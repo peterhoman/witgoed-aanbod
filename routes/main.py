@@ -94,7 +94,7 @@ def sync_status():
     robots.txt onder Disallow /api/.
     """
     from flask import jsonify
-    from models import db, Offer, PriceHistory, SyncLog
+    from models import db, Offer, PriceHistory, Product, SyncLog
 
     jobs = []
     try:
@@ -105,6 +105,7 @@ def sync_status():
         jobs = [{'fout': str(e)}]
 
     logs = (SyncLog.query.order_by(SyncLog.started_at.desc()).limit(5).all())
+    geen_foto = db.or_(Product.image_url.is_(None), Product.image_url == '')
     laatste_sync_per_winkel = {
         r: str(db.session.query(db.func.max(Offer.last_synced))
                .filter(Offer.retailer == r).scalar())
@@ -126,6 +127,14 @@ def sync_status():
         } for l in logs],
         'laatste_sync_per_winkel': laatste_sync_per_winkel,
         'prijshistorie_rijen': PriceHistory.query.count(),
+        # Producten die de foto-placeholder tonen: de winkel-feeds hebben er
+        # (nog) geen foto voor. Syncs vullen dit aan zodra een feed er wel
+        # een heeft; deze lijst maakt de hardnekkige gevallen zichtbaar.
+        'producten_zonder_foto': {
+            'aantal': Product.query.filter(geen_foto).count(),
+            'voorbeelden': [p.slug for p in Product.query.filter(geen_foto)
+                            .order_by(Product.id.desc()).limit(25).all()],
+        },
     })
 
 

@@ -280,6 +280,10 @@ def sync_coolblue():
             product.refresh_pricing()
         db.session.commit()
 
+        # Vangnet: feed had voor sommige producten geen foto -> Icecat proberen.
+        from icecat import vul_ontbrekende_fotos
+        vul_ontbrekende_fotos(db, Product)
+
         sync_log.finished_at = utcnow()
         sync_log.products_synced = added
         sync_log.products_updated = updated

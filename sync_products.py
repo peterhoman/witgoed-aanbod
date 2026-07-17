@@ -605,6 +605,10 @@ def sync_products():
                     db.session.commit()
                     logger.info(f"[+] {display_name}: removed {removed} example product(s) and {stale} stale/filtered product(s)")
 
+        # Vangnet: producten zonder foto -> Icecat proberen.
+        from icecat import vul_ontbrekende_fotos
+        vul_ontbrekende_fotos(db, Product)
+
         sync_log.finished_at = utcnow()
         sync_log.products_synced = total_synced
         sync_log.products_updated = total_updated

@@ -319,7 +319,7 @@ NEW_GUIDES = [
 <p>Niet de grootste van de lijst (8 kg), wel de beste. PowerWash mengt water en wasmiddel vooraf en sproeit het diep in de vezels: schoner wasgoed, ook op korte programma's. En Miele bouwt zijn machines om twintig jaar mee te gaan — duurder in aanschaf, maar per jaar gerekend waarschijnlijk de goedkoopste machine die je kunt kopen. Bekijk de actuele prijs van de <a href="/product/miele-web-368-wcs-powerwash-4002516896067">Miele WEB 368 WCS PowerWash</a>.</p>
 
 <h2>2. AEG LR86 PowerCare UniversalDose — de slimste</h2>
-<p>Met 10 kg vulgewicht de grootste van deze top 5, en hij doseert zijn wasmiddel automatisch: jij vult het reservoir, de machine bepaalt per wasbeurt precies hoeveel er nodig is. Dat bespaart wasmiddel en is beter voor je kleding. Bekijk de actuele prijs van de <a href="/product/aeg-lr86power-powercare-universaldose-7333394121017">AEG LR86 PowerCare UniversalDose</a>, of lees waarom we deze UniversalDose-techniek eerder al uitlichtten in onze <a href="/gidsen/beste-wasmachines-vergeleken">wasmachine-vergelijking</a>.</p>
+<p>Met 10 kg vulgewicht de grootste van deze top 5, en hij doseert zijn wasmiddel automatisch: jij vult het reservoir, de machine bepaalt per wasbeurt precies hoeveel er nodig is. Dat bespaart wasmiddel en is beter voor je kleding. Bekijk de actuele prijs van de <a href="/product/aeg-lr86power-powercare-universaldose-7333394121017">AEG LR86 PowerCare UniversalDose</a>, lees ons <a href="/blog/uitgelicht-aeg-powercare-universaldose">uitgelicht-artikel over de UniversalDose-doseertechniek</a>, of zie hoe het 8 kg-zusmodel scoort in onze <a href="/gidsen/beste-wasmachines-vergeleken">wasmachine-vergelijking</a>.</p>
 
 <h2>3. Siemens WG46 iQ500 — de krachtpatser</h2>
 <p>9 kg vulgewicht en 1600 toeren: dat hoge toerental slingert veel meer water uit je was, waardoor de droger daarna korter hoeft te draaien — dat scheelt tijd &eacute;n stroom. Met 73 dB is hij bij het centrifugeren bovendien netjes stil. Voor grote gezinnen die veel en snel wassen. Bekijk de actuele prijs van de <a href="/product/siemens-wg46g2zwnl---wasmachine-9-kg-1600-rpm-73-d-4242003979389">Siemens WG46G2ZWNL</a>.</p>
@@ -478,15 +478,23 @@ NEW_GUIDES = [
 
 
 def ensure_new_guides(db, Category, Guide):
-    """Synchroniseer de gidsen uit NEW_GUIDES met de database.
+    """Synchroniseer alle gidsen en blogposts uit de broncode met de database.
 
-    Idempotent: ontbrekende slugs worden toegevoegd; bestaat een slug al
-    maar wijkt titel, samenvatting of tekst af van deze broncode, dan
-    wordt de databaseversie bijgewerkt (de code is voor déze gidsen de
-    bron van de waarheid). Geeft het aantal gewijzigde gidsen terug.
+    Dekt zowel NEW_GUIDES (hier) als het oudere materiaal uit seed_guides.py
+    (ALL_GUIDES en BLOG_POSTS). Idempotent: ontbrekende slugs worden
+    toegevoegd; bestaat een slug al maar wijkt titel, samenvatting of tekst
+    af van de broncode, dan wordt de databaseversie bijgewerkt (de code is
+    de bron van de waarheid). Geeft het aantal gewijzigde stukken terug.
     """
+    # Import binnen de functie: seed_guides is puur content, maar zo blijft
+    # de importvolgorde bij het opstarten van app.py gegarandeerd simpel.
+    from seed_guides import ALL_GUIDES, BLOG_POSTS
+
+    alle_content = ([(data, 'guide') for data in NEW_GUIDES + ALL_GUIDES]
+                    + [(data, 'blog') for data in BLOG_POSTS])
+
     changed = 0
-    for data in NEW_GUIDES:
+    for data, post_type in alle_content:
         category = None
         if data['category_slug']:
             category = Category.query.filter_by(slug=data['category_slug']).first()
@@ -499,7 +507,7 @@ def ensure_new_guides(db, Category, Guide):
                 excerpt=data['excerpt'],
                 content=data['content'].strip(),
                 category_id=category.id if category else None,
-                post_type='guide',
+                post_type=post_type,
             ))
             changed += 1
         elif (guide.content != data['content'].strip()

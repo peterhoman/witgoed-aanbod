@@ -1453,6 +1453,44 @@ section h2 {
     font-size: 56px;
 }
 
+/* --- Koopgidsen-blok op de productpagina --- */
+.category-guides {
+    margin: 40px 0;
+}
+
+.category-guides-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.category-guides-list li {
+    background: var(--light);
+    border-radius: var(--radius);
+    padding: 16px;
+}
+
+.category-guides-list a {
+    font-weight: 600;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.category-guides-list a:hover {
+    text-decoration: underline;
+}
+
+.category-guide-excerpt {
+    display: block;
+    margin-top: 6px;
+    font-size: 14px;
+    color: var(--gray);
+    line-height: 1.5;
+}
+
 /* --- Tijdelijk niet leverbaar (productpagina zonder aanbiedingen) --- */
 .unavailable-notice {
     margin: 16px 0 24px;

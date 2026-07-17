@@ -125,8 +125,9 @@ def create_app(config_name=None):
         _ensure_products_strikethrough_column(db)
         _ensure_categories(db)
         _backfill_offers_from_products(db)
-        # Nieuwe koopgidsen publiceren zichzelf bij de eerstvolgende deploy;
-        # bestaande gidsen worden nooit overschreven (zie guides_content.py).
+        # Gidsen en blogposts publiceren zichzelf bij de eerstvolgende deploy;
+        # wijkt de tekst in de code af van de database, dan wint de code
+        # (zie guides_content.py, dekt ook het materiaal uit seed_guides.py).
         from guides_content import ensure_new_guides
         ensure_new_guides(db, Category, Guide)
 

@@ -9,10 +9,12 @@ plain product listings ("niet alleen doorlinken, maar mensen helpen
 kiezen").
 
 Safe to re-run: existing guides (matched by slug) are replaced.
-"""
 
-from app import create_app
-from models import db, Category, Guide
+De inhoud hieronder wordt ook automatisch gesynchroniseerd bij elke deploy
+(ensure_new_guides in guides_content.py leest ALL_GUIDES en BLOG_POSTS):
+een tekstwijziging hier komt dus vanzelf live, dit script handmatig draaien
+is alleen nog nodig om een gids volledig opnieuw op te bouwen.
+"""
 
 BLOG_POSTS = [
     {
@@ -39,11 +41,13 @@ BLOG_POSTS = [
         'excerpt': 'Deze maand lichten we een product uit dat opvalt door zijn automatische wasmiddeldosering: de AEG LR8686UC4 8000 PowerCare UniversalDose.',
         'category_slug': 'wasmachines',
         'content': """
-<p>Elke maand lichten we een product uit dat opvalt binnen zijn categorie. Deze keer: de <strong>AEG LR8686UC4 8000 PowerCare UniversalDose</strong>.</p>
+<p>Elke maand lichten we een product uit dat opvalt binnen zijn categorie. Deze keer: de <strong><a href="/product/aeg-lr8686uc4-8000-powercare-universaldose---wasma-7333394144375">AEG LR8686UC4 8000 PowerCare UniversalDose</a></strong>.</p>
 
 <p>Wat deze wasmachine onderscheidt, is de automatische wasmiddeldosering: je vult een voorraadhouder met wasmiddel, en de machine bepaalt zelf de juiste hoeveelheid per wasbeurt op basis van vulgewicht en programma. Dat scheelt niet alleen gedoe met doseerbakjes, maar voorkomt ook over- of onderdosering — vaak de oorzaak van slecht wasresultaat of onnodig wasmiddelverbruik.</p>
 
-<p>Daarnaast scoort dit model met energielabel A (tot 40% zuiniger dan wettelijk vereist) opvallend goed op verbruik. We hebben het model uitgebreider besproken in onze <a href="/gidsen/beste-wasmachines-vergeleken">vergelijking van drie populaire wasmachines</a>.</p>
+<p>Daarnaast scoort dit model met energielabel A (tot 40% zuiniger dan wettelijk vereist) opvallend goed op verbruik. We hebben het model uitgebreider besproken in onze <a href="/gidsen/beste-wasmachines-vergeleken">vergelijking van drie populaire wasmachines</a>. De actuele prijs en het prijsverloop vind je op de <a href="/product/aeg-lr8686uc4-8000-powercare-universaldose---wasma-7333394144375">productpagina van de AEG LR8686UC4</a>.</p>
+
+<p>De UniversalDose-doseertechniek bleek trouwens geen eendagsvlieg: de grotere 10 kg-uitvoering, de <a href="/product/aeg-lr86power-powercare-universaldose-7333394121017">AEG LR86 PowerCare UniversalDose</a>, staat inmiddels op nummer 2 in onze <a href="/gidsen/beste-wasmachine-2026">top 5 beste wasmachines van 2026</a> (met video).</p>
 """,
     },
     {
@@ -200,13 +204,13 @@ WASMACHINE_COMPARISON_GUIDE = {
 </table>
 
 <h2>Hisense WF5I1045BBQ — de ruimste optie</h2>
-<p>Met 10,5 kg vulgewicht en 1400 rpm centrifugeren is dit de machine met de grootste capaciteit van de drie, voor circa €499. Geschikt voor grotere gezinnen of huishoudens die liever minder vaak, maar dan in grote ladingen wassen. Energielabel A maakt hem ook op verbruik een solide keuze, ondanks de grotere trommel.</p>
+<p>Met 10,5 kg vulgewicht en 1400 rpm centrifugeren is de <a href="/product/hisense-wf5i1045bbq-wasmachine---voorbelading---10-6901101834089">Hisense WF5I1045BBQ</a> de machine met de grootste capaciteit van de drie, voor circa €499. Geschikt voor grotere gezinnen of huishoudens die liever minder vaak, maar dan in grote ladingen wassen. Energielabel A maakt hem ook op verbruik een solide keuze, ondanks de grotere trommel.</p>
 
 <h2>AEG LR8686UC4 8000 PowerCare UniversalDose — de zuinigste keuze</h2>
-<p>Deze AEG heeft een kleiner vulgewicht (8 kg) dan de Hisense, voor circa €749. Het opvallendste kenmerk: dit model is tot 40% zuiniger dan wettelijk vereist voor energielabel A, wat hem tot de zuinigste van de drie maakt. De hogere aanschafprijs wordt deels gecompenseerd door een lager energieverbruik per wasbeurt — voor wie veel wast en op de lange termijn wil besparen, is dit de moeite waard om te overwegen.</p>
+<p>De <a href="/product/aeg-lr8686uc4-8000-powercare-universaldose---wasma-7333394144375">AEG LR8686UC4 8000 PowerCare UniversalDose</a> heeft een kleiner vulgewicht (8 kg) dan de Hisense, voor circa €749. Het opvallendste kenmerk: dit model is tot 40% zuiniger dan wettelijk vereist voor energielabel A, wat hem tot de zuinigste van de drie maakt. De hogere aanschafprijs wordt deels gecompenseerd door een lager energieverbruik per wasbeurt — voor wie veel wast en op de lange termijn wil besparen, is dit de moeite waard om te overwegen. De automatische UniversalDose-wasmiddeldosering bespraken we eerder uitgebreid in ons <a href="/blog/uitgelicht-aeg-powercare-universaldose">uitgelicht-artikel over de AEG PowerCare UniversalDose</a>.</p>
 
 <h2>Samsung WW90CGC04AAHEN Ecobubble 5000 — de gebalanceerde middenmoot</h2>
-<p>Met 9 kg vulgewicht zit deze Samsung qua capaciteit tussen de andere twee in, voor circa €499. De Ecobubble-technologie zorgt ervoor dat wasmiddel sneller en gelijkmatiger inwerkt via een bellenmengsel, wat effectief wassen op lagere temperaturen mogelijk maakt — praktisch voor wie vaker op 30 graden wast. Energielabel A, 10% zuiniger dan het wettelijk vereiste minimum.</p>
+<p>Met 9 kg vulgewicht zit de <a href="/product/samsung-ww90cgc04aahen---ecobubble---5000-serie----8806095210582">Samsung WW90CGC04AAHEN Ecobubble 5000</a> qua capaciteit tussen de andere twee in, voor circa €499. De Ecobubble-technologie zorgt ervoor dat wasmiddel sneller en gelijkmatiger inwerkt via een bellenmengsel, wat effectief wassen op lagere temperaturen mogelijk maakt — praktisch voor wie vaker op 30 graden wast. Energielabel A, 10% zuiniger dan het wettelijk vereiste minimum.</p>
 
 <h2>Welke past bij jou?</h2>
 <ul>
@@ -219,7 +223,7 @@ WASMACHINE_COMPARISON_GUIDE = {
 <h2>Prijs-kwaliteitverhouding: waarom de goedkoopste niet altijd de beste keuze is</h2>
 <p>Opvallend genoeg zijn de Hisense en de Samsung in deze vergelijking even duur (circa €499), terwijl de AEG €250 meer kost. Dat prijsverschil zit hem grotendeels in het energielabel: de AEG verbruikt tot 40% minder dan wettelijk vereist, tegenover 10% bij de Samsung en het wettelijk minimum bij de Hisense. Was je bijvoorbeeld 4 keer per week, dan kan dat verbruiksverschil de hogere aanschafprijs van de AEG binnen enkele jaren compenseren — reken dit na met de vuistregel uit onze <a href="/gidsen/energielabel-witgoed-uitgelegd">gids over energielabels</a>. Voor wie minder vaak wast of een kleiner budget heeft, is het verschil in de praktijk vaak te klein om de hogere aanschafprijs te rechtvaardigen, en is de Hisense of Samsung de verstandigere keuze.</p>
 
-<p>Bekijk de actuele prijzen en beschikbaarheid van deze en andere modellen in onze <a href="/category/wasmachines">categorie wasmachines</a>.</p>
+<p>Bekijk de actuele prijzen en beschikbaarheid van deze en andere modellen in onze <a href="/category/wasmachines">categorie wasmachines</a>. Wil je een bredere shortlist met één winnaar per budget? Bekijk dan onze <a href="/gidsen/beste-wasmachine-2026">top 5 beste wasmachines van 2026</a> (met video).</p>
 """,
 }
 
@@ -418,16 +422,20 @@ STOFZUIGER_GUIDE = {
 }
 
 
+ALL_GUIDES = [
+    WASMACHINE_GUIDE, KOELKAST_GUIDE, ENERGY_LABEL_GUIDE, WASMACHINE_COMPARISON_GUIDE,
+    DROGER_GUIDE, WASDROOGCOMBI_GUIDE, VAATWASSER_GUIDE, MAGNETRON_GUIDE, OVEN_GUIDE, STOFZUIGER_GUIDE,
+]
+
+
 def seed():
+    from app import create_app
+    from models import db, Category, Guide
+
     app = create_app()
 
     with app.app_context():
-        all_guides = [
-            WASMACHINE_GUIDE, KOELKAST_GUIDE, ENERGY_LABEL_GUIDE, WASMACHINE_COMPARISON_GUIDE,
-            DROGER_GUIDE, WASDROOGCOMBI_GUIDE, VAATWASSER_GUIDE, MAGNETRON_GUIDE, OVEN_GUIDE, STOFZUIGER_GUIDE,
-        ]
-
-        for guide_data in all_guides:
+        for guide_data in ALL_GUIDES:
             Guide.query.filter_by(slug=guide_data['slug']).delete()
 
             category = None
@@ -464,7 +472,7 @@ def seed():
             print(f"[+] Added blog post: {post_data['title']}")
 
         db.session.commit()
-        print(f"\n[+] {len(all_guides)} guides + {len(BLOG_POSTS)} blog posts seeded successfully")
+        print(f"\n[+] {len(ALL_GUIDES)} guides + {len(BLOG_POSTS)} blog posts seeded successfully")
 
 
 if __name__ == '__main__':

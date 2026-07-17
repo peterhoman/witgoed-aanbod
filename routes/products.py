@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, current_app
-from models import Product, Category
+from models import Product, Category, Guide
 from sqlalchemy import or_
 
 products_bp = Blueprint('products', __name__)
@@ -77,10 +77,18 @@ def product_detail(slug):
         Product.is_available == True
     ).limit(6).all()
 
+    # Koopgidsen en blogartikelen uit dezelfde categorie: elke productpagina
+    # linkt zo naar de adviescontent (interne links voor SEO + hulp bij kiezen).
+    category_guides = (Guide.query
+                       .filter_by(category_id=product.category_id)
+                       .order_by(Guide.post_type.desc(), Guide.created_at.desc())
+                       .limit(5).all())
+
     from price_chart import build_price_history
     from energy_costs import bereken_energiekosten
     return render_template('product.html', product=product,
                            related_products=related_products,
+                           category_guides=category_guides,
                            structured_data=_product_structured_data(product),
                            price_history=build_price_history(product),
                            energiekosten=bereken_energiekosten(product))

@@ -177,6 +177,21 @@
         </div>
     </div>
 
+    <!-- Koopgidsen en tips uit dezelfde categorie (interne links) -->
+    {% if category_guides %}
+    <section class="category-guides">
+        <h2>{{ t('product.guides_title') }}</h2>
+        <ul class="category-guides-list">
+            {% for guide in category_guides %}
+            <li>
+                <a href="{{ '/blog/' if guide.post_type == 'blog' else '/gidsen/' }}{{ guide.slug }}">{{ guide.title }}</a>
+                {% if guide.excerpt %}<span class="category-guide-excerpt">{{ guide.excerpt }}</span>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
     <!-- Related Products -->
     {% if related_products %}
     <section class="related-products">

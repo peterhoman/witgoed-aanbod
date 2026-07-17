@@ -9,6 +9,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from sync_products import sync_products
 from sync_mediamarkt import sync_mediamarkt
 from sync_coolblue import sync_coolblue
+from sync_expert import sync_expert
 import os
 
 scheduler = BackgroundScheduler()
@@ -85,6 +86,19 @@ def start_scheduler(app=None):
         name='Coolblue Product Sync',
         replace_existing=True,
         next_run_time=eerste_run('coolblue', coolblue_interval, 35),
+    )
+
+    # Expert via de TradeTracker-feed (uurlijks ververst; 2x per dag ophalen
+    # volstaat ruim, zelfde ritme als de andere feed-winkels).
+    expert_interval = int(os.getenv('EXPERT_SYNC_INTERVAL', 12))
+    scheduler.add_job(
+        sync_expert,
+        'interval',
+        hours=expert_interval,
+        id='expert_sync_job',
+        name='Expert Product Sync',
+        replace_existing=True,
+        next_run_time=eerste_run('expert', expert_interval, 50),
     )
 
     scheduler.start()

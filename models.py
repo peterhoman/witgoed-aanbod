@@ -22,6 +22,7 @@ RETAILER_LABELS = {
     'bol': 'Bol.com',
     'mediamarkt': 'MediaMarkt',
     'coolblue': 'Coolblue',
+    'expert': 'Expert',
 }
 
 

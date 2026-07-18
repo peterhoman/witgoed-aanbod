@@ -62,6 +62,7 @@
         </label>
         {% if product.retailer_count > 1 %}
         <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('offer.compare_cta') }}</a>
+        <span class="btn-buy-trust">&#10003; {{ t('offer.at_shops', count=product.retailer_count) }}</span>
         {% else %}
         <a href="{{ best.link if best else (product.affiliate_url or product.bol_url) }}" target="_blank" rel="nofollow sponsored" class="btn-buy">{{ t('product.view_offer') }}</a>
         {% endif %}

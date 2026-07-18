@@ -286,6 +286,9 @@ def category(slug):
             break
     category_guide = video_guide or (category_guides[0] if category_guides else None)
 
+    from wizard import WIZARD_QUESTIONS
+    has_wizard = slug in WIZARD_QUESTIONS
+
     return render_template(
         'category.html',
         category=category,
@@ -302,6 +305,7 @@ def category(slug):
         video_id=video_id,
         meta_description=meta_description,
         structured_data=_category_structured_data(category, products.items),
+        has_wizard=has_wizard,
     )
 
 
@@ -393,3 +397,33 @@ def category_energielabel(slug, letter):
         f"Energielabel {letter}", f"Energielabel {letter} {category.name}",
         meta_description, intro,
     )
+
+
+@main_bp.route('/category/<slug>/keuzehulp')
+def category_wizard(slug):
+    """Kort vragenlijstje (3 vragen) dat mensentaal vertaalt naar dezelfde
+    ?spec=-filters als de categoriepagina — zie wizard.py. Alleen voor de
+    categorieën met een geconfigureerde vragenset; elders 404."""
+    category = Category.query.filter_by(slug=slug).first_or_404()
+    producten = Product.query.filter_by(category_id=category.id, is_available=True).all()
+
+    from wizard import build_wizard_context
+    context = build_wizard_context(slug, producten)
+    if not context:
+        abort(404)
+
+    return render_template('wizard.html', category=category,
+                           titel=context['titel'], vragen=context['vragen'])
+
+
+@main_bp.route('/api/keuzehulp-tellen/<slug>')
+def wizard_count(slug):
+    """Hoeveel producten voldoen aan de tot nu toe gekozen wizard-antwoorden
+    (dezelfde spec-filtersyntax als de categoriepagina). Voor de live
+    '397 wasmachines'-teller tijdens het doorlopen van de wizard."""
+    from flask import jsonify
+    category = Category.query.filter_by(slug=slug).first_or_404()
+    q = Product.query.filter_by(category_id=category.id, is_available=True)
+    for key, values in parse_spec_filters(request.args.getlist('spec')).items():
+        q = q.filter(Product.specs[key].as_string().in_(values))
+    return jsonify({'aantal': q.count()})

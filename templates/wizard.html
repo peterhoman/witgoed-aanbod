@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titel }} | WitgoedAanbod.nl{% endblock %}
+{% block meta_description %}Beantwoord een paar korte vragen en we filteren direct de {{ category.name|lower }} die bij je passen.{% endblock %}
+{% block robots %}noindex, follow{% endblock %}
+
+{% block content %}
+<div class="container legal-page wizard-page">
+    <nav class="breadcrumbs">
+        <a href="/">Home</a> /
+        <a href="/category/{{ category.slug }}">{{ category.name }}</a> /
+        <span>Keuzehulp</span>
+    </nav>
+
+    <h1>{{ titel }}</h1>
+    <p class="contact-intro">Beantwoord {{ vragen|length }} korte vragen — geen jargon, gewoon je situatie. We filteren live mee.</p>
+
+    <div class="wizard-box" id="wizard-box" data-slug="{{ category.slug }}">
+        <div class="wizard-progress">
+            <span id="wizard-progress-label">Vraag 1 van {{ vragen|length }}</span>
+            <span class="wizard-count" id="wizard-count"></span>
+        </div>
+
+        <div id="wizard-question"></div>
+
+        <div class="wizard-nav">
+            <button type="button" id="wizard-back" class="btn-secondary" style="display:none;">← Vorige</button>
+            <a href="/category/{{ category.slug }}" class="wizard-skip">Liever zelf filteren →</a>
+        </div>
+    </div>
+</div>
+
+<script type="application/json" id="wizard-data">{{ vragen | tojson }}</script>
+<script>
+(function() {
+    const vragen = JSON.parse(document.getElementById('wizard-data').textContent);
+    const slug = document.getElementById('wizard-box').dataset.slug;
+    const questionEl = document.getElementById('wizard-question');
+    const progressEl = document.getElementById('wizard-progress-label');
+    const countEl = document.getElementById('wizard-count');
+    const backBtn = document.getElementById('wizard-back');
+
+    let stap = 0;
+    const antwoorden = []; // per vraag: {key, waarden} of null (nog niet beantwoord / geen filter)
+
+    function specParams(totEnMet) {
+        const params = new URLSearchParams();
+        for (let i = 0; i < totEnMet; i++) {
+            const a = antwoorden[i];
+            if (a && a.waarden) {
+                a.waarden.forEach(w => params.append('spec', a.key + '::' + w));
+            }
+        }
+        return params;
+    }
+
+    function ververCount(totEnMet) {
+        countEl.textContent = '...';
+        fetch('/api/keuzehulp-tellen/' + slug + '?' + specParams(totEnMet).toString())
+            .then(r => r.json())
+            .then(data => { countEl.textContent = data.aantal + ' resultaten met deze keuze'; })
+            .catch(() => { countEl.textContent = ''; });
+    }
+
+    function toonVraag(i) {
+        const vraag = vragen[i];
+        progressEl.textContent = 'Vraag ' + (i + 1) + ' van ' + vragen.length;
+        backBtn.style.display = i > 0 ? 'inline-block' : 'none';
+
+        let html = '<h2 class="wizard-question-title">' + vraag.vraag + '</h2><div class="wizard-options">';
+        vraag.opties.forEach((optie, j) => {
+            html += '<button type="button" class="wizard-option-btn" data-index="' + j + '">' + optie.label + '</button>';
+        });
+        html += '</div>';
+        questionEl.innerHTML = html;
+
+        questionEl.querySelectorAll('.wizard-option-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const optie = vraag.opties[parseInt(this.dataset.index, 10)];
+                antwoorden[i] = optie.waarden ? {key: vraag.key, waarden: optie.waarden} : null;
+                antwoorden.length = i + 1; // latere stappen (na terug + opnieuw kiezen) vervallen
+                if (i === vragen.length - 1) {
+                    toonResultaat();
+                } else {
+                    stap = i + 1;
+                    toonVraag(stap);
+                    ververCount(stap);
+                }
+            });
+        });
+
+        ververCount(i);
+    }
+
+    function toonResultaat() {
+        progressEl.textContent = 'Klaar!';
+        backBtn.style.display = 'inline-block';
+        const params = specParams(vragen.length);
+        questionEl.innerHTML = '<h2 class="wizard-question-title">Bekijk je resultaten</h2>' +
+            '<p class="wizard-result-loading">Even tellen...</p>';
+        fetch('/api/keuzehulp-tellen/' + slug + '?' + params.toString())
+            .then(r => r.json())
+            .then(data => {
+                countEl.textContent = '';
+                questionEl.innerHTML = '<h2 class="wizard-question-title">Bekijk je resultaten</h2>' +
+                    '<p>Op basis van je antwoorden vonden we <strong>' + data.aantal + ' ' +
+                    "{{ category.name|lower }}" + '</strong> die passen.</p>' +
+                    '<a href="/category/{{ category.slug }}?' + params.toString() +
+                    '" class="btn-primary wizard-result-cta">Bekijk de resultaten →</a>';
+            });
+    }
+
+    backBtn.addEventListener('click', function() {
+        if (stap > 0) {
+            stap -= 1;
+            toonVraag(stap);
+        }
+    });
+
+    toonVraag(0);
+})();
+</script>
+{% endblock %}

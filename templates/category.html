@@ -31,6 +31,17 @@
         {% endif %}
     </header>
 
+    {% if has_wizard %}
+    <a href="/category/{{ category.slug }}/keuzehulp" class="wizard-teaser">
+        <span class="wizard-teaser-icon" aria-hidden="true">🧭</span>
+        <span class="wizard-teaser-info">
+            <strong>Nog niet zeker wat je nodig hebt?</strong>
+            <span>Doe de keuzehulp — 3 korte vragen, direct de juiste {{ category.name|lower }} eruit gefilterd.</span>
+        </span>
+        <span class="wizard-teaser-cta">Start →</span>
+    </a>
+    {% endif %}
+
     {% if video_id %}
     <a href="/gidsen/{{ category_guide.slug }}" class="category-video-teaser">
         <span class="category-video-teaser-thumb">

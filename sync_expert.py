@@ -136,7 +136,8 @@ def sync_expert():
             db.session.commit()
 
         # Vangnet: producten zonder foto -> Icecat proberen.
-        from icecat import vul_ontbrekende_fotos
+        from icecat import controleer_bestaande_fotos, vul_ontbrekende_fotos
+        controleer_bestaande_fotos(db, Product)
         vul_ontbrekende_fotos(db, Product)
 
         sync_log.finished_at = utcnow()

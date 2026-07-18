@@ -281,7 +281,8 @@ def sync_coolblue():
         db.session.commit()
 
         # Vangnet: feed had voor sommige producten geen foto -> Icecat proberen.
-        from icecat import vul_ontbrekende_fotos
+        from icecat import controleer_bestaande_fotos, vul_ontbrekende_fotos
+        controleer_bestaande_fotos(db, Product)
         vul_ontbrekende_fotos(db, Product)
 
         sync_log.finished_at = utcnow()

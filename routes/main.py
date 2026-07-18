@@ -15,6 +15,25 @@ main_bp = Blueprint('main', __name__)
 _FACET_CACHE = {}
 _FACET_TTL = 15 * 60  # seconden
 
+_PROS_CONS_CACHE = {}
+_PROS_CONS_TTL = 15 * 60
+
+
+def _pros_cons_by_ean():
+    """Redactionele pros/cons uit alle videogidsen, {ean: {...}} — zie
+    guide_cards.collect_pros_cons_by_ean. Zelfde cache-patroon als
+    _category_facets: er zijn maar ~10 gidsen, maar geen reden om ze op
+    elke productkaart-render opnieuw te doorzoeken."""
+    nu = time.time()
+    hit = _PROS_CONS_CACHE.get('data')
+    if hit and nu - hit[0] < _PROS_CONS_TTL:
+        return hit[1]
+    from guide_cards import collect_pros_cons_by_ean
+    guides = Guide.query.filter_by(post_type='guide').all()
+    data = collect_pros_cons_by_ean(guides)
+    _PROS_CONS_CACHE['data'] = (nu, data)
+    return data
+
 
 def _category_facets(category):
     nu = time.time()
@@ -318,6 +337,7 @@ def category(slug):
         structured_data=_category_structured_data(category, products.items),
         has_wizard=has_wizard,
         subtype_options=subtype_options,
+        pros_cons_by_ean=_pros_cons_by_ean(),
     )
 
 
@@ -359,6 +379,7 @@ def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_de
                                                    list_name=facet_title),
         facet_title=facet_title,
         facet_intro=intro,
+        pros_cons_by_ean=_pros_cons_by_ean(),
     )
 
 
@@ -515,7 +536,8 @@ def brand_detail(merk_slug):
 
     return render_template('brand_detail.html', merk=merk, products=products.items,
                            pagination=products, categorieen=categorieen, intro=intro,
-                           meta_description=meta_description, structured_data=structured_data)
+                           meta_description=meta_description, structured_data=structured_data,
+                           pros_cons_by_ean=_pros_cons_by_ean())
 
 
 @main_bp.route('/category/<slug>/keuzehulp')

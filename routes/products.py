@@ -137,10 +137,12 @@ def search():
 
     available_brands = sorted(set(p.brand for p in Product.query.filter(Product.is_available == True).all() if p.brand))
 
+    from routes.main import _pros_cons_by_ean
     return render_template('search.html', results=results.items, pagination=results,
                          query=query, categories=categories, selected_category=category_filter,
                          available_brands=available_brands, selected_brands=brand_filter,
-                         min_price=min_price, max_price=max_price)
+                         min_price=min_price, max_price=max_price,
+                         pros_cons_by_ean=_pros_cons_by_ean())
 
 
 @products_bp.route('/vergelijk')

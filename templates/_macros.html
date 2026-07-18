@@ -5,8 +5,9 @@
    Toont de laagste prijs over alle winkels ("vanaf € …" bij meerdere winkels),
    het aantal winkels, en een knop die bij meerdere winkels naar de
    productpagina leidt (vergelijken) en bij één winkel direct naar die winkel. #}
-{% macro product_card(product, show_excerpt=false) %}
+{% macro product_card(product, show_excerpt=false, pros_cons_by_ean=none) %}
 {% set best = product.best_offer %}
+{% set pc = pros_cons_by_ean.get(product.ean) if pros_cons_by_ean else none %}
 <article class="product-card">
     <a href="/product/{{ product.slug }}" class="product-image">
         {% if product.image_url %}
@@ -42,6 +43,16 @@
             <span class="availability unavailable">{{ t('product.out_of_stock') }}</span>
             {% endif %}
         </div>
+        {% if pc %}
+        {# Redactionele pros/cons, hergebruikt uit een van de videogidsen
+           (guide_cards.collect_pros_cons_by_ean) — alleen zichtbaar voor
+           de handjevol producten die daar al in staan, geen verzonnen
+           tekst voor de rest van de catalogus. #}
+        <div class="top-card-notes product-card-notes">
+            {% if pc.pros %}<span class="note-pro">&#10003; {{ pc.pros[0] }}</span>{% endif %}
+            {% if pc.cons %}<span class="note-con">&minus; {{ pc.cons[0] }}</span>{% endif %}
+        </div>
+        {% endif %}
         {% if product.is_example %}
         <span class="badge-example badge-example-block">{{ t('product.example_badge') }}</span>
         {% endif %}

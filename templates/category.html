@@ -153,7 +153,7 @@
             {% if products %}
             <div class="product-grid">
                 {% for product in products %}
-                {{ product_card(product) }}
+                {{ product_card(product, pros_cons_by_ean=pros_cons_by_ean) }}
                 {% endfor %}
             </div>
 

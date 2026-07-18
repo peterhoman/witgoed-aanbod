@@ -1643,6 +1643,14 @@ section h2 {
     color: #a04000;
 }
 
+/* Op een smal productkaartje (categoriepagina) staan pro/con onder elkaar
+   i.p.v. naast elkaar zoals in de bredere gids-toplijst-kaart. */
+.product-card-notes {
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 8px;
+}
+
 .guide-author {
     font-size: 13px;
     color: var(--gray);

@@ -70,7 +70,7 @@
             {% if results %}
             <div class="product-grid">
                 {% for product in results %}
-                {{ product_card(product, show_excerpt=true) }}
+                {{ product_card(product, show_excerpt=true, pros_cons_by_ean=pros_cons_by_ean) }}
                 {% endfor %}
             </div>
 

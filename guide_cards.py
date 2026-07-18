@@ -144,6 +144,32 @@ def _pros_cons_schema(verzameld):
             + json.dumps(data, ensure_ascii=False) + '</script>')
 
 
+def collect_pros_cons_by_ean(guides):
+    """Verzamel alle pros/cons-attributen uit <!--productkaart-->-comments
+    over de gegeven gidsen heen, in een {ean: {'pros': [...], 'cons': [...],
+    'guide_slug': ...}}-dict.
+
+    Hergebruikt de redactionele pros/cons die al in de 5 videogidsen staan
+    (guides_content.py), zodat categoriepagina's diezelfde tekst kunnen
+    tonen zonder iets te verzinnen voor de duizenden producten die geen
+    eigen redactionele beoordeling hebben — die tonen simpelweg niets.
+    """
+    resultaat = {}
+    for guide in guides:
+        for match in _PRODUCTKAART.finditer(guide.content or ''):
+            a = _attrs(match.group(1))
+            ean = (a.get('ean') or '').strip()
+            pros, cons = _split_notes(a.get('pros')), _split_notes(a.get('cons'))
+            if not ean or not (pros or cons):
+                continue
+            # Eerste vermelding wint: een product staat zelden in meerdere
+            # gidsen, maar bij twijfel is de oudste (eerst geschreven) tekst
+            # net zo goed als een willekeurige latere.
+            if ean not in resultaat:
+                resultaat[ean] = {'pros': pros, 'cons': cons, 'guide_slug': guide.slug}
+    return resultaat
+
+
 def render_guide_content(content):
     """Vervang kaart-placeholders in gidstekst door gerenderde kaarten."""
     if '<!--productkaart' not in content and '<!--merkkaart' not in content:

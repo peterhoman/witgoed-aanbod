@@ -289,6 +289,17 @@ def category(slug):
     from wizard import WIZARD_QUESTIONS
     has_wizard = slug in WIZARD_QUESTIONS
 
+    # Subcategorie-facetlinks (voorlader/bovenlader, warmtepomp/condens):
+    # los opgehaald, want deze specs zitten niet altijd in de (top-6)
+    # spec_facets-cache hierboven. Alleen voor de 2 categorieën met schone
+    # data (zie SUBCATEGORY_SPECS) — dus meestal helemaal geen extra query.
+    subtype_options = None
+    subtype_key = SUBCATEGORY_SPECS.get(slug)
+    if subtype_key:
+        alle_producten = Product.query.filter_by(category_id=category.id, is_available=True).all()
+        subtype_options = compute_spec_facets(alle_producten, max_filters=999, max_options=999)
+        subtype_options = next((f['options'] for f in subtype_options if f['key'] == subtype_key), None)
+
     return render_template(
         'category.html',
         category=category,
@@ -306,6 +317,7 @@ def category(slug):
         meta_description=meta_description,
         structured_data=_category_structured_data(category, products.items),
         has_wizard=has_wizard,
+        subtype_options=subtype_options,
     )
 
 
@@ -396,6 +408,47 @@ def category_energielabel(slug, letter):
         category, Product.specs[energie_facet['key']].as_string().ilike(f"{letter}%"),
         f"Energielabel {letter}", f"Energielabel {letter} {category.name}",
         meta_description, intro,
+    )
+
+
+# Subcategorie-landingspagina's: alleen waar de spec-data schoon en
+# betekenisvol genoeg is (geverifieerd via /api/category-specs/<slug>).
+# Koelkasten/vaatwassers hebben geen vergelijkbaar schoon type-veld —
+# bewust geen pagina forceren op rommelige data (zie audit: "thin content").
+SUBCATEGORY_SPECS = {
+    'wasmachines': 'Top load of voorlader',
+    'drogers': 'Type droger',
+}
+
+
+@main_bp.route('/category/<slug>/type/<waarde_slug>')
+def category_subtype(slug, waarde_slug):
+    category = Category.query.filter_by(slug=slug).first_or_404()
+    spec_key = SUBCATEGORY_SPECS.get(slug)
+    if not spec_key:
+        abort(404)
+    _, spec_facets, _ = _category_facets(category)
+    facet = next((f for f in spec_facets if f['key'] == spec_key), None)
+    if not facet:
+        # Uncapped: deze spec zit niet altijd in de (top-6) sidebar-cache.
+        producten = Product.query.filter_by(category_id=category.id, is_available=True).all()
+        alle_facets = compute_spec_facets(producten, max_filters=999, max_options=999)
+        facet = next((f for f in alle_facets if f['key'] == spec_key), None)
+    match = next((o for o in (facet['options'] if facet else [])
+                 if slugify(o['value']) == waarde_slug), None)
+    if not match:
+        abort(404)
+    waarde = match['value']
+
+    naam_lower = category.name.lower()
+    intro = (f"We volgen momenteel {match['count']} {waarde.lower()}s in de categorie "
+            f"{naam_lower}. Bekijk per model de actuele prijs bij onze aangesloten winkels.")
+    meta_description = (f"{waarde} {naam_lower} vergelijken: {match['count']} modellen op prijs "
+                        f"bij Bol, Coolblue, MediaMarkt en Expert.")[:160]
+
+    return _render_facet_page(
+        category, Product.specs[spec_key].as_string() == waarde, waarde,
+        f"{waarde} {category.name}", meta_description, intro,
     )
 
 

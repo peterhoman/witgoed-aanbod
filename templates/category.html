@@ -76,6 +76,9 @@
         <a href="/category/{{ category.slug }}/energielabel/{{ opt.value[:1]|lower }}">{{ t('category.energielabel_link', letter=opt.value[:1]) }} ({{ opt.count }})</a>
         {% endfor %}
         {% endfor %}
+        {% for opt in subtype_options or [] %}
+        <a href="/category/{{ category.slug }}/type/{{ opt.value|slugify }}">{{ opt.value }} ({{ opt.count }})</a>
+        {% endfor %}
     </nav>
     {% endif %}
 

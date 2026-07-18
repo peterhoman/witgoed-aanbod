@@ -5,6 +5,7 @@ SEO routes (sitemap, robots.txt)
 from flask import Blueprint, render_template_string, current_app
 from models import Product, Category, Guide, utcnow
 from filter_helpers import compute_brand_facet, compute_spec_facets, slugify
+from routes.main import SUBCATEGORY_SPECS
 
 seo_bp = Blueprint('seo', __name__)
 
@@ -60,6 +61,20 @@ def sitemap():
                     letters_gezien.add(letter)
                     sitemap_entries.append({
                         'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}/energielabel/{letter}",
+                        'lastmod': _lastmod(),
+                        'priority': '0.5'
+                    })
+        # Subcategorie-pagina's (voorlader/bovenlader, warmtepomp/condens):
+        # ongelimiteerd berekenen, want dit zijn geen priority-specs en
+        # kunnen buiten de standaard top-6 vallen.
+        subtype_key = SUBCATEGORY_SPECS.get(category.slug)
+        if subtype_key:
+            for facet in compute_spec_facets(cat_products, max_filters=999, max_options=999):
+                if facet['key'] != subtype_key:
+                    continue
+                for option in facet['options']:
+                    sitemap_entries.append({
+                        'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}/type/{slugify(option['value'])}",
                         'lastmod': _lastmod(),
                         'priority': '0.5'
                     })

@@ -16,6 +16,7 @@ TRANSLATIONS = {
         'nav.disclaimer': 'Disclaimer',
         'nav.contact': 'Contact',
         'nav.guides': 'Koopgidsen',
+        'nav.brands': 'Alle merken',
 
         # Category nav (also reused in footer)
         'nav.wasmachines': 'Wasmachines',
@@ -166,6 +167,7 @@ TRANSLATIONS = {
         'nav.disclaimer': 'Disclaimer',
         'nav.contact': 'Contact',
         'nav.guides': 'Buying guides',
+        'nav.brands': 'All brands',
 
         'nav.wasmachines': 'Washing Machines',
         'nav.drogers': 'Dryers',

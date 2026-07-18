@@ -4,7 +4,7 @@ SEO routes (sitemap, robots.txt)
 
 from flask import Blueprint, render_template_string, current_app
 from models import Product, Category, Guide, utcnow
-from filter_helpers import compute_brand_facet, compute_spec_facets, slugify
+from filter_helpers import compute_brand_facet, compute_spec_facets, compute_global_brand_index, slugify
 from routes.main import SUBCATEGORY_SPECS
 
 seo_bp = Blueprint('seo', __name__)
@@ -34,6 +34,19 @@ def sitemap():
         'lastmod': _lastmod(),
         'priority': '1.0'
     })
+
+    # Merken A-Z + per-merk-pagina (over alle categorieën heen)
+    sitemap_entries.append({
+        'loc': f"{current_app.config['SITE_URL']}/merken",
+        'lastmod': _lastmod(),
+        'priority': '0.6'
+    })
+    for merk in compute_global_brand_index((p.brand, 1) for p in products):
+        sitemap_entries.append({
+            'loc': f"{current_app.config['SITE_URL']}/merk/{merk['slug']}",
+            'lastmod': _lastmod(),
+            'priority': '0.5'
+        })
 
     # Category pages + hun merk-/energielabel-facetpagina's (long-tail SEO;
     # zelfde live-databerekening als de categoriepagina zelf, dus een

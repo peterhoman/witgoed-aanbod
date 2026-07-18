@@ -452,6 +452,72 @@ def category_subtype(slug, waarde_slug):
     )
 
 
+def _global_brand_index():
+    """Merk + aantal over álle categorieën heen (GROUP BY, geen volledige
+    productrijen), varianten in schrijfwijze samengevoegd."""
+    from models import db
+    from sqlalchemy import func
+    from filter_helpers import compute_global_brand_index
+    rows = (db.session.query(Product.brand, func.count(Product.id))
+            .filter(Product.is_available == True, Product.brand.isnot(None))
+            .group_by(Product.brand).all())
+    return compute_global_brand_index(rows)
+
+
+@main_bp.route('/merken')
+def brands_index():
+    """A-Z-overzicht van alle merken die we vergelijken — long-tail
+    zoekverkeer op merknaam alleen ('Bosch witgoed'), en een crawlbare
+    ingang naar de per-merk-pagina's hieronder."""
+    merken = _global_brand_index()
+    return render_template('brands.html', merken=merken)
+
+
+@main_bp.route('/merk/<merk_slug>')
+def brand_detail(merk_slug):
+    """Eén merk over alle categorieën heen (i.t.t. /category/<slug>/merk/<merk>,
+    dat is per categorie). Voor merken die in meerdere categorieën
+    voorkomen (bv. Bosch: wasmachines én koelkasten én vaatwassers)."""
+    from models import db
+
+    page = request.args.get('page', 1, type=int)
+    index = _global_brand_index()
+    match = next((m for m in index if m['slug'] == merk_slug), None)
+    if not match:
+        abort(404)
+    merk = match['naam']
+
+    q = Product.query.filter(Product.brand.ilike(merk), Product.is_available == True).order_by(Product.price.asc())
+    products = q.paginate(page=page, per_page=24)
+
+    categorie_rows = (db.session.query(Category.name)
+                      .join(Product, Product.category_id == Category.id)
+                      .filter(Product.brand.ilike(merk), Product.is_available == True)
+                      .distinct().all())
+    categorieen = sorted(r[0] for r in categorie_rows)
+
+    intro = (f"We vergelijken momenteel {match['aantal']} {merk}-producten"
+            + (f", verdeeld over {len(categorieen)} categorieën: {', '.join(categorieen[:6])}."
+               if categorieen else "."))
+    meta_description = (f"Vergelijk {match['aantal']} {merk}-producten op prijs bij "
+                        f"Bol, Coolblue, MediaMarkt en Expert.")[:160]
+
+    site_url = current_app.config['SITE_URL']
+    structured_data = [{
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+            {'@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': f"{site_url}/"},
+            {'@type': 'ListItem', 'position': 2, 'name': 'Merken', 'item': f"{site_url}/merken"},
+            {'@type': 'ListItem', 'position': 3, 'name': merk},
+        ],
+    }]
+
+    return render_template('brand_detail.html', merk=merk, products=products.items,
+                           pagination=products, categorieen=categorieen, intro=intro,
+                           meta_description=meta_description, structured_data=structured_data)
+
+
 @main_bp.route('/category/<slug>/keuzehulp')
 def category_wizard(slug):
     """Kort vragenlijstje (3 vragen) dat mensentaal vertaalt naar dezelfde

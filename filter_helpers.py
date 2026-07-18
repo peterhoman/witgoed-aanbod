@@ -82,6 +82,28 @@ def compute_spec_facets(products, max_filters=6, max_options=10):
     return facets
 
 
+def compute_global_brand_index(brand_counts):
+    """brand_counts: iterable van (merknaam, aantal) — bv. uit een SQL
+    GROUP BY over alle categorieën heen. Voegt schrijfwijze-varianten
+    samen (AEG/Aeg/aeg) tot één merk met de vaakst voorkomende
+    schrijfwijze als weergavenaam. Sorteert alfabetisch."""
+    per_merk = defaultdict(lambda: {'casing': Counter(), 'aantal': 0})
+    for naam, aantal in brand_counts:
+        naam = (naam or '').strip()
+        if not naam:
+            continue
+        key = naam.lower()
+        per_merk[key]['casing'][naam] += aantal
+        per_merk[key]['aantal'] += aantal
+
+    resultaat = []
+    for data in per_merk.values():
+        weergavenaam = data['casing'].most_common(1)[0][0]
+        resultaat.append({'naam': weergavenaam, 'slug': slugify(weergavenaam), 'aantal': data['aantal']})
+    resultaat.sort(key=lambda m: m['naam'].lower())
+    return resultaat
+
+
 def slugify(value):
     """'AEG' -> 'aeg', 'Miele & Co' -> 'miele-co'. Voor merk-/spec-facet-URL's
     (/category/wasmachines/merk/aeg) — geen externe dependency nodig voor

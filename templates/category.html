@@ -79,6 +79,9 @@
         {% for opt in subtype_options or [] %}
         <a href="/category/{{ category.slug }}/type/{{ opt.value|slugify }}">{{ opt.value }} ({{ opt.count }})</a>
         {% endfor %}
+        {% if brand_facet %}
+        <a href="/merken" class="category-facet-links-all">{{ t('nav.brands') }} →</a>
+        {% endif %}
     </nav>
     {% endif %}
 

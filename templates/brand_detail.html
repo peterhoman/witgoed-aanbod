@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import product_card with context %}
+
+{% block title %}{{ merk }} vergelijken - laagste prijs | WitgoedAanbod.nl{% endblock %}
+{% block meta_description %}{{ meta_description }}{% endblock %}
+
+{% block structured_data %}
+{% for blob in structured_data %}
+<script type="application/ld+json">{{ blob | tojson }}</script>
+{% endfor %}
+{% endblock %}
+
+{% block content %}
+<div class="container category-page">
+    <nav class="breadcrumbs">
+        <a href="/">Home</a> / <a href="/merken">Merken</a> / <span>{{ merk }}</span>
+    </nav>
+
+    <header class="category-header">
+        <h1>{{ merk }}</h1>
+        <p>{{ intro }}</p>
+    </header>
+
+    {% if categorieen %}
+    <nav class="category-facet-links" aria-label="Categorieën">
+        {% for c in categorieen %}
+        <span class="brand-category-badge">{{ c }}</span>
+        {% endfor %}
+    </nav>
+    {% endif %}
+
+    {% if products %}
+    <div class="product-grid">
+        {% for product in products %}
+        {{ product_card(product) }}
+        {% endfor %}
+    </div>
+
+    {% if pagination.pages > 1 %}
+    <nav class="pagination">
+        {% if pagination.has_prev %}
+        <a href="?page={{ pagination.prev_num }}" class="btn-secondary">{{ t('pagination.prev') }}</a>
+        {% endif %}
+        <span class="page-info">{{ t('pagination.page_of', page=pagination.page, pages=pagination.pages) }}</span>
+        {% if pagination.has_next %}
+        <a href="?page={{ pagination.next_num }}" class="btn-secondary">{{ t('pagination.next') }}</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+    {% else %}
+    <div class="no-products">
+        <p>{{ t('products.none_found') }}</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -846,6 +846,49 @@ body {
     color: var(--gray);
 }
 
+/* --- Merken A-Z --- */
+.brands-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.brands-grid-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--dark);
+    font-weight: 600;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.brands-grid-item:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.brands-grid-count {
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--gray);
+}
+
+.brand-category-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 14px;
+    background: var(--light);
+    color: var(--gray);
+    font-size: 13px;
+    border: 1px solid var(--border);
+}
+
 /* ============================================
    BUTTONS
    ============================================ */

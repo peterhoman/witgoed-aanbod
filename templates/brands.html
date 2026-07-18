@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Alle merken A-Z | WitgoedAanbod.nl{% endblock %}
+{% block meta_description %}Blader door alle {{ merken|length }} merken die we vergelijken, van A tot Z, met per merk het actuele aanbod en de laagste prijzen.{% endblock %}
+
+{% block content %}
+<div class="container legal-page">
+    <nav class="breadcrumbs">
+        <a href="/">Home</a> / <span>Merken</span>
+    </nav>
+
+    <h1>Alle merken</h1>
+    <p class="contact-intro">We vergelijken {{ merken|length }} merken witgoed en huishoudapparaten. Kies een merk voor het actuele aanbod over al onze categorieën heen.</p>
+
+    <div class="brands-grid">
+        {% for merk in merken %}
+        <a href="/merk/{{ merk.slug }}" class="brands-grid-item">
+            <span>{{ merk.naam }}</span>
+            <span class="brands-grid-count">{{ merk.aantal }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -85,9 +85,28 @@ def build_price_history(product):
         'prijs': _euro(r.price),
     } for r in reversed(rows)]
 
+    laagste_is_nu = bool(actuele) and min(actuele.values()) <= laagste.price
+
+    # Koopadvies: alleen een uitspraak doen als de data dat eerlijk onderbouwt
+    # — geen kunstmatige urgentie. Is de huidige prijs niet de laagste ooit,
+    # dan melden we neutraal wat de laagste prijs was, zonder aan te sporen.
+    koopadvies = None
+    if laagste_is_nu and len(rows) > 1:
+        koopadvies = 'Dit is de laagste prijs sinds we dit apparaat volgen — een goed moment om te kopen.'
+    elif actuele:
+        huidige_laagste = min(actuele.values())
+        verschil = huidige_laagste - laagste.price
+        # Alleen vermelden bij een merkbaar verschil (>3%); anders voegt de
+        # zin niets toe aan de tabel die er al staat.
+        if laagste.price > 0 and verschil / laagste.price > 0.03:
+            koopadvies = (f'De laagste prijs sinds we meten was &euro; {_euro(laagste.price)} '
+                          f'(op {_datum(laagste.recorded_at)}) — nu is de laagste prijs '
+                          f'&euro; {_euro(huidige_laagste)}.')
+
     resultaat = {
         'laagste_prijs': _euro(laagste.price),
-        'laagste_is_nu': bool(actuele) and min(actuele.values()) <= laagste.price,
+        'laagste_is_nu': laagste_is_nu,
+        'koopadvies': koopadvies,
         'sinds': _datum(sinds),
         'tabel': tabel,
         'svg': None,

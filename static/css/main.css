@@ -1251,6 +1251,17 @@ section h2 {
     line-height: 1.5;
 }
 
+/* Bovenaan de aanbiedingen (vóór de koopknoppen), iets leesbaarder dan de
+   voorheen weggestopte <small>-variant: transparantie werkt vertrouwenwekkend
+   juist als ze zichtbaar is vóórdat je klikt, niet pas erna. */
+.affiliate-disclosure-top {
+    font-size: 13px;
+    margin: 10px 0 14px;
+    padding: 8px 12px;
+    background: var(--light);
+    border-radius: var(--radius);
+}
+
 /* --- Video-thumbnail op gidskaarten (gidsenoverzicht) --- */
 .guide-video-thumb {
     position: relative;
@@ -1585,6 +1596,12 @@ section h2 {
     color: #006300;
     font-size: 12px;
     font-weight: 600;
+}
+
+.price-history-advies {
+    font-size: 13px;
+    color: var(--gray);
+    margin: -6px 0 12px;
 }
 
 .price-history-legend {

@@ -66,6 +66,8 @@
                     {% endif %}
                 </div>
 
+                <p class="affiliate-disclosure affiliate-disclosure-top">{{ t('product.affiliate_disclosure') }}</p>
+
                 {% if offers %}
                 <ul class="offers-list">
                     {% for offer in offers %}
@@ -87,8 +89,6 @@
                 {% else %}
                 <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" rel="nofollow sponsored" class="btn-large btn-buy">{{ t('product.view_offer') }} →</a>
                 {% endif %}
-
-                <p class="affiliate-disclosure"><small>{{ t('product.affiliate_disclosure') }}</small></p>
             </div>
             {% endif %}
 
@@ -123,6 +123,9 @@
                     <span class="price-history-badge">nu de laagste prijs</span>
                     {% endif %}
                 </p>
+                {% if price_history.koopadvies %}
+                <p class="price-history-advies">{{ price_history.koopadvies | safe }}</p>
+                {% endif %}
                 {% if price_history.svg %}
                 {{ price_history.svg | safe }}
                 {% if price_history.legenda | length > 1 %}

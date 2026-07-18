@@ -36,6 +36,22 @@ def _ensure_products_strikethrough_column(db):
             conn.commit()
 
 
+def _ensure_guides_updated_at_column(db):
+    """Zelfde boot-migratiepatroon: voeg updated_at toe aan een bestaande
+    guides-tabel, zodat 'bijgewerkt op'-datums (E-E-A-T) ook op gidsen
+    werken die al vóór deze kolom bestonden."""
+    inspector = inspect(db.engine)
+    if 'guides' not in inspector.get_table_names():
+        return
+    columns = [c['name'] for c in inspector.get_columns('guides')]
+    if 'updated_at' not in columns:
+        with db.engine.connect() as conn:
+            # Bestaande rijen: updated_at = created_at, geen valse "zojuist bijgewerkt".
+            conn.execute(text("ALTER TABLE guides ADD COLUMN updated_at TIMESTAMP"))
+            conn.execute(text("UPDATE guides SET updated_at = created_at WHERE updated_at IS NULL"))
+            conn.commit()
+
+
 def _backfill_offers_from_products(db):
     """Fase 1 (multi-winkel): tot nu toe stond prijs/link/voorraad rechtstreeks
     op elke products-rij (alleen Bol). Zet die één-op-één om naar een rij in de
@@ -122,6 +138,7 @@ def create_app(config_name=None):
     with app.app_context():
         db.create_all()
         _ensure_guides_post_type_column(db)
+        _ensure_guides_updated_at_column(db)
         _ensure_products_strikethrough_column(db)
         _ensure_categories(db)
         _backfill_offers_from_products(db)

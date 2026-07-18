@@ -17,9 +17,8 @@
 
     <h1>{{ guide.title }}</h1>
 
-    <p class="guide-author">Door de redactie van <strong>WitgoedAanbod.nl</strong>
-        — onderdeel van Avantius, ruim 20 jaar actief in huishoudelijke apparaten
-        {%- if guide.created_at %} · gepubliceerd {{ guide.created_at.strftime('%d-%m-%Y') }}{% endif %}</p>
+    {% set gewijzigd = guide.updated_at and guide.created_at and (guide.updated_at - guide.created_at).days >= 1 %}
+    <p class="guide-author">Door de redactie van <strong>WitgoedAanbod.nl</strong> — onderdeel van Avantius, ruim 20 jaar actief in huishoudelijke apparaten{% if guide.created_at %} · gepubliceerd {{ guide.created_at.strftime('%d-%m-%Y') }}{% endif %}{% if gewijzigd %} · bijgewerkt {{ guide.updated_at.strftime('%d-%m-%Y') }}{% endif %} · zie onze <a href="/over-ons#werkwijze">werkwijze</a></p>
 
     <div class="legal-content">
         {{ (rendered_content or guide.content)|safe }}
@@ -39,6 +38,7 @@
     "headline": "{{ guide.title }}",
     "description": "{{ guide.excerpt }}",
     "datePublished": "{{ guide.created_at.strftime('%Y-%m-%d') if guide.created_at }}",
+    "dateModified": "{{ (guide.updated_at or guide.created_at).strftime('%Y-%m-%d') if guide.created_at }}",
     "inLanguage": "nl-NL",
     "author": {"@type": "Organization", "name": "WitgoedAanbod.nl",
                "url": "{{ config.SITE_URL }}/over-ons",

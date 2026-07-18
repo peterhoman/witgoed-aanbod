@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import Blueprint, render_template, request, jsonify, current_app
 from models import Product, Category, Guide
 from sqlalchemy import or_
@@ -31,6 +33,8 @@ def _product_structured_data(product):
     description = product.ai_description or product.description
     if description:
         data['description'] = description[:500]
+    if product.category:
+        data['category'] = product.category.name
 
     if offers:
         prices = [o.price for o in offers]
@@ -47,6 +51,11 @@ def _product_structured_data(product):
                 'availability': 'https://schema.org/InStock',
                 'url': o.link,
                 'seller': {'@type': 'Organization', 'name': o.retailer_name},
+                # We syncen elke ~12u; een prijs die net gecontroleerd is
+                # blijft dus ruim binnen 24u geldig. Voorkomt dat Google een
+                # stilzwijgend verouderde prijs als "definitief" behandelt.
+                'priceValidUntil': ((o.last_synced or product.last_synced)
+                                    + timedelta(hours=24)).strftime('%Y-%m-%d'),
             } for o in offers],
         }
 

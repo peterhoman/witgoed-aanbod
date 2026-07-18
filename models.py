@@ -288,6 +288,7 @@ class Guide(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
     post_type = db.Column(db.String(20), default='guide')  # 'guide' (koopgids) or 'blog' (nieuwsbericht)
     created_at = db.Column(db.DateTime, default=utcnow)
+    updated_at = db.Column(db.DateTime, default=utcnow, onupdate=utcnow)
 
     category = db.relationship('Category', backref='guides')
 

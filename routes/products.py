@@ -170,6 +170,30 @@ def compare():
     return render_template('compare.html', products=products, spec_keys=spec_keys)
 
 
+@products_bp.route('/verlanglijst')
+def wishlist():
+    # Zelfde opzet als /vergelijk: de lijst zelf staat alleen lokaal bij de
+    # bezoeker (localStorage, geen account); deze pagina zoekt op basis van
+    # de ID's in de URL de actuele productgegevens op, zodat prijs en foto
+    # altijd live zijn i.p.v. de (mogelijk verouderde) waarde uit de browser.
+    ids_param = request.args.get('ids', '')
+    ids = []
+    for raw_id in ids_param.split(','):
+        raw_id = raw_id.strip()
+        if raw_id.isdigit():
+            product_id = int(raw_id)
+            if product_id not in ids:
+                ids.append(product_id)
+
+    products = []
+    if ids:
+        found = Product.query.filter(Product.id.in_(ids)).all()
+        by_id = {p.id: p for p in found}
+        products = [by_id[i] for i in ids if i in by_id]
+
+    return render_template('wishlist.html', products=products)
+
+
 @products_bp.route('/api/categories')
 def api_categories():
     categories = Category.query.filter_by(parent_id=None).all()

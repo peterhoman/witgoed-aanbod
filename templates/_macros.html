@@ -16,6 +16,10 @@
         <span class="image-placeholder" aria-hidden="true">&#128247;</span>
         {% endif %}
     </a>
+    {# Verlanglijst-hartje: puur client-side (localStorage), zie WISHLIST in main.js #}
+    <button type="button" class="wishlist-toggle" data-product-id="{{ product.id }}"
+            data-product-title="{{ product.title }}"
+            aria-label="{{ t('wishlist.toggle_aria') }}" title="{{ t('wishlist.toggle_aria') }}">&#9825;</button>
     <div class="product-info">
         <h3><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
         <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>

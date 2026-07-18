@@ -38,6 +38,10 @@
         <div class="product-details">
             <h1>{{ product.title }}</h1>
             <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
+            <button type="button" class="wishlist-toggle wishlist-toggle-large" data-product-id="{{ product.id }}"
+                    data-product-title="{{ product.title }}">
+                <span aria-hidden="true">&#9825;</span> <span class="wishlist-toggle-label">{{ t('wishlist.toggle_cta') }}</span>
+            </button>
             {% if product.is_example %}
             <span class="badge-example">{{ t('product.example_badge_detail') }}</span>
             {% endif %}

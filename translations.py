@@ -101,6 +101,14 @@ TRANSLATIONS = {
 
         'compare.title': 'Vergelijk producten',
         'compare.empty': 'Geen producten geselecteerd om te vergelijken. Ga naar een categorie en vink "Vergelijk" aan bij maximaal 3 producten.',
+
+        'wishlist.title': 'Mijn verlanglijst',
+        'wishlist.intro': 'Producten die je hebt bewaard. Deze lijst staat alleen lokaal in je browser — geen account nodig, maar ook niet beschikbaar op een ander apparaat.',
+        'wishlist.empty': 'Je verlanglijst is nog leeg. Klik op het hartje bij een product om het hier te bewaren.',
+        'wishlist.empty_cta': 'Begin met vergelijken',
+        'wishlist.toggle_aria': 'Toevoegen aan verlanglijst',
+        'wishlist.toggle_cta': 'Toevoegen aan verlanglijst',
+        'wishlist.toggle_cta_remove': 'In verlanglijst — klik om te verwijderen',
         'compare.property': 'Eigenschap',
 
         # Search page
@@ -236,6 +244,14 @@ TRANSLATIONS = {
 
         'compare.title': 'Compare products',
         'compare.empty': 'No products selected to compare. Go to a category and check "Compare" on up to 3 products.',
+
+        'wishlist.title': 'My wishlist',
+        'wishlist.intro': 'Products you saved. This list is stored only in your own browser — no account needed, but also not available on another device.',
+        'wishlist.empty': 'Your wishlist is empty. Click the heart on a product to save it here.',
+        'wishlist.empty_cta': 'Start comparing',
+        'wishlist.toggle_aria': 'Add to wishlist',
+        'wishlist.toggle_cta': 'Add to wishlist',
+        'wishlist.toggle_cta_remove': 'In your wishlist — click to remove',
         'compare.property': 'Property',
 
         'search.results_for': 'Search results for "{query}"',

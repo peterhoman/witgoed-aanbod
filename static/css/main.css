@@ -441,6 +441,7 @@ body {
 }
 
 .product-card {
+    position: relative;
     background: #fff;
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -448,6 +449,65 @@ body {
     transition: transform 0.3s, box-shadow 0.3s;
     display: flex;
     flex-direction: column;
+}
+
+/* --- Verlanglijst-hartje (client-side, geen account) --- */
+.wishlist-toggle {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    color: var(--gray);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: color 0.15s, transform 0.15s;
+}
+
+.wishlist-toggle:hover {
+    transform: scale(1.1);
+}
+
+.wishlist-toggle.is-active {
+    color: #e0345c;
+}
+
+.wishlist-toggle-large {
+    position: static;
+    width: auto;
+    height: auto;
+    border-radius: var(--radius);
+    background: var(--light);
+    box-shadow: none;
+    padding: 8px 14px;
+    font-size: 15px;
+    gap: 8px;
+    color: var(--dark);
+}
+
+.wishlist-toggle-large.is-active {
+    color: #e0345c;
+}
+
+/* --- Verlanglijst-teller in de header --- */
+.wishlist-nav-link {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+}
+
+.wishlist-nav-link.has-items {
+    display: flex;
 }
 
 .product-card:hover {

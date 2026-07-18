@@ -274,6 +274,91 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 
 // ============================================
+// WISHLIST (verlanglijst, localStorage, geen account)
+// ============================================
+(function() {
+    const STORAGE_KEY = 'wishlist-products';
+    const HEART_EMPTY = '♡';
+    const HEART_FILLED = '♥';
+
+    function getWishlist() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveWishlist(list) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        syncButtons();
+        renderNavCount();
+    }
+
+    function toggleWishlist(id, title) {
+        let list = getWishlist();
+        const existingIndex = list.findIndex(item => item.id === id);
+        if (existingIndex > -1) {
+            list.splice(existingIndex, 1);
+        } else {
+            list.push({ id: id, title: title });
+        }
+        saveWishlist(list);
+    }
+
+    function syncButtons() {
+        const ids = getWishlist().map(item => item.id);
+        document.querySelectorAll('.wishlist-toggle').forEach(function(btn) {
+            const active = ids.includes(parseInt(btn.dataset.productId, 10));
+            btn.classList.toggle('is-active', active);
+            const glyph = btn.querySelector('span[aria-hidden]') || btn;
+            // Kaartjes-hartje heeft geen los <span>: hele knop is de glyph.
+            if (btn.classList.contains('wishlist-toggle-large')) {
+                glyph.textContent = active ? HEART_FILLED : HEART_EMPTY;
+                const label = btn.querySelector('.wishlist-toggle-label');
+                if (label) label.textContent = active ? wishlistLabels.remove : wishlistLabels.add;
+            } else {
+                btn.innerHTML = active ? HEART_FILLED : HEART_EMPTY;
+            }
+        });
+    }
+
+    function renderNavCount() {
+        const count = getWishlist().length;
+        const link = document.getElementById('wishlist-nav-link');
+        const counter = document.getElementById('wishlist-nav-count');
+        if (!link || !counter) return;
+        counter.textContent = count;
+        link.classList.toggle('has-items', count > 0);
+        if (count > 0) {
+            link.href = '/verlanglijst?ids=' + getWishlist().map(i => i.id).join(',');
+        }
+    }
+
+    // Labels komen uit de pagina zelf (data-attributen op <body>) zodat de
+    // NL/EN-vertaling uit translations.py ook hier klopt, zonder een aparte
+    // JS-vertaaltabel te hoeven onderhouden.
+    const wishlistLabels = {
+        add: document.body.dataset.wishlistAdd || 'Toevoegen aan verlanglijst',
+        remove: document.body.dataset.wishlistRemove || 'In verlanglijst',
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            const btn = e.target.closest('.wishlist-toggle');
+            if (!btn) return;
+            e.preventDefault();
+            const id = parseInt(btn.dataset.productId, 10);
+            const title = btn.dataset.productTitle || '';
+            toggleWishlist(id, title);
+        });
+
+        syncButtons();
+        renderNavCount();
+    });
+})();
+
+// ============================================
 // CATEGORIES CAROUSEL (homepage)
 // ============================================
 document.querySelectorAll('.carousel').forEach(function(carousel) {

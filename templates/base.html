@@ -48,7 +48,7 @@
     }
     </script>
 </head>
-<body>
+<body data-wishlist-add="{{ t('wishlist.toggle_cta') }}" data-wishlist-remove="{{ t('wishlist.toggle_cta_remove') }}">
     <!-- Header -->
     <header class="header">
         <div class="container">
@@ -60,6 +60,9 @@
                     <input type="text" name="q" placeholder="{{ t('search.placeholder') }}" required>
                     <button type="submit">{{ t('search.button') }}</button>
                 </form>
+                <a href="/verlanglijst" id="wishlist-nav-link" class="wishlist-nav-link" title="{{ t('wishlist.title') }}">
+                    &#9825; <span id="wishlist-nav-count">0</span>
+                </a>
                 <div class="lang-switcher">
                     <a href="/set-language/nl" class="{{ 'active' if current_lang == 'nl' }}">NL</a>
                     <a href="/set-language/en" class="{{ 'active' if current_lang == 'en' }}">EN</a>

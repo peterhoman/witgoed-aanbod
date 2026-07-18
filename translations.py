@@ -128,6 +128,7 @@ TRANSLATIONS = {
         'category.guide_teaser': 'Koopgids',
         'category.video_teaser': 'Videogids',
         'category.guide_teaser_cta': 'Lees onze gids',
+        'category.energielabel_link': 'Label {letter}',
 
         # Blog
         'blog.title': 'Blog & Nieuws',
@@ -269,6 +270,7 @@ TRANSLATIONS = {
         'category.guide_teaser': 'Buying Guide',
         'category.video_teaser': 'Video Guide',
         'category.guide_teaser_cta': 'Read our guide',
+        'category.energielabel_link': 'Label {letter}',
 
         'blog.title': 'Blog & News',
         'blog.intro': 'Appliance news and featured products, updated weekly.',

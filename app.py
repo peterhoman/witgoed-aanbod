@@ -179,6 +179,12 @@ def create_app(config_name=None):
             return translate(key, g.get('lang', 'nl'), **kwargs)
         return {'t': t, 'current_lang': g.get('lang', 'nl')}
 
+    @app.template_filter('slugify')
+    def slugify_filter(value):
+        """Merk-/spec-facet-links in templates (/category/<slug>/merk/<slug>)."""
+        from filter_helpers import slugify
+        return slugify(value)
+
     @app.template_filter('euro')
     def euro_filter(value):
         """Nederlandse prijsnotatie: 1299.5 -> '1.299,50' (komma, puntjes voor duizendtallen)."""

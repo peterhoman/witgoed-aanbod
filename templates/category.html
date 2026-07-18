@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% from '_macros.html' import product_card with context %}
 
-{% block title %}{{ category.name }} vergelijken - laagste prijs | WitgoedAanbod.nl{% endblock %}
+{% block title %}{{ facet_title or category.name }} vergelijken - laagste prijs | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}{{ meta_description }}{% endblock %}
 
 {% block structured_data %}
@@ -14,13 +14,17 @@
 <div class="container category-page">
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs">
-        <a href="/">Home</a> / <span>{{ category.name }}</span>
+        <a href="/">Home</a> /
+        {% if facet_title %}<a href="/category/{{ category.slug }}">{{ category.name }}</a> / <span>{{ facet_title }}</span>
+        {% else %}<span>{{ category.name }}</span>{% endif %}
     </nav>
 
     <!-- Category Header -->
     <header class="category-header">
-        <h1>{{ category.name }}</h1>
-        {% if category.ai_intro %}
+        <h1>{{ facet_title or category.name }}</h1>
+        {% if facet_intro %}
+        <p>{{ facet_intro }}</p>
+        {% elif category.ai_intro %}
         <p>{{ category.ai_intro }}</p>
         {% else %}
         <p>Vergelijk en vind de beste {{ category.name }}. Alle producten, prijzen en aanbiedingen op één plek.</p>
@@ -45,6 +49,23 @@
         <strong>{{ category_guide.title }}</strong>
         <span class="guide-teaser-cta">{{ t('category.guide_teaser_cta') }} →</span>
     </a>
+    {% endif %}
+
+    {% if not facet_title and (brand_facet or spec_facets) %}
+    {# Echte <a>-links naar de merk-/energielabel-facetpagina's: de checkbox-
+       filters hieronder zijn een <form> zonder href's, dus onbereikbaar voor
+       Google's crawler. Deze links geven diezelfde deelverzamelingen een
+       eigen, indexeerbare URL (long-tail zoekverkeer als "Bosch witgoed"). #}
+    <nav class="category-facet-links" aria-label="{{ t('filters.brand') }}">
+        {% for option in brand_facet[:12] %}
+        <a href="/category/{{ category.slug }}/merk/{{ option.value|slugify }}">{{ option.value }} ({{ option.count }})</a>
+        {% endfor %}
+        {% for facet in spec_facets if 'energielabel' in facet.key|lower %}
+        {% for opt in facet.options %}
+        <a href="/category/{{ category.slug }}/energielabel/{{ opt.value[:1]|lower }}">{{ t('category.energielabel_link', letter=opt.value[:1]) }} ({{ opt.count }})</a>
+        {% endfor %}
+        {% endfor %}
+    </nav>
     {% endif %}
 
     <!-- Filters Sidebar -->

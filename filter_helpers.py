@@ -5,6 +5,7 @@ These are pure functions (no Flask/DB dependencies) so they can be tested
 in isolation with plain lists of objects that have `.brand` and `.specs`.
 """
 
+import re
 from collections import Counter, defaultdict
 
 # Specs die bol.com wel meelevert maar die niemand gebruikt om op te
@@ -79,6 +80,14 @@ def compute_spec_facets(products, max_filters=6, max_options=10):
         facets.append({'key': key, 'options': options})
 
     return facets
+
+
+def slugify(value):
+    """'AEG' -> 'aeg', 'Miele & Co' -> 'miele-co'. Voor merk-/spec-facet-URL's
+    (/category/wasmachines/merk/aeg) — geen externe dependency nodig voor
+    de eenvoudige, grotendeels ASCII merknamen die de feeds leveren."""
+    slug = re.sub(r'[^a-z0-9]+', '-', value.lower()).strip('-')
+    return slug
 
 
 def parse_spec_filters(raw_values):

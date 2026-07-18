@@ -1,9 +1,9 @@
 import time
 
-from flask import Blueprint, render_template, request, redirect, current_app
+from flask import Blueprint, render_template, request, redirect, current_app, abort
 from models import Category, Product, Guide
 from sqlalchemy import or_
-from filter_helpers import compute_brand_facet, compute_spec_facets, parse_spec_filters
+from filter_helpers import compute_brand_facet, compute_spec_facets, parse_spec_filters, slugify
 
 main_bp = Blueprint('main', __name__)
 
@@ -59,27 +59,34 @@ def _category_meta_description(category, products):
     return tekst[:160]
 
 
-def _category_structured_data(category, page_products):
-    """ItemList + BreadcrumbList JSON-LD voor een categoriepagina."""
+def _category_structured_data(category, page_products, extra_crumb=None, list_name=None):
+    """ItemList + BreadcrumbList JSON-LD voor een categorie- of facetpagina.
+
+    extra_crumb (bv. een merknaam) voegt een derde breadcrumb-niveau toe;
+    zonder extra_crumb blijft dit het oorspronkelijke 2-niveau-gedrag.
+    """
     site_url = current_app.config['SITE_URL']
     item_list = {
         '@context': 'https://schema.org',
         '@type': 'ItemList',
-        'name': category.name,
+        'name': list_name or category.name,
         'itemListElement': [{
             '@type': 'ListItem',
             'position': i,
             'url': f"{site_url}/product/{p.slug}",
         } for i, p in enumerate(page_products, 1)],
     }
+    crumbs = [{'@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': f"{site_url}/"}]
+    if extra_crumb:
+        crumbs.append({'@type': 'ListItem', 'position': 2, 'name': category.name,
+                       'item': f"{site_url}/category/{category.slug}"})
+        crumbs.append({'@type': 'ListItem', 'position': 3, 'name': extra_crumb})
+    else:
+        crumbs.append({'@type': 'ListItem', 'position': 2, 'name': category.name})
     breadcrumbs = {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
-        'itemListElement': [
-            {'@type': 'ListItem', 'position': 1, 'name': 'Home',
-             'item': f"{site_url}/"},
-            {'@type': 'ListItem', 'position': 2, 'name': category.name},
-        ],
+        'itemListElement': crumbs,
     }
     return [item_list, breadcrumbs]
 
@@ -279,4 +286,94 @@ def category(slug):
         video_id=video_id,
         meta_description=meta_description,
         structured_data=_category_structured_data(category, products.items),
+    )
+
+
+def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_description, intro):
+    """Gedeelde rendering voor merk-/energielabel-facetpagina's.
+
+    In tegenstelling tot ?brand=/?spec= (client-side filters, alleen
+    bereikbaar via een formulier dat Google niet invult) heeft elke
+    facetpagina een eigen, crawlbare URL, titel en een uit live data
+    afgeleide introtekst — geen kale doorgeklikte tabel, om hetzelfde lot
+    te vermijden als de "thin" vergelijkingspagina's die Google's
+    maart 2026-kernupdate afstrafte.
+    """
+    page = request.args.get('page', 1, type=int)
+    q = (Product.query.filter_by(category_id=category.id, is_available=True)
+         .filter(extra_filter).order_by(Product.price.asc()))
+    products = q.paginate(page=page, per_page=24)
+    if products.total == 0:
+        abort(404)
+
+    brand_facet, spec_facets, _ = _category_facets(category)
+
+    return render_template(
+        'category.html',
+        category=category,
+        products=products.items,
+        pagination=products,
+        brand_facet=brand_facet,
+        spec_facets=spec_facets,
+        selected_brands=[],
+        selected_specs={},
+        min_price=0,
+        max_price=10000,
+        selected_sort='',
+        category_guide=None,
+        video_id=None,
+        meta_description=meta_description,
+        structured_data=_category_structured_data(category, products.items, extra_crumb=facet_label,
+                                                   list_name=facet_title),
+        facet_title=facet_title,
+        facet_intro=intro,
+    )
+
+
+@main_bp.route('/category/<slug>/merk/<merk_slug>')
+def category_brand(slug, merk_slug):
+    category = Category.query.filter_by(slug=slug).first_or_404()
+    brand_facet, _, _ = _category_facets(category)
+    match = next((b for b in brand_facet if slugify(b['value']) == merk_slug), None)
+    if not match:
+        abort(404)
+    merk = match['value']
+
+    naam_lower = category.name.lower()
+    intro = (f"We volgen momenteel {match['count']} {merk}-modellen in de categorie "
+            f"{naam_lower}. Bekijk per model de actuele prijs bij onze aangesloten "
+            f"winkels, plus het prijsverloop over tijd.")
+    meta_description = (f"Vergelijk {match['count']} {merk} {naam_lower} op prijs. "
+                        f"Bekijk actuele prijzen en prijsverloop bij Bol, Coolblue, "
+                        f"MediaMarkt en Expert.")[:160]
+
+    return _render_facet_page(
+        category, Product.brand.ilike(merk), merk,
+        f"{merk} {category.name}", meta_description, intro,
+    )
+
+
+@main_bp.route('/category/<slug>/energielabel/<letter>')
+def category_energielabel(slug, letter):
+    category = Category.query.filter_by(slug=slug).first_or_404()
+    letter = letter.upper()
+    if letter not in ('A', 'B', 'C', 'D', 'E', 'F', 'G'):
+        abort(404)
+    _, spec_facets, _ = _category_facets(category)
+    energie_facet = next((f for f in spec_facets if 'energielabel' in f['key'].lower()), None)
+    match = next((o for o in (energie_facet['options'] if energie_facet else [])
+                 if o['value'].strip().upper().startswith(letter)), None)
+    if not match:
+        abort(404)
+
+    naam_lower = category.name.lower()
+    intro = (f"Dit zijn de {match['count']} zuinigste modellen (energielabel {letter}) "
+            f"in onze {naam_lower}-vergelijker, met de actuele prijs per winkel.")
+    meta_description = (f"Energielabel {letter} {naam_lower} vergelijken: {match['count']} "
+                        f"zuinige modellen op prijs, bij Bol, Coolblue, MediaMarkt en Expert.")[:160]
+
+    return _render_facet_page(
+        category, Product.specs[energie_facet['key']].as_string().ilike(f"{letter}%"),
+        f"Energielabel {letter}", f"Energielabel {letter} {category.name}",
+        meta_description, intro,
     )

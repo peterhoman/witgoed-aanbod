@@ -4,6 +4,7 @@ SEO routes (sitemap, robots.txt)
 
 from flask import Blueprint, render_template_string, current_app
 from models import Product, Category, Guide, utcnow
+from filter_helpers import compute_brand_facet, compute_spec_facets, slugify
 
 seo_bp = Blueprint('seo', __name__)
 
@@ -33,13 +34,35 @@ def sitemap():
         'priority': '1.0'
     })
 
-    # Category pages
+    # Category pages + hun merk-/energielabel-facetpagina's (long-tail SEO;
+    # zelfde live-databerekening als de categoriepagina zelf, dus een
+    # facetpagina staat hier alleen als hij ook echt producten heeft).
     for category in categories:
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}",
             'lastmod': _lastmod(),
             'priority': '0.8'
         })
+        cat_products = [p for p in products if p.category_id == category.id]
+        for brand in compute_brand_facet(cat_products):
+            sitemap_entries.append({
+                'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}/merk/{slugify(brand['value'])}",
+                'lastmod': _lastmod(),
+                'priority': '0.5'
+            })
+        for facet in compute_spec_facets(cat_products):
+            if 'energielabel' not in facet['key'].lower():
+                continue
+            letters_gezien = set()
+            for option in facet['options']:
+                letter = option['value'].strip()[:1].lower()
+                if letter and letter not in letters_gezien:
+                    letters_gezien.add(letter)
+                    sitemap_entries.append({
+                        'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}/energielabel/{letter}",
+                        'lastmod': _lastmod(),
+                        'priority': '0.5'
+                    })
 
     # Product pages
     for product in products:

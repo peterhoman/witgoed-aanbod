@@ -703,6 +703,30 @@ body {
     font-size: 16px;
 }
 
+/* --- Crawlbare merk-/energielabel-facetlinks op de categoriepagina --- */
+.category-facet-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.category-facet-links a {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 14px;
+    background: var(--light);
+    color: var(--dark);
+    font-size: 13px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+}
+
+.category-facet-links a:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
 /* ============================================
    BUTTONS
    ============================================ */

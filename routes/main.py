@@ -145,6 +145,22 @@ def sync_status():
     })
 
 
+@main_bp.route('/api/category-specs/<slug>')
+def category_specs_debug(slug):
+    """Alle spec-facetten van een categorie, ongelimiteerd (i.t.t. de 6 die
+    de filter-zijbalk toont). Alleen-lezen diagnosetool om te zien welke
+    specs er écht met welke waarden in de data staan, voordat je daarop
+    bouwt (bv. voor de keuzehulp-wizard) — voorkomt gokken op key-namen die
+    in productie anders geschreven blijken dan in lokale voorbeelddata."""
+    from flask import jsonify
+    category = Category.query.filter_by(slug=slug).first_or_404()
+    producten = Product.query.filter_by(category_id=category.id, is_available=True).all()
+    facets = compute_spec_facets(producten, max_filters=50, max_options=20)
+    return jsonify({'aantal_producten': len(producten),
+                    'facets': [{'key': f['key'], 'aantal_opties': len(f['options']),
+                               'top_waarden': f['options'][:8]} for f in facets]})
+
+
 @main_bp.route('/set-language/<lang>')
 def set_language(lang):
     response = redirect(request.referrer or '/')

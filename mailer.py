@@ -41,21 +41,25 @@ def alerts_enabled():
     return is_configured() or _is_dev()
 
 
-def send_email(to_email, subject, html):
+def send_email(to_email, subject, html, reply_to=None):
     """Verstuur één transactionele mail. Geeft True terug bij succes
     (of dev-logging), False bij een verzendfout — nooit een exception,
-    zodat een mailstoring een sync-run niet kan breken."""
+    zodat een mailstoring een sync-run niet kan breken.
+
+    reply_to overschrijft het standaard-antwoordadres; het contactformulier
+    zet hier het adres van de bezoeker in, zodat "Beantwoorden" in de
+    mailbox direct naar die persoon gaat."""
     if not is_configured():
         if _is_dev():
             logger.warning("[DEV-MAIL] aan=%s onderwerp=%r\n%s", to_email, subject, html)
             return True
-        logger.warning("Prijsalert-mail niet verstuurd (geen BREVO_API_KEY): %s", subject)
+        logger.warning("Mail niet verstuurd (geen BREVO_API_KEY): %s", subject)
         return False
 
     payload = {
         'sender': {'email': current_app.config['ALERT_FROM_EMAIL'],
                    'name': current_app.config['ALERT_FROM_NAME']},
-        'replyTo': {'email': current_app.config['ALERT_REPLY_TO']},
+        'replyTo': {'email': reply_to or current_app.config['ALERT_REPLY_TO']},
         'to': [{'email': to_email}],
         'subject': subject,
         'htmlContent': html,

@@ -13,6 +13,12 @@
             <div class="contact-form">
                 <div id="contact-message" style="display:none;"></div>
                 <form id="contact-form" method="post" action="/contact" class="form">
+                    {# Honeypot tegen spam-bots: onzichtbaar voor mensen,
+                       bots vullen het in en worden stil genegeerd. #}
+                    <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                        <label for="website">Website</label>
+                        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                    </div>
                     <div class="form-group">
                         <label for="name">Naam *</label>
                         <input type="text" id="name" name="name" required>

@@ -64,7 +64,10 @@ class Config:
     BREVO_API_KEY = os.getenv('BREVO_API_KEY')
     ALERT_FROM_EMAIL = os.getenv('ALERT_FROM_EMAIL', 'prijsalert@witgoedaanbod.nl')
     ALERT_FROM_NAME = os.getenv('ALERT_FROM_NAME', 'WitgoedAanbod.nl')
-    ALERT_REPLY_TO = os.getenv('ALERT_REPLY_TO', 'pfmhoman@gmail.com')
+    ALERT_REPLY_TO = os.getenv('ALERT_REPLY_TO', 'info@witgoedaanbod.nl')
+    # Waar contactformulier-berichten heen gemaild worden (komt via de
+    # TransIP-doorstuurservice binnen op Peters eigen mailbox).
+    CONTACT_TO_EMAIL = os.getenv('CONTACT_TO_EMAIL', 'info@witgoedaanbod.nl')
 
     # Sync
     SYNC_INTERVAL = 6  # hours

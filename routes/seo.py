@@ -92,10 +92,15 @@ def sitemap():
                         'priority': '0.5'
                     })
 
-    # Product pages
+    # Product pages. Slugs kunnen speciale tekens bevatten (De'Longhi,
+    # "Hot & Cold", ’); het sitemap-protocol wil URL's percent-gecodeerd
+    # (%26 i.p.v. &) vóórdat de XML-escaping eroverheen gaat. De pagina's
+    # werken ook zonder, maar zo is er geen enkele interpretatieruimte
+    # voor crawlers.
+    from urllib.parse import quote
     for product in products:
         sitemap_entries.append({
-            'loc': f"{current_app.config['SITE_URL']}/product/{product.slug}",
+            'loc': f"{current_app.config['SITE_URL']}/product/{quote(product.slug, safe='-._~')}",
             'lastmod': _lastmod(product.updated_at),
             'priority': '0.6'
         })

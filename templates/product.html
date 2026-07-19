@@ -155,6 +155,24 @@
             </div>
             {% endif %}
 
+            {% if alerts_enabled and product.is_available %}
+            <!-- Prijsalert: double opt-in, zie routes/alerts.py. Bewust vlak
+                 onder het prijsverloop: wie de grafiek bekijkt, wacht op een
+                 betere prijs — precies de bezoeker die dit wil. -->
+            <div class="price-alert-section">
+                <h2>&#128276; {{ t('alert.form_title') }}</h2>
+                <p class="price-alert-intro">{{ t('alert.form_intro') }}</p>
+                <form method="post" action="/prijsalert" class="price-alert-form">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="email" name="email" required maxlength="255"
+                           placeholder="{{ t('alert.email_placeholder') }}" autocomplete="email">
+                    <button type="submit" class="btn-primary">{{ t('alert.submit') }}</button>
+                </form>
+                <p class="price-alert-privacy">{{ t('alert.privacy_note') }}
+                    <a href="/privacy">{{ t('footer.privacy') }}</a></p>
+            </div>
+            {% endif %}
+
             <!-- Product Description -->
             {% if product.ai_description or product.description %}
             <div class="description-section">

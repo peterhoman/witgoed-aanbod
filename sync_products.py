@@ -610,6 +610,12 @@ def sync_products():
         controleer_bestaande_fotos(db, Product)
         vul_ontbrekende_fotos(db, Product)
 
+        # Prijsalerts: net gesyncte prijzen vergelijken met wat abonnees
+        # als laatste gemeld kregen (price_alerts.py doet niets zolang er
+        # geen bevestigde alerts zijn).
+        from price_alerts import check_price_alerts
+        check_price_alerts()
+
         sync_log.finished_at = utcnow()
         sync_log.products_synced = total_synced
         sync_log.products_updated = total_updated

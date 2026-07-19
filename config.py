@@ -56,6 +56,16 @@ class Config:
         'TRADETRACKER_SITE_VERIFICATION',
         '9aa380426ef441ac55aad81838ffa685fa5dcb2c')
 
+    # Prijsalert-e-mail via Brevo (transactionele API). Zonder API-key is de
+    # hele feature onzichtbaar op de site (formulier verschijnt niet) —
+    # zo kan de code live staan terwijl de domeinverificatie nog loopt.
+    # Reply-to wijst naar een bestaand, gelezen adres: het afzenderadres
+    # zelf (prijsalert@) heeft bewust geen postbus.
+    BREVO_API_KEY = os.getenv('BREVO_API_KEY')
+    ALERT_FROM_EMAIL = os.getenv('ALERT_FROM_EMAIL', 'prijsalert@witgoedaanbod.nl')
+    ALERT_FROM_NAME = os.getenv('ALERT_FROM_NAME', 'WitgoedAanbod.nl')
+    ALERT_REPLY_TO = os.getenv('ALERT_REPLY_TO', 'pfmhoman@gmail.com')
+
     # Sync
     SYNC_INTERVAL = 6  # hours
 

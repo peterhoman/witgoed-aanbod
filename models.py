@@ -277,6 +277,48 @@ class AIContent(db.Model):
         return f'<AIContent {self.content_type}>'
 
 
+class PriceAlert(db.Model):
+    """Prijsalert: mail de aanvrager zodra dit apparaat merkbaar goedkoper wordt.
+
+    AVG-opzet — bewust minimaal en bewijsbaar:
+    - created_at = het moment van aanmelden (toestemmingsbewijs);
+      confirmed_at = het moment van de double-opt-in-klik. Beide bewaren
+      we omdat een toezichthouder om precies deze tijdstempels kan vragen.
+    - token is zowel de bevestigings- als de afmeldsleutel (URL-safe,
+      cryptografisch willekeurig): afmelden en bevestigen kan daardoor
+      zonder account of login, met één klik vanuit de mail.
+    - Afmelden = rij VERWIJDEREN, geen vlag. We hoeven niets te bewaren
+      van iemand die geen alert meer wil (dataminimalisatie).
+    - last_notified_price start op de prijs bij aanmelding; we mailen
+      alleen bij een echte daling daaronder (zie price_alerts.py) en
+      schuiven de lat na elke mail mee omlaag.
+    """
+    __tablename__ = 'price_alerts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    email = db.Column(db.String(255), nullable=False)
+    token = db.Column(db.String(64), nullable=False, unique=True, index=True)
+
+    confirmed = db.Column(db.Boolean, default=False)
+    confirmed_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=utcnow)
+
+    last_notified_price = db.Column(db.Float, nullable=True)
+    last_notified_at = db.Column(db.DateTime, nullable=True)
+
+    product = db.relationship('Product', backref='price_alerts')
+
+    __table_args__ = (
+        # Eén alert per e-mailadres per product; dubbel aanmelden wordt
+        # in de route afgevangen door de bestaande rij te hergebruiken.
+        db.UniqueConstraint('product_id', 'email', name='uq_price_alert_product_email'),
+    )
+
+    def __repr__(self):
+        return f'<PriceAlert {self.email} -> product {self.product_id}>'
+
+
 class Guide(db.Model):
     __tablename__ = 'guides'
 

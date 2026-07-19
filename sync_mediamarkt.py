@@ -348,6 +348,10 @@ def sync_mediamarkt():
         controleer_bestaande_fotos(db, Product)
         vul_ontbrekende_fotos(db, Product)
 
+        # Prijsalerts checken tegen de zojuist bijgewerkte prijzen.
+        from price_alerts import check_price_alerts
+        check_price_alerts()
+
         sync_log.finished_at = utcnow()
         sync_log.products_synced = added
         sync_log.products_updated = updated

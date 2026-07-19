@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ t('alert.page_title') }} | WitgoedAanbod.nl{% endblock %}
+{% block meta_description %}{{ t('alert.page_title') }}{% endblock %}
+{% block robots %}noindex, follow{% endblock %}
+
+{% block content %}
+<div class="container legal-page">
+    <div class="alert-result">
+        {% if variant == 'aangemeld' %}
+        <h1>&#128231; {{ t('alert.check_inbox_title') }}</h1>
+        <p>{{ t('alert.check_inbox_text') }}</p>
+        {% elif variant == 'bevestigd' %}
+        <h1>&#9989; {{ t('alert.confirmed_title') }}</h1>
+        <p>{{ t('alert.confirmed_text') }}</p>
+        {% elif variant == 'afgemeld' %}
+        <h1>{{ t('alert.unsubscribed_title') }}</h1>
+        <p>{{ t('alert.unsubscribed_text') }}</p>
+        {% elif variant == 'ongeldig' %}
+        <h1>{{ t('alert.invalid_title') }}</h1>
+        <p>{{ t('alert.invalid_text') }}</p>
+        {% else %}
+        <h1>{{ t('alert.unknown_title') }}</h1>
+        <p>{{ t('alert.unknown_text') }}</p>
+        {% endif %}
+
+        {% if product %}
+        <a href="/product/{{ product.slug }}" class="btn-primary">{{ product.title[:60] }} →</a>
+        {% else %}
+        <a href="/" class="btn-primary">{{ t('search.back_home') }}</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

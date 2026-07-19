@@ -157,11 +157,21 @@ def create_app(config_name=None):
     from routes.products import products_bp
     from routes.legal import legal_bp
     from routes.seo import seo_bp
+    from routes.alerts import alerts_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(products_bp)
     app.register_blueprint(legal_bp)
     app.register_blueprint(seo_bp)
+    app.register_blueprint(alerts_bp)
+
+    @app.context_processor
+    def inject_alerts_enabled():
+        # Bepaalt of productpagina's het prijsalert-formulier tonen; op
+        # productie blijft de feature onzichtbaar zolang Brevo niet
+        # gekoppeld is (BREVO_API_KEY ontbreekt) — zie mailer.alerts_enabled.
+        from mailer import alerts_enabled
+        return {'alerts_enabled': alerts_enabled()}
 
     @app.before_request
     def redirect_to_www():

@@ -17,17 +17,40 @@ from collections import Counter, defaultdict
 _EXCLUDED_SPEC_KEYS = {'fabrikant naam', 'taal handleiding', 'merk', 'taal bedieningspaneel'}
 # 'model' (en varianten als modelnaam/modelnummer) is per product uniek en
 # dus zinloos om op te filteren; maakte de zijbalk alleen maar langer.
-_EXCLUDED_SPEC_KEYWORDS = ('verpakking', 'mpn', 'model')
+# 'toerental aanpasbaar' is een Ja/Nee-veld dat een filterplek zou opeten
+# nu 'toerental' een voorrangs-keyword is (zie hieronder).
+_EXCLUDED_SPEC_KEYWORDS = ('verpakking', 'mpn', 'model', 'toerental aanpasbaar')
 
 # Filters waar bezoekers echt op zoeken krijgen voorrang: die komen direct
-# na het merkblok, ook als andere specs vaker voorkomen. De waarden van deze
-# filters sorteren we alfabetisch (energielabel A t/m G) i.p.v. op aantal.
-_PRIORITY_SPEC_KEYWORDS = ('energielabel',)
+# na het merkblok, ook als andere specs vaker voorkomen — in déze volgorde
+# (energielabel eerst, dan toerental). De waarden van deze filters sorteren
+# we oplopend (energielabel A t/m G, toerental 1200 vóór 1600) i.p.v. op aantal.
+_PRIORITY_SPEC_KEYWORDS = ('energielabel', 'toerental')
 
 
 def _is_priority_spec(key):
     key_lower = key.lower()
     return any(kw in key_lower for kw in _PRIORITY_SPEC_KEYWORDS)
+
+
+def _priority_rank(key):
+    """Positie van het eerste matchende voorrangs-keyword: bepaalt de vaste
+    volgorde van de voorrangsfilters in de zijbalk (energielabel, toerental)."""
+    key_lower = key.lower()
+    for i, kw in enumerate(_PRIORITY_SPEC_KEYWORDS):
+        if kw in key_lower:
+            return i
+    return len(_PRIORITY_SPEC_KEYWORDS)
+
+
+def _waarde_sorteersleutel(waarde):
+    """'1200 r/min' -> (0, 1200.0), 'A' -> (1, 'a'): numerieke waarden
+    oplopend op getal, tekstwaarden alfabetisch — '900 r/min' belandt zo
+    vóór '1600 r/min' i.p.v. erna (tekstsortering op eerste teken)."""
+    m = re.match(r'\s*(\d+(?:[.,]\d+)?)', str(waarde))
+    if m:
+        return (0, float(m.group(1).replace(',', '.')), str(waarde).lower())
+    return (1, 0.0, str(waarde).lower())
 
 
 def _is_excluded_spec(key):
@@ -66,7 +89,7 @@ def compute_spec_facets(products, max_filters=6, max_options=10):
             value_counts[key][value] += 1
 
     ordered = [key for key, _ in key_frequency.most_common()]
-    priority = [key for key in ordered if _is_priority_spec(key)]
+    priority = sorted([key for key in ordered if _is_priority_spec(key)], key=_priority_rank)
     rest = [key for key in ordered if key not in priority]
     top_keys = (priority + rest)[:max_filters]
 
@@ -74,8 +97,9 @@ def compute_spec_facets(products, max_filters=6, max_options=10):
     for key in top_keys:
         counted = value_counts[key].most_common(max_options)
         if _is_priority_spec(key):
-            # energielabel: A boven G is logischer dan "meeste eerst"
-            counted = sorted(counted, key=lambda vc: vc[0])
+            # Oplopend i.p.v. "meeste eerst": energielabel A boven G,
+            # toerental 1200 vóór 1600.
+            counted = sorted(counted, key=lambda vc: _waarde_sorteersleutel(vc[0]))
         options = [{'value': value, 'count': count} for value, count in counted]
         facets.append({'key': key, 'options': options})
 

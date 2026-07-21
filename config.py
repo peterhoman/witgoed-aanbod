@@ -65,9 +65,13 @@ class Config:
     ALERT_FROM_EMAIL = os.getenv('ALERT_FROM_EMAIL', 'prijsalert@witgoedaanbod.nl')
     ALERT_FROM_NAME = os.getenv('ALERT_FROM_NAME', 'WitgoedAanbod.nl')
     ALERT_REPLY_TO = os.getenv('ALERT_REPLY_TO', 'info@witgoedaanbod.nl')
-    # Waar contactformulier-berichten heen gemaild worden (komt via de
-    # TransIP-doorstuurservice binnen op Peters eigen mailbox).
-    CONTACT_TO_EMAIL = os.getenv('CONTACT_TO_EMAIL', 'info@witgoedaanbod.nl')
+    # Waar contactformulier-berichten heen gemaild worden. Bewust direct
+    # naar de Gmail-inbox en niet naar info@witgoedaanbod.nl: die extra
+    # sprong (Brevo -> TransIP-doorstuur -> Gmail) bleek onbetrouwbaar
+    # voor Brevo-mail van het eigen domein (19-07 permanent "deferred"),
+    # terwijl Brevo -> Gmail direct aantoonbaar goed werkt. info@ blijft
+    # het publieke adres voor mail van échte mensen (die route werkt wel).
+    CONTACT_TO_EMAIL = os.getenv('CONTACT_TO_EMAIL', 'pfmhoman@gmail.com')
 
     # Billy, de advies-chatbot (routes/chat.py + chatbot.py). Zonder
     # OPENROUTER_API_KEY is de widget onzichtbaar en weigert het endpoint —

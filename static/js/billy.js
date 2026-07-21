@@ -17,8 +17,11 @@
         ' padding:12px 20px;font-size:15px;font-weight:600;cursor:pointer;',
         ' box-shadow:0 2px 10px rgba(0,0,0,.2);font-family:inherit;}',
         '#billy-knop:hover{background:var(--primary-dark,#0072AD);}',
-        '#billy-venster{position:fixed;bottom:20px;right:20px;z-index:9001;',
-        ' width:min(440px,calc(100vw - 24px));max-height:min(680px,calc(100vh - 40px));',
+        /* Geopend venster verticaal gecentreerd (feedback Peter): zo hangt
+           het typvak rond het midden van het scherm i.p.v. in de onderhoek.
+           De knop zelf blijft op de vertrouwde chat-plek rechtsonder. */
+        '#billy-venster{position:fixed;top:50%;right:20px;transform:translateY(-50%);z-index:9001;',
+        ' width:min(440px,calc(100vw - 24px));height:min(660px,calc(100vh - 32px));',
         ' background:#fff;border:1px solid var(--border,#E0E0E0);border-radius:12px;',
         ' box-shadow:0 4px 24px rgba(0,0,0,.18);display:none;flex-direction:column;overflow:hidden;}',
         '#billy-venster.open{display:flex;}',

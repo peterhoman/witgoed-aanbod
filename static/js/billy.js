@@ -18,7 +18,7 @@
         ' box-shadow:0 2px 10px rgba(0,0,0,.2);font-family:inherit;}',
         '#billy-knop:hover{background:var(--primary-dark,#0072AD);}',
         '#billy-venster{position:fixed;bottom:20px;right:20px;z-index:9001;',
-        ' width:min(380px,calc(100vw - 24px));max-height:min(560px,calc(100vh - 40px));',
+        ' width:min(440px,calc(100vw - 24px));max-height:min(680px,calc(100vh - 40px));',
         ' background:#fff;border:1px solid var(--border,#E0E0E0);border-radius:12px;',
         ' box-shadow:0 4px 24px rgba(0,0,0,.18);display:none;flex-direction:column;overflow:hidden;}',
         '#billy-venster.open{display:flex;}',
@@ -42,8 +42,9 @@
         '#billy-voorbeeld{margin:0 14px;padding:7px 12px;font-size:12.5px;border:1px dashed var(--border,#E0E0E0);',
         ' border-radius:8px;background:#fff;color:var(--gray,#6C757D);cursor:pointer;text-align:left;font-family:inherit;}',
         '#billy-voorbeeld:hover{border-color:var(--primary,#0090DA);color:var(--primary,#0090DA);}',
-        '#billy-invoer{display:flex;gap:8px;padding:12px 14px;background:#fff;border-top:1px solid var(--border,#E0E0E0);}',
-        '#billy-invoer input{flex:1;border:1px solid var(--border,#E0E0E0);border-radius:8px;padding:9px 12px;font-size:14px;font-family:inherit;}',
+        '#billy-invoer{display:flex;gap:8px;padding:12px 14px;background:#fff;border-top:1px solid var(--border,#E0E0E0);align-items:flex-end;}',
+        '#billy-invoer textarea{flex:1;border:1px solid var(--border,#E0E0E0);border-radius:8px;padding:10px 12px;',
+        ' font-size:15px;font-family:inherit;line-height:1.45;resize:none;overflow-y:hidden;max-height:104px;}',
         '#billy-invoer button{background:var(--primary,#0090DA);border:none;color:#fff;font-weight:600;',
         ' padding:9px 16px;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit;}',
         '#billy-invoer button:disabled{opacity:.5;cursor:default;}',
@@ -69,8 +70,8 @@
             '<button id="billy-sluit" type="button" aria-label="Sluiten">&times;</button></div>' +
             '<div id="billy-berichten"></div>' +
             '<button id="billy-voorbeeld" type="button">Bijvoorbeeld: &ldquo;' + VOORBEELDVRAAG + '&rdquo;</button>' +
-            '<form id="billy-invoer"><input type="text" maxlength="500" ' +
-            'placeholder="Stel je vraag aan Billy" aria-label="Je vraag">' +
+            '<form id="billy-invoer"><textarea rows="1" maxlength="500" ' +
+            'placeholder="Stel je vraag aan Billy" aria-label="Je vraag"></textarea>' +
             '<button type="submit">Vraag</button></form>' +
             '<div id="billy-disclaimer">Billy vergelijkt alleen producten op WitgoedAanbod.nl &mdash; ' +
             'wij zijn een onafhankelijke prijsvergelijker, geen winkel. Controleer prijs en voorraad altijd bij de winkel zelf.</div>' +
@@ -80,9 +81,23 @@
 
         var berichten = venster.querySelector('#billy-berichten');
         var formulier = venster.querySelector('#billy-invoer');
-        var invoer = formulier.querySelector('input');
+        var invoer = formulier.querySelector('textarea');
         var verstuurKnop = formulier.querySelector('button');
         var voorbeeld = venster.querySelector('#billy-voorbeeld');
+
+        // Tekstvak groeit mee met wat je typt (tot ~4 regels), zodat je
+        // altijd ziet wat er staat; Enter verstuurt, Shift+Enter = nieuwe regel.
+        function groei() {
+            invoer.style.height = 'auto';
+            invoer.style.height = Math.min(invoer.scrollHeight, 104) + 'px';
+        }
+        invoer.addEventListener('input', groei);
+        invoer.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                formulier.dispatchEvent(new Event('submit', { cancelable: true }));
+            }
+        });
 
         function voegBericht(node) {
             berichten.appendChild(node);
@@ -125,6 +140,7 @@
             mijn.textContent = vraag;
             voegBericht(mijn);
             invoer.value = '';
+            groei();
             verstuurKnop.disabled = true;
             var bezig = botTekst('Even zoeken…');
 
@@ -161,6 +177,7 @@
         });
         voorbeeld.addEventListener('click', function () {
             invoer.value = VOORBEELDVRAAG;
+            groei();
             invoer.focus();
         });
         formulier.addEventListener('submit', function (e) {

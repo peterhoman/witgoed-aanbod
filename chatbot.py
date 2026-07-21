@@ -15,6 +15,7 @@ onzichtbaar, endpoint weigert); lokaal geeft _mock_advies een deterministisch
 testantwoord zodat de flow end-to-end te testen is, net als de dev-modus
 van mailer.py.
 """
+import difflib
 import json
 import logging
 import os
@@ -60,11 +61,35 @@ _GETAL = re.compile(r'\b(\d{2,5})\b')
 
 
 def detecteer_categorie(vraag):
-    """Eerste categorie waarvan een keyword in de vraag voorkomt, of None."""
+    """Eerste categorie waarvan een keyword in de vraag voorkomt, of None.
+
+    Twee rondes: eerst exact (substring), daarna fuzzy per woord zodat
+    spelfouten als "wasmachiene" of "vaatwaser" ook herkend worden — de
+    AI zelf kan daar prima mee overweg, dus de voorfilter moet niet
+    strenger zijn dan de AI. Fuzzy alleen op woorden/keywords van >= 5
+    tekens: bij korte woorden geeft gelijkenis te veel valse treffers
+    ("boven" lijkt op "oven")."""
     v = vraag.lower()
+
+    def _match(kw):
+        if ' ' in kw:
+            return kw in v
+        # Woordgrens aan de voorkant: "oven" mag "ovens" matchen maar
+        # niet het woord "boven"; "droger" wel "drogers".
+        return re.search(r'\b' + re.escape(kw), v) is not None
+
     for slug, keywords in _CATEGORIE_KEYWORDS:
-        if any(kw in v for kw in keywords):
+        if any(_match(kw) for kw in keywords):
             return slug
+
+    woorden = [w for w in re.findall(r'[a-zà-ü]+', v) if len(w) >= 5]
+    for slug, keywords in _CATEGORIE_KEYWORDS:
+        for kw in keywords:
+            if len(kw) < 5 or ' ' in kw:
+                continue
+            for woord in woorden:
+                if difflib.SequenceMatcher(None, woord, kw).ratio() >= 0.82:
+                    return slug
     return None
 
 

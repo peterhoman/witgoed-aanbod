@@ -52,6 +52,21 @@ def _ensure_guides_updated_at_column(db):
             conn.commit()
 
 
+def _ensure_offers_delivery_columns(db):
+    """Boot-migratie: verzendinfo-kolommen op de bestaande offers-tabel
+    (db.create_all() wijzigt geen bestaande tabellen)."""
+    inspector = inspect(db.engine)
+    if 'offers' not in inspector.get_table_names():
+        return
+    columns = [c['name'] for c in inspector.get_columns('offers')]
+    with db.engine.connect() as conn:
+        if 'delivery_time' not in columns:
+            conn.execute(text("ALTER TABLE offers ADD COLUMN delivery_time VARCHAR(120)"))
+        if 'delivery_cost' not in columns:
+            conn.execute(text("ALTER TABLE offers ADD COLUMN delivery_cost FLOAT"))
+        conn.commit()
+
+
 def _backfill_offers_from_products(db):
     """Fase 1 (multi-winkel): tot nu toe stond prijs/link/voorraad rechtstreeks
     op elke products-rij (alleen Bol). Zet die één-op-één om naar een rij in de
@@ -140,6 +155,7 @@ def create_app(config_name=None):
         _ensure_guides_post_type_column(db)
         _ensure_guides_updated_at_column(db)
         _ensure_products_strikethrough_column(db)
+        _ensure_offers_delivery_columns(db)
         _ensure_categories(db)
         _backfill_offers_from_products(db)
         # Gidsen en blogposts publiceren zichzelf bij de eerstvolgende deploy;

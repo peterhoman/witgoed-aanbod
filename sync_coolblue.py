@@ -36,7 +36,7 @@ FEED_ID = 95930
 FEED_COLUMNS = [
     'ean', 'product_name', 'brand_name', 'description', 'merchant_image_url',
     'aw_image_url', 'aw_deep_link', 'merchant_deep_link', 'search_price',
-    'base_price', 'product_type', 'delivery_time', 'condition',
+    'base_price', 'product_type', 'delivery_time', 'delivery_cost', 'condition',
 ]
 
 # Levert een sync minder dan dit deel van de bekende aanbiedingen op, dan gaan
@@ -160,6 +160,12 @@ def normalize(row):
         'affiliate_url': row.get('aw_deep_link'),
         'url': row.get('merchant_deep_link'),
         'is_available': is_available,
+        # Verzendinfo (audit-punt 14). delivery_time bevat hier soms ook
+        # 'pre-order'/'download' (zie is_available hierboven); die zijn geen
+        # zinnige levertijd voor bezoekers en blijven leeg.
+        'delivery_time': ((row.get('delivery_time') or '').strip()[:120]
+                          if delivery not in ('pre-order', 'download') else None) or None,
+        'delivery_cost': _parse_price(row.get('delivery_cost')),
     }
 
 
@@ -263,6 +269,8 @@ def sync_coolblue():
             offer.strikethrough_price = record['strikethrough_price']
             offer.url = record['url']
             offer.affiliate_url = record['affiliate_url']
+            offer.delivery_time = record['delivery_time']
+            offer.delivery_cost = record['delivery_cost']
             offer.is_available = record['is_available']
             offer.last_synced = utcnow()
             if record['is_available']:

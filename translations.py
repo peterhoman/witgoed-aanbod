@@ -97,6 +97,8 @@ TRANSLATIONS = {
         'offer.lowest_badge': 'Laagste prijs',
         'offer.from': 'vanaf',
         'offer.at_shops': 'bij {count} winkels',
+        'offer.free_shipping': 'Gratis verzending',
+        'offer.shipping': 'verzendkosten',
         'offer.compare_cta': 'Vergelijk prijzen',
         'offer.view_at': 'Bekijk bij {retailer}',
 
@@ -259,6 +261,8 @@ TRANSLATIONS = {
         'offer.lowest_badge': 'Lowest price',
         'offer.from': 'from',
         'offer.at_shops': 'at {count} shops',
+        'offer.free_shipping': 'Free shipping',
+        'offer.shipping': 'shipping',
         'offer.compare_cta': 'Compare prices',
         'offer.view_at': 'View at {retailer}',
 

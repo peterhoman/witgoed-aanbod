@@ -549,6 +549,15 @@ def sync_products():
                     offer.strikethrough_price = strikethrough
                     offer.url = bol_url
                     offer.affiliate_url = product.affiliate_url
+                    # Verzendinfo (audit-punt 14), defensief: het Marketing
+                    # Catalog-offer heeft mogelijk een leverbeschrijving
+                    # ("Voor 23:59 besteld, morgen in huis"); veldnaam kon
+                    # niet lokaal geverifieerd worden, dus beide bekende
+                    # spellingen proberen en anders leeg laten.
+                    if offers:
+                        levertekst = (offers[0].get('deliveryDescription')
+                                      or offers[0].get('deliveryTime') or '')
+                        offer.delivery_time = str(levertekst).strip()[:120] or None
                     offer.is_available = True
                     offer.last_synced = utcnow()
                     log_price(product.id, 'bol', price)

@@ -190,6 +190,9 @@ def normalize(product, from_main_feed):
         'affiliate_url': offer.get('productUrl'),
         'is_available': in_stock > 0 or offer.get('availability') == 'in stock',
         'from_main_feed': from_main_feed,
+        # Verzendinfo (audit-punt 14): Tradedoubler levert alleen een
+        # levertijd, geen verzendkosten — dan tonen we alleen dat.
+        'delivery_time': (offer.get('deliveryTime') or '').strip()[:120] or None,
     }
 
 
@@ -326,6 +329,7 @@ def sync_mediamarkt():
             offer.strikethrough_price = record['strikethrough_price']
             offer.url = record['affiliate_url']
             offer.affiliate_url = record['affiliate_url']
+            offer.delivery_time = record['delivery_time']
             offer.is_available = record['is_available']
             offer.last_synced = utcnow()
             if record['is_available']:

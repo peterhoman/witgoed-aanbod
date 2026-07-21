@@ -2013,6 +2013,14 @@ section h2 {
     background: #fff;
 }
 
+/* Verzendinfo per winkelrij (audit-punt 14): volle breedte onder de knop,
+   gedempt — informatief, niet schreeuwerig. */
+.offer-delivery {
+    flex-basis: 100%;
+    font-size: 12.5px;
+    color: var(--gray);
+}
+
 /* Goedkoopste aanbieding krijgt een groen randje (alleen bij >1 winkel) */
 .offer-row-best {
     border-color: var(--success);

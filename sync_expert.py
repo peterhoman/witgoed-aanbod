@@ -56,11 +56,21 @@ def _feed_records(feed_url):
         except (TypeError, ValueError):
             van_prijs = None
         images = p.get('images') or []
+        # Verzendinfo (audit-punt 14): deliveryCosts is '0.00' of 6.95,
+        # deliveryTime bv. "1-2 werkdagen". Ontbreekt/onparseerbaar -> None,
+        # dan toont de site er simpelweg niets over.
+        try:
+            verzendkosten = float(_eerste(props.get('deliveryCosts')))
+        except (TypeError, ValueError):
+            verzendkosten = None
+        levertijd = (_eerste(props.get('deliveryTime')) or '').strip()[:120] or None
         records[str(ean)] = {
             'price': float(prijs),
             'strikethrough_price': van_prijs if (van_prijs and van_prijs > float(prijs)) else None,
             'url': url,
             'image_url': images[0] if images else None,
+            'delivery_time': levertijd,
+            'delivery_cost': verzendkosten,
         }
     return records
 
@@ -101,6 +111,8 @@ def sync_expert():
             offer.strikethrough_price = record['strikethrough_price']
             offer.url = record['url']
             offer.affiliate_url = record['url']  # feed-URL ís de trackinglink
+            offer.delivery_time = record['delivery_time']
+            offer.delivery_cost = record['delivery_cost']
             offer.is_available = True
             offer.last_synced = utcnow()
             # Product-identiteit laten we met rust, behalve een ontbrekende

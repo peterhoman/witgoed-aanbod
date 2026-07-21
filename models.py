@@ -176,6 +176,12 @@ class Offer(db.Model):
     url = db.Column(db.String(500))            # productpagina bij de winkel
     affiliate_url = db.Column(db.String(500))  # tracking-/deeplink naar de winkel
 
+    # Verzendinfo uit de winkel-feed, alleen gevuld waar de feed het levert
+    # (Expert: beide; Coolblue: beide; MediaMarkt: alleen levertijd; Bol:
+    # afhankelijk van het offer-object). None = niet tonen op de site.
+    delivery_time = db.Column(db.String(120), nullable=True)   # "1-2 werkdagen"
+    delivery_cost = db.Column(db.Float, nullable=True)         # 0.0 = gratis
+
     is_available = db.Column(db.Boolean, default=True)
     last_synced = db.Column(db.DateTime, default=utcnow)
     created_at = db.Column(db.DateTime, default=utcnow)

@@ -87,6 +87,22 @@
                         <span class="offer-badge-best">{{ t('offer.lowest_badge') }}</span>
                         {% endif %}
                         <a href="{{ offer.link }}" target="_blank" rel="nofollow sponsored" class="btn-buy offer-btn">{{ t('offer.view_at', retailer=offer.retailer_name) }} →</a>
+                        {# Verzendinfo uit de winkel-feed: alleen tonen wat we
+                           écht weten, niets forceren waar de data ontbreekt. #}
+                        {% set verzenddelen = [] %}
+                        {% if offer.delivery_cost is not none %}
+                            {% if offer.delivery_cost == 0 %}
+                                {% set _ = verzenddelen.append(t('offer.free_shipping')) %}
+                            {% else %}
+                                {% set _ = verzenddelen.append('€ ' + (offer.delivery_cost|euro) + ' ' + t('offer.shipping')) %}
+                            {% endif %}
+                        {% endif %}
+                        {% if offer.delivery_time %}
+                            {% set _ = verzenddelen.append(offer.delivery_time) %}
+                        {% endif %}
+                        {% if verzenddelen %}
+                        <span class="offer-delivery">{{ verzenddelen | join(' · ') }}</span>
+                        {% endif %}
                     </li>
                     {% endfor %}
                 </ul>

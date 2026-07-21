@@ -186,6 +186,9 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% if chat_enabled %}
+    <script src="{{ url_for('static', filename='js/billy.js') }}" defer></script>
+    {% endif %}
     {% block extra_js %}{% endblock %}
 </body>
 </html>

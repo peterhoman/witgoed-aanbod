@@ -158,12 +158,22 @@ def create_app(config_name=None):
     from routes.legal import legal_bp
     from routes.seo import seo_bp
     from routes.alerts import alerts_bp
+    from routes.chat import chat_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(products_bp)
     app.register_blueprint(legal_bp)
     app.register_blueprint(seo_bp)
     app.register_blueprint(alerts_bp)
+    app.register_blueprint(chat_bp)
+
+    @app.context_processor
+    def inject_chat_enabled():
+        # Billy-widget alleen tonen als er echt geadviseerd kan worden
+        # (OPENROUTER_API_KEY gezet, of lokale dev) — zelfde patroon als
+        # alerts_enabled hieronder.
+        from chatbot import chat_enabled
+        return {'chat_enabled': chat_enabled()}
 
     @app.context_processor
     def inject_alerts_enabled():

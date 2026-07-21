@@ -69,6 +69,13 @@ class Config:
     # TransIP-doorstuurservice binnen op Peters eigen mailbox).
     CONTACT_TO_EMAIL = os.getenv('CONTACT_TO_EMAIL', 'info@witgoedaanbod.nl')
 
+    # Billy, de advies-chatbot (routes/chat.py + chatbot.py). Zonder
+    # OPENROUTER_API_KEY is de widget onzichtbaar en weigert het endpoint —
+    # zelfde patroon als BREVO_API_KEY hierboven. Model instelbaar zodat er
+    # zonder deploy gewisseld kan worden.
+    OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
+    OPENROUTER_MODEL = os.getenv('OPENROUTER_MODEL', 'google/gemini-flash-1.5')
+
     # Sync
     SYNC_INTERVAL = 6  # hours
 

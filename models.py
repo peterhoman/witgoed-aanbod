@@ -319,6 +319,31 @@ class PriceAlert(db.Model):
         return f'<PriceAlert {self.email} -> product {self.product_id}>'
 
 
+class ChatCache(db.Model):
+    """Cache voor Billy-antwoorden: identieke vragen (genormaliseerd +
+    gehasht) krijgen 24 uur hetzelfde antwoord zonder nieuwe API-call —
+    scheelt OpenRouter-kosten en maakt herhaalvragen instant."""
+    __tablename__ = 'chat_cache'
+
+    id = db.Column(db.Integer, primary_key=True)
+    vraag_hash = db.Column(db.String(64), nullable=False, unique=True, index=True)
+    antwoord = db.Column(db.Text, nullable=False)  # kant-en-klare respons-JSON
+    created_at = db.Column(db.DateTime, default=utcnow)
+
+
+class ChatLog(db.Model):
+    """Welke vragen bezoekers aan Billy stellen (los van de cache): input
+    voor nieuwe koopgidsen/filters. Bewust GEEN IP-adres of ander
+    persoonsgegeven — alleen de vraagtekst en het moment."""
+    __tablename__ = 'chat_log'
+
+    id = db.Column(db.Integer, primary_key=True)
+    vraag = db.Column(db.String(500), nullable=False)
+    categorie = db.Column(db.String(50), nullable=True)   # gedetecteerde categorie
+    cache_hit = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=utcnow)
+
+
 class Guide(db.Model):
     __tablename__ = 'guides'
 

@@ -78,7 +78,10 @@ class Config:
     # zelfde patroon als BREVO_API_KEY hierboven. Model instelbaar zodat er
     # zonder deploy gewisseld kan worden.
     OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
-    OPENROUTER_MODEL = os.getenv('OPENROUTER_MODEL', 'google/gemini-flash-1.5')
+    # gemini-flash-1.5 (uit de oorspronkelijke opdracht) bestaat niet meer
+    # bij OpenRouter (geverifieerd 21-07 via hun /models-endpoint);
+    # 2.5-flash-lite is de huidige goedkoopste opvolger.
+    OPENROUTER_MODEL = os.getenv('OPENROUTER_MODEL', 'google/gemini-2.5-flash-lite')
 
     # Sync
     SYNC_INTERVAL = 6  # hours

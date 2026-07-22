@@ -20,8 +20,9 @@ SERIES_KLEUREN = {
     'bol': '#2a78d6',        # blauw
     'mediamarkt': '#1baf7a', # aqua
     'coolblue': '#eda100',   # geel
-    'expert': '#008300',     # groen (toekomstige winkel)
+    'expert': '#008300',     # groen
     'ep': '#4a3aa7',         # violet (toekomstige winkel)
+    'alternate': '#c75373',  # framboos (CVD-veilig naast blauw/aqua/geel/groen/violet)
 }
 KLEUR_OVERIG = '#898781'
 

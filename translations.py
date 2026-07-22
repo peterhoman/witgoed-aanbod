@@ -47,7 +47,7 @@ TRANSLATIONS = {
 
         # Cookie modal
         'cookie.title': 'Cookie-instellingen',
-        'cookie.intro': 'Op onze eigen pagina\'s plaatsen wij alleen noodzakelijke cookies. Klik je op een aanbieding, dan ga je naar een aangesloten winkel zoals Bol.com, MediaMarkt, Coolblue of Expert; die partijen kunnen je bezoek volgen om onze commissie te bepalen. Lees meer in ons',
+        'cookie.intro': 'Op onze eigen pagina\'s plaatsen wij alleen noodzakelijke cookies. Klik je op een aanbieding, dan ga je naar een aangesloten winkel zoals Bol.com, MediaMarkt, Coolblue, Expert of Alternate; die partijen kunnen je bezoek volgen om onze commissie te bepalen. Lees meer in ons',
         'cookie.policy_link': 'cookiebeleid',
         'cookie.essential_title': 'Noodzakelijke cookies',
         'cookie.essential_desc': 'Nodig om de site te laten werken: onthoudt je taalkeuze en deze cookiekeuze. Deze kun je niet uitzetten.',
@@ -162,7 +162,7 @@ TRANSLATIONS = {
         'home.usp2': 'Onafhankelijk vergelijken',
         'home.usp3': 'Alle topmerken op één plek',
         'home.hero_title': 'Witgoed prijzen vergelijken',
-        'home.hero_text': 'Vergelijk de prijzen van wasmachines, drogers, koelkasten en meer bij o.a. Bol, Coolblue, MediaMarkt en Expert — en vind de laagste prijs.',
+        'home.hero_text': 'Vergelijk de prijzen van wasmachines, drogers, koelkasten en meer bij o.a. Bol, Coolblue, MediaMarkt, Expert en Alternate — en vind de laagste prijs.',
         'home.hero_search_placeholder': 'Zoek een product...',
         'home.featured_title': 'Kijk en vergelijk: laagste prijzen, merken en levertijden',
         'home.categories_title': 'Populaire Categorieën',
@@ -214,7 +214,7 @@ TRANSLATIONS = {
         'footer.copyright': '© 2026 WitgoedAanbod.nl participates in an affiliate partner program. If you buy something through our links, we may earn a small commission, at no extra cost to you.',
 
         'cookie.title': 'Cookie settings',
-        'cookie.intro': 'On our own pages we only place necessary cookies. When you click an offer you go to Bol.com, MediaMarkt or Coolblue; those parties may track your visit to determine our commission. Read more in our',
+        'cookie.intro': 'On our own pages we only place necessary cookies. When you click an offer you go to a partner store such as Bol.com, MediaMarkt, Coolblue, Expert or Alternate; those parties may track your visit to determine our commission. Read more in our',
         'cookie.policy_link': 'cookie policy',
         'cookie.essential_title': 'Necessary cookies',
         'cookie.essential_desc': 'Needed for the site to work: they remember your language and this cookie choice. These cannot be switched off.',

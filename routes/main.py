@@ -74,7 +74,7 @@ def _category_meta_description(category, products):
         parts.append(f"van o.a. {', '.join(brands)}")
     if prices:
         parts.append(f"al vanaf € {min(prices):.0f}".replace('.', ','))
-    tekst = ' '.join(parts) + ". Vind de laagste prijs bij o.a. Bol, Coolblue, MediaMarkt en Expert."
+    tekst = ' '.join(parts) + ". Vind de laagste prijs bij o.a. Bol, Coolblue, MediaMarkt, Expert en Alternate."
     return tekst[:160]
 
 
@@ -135,7 +135,7 @@ def sync_status():
     laatste_sync_per_winkel = {
         r: str(db.session.query(db.func.max(Offer.last_synced))
                .filter(Offer.retailer == r).scalar())
-        for r in ('bol', 'mediamarkt', 'coolblue', 'expert')
+        for r in ('bol', 'mediamarkt', 'coolblue', 'expert', 'alternate')
     }
     import os
     return jsonify({
@@ -398,7 +398,7 @@ def category_brand(slug, merk_slug):
             f"winkels, plus het prijsverloop over tijd.")
     meta_description = (f"Vergelijk {match['count']} {merk} {naam_lower} op prijs. "
                         f"Bekijk actuele prijzen en prijsverloop bij Bol, Coolblue, "
-                        f"MediaMarkt en Expert.")[:160]
+                        f"MediaMarkt, Expert en Alternate.")[:160]
 
     return _render_facet_page(
         category, Product.brand.ilike(merk), merk,
@@ -423,7 +423,8 @@ def category_energielabel(slug, letter):
     intro = (f"Dit zijn de {match['count']} zuinigste modellen (energielabel {letter}) "
             f"in onze {naam_lower}-vergelijker, met de actuele prijs per winkel.")
     meta_description = (f"Energielabel {letter} {naam_lower} vergelijken: {match['count']} "
-                        f"zuinige modellen op prijs, bij Bol, Coolblue, MediaMarkt en Expert.")[:160]
+                        f"zuinige modellen op prijs, bij Bol, Coolblue, MediaMarkt, "
+                        f"Expert en Alternate.")[:160]
 
     return _render_facet_page(
         category, Product.specs[energie_facet['key']].as_string().ilike(f"{letter}%"),
@@ -465,7 +466,7 @@ def category_subtype(slug, waarde_slug):
     intro = (f"We volgen momenteel {match['count']} {waarde.lower()}s in de categorie "
             f"{naam_lower}. Bekijk per model de actuele prijs bij onze aangesloten winkels.")
     meta_description = (f"{waarde} {naam_lower} vergelijken: {match['count']} modellen op prijs "
-                        f"bij Bol, Coolblue, MediaMarkt en Expert.")[:160]
+                        f"bij Bol, Coolblue, MediaMarkt, Expert en Alternate.")[:160]
 
     return _render_facet_page(
         category, Product.specs[spec_key].as_string() == waarde, waarde,
@@ -521,7 +522,7 @@ def brand_detail(merk_slug):
             + (f", verdeeld over {len(categorieen)} categorieën: {', '.join(categorieen[:6])}."
                if categorieen else "."))
     meta_description = (f"Vergelijk {match['aantal']} {merk}-producten op prijs bij "
-                        f"Bol, Coolblue, MediaMarkt en Expert.")[:160]
+                        f"Bol, Coolblue, MediaMarkt, Expert en Alternate.")[:160]
 
     site_url = current_app.config['SITE_URL']
     structured_data = [{

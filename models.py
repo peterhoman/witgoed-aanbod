@@ -23,6 +23,7 @@ RETAILER_LABELS = {
     'mediamarkt': 'MediaMarkt',
     'coolblue': 'Coolblue',
     'expert': 'Expert',
+    'alternate': 'Alternate',
 }
 
 

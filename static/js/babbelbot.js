@@ -1,8 +1,8 @@
-/* Billy — advies-chatbot van WitgoedAanbod.nl.
+/* Babbelbot — advies-chatbot van WitgoedAanbod.nl.
  *
  * Zelfstandig, herbruikbaar bestand: injecteert zijn eigen knop, venster en
  * stijlen. Inladen = één regel op elke pagina:
- *   <script src="/static/js/billy.js" defer></script>
+ *   <script src="/static/js/babbelbot.js" defer></script>
  * Praat met POST /api/chat-advies (routes/chat.py); alle productdata in de
  * antwoorden komt server-side uit de eigen database.
  */
@@ -12,46 +12,46 @@
     var VOORBEELDVRAAG = 'Ik zoek een wasmachine die ook kan drogen';
 
     var css = [
-        '#billy-knop{position:fixed;bottom:20px;right:20px;z-index:9000;',
+        '#babbelbot-knop{position:fixed;bottom:20px;right:20px;z-index:9000;',
         ' background:var(--primary,#0090DA);color:#fff;border:none;border-radius:24px;',
         ' padding:12px 20px;font-size:15px;font-weight:600;cursor:pointer;',
         ' box-shadow:0 2px 10px rgba(0,0,0,.2);font-family:inherit;}',
-        '#billy-knop:hover{background:var(--primary-dark,#0072AD);}',
+        '#babbelbot-knop:hover{background:var(--primary-dark,#0072AD);}',
         /* Geopend venster verticaal gecentreerd (feedback Peter): zo hangt
            het typvak rond het midden van het scherm i.p.v. in de onderhoek.
            De knop zelf blijft op de vertrouwde chat-plek rechtsonder. */
-        '#billy-venster{position:fixed;top:50%;right:20px;transform:translateY(-50%);z-index:9001;',
+        '#babbelbot-venster{position:fixed;top:50%;right:20px;transform:translateY(-50%);z-index:9001;',
         ' width:min(440px,calc(100vw - 24px));height:min(660px,calc(100vh - 32px));',
         ' background:#fff;border:1px solid var(--border,#E0E0E0);border-radius:12px;',
         ' box-shadow:0 4px 24px rgba(0,0,0,.18);display:none;flex-direction:column;overflow:hidden;}',
-        '#billy-venster.open{display:flex;}',
-        '#billy-kop{background:var(--primary,#0090DA);color:#fff;padding:14px 16px;',
+        '#babbelbot-venster.open{display:flex;}',
+        '#babbelbot-kop{background:var(--primary,#0090DA);color:#fff;padding:14px 16px;',
         ' display:flex;justify-content:space-between;align-items:center;}',
-        '#billy-kop strong{font-size:16px;}',
-        '#billy-kop small{display:block;font-weight:400;font-size:11.5px;opacity:.9;margin-top:2px;}',
-        '#billy-sluit{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;padding:4px;}',
-        '#billy-berichten{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--light,#F8F9FA);}',
-        '.billy-bericht{max-width:88%;padding:9px 13px;border-radius:10px;font-size:14px;line-height:1.5;}',
-        '.billy-bezoeker{align-self:flex-end;background:var(--secondary-light,#E3F2FD);color:var(--dark,#212529);}',
-        '.billy-bot{align-self:flex-start;background:#fff;border:1px solid var(--border,#E0E0E0);color:var(--dark,#212529);}',
-        '.billy-kaart{background:#fff;border:1px solid var(--border,#E0E0E0);border-radius:10px;padding:11px 13px;align-self:stretch;}',
-        '.billy-kaart strong{font-size:13.5px;display:block;margin-bottom:2px;}',
-        '.billy-kaart .billy-prijs{font-size:14px;font-weight:700;color:var(--dark,#212529);}',
-        '.billy-kaart .billy-winkels{font-size:11.5px;color:var(--gray,#6C757D);margin-left:6px;}',
-        '.billy-kaart p{font-size:12.5px;color:var(--gray,#6C757D);margin:6px 0;line-height:1.45;}',
-        '.billy-kaart a{display:inline-block;background:var(--primary,#0090DA);color:#fff;text-decoration:none;',
+        '#babbelbot-kop strong{font-size:16px;}',
+        '#babbelbot-kop small{display:block;font-weight:400;font-size:11.5px;opacity:.9;margin-top:2px;}',
+        '#babbelbot-sluit{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;padding:4px;}',
+        '#babbelbot-berichten{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--light,#F8F9FA);}',
+        '.babbelbot-bericht{max-width:88%;padding:9px 13px;border-radius:10px;font-size:14px;line-height:1.5;}',
+        '.babbelbot-bezoeker{align-self:flex-end;background:var(--secondary-light,#E3F2FD);color:var(--dark,#212529);}',
+        '.babbelbot-bot{align-self:flex-start;background:#fff;border:1px solid var(--border,#E0E0E0);color:var(--dark,#212529);}',
+        '.babbelbot-kaart{background:#fff;border:1px solid var(--border,#E0E0E0);border-radius:10px;padding:11px 13px;align-self:stretch;}',
+        '.babbelbot-kaart strong{font-size:13.5px;display:block;margin-bottom:2px;}',
+        '.babbelbot-kaart .babbelbot-prijs{font-size:14px;font-weight:700;color:var(--dark,#212529);}',
+        '.babbelbot-kaart .babbelbot-winkels{font-size:11.5px;color:var(--gray,#6C757D);margin-left:6px;}',
+        '.babbelbot-kaart p{font-size:12.5px;color:var(--gray,#6C757D);margin:6px 0;line-height:1.45;}',
+        '.babbelbot-kaart a{display:inline-block;background:var(--primary,#0090DA);color:#fff;text-decoration:none;',
         ' font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:6px;}',
-        '.billy-kaart a:hover{background:var(--primary-dark,#0072AD);}',
-        '#billy-voorbeeld{margin:0 14px;padding:7px 12px;font-size:12.5px;border:1px dashed var(--border,#E0E0E0);',
+        '.babbelbot-kaart a:hover{background:var(--primary-dark,#0072AD);}',
+        '#babbelbot-voorbeeld{margin:0 14px;padding:7px 12px;font-size:12.5px;border:1px dashed var(--border,#E0E0E0);',
         ' border-radius:8px;background:#fff;color:var(--gray,#6C757D);cursor:pointer;text-align:left;font-family:inherit;}',
-        '#billy-voorbeeld:hover{border-color:var(--primary,#0090DA);color:var(--primary,#0090DA);}',
-        '#billy-invoer{display:flex;gap:8px;padding:12px 14px;background:#fff;border-top:1px solid var(--border,#E0E0E0);align-items:flex-end;}',
-        '#billy-invoer textarea{flex:1;border:1px solid var(--border,#E0E0E0);border-radius:8px;padding:10px 12px;',
+        '#babbelbot-voorbeeld:hover{border-color:var(--primary,#0090DA);color:var(--primary,#0090DA);}',
+        '#babbelbot-invoer{display:flex;gap:8px;padding:12px 14px;background:#fff;border-top:1px solid var(--border,#E0E0E0);align-items:flex-end;}',
+        '#babbelbot-invoer textarea{flex:1;border:1px solid var(--border,#E0E0E0);border-radius:8px;padding:10px 12px;',
         ' font-size:15px;font-family:inherit;line-height:1.45;resize:none;overflow-y:hidden;max-height:104px;}',
-        '#billy-invoer button{background:var(--primary,#0090DA);border:none;color:#fff;font-weight:600;',
+        '#babbelbot-invoer button{background:var(--primary,#0090DA);border:none;color:#fff;font-weight:600;',
         ' padding:9px 16px;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit;}',
-        '#billy-invoer button:disabled{opacity:.5;cursor:default;}',
-        '#billy-disclaimer{font-size:10.5px;color:var(--gray,#6C757D);padding:0 14px 10px;background:#fff;}',
+        '#babbelbot-invoer button:disabled{opacity:.5;cursor:default;}',
+        '#babbelbot-disclaimer{font-size:10.5px;color:var(--gray,#6C757D);padding:0 14px 10px;background:#fff;}',
     ].join('');
 
     function maakElement(html) {
@@ -65,28 +65,28 @@
         stijl.textContent = css;
         document.head.appendChild(stijl);
 
-        var knop = maakElement('<button id="billy-knop" type="button">&#128172; Vraag het Billy</button>');
+        var knop = maakElement('<button id="babbelbot-knop" type="button">&#128172; Vraag de Babbelbot</button>');
         var venster = maakElement(
-            '<div id="billy-venster" role="dialog" aria-label="Billy productadvies">' +
-            '<div id="billy-kop"><div><strong>Billy</strong>' +
+            '<div id="babbelbot-venster" role="dialog" aria-label="Babbelbot productadvies">' +
+            '<div id="babbelbot-kop"><div><strong>Babbelbot</strong>' +
             '<small>Productadvies van WitgoedAanbod.nl</small></div>' +
-            '<button id="billy-sluit" type="button" aria-label="Sluiten">&times;</button></div>' +
-            '<div id="billy-berichten"></div>' +
-            '<button id="billy-voorbeeld" type="button">Bijvoorbeeld: &ldquo;' + VOORBEELDVRAAG + '&rdquo;</button>' +
-            '<form id="billy-invoer"><textarea rows="1" maxlength="500" ' +
-            'placeholder="Stel je vraag aan Billy" aria-label="Je vraag"></textarea>' +
+            '<button id="babbelbot-sluit" type="button" aria-label="Sluiten">&times;</button></div>' +
+            '<div id="babbelbot-berichten"></div>' +
+            '<button id="babbelbot-voorbeeld" type="button">Bijvoorbeeld: &ldquo;' + VOORBEELDVRAAG + '&rdquo;</button>' +
+            '<form id="babbelbot-invoer"><textarea rows="1" maxlength="500" ' +
+            'placeholder="Stel je vraag aan de Babbelbot" aria-label="Je vraag"></textarea>' +
             '<button type="submit">Vraag</button></form>' +
-            '<div id="billy-disclaimer">Billy vergelijkt alleen producten op WitgoedAanbod.nl &mdash; ' +
+            '<div id="babbelbot-disclaimer">De Babbelbot vergelijkt alleen producten op WitgoedAanbod.nl &mdash; ' +
             'wij zijn een onafhankelijke prijsvergelijker, geen winkel. Controleer prijs en voorraad altijd bij de winkel zelf.</div>' +
             '</div>');
         document.body.appendChild(knop);
         document.body.appendChild(venster);
 
-        var berichten = venster.querySelector('#billy-berichten');
-        var formulier = venster.querySelector('#billy-invoer');
+        var berichten = venster.querySelector('#babbelbot-berichten');
+        var formulier = venster.querySelector('#babbelbot-invoer');
         var invoer = formulier.querySelector('textarea');
         var verstuurKnop = formulier.querySelector('button');
-        var voorbeeld = venster.querySelector('#billy-voorbeeld');
+        var voorbeeld = venster.querySelector('#babbelbot-voorbeeld');
 
         // Tekstvak groeit mee met wat je typt (tot ~4 regels), zodat je
         // altijd ziet wat er staat; Enter verstuurt, Shift+Enter = nieuwe regel.
@@ -108,7 +108,7 @@
         }
 
         function botTekst(tekst) {
-            var b = maakElement('<div class="billy-bericht billy-bot"></div>');
+            var b = maakElement('<div class="babbelbot-bericht babbelbot-bot"></div>');
             b.textContent = tekst;
             voegBericht(b);
             return b;
@@ -117,12 +117,12 @@
         function toonProducten(data) {
             if (data.toelichting) { botTekst(data.toelichting); }
             (data.producten || []).forEach(function (p) {
-                var kaart = maakElement('<div class="billy-kaart"></div>');
+                var kaart = maakElement('<div class="babbelbot-kaart"></div>');
                 var titel = document.createElement('strong');
                 titel.textContent = p.naam;
-                var prijs = maakElement('<span class="billy-prijs"></span>');
+                var prijs = maakElement('<span class="babbelbot-prijs"></span>');
                 prijs.textContent = '€ ' + p.prijs;
-                var winkels = maakElement('<span class="billy-winkels"></span>');
+                var winkels = maakElement('<span class="babbelbot-winkels"></span>');
                 if (p.winkels > 1) { winkels.textContent = 'bij ' + p.winkels + ' winkels'; }
                 var reden = document.createElement('p');
                 reden.textContent = p.reden;
@@ -139,7 +139,7 @@
         }
 
         function verstuur(vraag) {
-            var mijn = maakElement('<div class="billy-bericht billy-bezoeker"></div>');
+            var mijn = maakElement('<div class="babbelbot-bericht babbelbot-bezoeker"></div>');
             mijn.textContent = vraag;
             voegBericht(mijn);
             invoer.value = '';
@@ -174,7 +174,7 @@
             }
             invoer.focus();
         });
-        venster.querySelector('#billy-sluit').addEventListener('click', function () {
+        venster.querySelector('#babbelbot-sluit').addEventListener('click', function () {
             venster.classList.remove('open');
             knop.style.display = '';
         });

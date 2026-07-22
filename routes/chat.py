@@ -1,4 +1,4 @@
-"""Billy-endpoint: /api/chat-advies (POST {vraag}).
+"""Babbelbot-endpoint: /api/chat-advies (POST {vraag}).
 
 Kostenbeheersing in drie lagen vóór er ook maar één API-call gebeurt:
 1. Cache: identieke vraag (genormaliseerd + gehasht) binnen 24u -> zelfde

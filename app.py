@@ -185,7 +185,7 @@ def create_app(config_name=None):
 
     @app.context_processor
     def inject_chat_enabled():
-        # Billy-widget alleen tonen als er echt geadviseerd kan worden
+        # Babbelbot-widget alleen tonen als er echt geadviseerd kan worden
         # (OPENROUTER_API_KEY gezet, of lokale dev) — zelfde patroon als
         # alerts_enabled hieronder.
         from chatbot import chat_enabled

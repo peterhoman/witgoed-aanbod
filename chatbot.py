@@ -1,4 +1,4 @@
-"""Billy, de advies-chatbot: vraag in gewone taal -> 2-3 productadviezen.
+"""De Babbelbot, de advies-chatbot: vraag in gewone taal -> 2-3 productadviezen.
 
 Veiligheidsontwerp (belangrijkste keuze):
 - Het taalmodel KIEST alleen uit een door ons samengestelde shortlist en
@@ -126,7 +126,7 @@ def _product_regel(p):
             + (' | '.join(spec_delen) if spec_delen else 'geen specs bekend'))
 
 
-_SYSTEEM_PROMPT = """Je bent Billy, de productadviseur van WitgoedAanbod.nl (een Nederlandse prijsvergelijker, geen winkel).
+_SYSTEEM_PROMPT = """Je bent de Babbelbot, de productadviseur van WitgoedAanbod.nl (een Nederlandse prijsvergelijker, geen winkel).
 
 Regels:
 - Kies UITSLUITEND uit de meegegeven productlijst; identificeer elk gekozen product met zijn EAN exact zoals opgegeven.
@@ -155,7 +155,7 @@ def _roep_openrouter(vraag, shortlist):
         headers={'Authorization': f"Bearer {current_app.config['OPENROUTER_API_KEY']}",
                  # Aanbevolen door OpenRouter voor herkenbaarheid in hun dashboard
                  'HTTP-Referer': current_app.config['SITE_URL'],
-                 'X-Title': 'WitgoedAanbod.nl Billy'})
+                 'X-Title': 'WitgoedAanbod.nl Babbelbot'})
     resp.raise_for_status()
     tekst = resp.json()['choices'][0]['message']['content']
     # Sommige modellen wikkelen JSON toch in ```json-hekjes.
@@ -209,7 +209,7 @@ def beantwoord_vraag(vraag):
         else:
             uitkomst = _mock_advies(shortlist)
     except Exception as e:
-        logger.error("Billy/OpenRouter-fout: %s", e)
+        logger.error("Babbelbot/OpenRouter-fout: %s", e)
         return {'type': 'fout',
                 'tekst': 'Het advies lukt op dit moment even niet. Probeer het zo opnieuw.'}, categorie
 

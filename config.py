@@ -73,7 +73,7 @@ class Config:
     # het publieke adres voor mail van échte mensen (die route werkt wel).
     CONTACT_TO_EMAIL = os.getenv('CONTACT_TO_EMAIL', 'pfmhoman@gmail.com')
 
-    # Billy, de advies-chatbot (routes/chat.py + chatbot.py). Zonder
+    # De Babbelbot, de advies-chatbot (routes/chat.py + chatbot.py). Zonder
     # OPENROUTER_API_KEY is de widget onzichtbaar en weigert het endpoint —
     # zelfde patroon als BREVO_API_KEY hierboven. Model instelbaar zodat er
     # zonder deploy gewisseld kan worden.

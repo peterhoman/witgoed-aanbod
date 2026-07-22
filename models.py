@@ -326,7 +326,7 @@ class PriceAlert(db.Model):
 
 
 class ChatCache(db.Model):
-    """Cache voor Billy-antwoorden: identieke vragen (genormaliseerd +
+    """Cache voor Babbelbot-antwoorden: identieke vragen (genormaliseerd +
     gehasht) krijgen 24 uur hetzelfde antwoord zonder nieuwe API-call —
     scheelt OpenRouter-kosten en maakt herhaalvragen instant."""
     __tablename__ = 'chat_cache'
@@ -338,7 +338,7 @@ class ChatCache(db.Model):
 
 
 class ChatLog(db.Model):
-    """Welke vragen bezoekers aan Billy stellen (los van de cache): input
+    """Welke vragen bezoekers aan de Babbelbot stellen (los van de cache): input
     voor nieuwe koopgidsen/filters. Bewust GEEN IP-adres of ander
     persoonsgegeven — alleen de vraagtekst en het moment."""
     __tablename__ = 'chat_log'

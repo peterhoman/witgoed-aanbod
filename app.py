@@ -221,6 +221,23 @@ def create_app(config_name=None):
         from filter_helpers import slugify
         return slugify(value)
 
+    @app.template_filter('foto')
+    def foto_filter(url, breedte=400):
+        """Winkelfoto's via de gratis verkleinservice wsrv.nl (Cloudflare-CDN).
+
+        De feeds leveren originelen tot ~5 MB (MediaMarkt) voor kaartjes
+        van ~300px; wsrv.nl verkleint naar WebP van enkele tientallen KB's
+        en cachet wereldwijd. Mislukt het ophalen bij wsrv, dan stuurt de
+        &default= door naar de originele foto (geen kapotte afbeelding).
+        Niet-http-waarden (None, static paden) gaan ongemoeid terug.
+        """
+        from urllib.parse import quote
+        if not url or not str(url).startswith(('http://', 'https://')):
+            return url
+        origineel = quote(str(url), safe='')
+        return (f"https://wsrv.nl/?url={origineel}&w={breedte}"
+                f"&output=webp&q=80&default={origineel}")
+
     @app.template_filter('euro')
     def euro_filter(value):
         """Nederlandse prijsnotatie: 1299.5 -> '1.299,50' (komma, puntjes voor duizendtallen)."""

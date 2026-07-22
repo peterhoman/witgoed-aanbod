@@ -52,7 +52,7 @@
                 <a href="/category/{{ card.category.slug }}" class="carousel-card">
                     <div class="carousel-card-image">
                         {% if card.image_url %}
-                        <img src="{{ card.image_url }}" alt="{{ card.category.name }}" loading="lazy">
+                        <img src="{{ card.image_url|foto }}" alt="{{ card.category.name }}" loading="lazy">
                         {% endif %}
                     </div>
                     <span class="carousel-card-label">{{ card.category.name }}</span>

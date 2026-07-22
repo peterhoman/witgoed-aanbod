@@ -28,7 +28,7 @@
         <!-- Product Image -->
         <div class="product-image-section">
             {% if product.image_url %}
-            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="product-image-large" loading="lazy">
+            <img src="{{ product.image_url|foto(800) }}" alt="{{ product.title }}" class="product-image-large" loading="lazy">
             {% else %}
             <span class="image-placeholder image-placeholder-large" aria-hidden="true">&#128247;</span>
             {% endif %}

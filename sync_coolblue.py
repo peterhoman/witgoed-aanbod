@@ -17,6 +17,7 @@ import io
 import os
 import re
 import requests
+from affiliate_ref import voeg_clickref_toe
 from app import create_app
 from models import db, Product, Category, Offer, SyncLog, utcnow, log_price
 from sync_products import EXCLUDE_KEYWORDS, MIN_PRICES, guess_brand
@@ -157,7 +158,7 @@ def normalize(row):
         'product_type': (row.get('product_type') or '').strip().lower(),
         'price': price,
         'strikethrough_price': advies if advies and advies > price else None,
-        'affiliate_url': row.get('aw_deep_link'),
+        'affiliate_url': voeg_clickref_toe(row.get('aw_deep_link'), 'awin', ean),
         'url': row.get('merchant_deep_link'),
         'is_available': is_available,
         # Verzendinfo (audit-punt 14). delivery_time bevat hier soms ook

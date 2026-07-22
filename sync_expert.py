@@ -16,6 +16,7 @@ import logging
 import os
 import urllib.request
 
+from affiliate_ref import voeg_clickref_toe
 from app import create_app
 from models import db, Product, Offer, SyncLog, utcnow, log_price
 
@@ -67,7 +68,7 @@ def _feed_records(feed_url):
         records[str(ean)] = {
             'price': float(prijs),
             'strikethrough_price': van_prijs if (van_prijs and van_prijs > float(prijs)) else None,
-            'url': url,
+            'url': voeg_clickref_toe(url, 'tradetracker', ean),
             'image_url': images[0] if images else None,
             'delivery_time': levertijd,
             'delivery_cost': verzendkosten,

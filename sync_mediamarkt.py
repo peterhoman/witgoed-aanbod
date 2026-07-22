@@ -18,6 +18,7 @@ import json
 import os
 import re
 import requests
+from affiliate_ref import voeg_clickref_toe
 from app import create_app
 from models import db, Product, Category, Offer, SyncLog, utcnow, log_price
 from sync_products import EXCLUDE_KEYWORDS, MIN_PRICES, guess_brand
@@ -187,7 +188,7 @@ def normalize(product, from_main_feed):
         'category_path': _get_field(product, 'category_path'),
         'price': price,
         'strikethrough_price': advies if advies and advies > price else None,
-        'affiliate_url': offer.get('productUrl'),
+        'affiliate_url': voeg_clickref_toe(offer.get('productUrl'), 'tradedoubler', ean),
         'is_available': in_stock > 0 or offer.get('availability') == 'in stock',
         'from_main_feed': from_main_feed,
         # Verzendinfo (audit-punt 14): Tradedoubler levert alleen een

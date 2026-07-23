@@ -253,11 +253,20 @@ body {
 }
 
 @media (max-width: 768px) {
+    /* Compacter op mobiel (feedback testgroep): minder blauw boven en
+       onder, tekst dichter op elkaar, USP-regels strak onder elkaar. */
     .hero {
-        padding: 48px 20px;
+        padding: 24px 20px;
+        margin: 16px 0;
     }
     .hero-mascot {
         display: none;
+    }
+    .hero-content h1 {
+        margin-bottom: 10px;
+    }
+    .hero-content p {
+        margin-bottom: 18px;
     }
 }
 
@@ -2561,6 +2570,14 @@ section h2 {
 
     .filters-sidebar.open {
         display: block;
+    }
+
+    /* USP-vinkjes strak onder elkaar: flex-gap geldt ook verticaal, dus
+       de 40px maakte gestapelde regels onbedoeld tot losse eilandjes.
+       (Staat hier, ná de basisregel van .usp-bar, anders wint die.) */
+    .usp-bar {
+        gap: 6px 40px;
+        padding: 8px 16px 0;
     }
 
     /* Merk-/labelchips: één horizontaal scrollbare rij i.p.v. een blok

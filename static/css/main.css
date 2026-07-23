@@ -2604,8 +2604,10 @@ section h2 {
         flex-wrap: wrap;
     }
 
+    /* Compacter (feedback testgroep): met vijf omgeslagen regels duwde
+       de oude 12px-padding de rest van de pagina ver naar beneden. */
     .nav-categories a {
-        padding: 12px 16px;
+        padding: 5px 10px;
         font-size: 12px;
     }
 

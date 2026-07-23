@@ -92,22 +92,53 @@
         ververCount(i);
     }
 
-    function toonResultaat() {
+    function paramsVanFilters(filters) {
+        const params = new URLSearchParams();
+        filters.forEach(a => a.waarden.forEach(w => params.append('spec', a.key + '::' + w)));
+        return params;
+    }
+
+    function tel(params) {
+        return fetch('/api/keuzehulp-tellen/' + slug + '?' + params.toString())
+            .then(r => r.json()).then(data => data.aantal);
+    }
+
+    async function toonResultaat() {
         progressEl.textContent = 'Klaar!';
         backBtn.style.display = 'inline-block';
-        const params = specParams(vragen.length);
+        countEl.textContent = '';
         questionEl.innerHTML = '<h2 class="wizard-question-title">Bekijk je resultaten</h2>' +
             '<p class="wizard-result-loading">Even tellen...</p>';
-        fetch('/api/keuzehulp-tellen/' + slug + '?' + params.toString())
-            .then(r => r.json())
-            .then(data => {
-                countEl.textContent = '';
-                questionEl.innerHTML = '<h2 class="wizard-question-title">Bekijk je resultaten</h2>' +
-                    '<p>Op basis van je antwoorden vonden we <strong>' + data.aantal + ' ' +
-                    "{{ category.name|lower }}" + '</strong> die passen.</p>' +
-                    '<a href="/category/{{ category.slug }}?' + params.toString() +
-                    '" class="btn-primary wizard-result-cta">Bekijk de resultaten →</a>';
-            });
+        // Levert de exacte combinatie niets op, dan laten we van achteren
+        // af eisen vallen tot er wél resultaten zijn — nooit een dood spoor.
+        let filters = antwoorden.filter(a => a && a.waarden);
+        let vervallen = 0;
+        let aantal = 0;
+        try {
+            aantal = await tel(paramsVanFilters(filters));
+            while (aantal === 0 && filters.length > 0) {
+                filters = filters.slice(0, -1);
+                vervallen += 1;
+                aantal = await tel(paramsVanFilters(filters));
+            }
+        } catch (e) {
+            filters = [];
+            vervallen = 0;
+        }
+        const params = paramsVanFilters(filters);
+        let uitleg;
+        if (vervallen === 0) {
+            uitleg = 'Op basis van je antwoorden vonden we <strong>' + aantal + ' ' +
+                "{{ category.name|lower }}" + '</strong> die passen.';
+        } else {
+            uitleg = 'Die exacte combinatie is er op dit moment niet. Zonder je laatste ' +
+                (vervallen === 1 ? 'eis' : vervallen + ' eisen') + ' zijn er <strong>' + aantal + ' ' +
+                "{{ category.name|lower }}" + '</strong> die passen.';
+        }
+        questionEl.innerHTML = '<h2 class="wizard-question-title">Bekijk je resultaten</h2>' +
+            '<p>' + uitleg + '</p>' +
+            '<a href="/category/{{ category.slug }}?' + params.toString() +
+            '" class="btn-primary wizard-result-cta">Bekijk de resultaten →</a>';
     }
 
     backBtn.addEventListener('click', function() {

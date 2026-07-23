@@ -35,13 +35,21 @@ def _parse_nummer(waarde):
 
 def resolve_bucket_options(spec_facet_values, opties):
     """Voor elke {'label', 'max'}-optie: welke échte spec-waarden vallen
-    eronder (gesorteerd op een oplopende bovengrens; laatste optie met
-    max=None vangt alles daarboven). Opties zonder enige matchende
+    eronder. Zonder expliciete 'min' sluiten de buckets op elkaar aan
+    (ondergrens = vorige bovengrens); mét 'min' mogen ze overlappen — een
+    8kg-machine past immers bij "1-2 personen" én bij een gezin, en juist
+    de kleine maten zijn zeldzaam in het echte aanbod. 'geen_filter': True
+    betekent "maakt niet uit": geen spec-filter, zodat ook producten
+    zonder deze spec in beeld blijven. Opties zonder enige matchende
     productwaarde worden overgeslagen (geen doodlopende keuze aanbieden)."""
     resultaat = []
-    ondergrens = 0
+    vorige_grens = 0
     for optie in opties:
+        if optie.get('geen_filter'):
+            resultaat.append({'label': optie['label'], 'waarden': None})
+            continue
         bovengrens = optie['max']
+        ondergrens = optie.get('min', vorige_grens)
         match = []
         for w in spec_facet_values:
             n = _parse_nummer(w)
@@ -51,37 +59,52 @@ def resolve_bucket_options(spec_facet_values, opties):
                 match.append(w)
         if match:
             resultaat.append({'label': optie['label'], 'waarden': match})
-        ondergrens = bovengrens if bovengrens is not None else ondergrens
+        vorige_grens = bovengrens if bovengrens is not None else vorige_grens
     return resultaat
 
 
-# Drempels uit wasmachine-kopen-waar-op-letten: 7kg=1-2p, 8-9kg=gezin, 10kg+=groot gezin.
+# Drempels uit wasmachine-kopen-waar-op-letten, met bewuste overlap: de gids
+# zegt "7 kg volstaat; 8 kg geeft ruimte" voor 1-2 personen en "8-9 kg is de
+# sweet spot" voor een gezin. Een harde grens op 7 kg liet in de praktijk
+# maar een handvol machines over (kleine trommels zijn zeldzaam geworden).
 WASMACHINE_VULGEWICHT = [
-    {'label': '1-2 personen', 'max': 7.5},
-    {'label': '3-4 personen', 'max': 9.5},
-    {'label': '5 of meer personen', 'max': None},
+    {'label': '1-2 personen', 'max': 8.5},
+    {'label': '3-4 personen', 'min': 7.5, 'max': 9.5},
+    {'label': '5 of meer personen', 'min': 8.5, 'max': None},
 ]
-# Drempel uit droger-kopen-waar-op-letten: vergelijkbare capaciteit als de wasmachine.
+# Drempel uit droger-kopen-waar-op-letten: vergelijkbare capaciteit als de
+# wasmachine, met dezelfde overlap rond 8 kg.
 DROGER_LAADVERMOGEN = [
-    {'label': 'Klein huishouden (1-2 personen)', 'max': 7.5},
-    {'label': 'Gezin (3 personen of meer)', 'max': None},
+    {'label': 'Klein huishouden (1-2 personen)', 'max': 8.5},
+    {'label': 'Gezin (3 personen of meer)', 'min': 7.5, 'max': None},
 ]
-# Drempels uit koelkast-kopen-complete-gids: 150-250l=1-2p, 250-350l=gezin, 350l+=groot gezin.
+# Drempels uit koelkast-kopen-complete-gids: 150-250l=1-2p, 250-350l=gezin,
+# 350l+=groot gezin — met overlap op de grenzen (een 260l-koelkast is voor
+# beide situaties prima).
 KOELKAST_VOLUME = [
-    {'label': '1-2 personen', 'max': 250},
-    {'label': '3-4 personen', 'max': 350},
-    {'label': '5 of meer personen', 'max': None},
+    {'label': '1-2 personen', 'max': 275},
+    {'label': '3-4 personen', 'min': 225, 'max': 375},
+    {'label': '5 of meer personen', 'min': 325, 'max': None},
 ]
-# Drempels uit vaatwasser-kopen-complete-gids: 10-12=1-2p, 12-14=gezin, 14+=groot gezin.
+# Drempels uit vaatwasser-kopen-complete-gids: 10-12=1-2p, 12-14=gezin,
+# 14+=groot gezin — zelfde overlap-principe.
 VAATWASSER_COUVERTS = [
-    {'label': '1-2 personen', 'max': 11.5},
-    {'label': '3-4 personen', 'max': 14.5},
-    {'label': '5 of meer personen', 'max': None},
+    {'label': '1-2 personen', 'max': 12.5},
+    {'label': '3-4 personen', 'min': 11.5, 'max': 14.5},
+    {'label': '5 of meer personen', 'min': 13.5, 'max': None},
 ]
-# Uit vaatwasser-gids: stille modellen zitten rond 40-44 dB.
+# Uit vaatwasser-gids: stille modellen zitten rond 40-44 dB. "Maakt niet
+# uit" is bewust géén filter: de oude bucket (alles boven 44,5 dB) sloot
+# juist de stille én de spec-loze modellen uit.
 GELUID_STIL = [
     {'label': 'Ja, het liefst zo stil mogelijk', 'max': 44.5},
-    {'label': 'Maakt niet uit', 'max': None},
+    {'label': 'Maakt niet uit', 'geen_filter': True},
+]
+# Toerental als ondergrens-bucket i.p.v. de exacte tekst '1600 r/min':
+# notaties verschillen per winkel-feed, en zo doet 1700 toeren ook mee.
+WASMACHINE_TOERENTAL = [
+    {'label': 'Ja, minstens 1600 toeren', 'min': 1550, 'max': None},
+    {'label': 'Maakt niet uit', 'geen_filter': True},
 ]
 
 WIZARD_QUESTIONS = {
@@ -96,10 +119,7 @@ WIZARD_QUESTIONS = {
                  {'label': 'Maakt niet zoveel uit', 'waarden': None},
              ]},
             {'vraag': 'Wil je dat de was extra droog uit de trommel komt (handig i.c.m. een droger)?',
-             'key': 'Toerental centrifuge', 'type': 'exact', 'opties': [
-                 {'label': 'Ja, het liefst 1600 toeren', 'waarden': ['1600 r/min']},
-                 {'label': 'Maakt niet uit', 'waarden': None},
-             ]},
+             'key': 'Toerental centrifuge', 'type': 'bucket', 'opties': WASMACHINE_TOERENTAL},
         ],
     },
     'koelkasten': {
@@ -173,6 +193,10 @@ def build_wizard_context(category_slug, products):
         if vraag['type'] == 'bucket':
             waarden = facet_by_key.get(vraag['key'], [])
             opties = resolve_bucket_options(waarden, vraag['opties'])
+            # Alleen "maakt niet uit" over (spec ontbreekt in deze data):
+            # dan is er niets te kiezen en vervalt de vraag.
+            if not any(o['waarden'] for o in opties):
+                opties = []
         else:
             opties = [{'label': o['label'], 'waarden': o['waarden']} for o in vraag['opties']]
         if opties:

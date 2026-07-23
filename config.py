@@ -41,12 +41,16 @@ class Config:
     _http_idx = _site_url.find('http')
     SITE_URL = _site_url[_http_idx:].rstrip('/') if _http_idx >= 0 else 'https://www.witgoedaanbod.nl'
 
-    # Google Search Console: de content-waarde van de meta-verificatietag
-    # (uit "HTML-tag"-verificatie). Leeg = geen tag. De property is een
-    # domein-property, geverifieerd via DNS onder pfmhoman@gmail.com; de
-    # eerdere HTML-tag (avantiusshop, 2026-07-11) is bewust verwijderd
-    # zodat dat account zijn eigenaarschap verliest.
-    GOOGLE_SITE_VERIFICATION = os.getenv('GOOGLE_SITE_VERIFICATION', '')
+    # Google site-verificatie: de content-waarde van de meta-verificatietag.
+    # De Search Console-property zelf is een domein-property (DNS-geverifieerd
+    # onder pfmhoman@gmail.com); deze HTML-tag is 23-07 toegevoegd voor de
+    # Merchant Center-verificatie (gratis Shopping-vermeldingen, zelfde
+    # account). Geen geheim — staat bewust publiek in de <head> en moet
+    # blijven staan (Google hercontroleert periodiek). De eerdere tag van
+    # het avantiusshop-account (2026-07-11) is bewust verwijderd.
+    GOOGLE_SITE_VERIFICATION = os.getenv(
+        'GOOGLE_SITE_VERIFICATION',
+        'FSTWs3GDdEhblm5n4TdA8e6AmXFhMEg8b2KLHom8qZ0')
 
     # TradeTracker site-verificatie (affiliatesite #512985): bewijst het
     # eigendom van de site richting adverteerders. Geen geheim — staat

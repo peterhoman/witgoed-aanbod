@@ -91,7 +91,8 @@
            verborgen, sidebar gewoon zichtbaar). Badge = aantal actieve filters. #}
         {% set actieve_filters = selected_brands|length + (selected_specs.values()|map('length')|sum if selected_specs else 0) %}
         <button type="button" class="filters-toggle" id="filters-toggle"
-                aria-expanded="false" aria-controls="filters-sidebar">
+                aria-expanded="false" aria-controls="filters-sidebar"
+                data-label-sluiten="{{ t('filters.close') }}">
             <span>{{ t('filters.title') }}{% if actieve_filters %} ({{ actieve_filters }}){% endif %}</span>
             <span class="filters-toggle-arrow" aria-hidden="true">▾</span>
         </button>
@@ -198,9 +199,12 @@ document.getElementById('max_price').addEventListener('input', function() {
 
 var filtersToggle = document.getElementById('filters-toggle');
 if (filtersToggle) {
+    var filtersLabel = filtersToggle.querySelector('span');
+    var labelDicht = filtersLabel.textContent;
     filtersToggle.addEventListener('click', function() {
         var open = document.getElementById('filters-sidebar').classList.toggle('open');
         this.setAttribute('aria-expanded', open ? 'true' : 'false');
+        filtersLabel.textContent = open ? this.dataset.labelSluiten : labelDicht;
         this.querySelector('.filters-toggle-arrow').textContent = open ? '▴' : '▾';
     });
 }

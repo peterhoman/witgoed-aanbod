@@ -61,6 +61,7 @@ TRANSLATIONS = {
 
         # Filters
         'filters.title': 'Filters',
+        'filters.close': 'Filter sluiten',
         'filters.min_price': 'Min. prijs',
         'filters.max_price': 'Max. prijs',
         'filters.brand': 'Merk',
@@ -227,6 +228,7 @@ TRANSLATIONS = {
         'cookie.accept': 'Accept all',
 
         'filters.title': 'Filters',
+        'filters.close': 'Close filters',
         'filters.min_price': 'Min. price',
         'filters.max_price': 'Max. price',
         'filters.brand': 'Brand',

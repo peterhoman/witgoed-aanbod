@@ -40,7 +40,7 @@ def _mail_shell(binnenkant):
         f'{binnenkant}'
         '<p style="font-size:12px;color:#898781;border-top:1px solid #e1e0d9;'
         'padding-top:12px;margin-top:28px;">WitgoedAanbod.nl vergelijkt prijzen '
-        'van o.a. Bol, Coolblue, MediaMarkt, Expert en Alternate. Je ontvangt deze mail '
+        'van o.a. Bol, Coolblue, MediaMarkt, Expert en EP. Je ontvangt deze mail '
         'omdat dit e-mailadres een prijsalert aanvroeg.</p>'
         '</div>'
     )

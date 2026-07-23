@@ -11,6 +11,7 @@ from sync_mediamarkt import sync_mediamarkt
 from sync_coolblue import sync_coolblue
 from sync_expert import sync_expert
 from sync_alternate import sync_alternate
+from sync_ep import sync_ep
 import os
 
 scheduler = BackgroundScheduler()
@@ -112,6 +113,18 @@ def start_scheduler(app=None):
         name='Alternate Product Sync',
         replace_existing=True,
         next_run_time=eerste_run('alternate', alternate_interval, 65),
+    )
+
+    # EP via de TradeTracker-feed, zelfde ritme als Expert/Alternate.
+    ep_interval = int(os.getenv('EP_SYNC_INTERVAL', 12))
+    scheduler.add_job(
+        sync_ep,
+        'interval',
+        hours=ep_interval,
+        id='ep_sync_job',
+        name='EP Product Sync',
+        replace_existing=True,
+        next_run_time=eerste_run('ep', ep_interval, 80),
     )
 
     scheduler.start()

@@ -24,6 +24,7 @@ RETAILER_LABELS = {
     'coolblue': 'Coolblue',
     'expert': 'Expert',
     'alternate': 'Alternate',
+    'ep': 'EP',
 }
 
 

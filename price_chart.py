@@ -21,7 +21,7 @@ SERIES_KLEUREN = {
     'mediamarkt': '#1baf7a', # aqua
     'coolblue': '#eda100',   # geel
     'expert': '#008300',     # groen
-    'ep': '#4a3aa7',         # violet (toekomstige winkel)
+    'ep': '#4a3aa7',         # violet
     'alternate': '#c75373',  # framboos (CVD-veilig naast blauw/aqua/geel/groen/violet)
 }
 KLEUR_OVERIG = '#898781'

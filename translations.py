@@ -43,6 +43,7 @@ TRANSLATIONS = {
         'footer.cookie_settings': 'Cookievoorkeuren',
         'footer.disclaimer': 'Affiliate Disclaimer',
         'footer.terms': 'Algemene Voorwaarden',
+        'footer.returns': 'Retourneren',
         'footer.copyright': '© 2026 WitgoedAanbod.nl is deelnemer aan affiliate partnerprogramma. Als je via onze links iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.',
 
         # Cookie modal
@@ -212,6 +213,7 @@ TRANSLATIONS = {
         'footer.cookie_settings': 'Cookie preferences',
         'footer.disclaimer': 'Affiliate Disclaimer',
         'footer.terms': 'Terms & Conditions',
+        'footer.returns': 'Returns',
         'footer.copyright': '© 2026 WitgoedAanbod.nl participates in an affiliate partner program. If you buy something through our links, we may earn a small commission, at no extra cost to you.',
 
         'cookie.title': 'Cookie settings',

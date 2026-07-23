@@ -31,6 +31,13 @@ def voorwaarden():
     return render_template('legal/voorwaarden.html')
 
 
+@legal_bp.route('/retourneren')
+def retourneren():
+    """Retourbeleid-uitleg (vergelijker: retour loopt via de winkel).
+    Vereist door Google Merchant Center als retourbeleid-URL."""
+    return render_template('legal/retourneren.html')
+
+
 @legal_bp.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':

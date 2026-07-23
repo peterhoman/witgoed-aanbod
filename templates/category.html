@@ -87,7 +87,15 @@
 
     <!-- Filters Sidebar -->
     <div class="category-layout">
-        <aside class="filters-sidebar">
+        {# Mobiel: producten eerst, filters achter deze knop (desktop: knop
+           verborgen, sidebar gewoon zichtbaar). Badge = aantal actieve filters. #}
+        {% set actieve_filters = selected_brands|length + (selected_specs.values()|map('length')|sum if selected_specs else 0) %}
+        <button type="button" class="filters-toggle" id="filters-toggle"
+                aria-expanded="false" aria-controls="filters-sidebar">
+            <span>{{ t('filters.title') }}{% if actieve_filters %} ({{ actieve_filters }}){% endif %}</span>
+            <span class="filters-toggle-arrow" aria-hidden="true">▾</span>
+        </button>
+        <aside class="filters-sidebar" id="filters-sidebar">
             <h3>{{ t('filters.title') }}</h3>
 
             <form method="get" action="" class="filters-form">
@@ -187,6 +195,15 @@ document.getElementById('min_price').addEventListener('input', function() {
 document.getElementById('max_price').addEventListener('input', function() {
     document.getElementById('max-price-label').textContent = this.value;
 });
+
+var filtersToggle = document.getElementById('filters-toggle');
+if (filtersToggle) {
+    filtersToggle.addEventListener('click', function() {
+        var open = document.getElementById('filters-sidebar').classList.toggle('open');
+        this.setAttribute('aria-expanded', open ? 'true' : 'false');
+        this.querySelector('.filters-toggle-arrow').textContent = open ? '▴' : '▾';
+    });
+}
 
 function applySort(value) {
     const params = new URLSearchParams(window.location.search);

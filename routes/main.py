@@ -240,7 +240,9 @@ def index():
         if cheapest:
             featured_products.append(cheapest)
 
-    latest_blog_posts = Guide.query.filter_by(post_type='blog').order_by(Guide.created_at.desc()).limit(3).all()
+    # 5 stuks: vult de nieuwsrij op de homepage (zelfde breedte als de
+    # productkaarten-grid erboven).
+    latest_blog_posts = Guide.query.filter_by(post_type='blog').order_by(Guide.created_at.desc()).limit(5).all()
 
     # Geen aparte categorie-afbeeldingen in het model; gebruik de foto van
     # een echt product uit die categorie als representatief plaatje voor

@@ -18,6 +18,43 @@ is alleen nog nodig om een gids volledig opnieuw op te bouwen.
 
 BLOG_POSTS = [
     {
+        'slug': 'recht-op-reparatie-31-juli-2026',
+        'title': 'Vanaf 31 juli: recht op reparatie voor wasmachines en ander witgoed',
+        'excerpt': 'De Europese reparatierichtlijn wordt eind deze maand concreet: fabrikanten moeten witgoed ook ná de garantie repareren, en wie binnen de garantie voor reparatie kiest krijgt er 12 maanden garantie bij.',
+        'category_slug': None,
+        'content': """
+<p>We schreven er eerder dit jaar al over in ons <a href="/blog/witgoedmarkt-nieuws-2026-reparatierecht-smart-inbouw">marktoverzicht</a>, en nu is het bijna zover: uiterlijk <strong>31 juli 2026</strong> moet de Europese richtlijn "recht op reparatie" in nationale wetgeving zijn omgezet. Voor iedereen met een wasmachine, droger, vaatwasser, koelkast of vriezer verandert er daarmee het nodige.</p>
+
+<h2>Wat verandert er concreet?</h2>
+<ul>
+    <li><strong>Reparatie ook ná de garantie:</strong> fabrikanten van grote huishoudelijke apparaten worden verplicht om reparaties uit te voeren als dat technisch mogelijk is — ook buiten de wettelijke garantieperiode, tegen een redelijke prijs.</li>
+    <li><strong>12 maanden extra garantie na reparatie:</strong> laat je een apparaat bínnen de garantie repareren in plaats van vervangen, dan wordt de wettelijke garantie eenmalig met een jaar verlengd. Repareren wordt daarmee aantrekkelijker dan omruilen.</li>
+    <li><strong>Onderdelen en informatie beschikbaar:</strong> reserveonderdelen, gereedschap en technische reparatie-informatie moeten beschikbaar komen, zonder kunstmatige drempels zoals het alleen verkopen van dure complete modules.</li>
+</ul>
+
+<h2>Let op: reparatie is niet gratis</h2>
+<p>De regels maken reparatie mogelijk en toegankelijk, maar buiten de garantieperiode betaal je er gewoon voor. De wettelijke garantie zelf blijft ongewijzigd. De afweging "repareren of vervangen" blijft dus een rekensom — zeker bij oudere, onzuinige apparaten kan een nieuw, zuinig model per saldo goedkoper zijn. Hoe je die som maakt, lees je in onze gids over het <a href="/blog/stroomverbruik-koelkast-per-jaar">stroomverbruik van een koelkast</a> (dezelfde rekenmethode werkt voor elk groot apparaat).</p>
+
+<p>Staat vervangen toch op de planning? Vergelijk dan eerst de actuele prijzen in onze categorieën <a href="/category/wasmachines">wasmachines</a>, <a href="/category/drogers">drogers</a>, <a href="/category/vaatwassers">vaatwassers</a> en <a href="/category/koelkasten">koelkasten</a> — de goedkoopste leverbare aanbieding staat bij ons altijd bovenaan.</p>
+""",
+    },
+    {
+        'slug': 'witgoedaanbod-vergelijkt-nu-6-winkels',
+        'title': 'WitgoedAanbod vergelijkt nu 6 winkels: EP en Alternate zijn live',
+        'excerpt': 'Onze vergelijker is deze maand uitgebreid met twee winkels: EP (met een groot witgoedassortiment) en elektronica-specialist Alternate. Meer prijzen per apparaat, dus een completer beeld.',
+        'category_slug': None,
+        'content': """
+<p>Goed nieuws voor iedereen die via WitgoedAanbod.nl prijzen vergelijkt: er doen sinds deze maand twee winkels extra mee. Daarmee vergelijken we de prijzen van <strong>zes grote Nederlandse webshops</strong>: Bol, Coolblue, MediaMarkt, Expert, Alternate en EP.</p>
+
+<h2>Wat merk je daarvan?</h2>
+<p><strong>EP</strong> is een echte witgoedwinkel — van wasmachines en koelkasten tot afzuigkappen — en voegt in vrijwel elke categorie honderden actuele prijzen toe. <strong>Alternate</strong> is vooral sterk in elektronica en vult de vergelijking aan bij onder meer stofzuigers en koffiemachines. Per apparaat zie je dus vaker meerdere winkels naast elkaar, en dat vergroot de kans dat je de laagste prijs te pakken hebt.</p>
+
+<p>De spelregels blijven zoals je van ons gewend bent: de <strong>goedkoopste leverbare aanbieding staat altijd bovenaan</strong>, winkels kunnen hun positie niet kopen, en de prijzen worden meerdere keren per dag automatisch ververst — inclusief het prijsverloop per apparaat, zodat je ziet of een "aanbieding" echt een aanbieding is. Meer over hoe we werken lees je op onze <a href="/over-ons">over-ons-pagina</a>.</p>
+
+<p>Benieuwd? Bekijk de vernieuwde vergelijking in de categorieën <a href="/category/wasmachines">wasmachines</a>, <a href="/category/koelkasten">koelkasten</a> of <a href="/category/stofzuigers">stofzuigers</a>.</p>
+""",
+    },
+    {
         'slug': 'witgoedmarkt-nieuws-2026-reparatierecht-smart-inbouw',
         'title': 'Witgoedmarkt 2026: reparatierecht, slimme apparaten en meer luxe inbouw',
         'excerpt': 'Drie actuele ontwikkelingen in de witgoedmarkt: het nieuwe Europese reparatierecht, de opmars van slimme apparaten en een duidelijke verschuiving naar luxe inbouwapparatuur.',

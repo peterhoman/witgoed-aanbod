@@ -124,7 +124,8 @@ def sitemap():
         })
 
     # Legal pages
-    legal_pages = ['over-ons', 'privacy', 'disclaimer', 'cookies', 'voorwaarden', 'contact']
+    legal_pages = ['over-ons', 'privacy', 'disclaimer', 'cookies', 'voorwaarden',
+                   'retourneren', 'contact']
     for page in legal_pages:
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/{page}",
@@ -148,7 +149,14 @@ def sitemap():
 
 @seo_bp.route('/robots.txt')
 def robots():
-    """Generate robots.txt"""
+    """Generate robots.txt.
+
+    AI-crawlers (GPTBot, ClaudeBot, PerplexityBot, ...) worden BEWUST
+    toegelaten (SEO-audit 24-07): AI-zoekmachines citeren juist
+    vergelijkingscontent, en elke vermelding met bronlink is een gratis
+    verkeerskanaal. De expliciete Allow-regels documenteren die keuze —
+    zonder deze regels was het een stilzwijgende default geweest.
+    """
     robots_txt = f"""User-agent: *
 Allow: /
 Disallow: /api/
@@ -160,6 +168,29 @@ User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
+Allow: /
+
+# AI-zoekmachines en -assistenten: bewust welkom (antwoorden met
+# bronvermelding naar onze vergelijkingen zijn een verkeerskanaal).
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
 Allow: /
 """
     return robots_txt, 200, {'Content-Type': 'text/plain'}

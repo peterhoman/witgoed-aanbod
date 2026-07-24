@@ -238,6 +238,27 @@ class PriceHistory(db.Model):
         return f'<PriceHistory {self.retailer} €{self.price} @ {self.recorded_at:%Y-%m-%d}>'
 
 
+def prijssprong_melding(oude_prijs, nieuwe_prijs, drempel=0.5):
+    """Signaleer een verdachte prijssprong (>50% t.o.v. de vorige prijs).
+
+    Geeft een korte omschrijving terug ('€899->€89'), of None als de
+    verandering normaal is. Vangnet tegen feed-fouten (verkeerde valuta,
+    cent-bedragen, kapotte kolommen): de syncs schrijven de meldingen
+    naar SyncLog.errors zodat ze in /api/sync-status opvallen — de prijs
+    wordt WEL gewoon bijgewerkt (de feed is de bron van de waarheid;
+    echte stuntprijzen bestaan ook).
+    """
+    try:
+        oud, nieuw = float(oude_prijs), float(nieuwe_prijs)
+    except (TypeError, ValueError):
+        return None
+    if oud <= 0 or nieuw <= 0:
+        return None
+    if abs(nieuw - oud) / oud <= drempel:
+        return None
+    return f"€{oud:.0f}->€{nieuw:.0f}"
+
+
 def log_price(product_id, retailer, price):
     """Schrijf een prijspunt weg als de prijs afwijkt van de laatst bekende.
 

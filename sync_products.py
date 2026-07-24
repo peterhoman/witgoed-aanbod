@@ -10,7 +10,7 @@ import time
 from urllib.parse import quote_plus
 from datetime import timedelta
 from app import create_app
-from models import db, Product, Category, Offer, SyncLog, utcnow, log_price
+from models import db, Product, Category, Offer, SyncLog, utcnow, log_price, prijssprong_melding
 from bitly_helper import get_bitly_client
 import logging
 
@@ -380,6 +380,7 @@ def sync_products():
 
         total_synced = 0
         total_updated = 0
+        prijssprongen = []
         total_errors = 0
 
         # (slug, weergavenaam, zoektermen). De weergavenaam wordt ook naar de
@@ -545,6 +546,10 @@ def sync_products():
                     if not offer:
                         offer = Offer(product_id=product.id, retailer='bol')
                         db.session.add(offer)
+                    else:
+                        sprong = prijssprong_melding(offer.price, price)
+                        if sprong:
+                            prijssprongen.append(f"{ean}: {sprong}")
                     offer.price = price
                     offer.strikethrough_price = strikethrough
                     offer.url = bol_url
@@ -625,6 +630,9 @@ def sync_products():
         from price_alerts import check_price_alerts
         check_price_alerts()
 
+        if prijssprongen:
+            sync_log.errors = ('Prijssprong >50% (feed checken): '
+                               + '; '.join(prijssprongen[:15]))[:2000]
         sync_log.finished_at = utcnow()
         sync_log.products_synced = total_synced
         sync_log.products_updated = total_updated

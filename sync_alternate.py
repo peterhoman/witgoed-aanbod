@@ -26,7 +26,7 @@ import urllib.request
 
 from affiliate_ref import voeg_clickref_toe
 from app import create_app
-from models import db, Product, Offer, SyncLog, utcnow, log_price
+from models import db, Product, Offer, SyncLog, utcnow, log_price, prijssprong_melding
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +103,7 @@ def sync_alternate():
         logger.info(f"[+] {len(records)} feedproducten met EAN en prijs")
 
         matched = updated = 0
+        prijssprongen = []
         seen_product_ids = set()
 
         # Ook niet-leverbare producten meenemen: een apparaat dat bij de
@@ -119,6 +120,9 @@ def sync_alternate():
                 db.session.add(offer)
                 matched += 1
             else:
+                sprong = prijssprong_melding(offer.price, record['price'])
+                if sprong:
+                    prijssprongen.append(f"{product.ean}: {sprong}")
                 updated += 1
             offer.price = record['price']
             offer.strikethrough_price = record['strikethrough_price']
@@ -169,6 +173,9 @@ def sync_alternate():
         from price_alerts import check_price_alerts
         check_price_alerts()
 
+        if prijssprongen:
+            sync_log.errors = ('Prijssprong >50% (feed checken): '
+                               + '; '.join(prijssprongen[:15]))[:2000]
         sync_log.finished_at = utcnow()
         sync_log.products_synced = matched
         sync_log.products_updated = updated

@@ -19,7 +19,7 @@ import re
 import requests
 from affiliate_ref import voeg_clickref_toe
 from app import create_app
-from models import db, Product, Category, Offer, SyncLog, utcnow, log_price
+from models import db, Product, Category, Offer, SyncLog, utcnow, log_price, prijssprong_melding
 from sync_products import EXCLUDE_KEYWORDS, MIN_PRICES, guess_brand
 import logging
 
@@ -197,6 +197,7 @@ def sync_coolblue():
 
         categories = {c.slug: c for c in Category.query.all()}
         added = updated = skipped = 0
+        prijssprongen = []
         seen_product_ids = set()
         seen_eans = set()
 
@@ -265,6 +266,10 @@ def sync_coolblue():
             if not offer:
                 offer = Offer(product_id=product.id, retailer=RETAILER)
                 db.session.add(offer)
+            elif record['is_available']:
+                sprong = prijssprong_melding(offer.price, record['price'])
+                if sprong:
+                    prijssprongen.append(f"{product.ean}: {sprong}")
 
             offer.price = record['price']
             offer.strikethrough_price = record['strikethrough_price']
@@ -298,6 +303,9 @@ def sync_coolblue():
         from price_alerts import check_price_alerts
         check_price_alerts()
 
+        if prijssprongen:
+            sync_log.errors = ('Prijssprong >50% (feed checken): '
+                               + '; '.join(prijssprongen[:15]))[:2000]
         sync_log.finished_at = utcnow()
         sync_log.products_synced = added
         sync_log.products_updated = updated

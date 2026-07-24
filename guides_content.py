@@ -17,6 +17,71 @@ aangesloten winkels zelf niet bieden.
 
 NEW_GUIDES = [
     {
+        # Eerste prijssegment-gids (SEO-audit punt 9): "beste X onder €Y"
+        # is een bewezen longtail-patroon dat we nog niet bedienden. Alle
+        # vijf modellen zijn 24-07 op EAN geverifieerd tegen productie
+        # (prijs, winkelaanbod, specs uit de producttitels).
+        'slug': 'beste-wasmachine-onder-500',
+        'title': 'De beste wasmachine onder de €500 (2026)',
+        'excerpt': 'Een goede wasmachine hoeft geen €800 te kosten. Vijf bewezen modellen onder de €500 — van de zuinigste 8-kilo-machine tot de goedkoopste instapper.',
+        'category_slug': 'wasmachines',
+        'content': """
+<p>Wie een wasmachine zoekt, ziet al snel adviesprijzen van €700 tot ver boven de €1.000. Maar voor de meeste huishoudens is dat helemaal niet nodig: onder de €500 vind je tegenwoordig machines met 8 of zelfs 9 kg trommelinhoud, 1400 toeren én energielabel A. We volgen in onze vergelijker tientallen wasmachines onder de €500 en kozen de vijf beste — op basis van <strong>energielabel</strong>, <strong>trommelinhoud</strong>, <strong>toerental</strong> en natuurlijk de <strong>prijs</strong>.</p>
+
+<h2>De top 5 met actuele prijzen</h2>
+<!--productkaart ean=6901101830180 rank=1 label="De beste koop: zuinig én bij de meeste winkels" pros="Energielabel A-30%: zuiniger dan het strengste label vereist|8 kg en 1400 toeren: volwaardige gezinsmachine" cons="Minder bekend merk dan Bosch of Beko (wel van de maker van Gorenje)"-->
+<!--productkaart ean=8690842708138 rank=2 label="Bekend merk, scherpste prijs" pros="8 kg en 1400 toeren voor rond de €330|Beko is al jaren een van de meest verkochte merken van Nederland" cons="Standaard energielabel: prima, maar niet de zuinigste van deze lijst"-->
+<!--productkaart ean=6901101830197 rank=3 label="De beste grote trommel: 9 kg onder de €400" pros="9 kg: dekbedovertrek en beddengoed moeiteloos in één beurt|Energielabel A-30%, dus ook nog eens zuinig" cons="9 kg is overdreven voor een 1-2-persoonshuishouden"-->
+<!--productkaart ean=8806096118948 rank=4 label="Het A-merk onder de €400" pros="LG-kwaliteit met 8 kg en 1400 toeren|Relatief stil: 75 dB in de centrifugegang" cons="Rond de €390 net iets duurder dan de nummers 1 en 2"-->
+<!--productkaart ean=4049011190580 rank=5 label="De budgetkoop voor kleine huishoudens" pros="Rond de €240: de goedkoopste echte wasmachine die we volgen|6 kg volstaat prima voor 1-2 personen" cons="Energielabel D en 1000 toeren: was komt natter uit de trommel"-->
+
+<h2>1. Hisense WF3S8043BW3 — de beste koop</h2>
+<p>Deze Hisense bewijst hoe veel wasmachine je tegenwoordig voor rond de €350 krijgt: <strong>8 kg trommelinhoud, 1400 toeren én energielabel A-30%</strong> — dat laatste betekent 30% zuiniger dan de grens voor het strengste label. Hij is bovendien bij meerdere aangesloten winkels leverbaar, dus de prijsvergelijking doet hier echt zijn werk. Bekijk de actuele prijs van de <a href="/product/hisense-3s-serie-wf3s8043bw3-blx---wasmachine-met--6901101830180">Hisense WF3S8043BW3</a>.</p>
+
+<h2>2. Beko b300 BM3WFU38412CW — bekend merk, scherpste prijs</h2>
+<p>Wil je een vertrouwd merk zonder meerprijs, dan is deze Beko de slimste keuze: <strong>8 kg en 1400 toeren voor rond de €330</strong> — de laagste prijs die we voor een volwaardige 8-kilo-machine volgen. Het energielabel is standaard (geen A-klasse), maar op aanschafprijs wint hij het van vrijwel alles in dit segment. Bekijk de actuele prijs van de <a href="/product/beko-b300-bm3wfu38412cw---wasmachine---voorlader---8690842708138">Beko BM3WFU38412CW</a>.</p>
+
+<h2>3. Hisense WF3S9043BW3 — 9 kg onder de €400</h2>
+<p>Voor gezinnen die dekbedden, dekens en volle wasmanden in één beurt willen draaien: de grote broer van onze nummer 1, met <strong>9 kg trommelinhoud en hetzelfde zuinige energielabel A-30%</strong>, voor rond de €380. In onze <a href="/gidsen/wasmachine-8-of-9-kg">gids over vulgewicht</a> lees je wanneer die extra kilo echt het verschil maakt. Bekijk de actuele prijs van de <a href="/product/hisense-3s-serie-wf3s9043bw3-blx---wasmachine-met--6901101830197">Hisense WF3S9043BW3</a>.</p>
+
+<h2>4. LG F4x1008nwh — het A-merk onder de €400</h2>
+<p>Hecht je aan een gevestigd A-merk, dan is deze LG het toegankelijkste instapmodel: <strong>8 kg, 1400 toeren en een relatief stille centrifugegang van 75 dB</strong>, voor rond de €390. Bekijk de actuele prijs van de <a href="/product/lg-f4x1008nwh---wasmachine-voorlader-8-kg-1400-rpm-8806096118948">LG F4x1008nwh</a>.</p>
+
+<h2>5. OK. OWM 6146 D — de budgetkoop</h2>
+<p>Voor een studentenkamer, vakantiewoning of 1-2-persoonshuishouden met weinig was: rond de <strong>€240</strong> en daarmee de goedkoopste echte wasmachine die we volgen. Wees eerlijk over de compromissen: 6 kg trommel, 1000 toeren (was komt natter uit de machine) en energielabel D — bij dagelijks draaien haalt een zuinigere machine dat prijsverschil op termijn in. Bekijk de actuele prijs van de <a href="/product/ok.-owm-6146-d-wasmachine-(6-kg-1000-rpm-d)-4049011190580">OK. OWM 6146 D</a>.</p>
+
+<h2>Zo kies je uit deze vijf</h2>
+<ul>
+    <li><strong>Gewoon de beste deal:</strong> de Hisense 8 kg — zuinig, compleet en scherp geprijsd.</li>
+    <li><strong>Vertrouwd merk, kleinste budget:</strong> de Beko, rond de €330.</li>
+    <li><strong>Gezin met veel (groot) wasgoed:</strong> de Hisense 9 kg.</li>
+    <li><strong>A-merk-gevoel:</strong> de LG.</li>
+    <li><strong>Zo goedkoop mogelijk, weinig was:</strong> de OK., met open ogen voor het D-label.</li>
+</ul>
+<p><strong>Let op: prijzen veranderen dagelijks.</strong> De kaarten hierboven tonen live de laagste prijs per apparaat; in de <a href="/category/wasmachines">categorie wasmachines</a> kun je zelf verder filteren op prijs, merk en energielabel, of doe de <a href="/category/wasmachines/keuzehulp">keuzehulp</a> (3 korte vragen).</p>
+
+<h2>Zo kiezen wij de beste wasmachines onder de €500</h2>
+<p>Onze vergelijker volgt dagelijks honderden wasmachines bij zes grote Nederlandse webshops, inclusief het prijsverloop per apparaat. Voor deze gids keken we naar alle modellen die op moment van schrijven onder de €500 leverbaar zijn en wogen we energielabel, trommelinhoud, toerental en prijs. <strong>Geen enkele winkel betaalt voor een positie in onze lijsten</strong>; de goedkoopste leverbare aanbieding staat altijd bovenaan — lees meer <a href="/over-ons">over onze werkwijze</a>. Verandert het aanbod structureel, dan herzien we deze lijst.</p>
+
+<h2>Veelgestelde vragen</h2>
+<h3>Wat is de beste wasmachine onder de €500?</h3>
+<p>De Hisense WF3S8043BW3 is volgens ons de beste koop: 8 kg, 1400 toeren en energielabel A-30% voor rond de €350, leverbaar bij meerdere winkels.</p>
+<h3>Is een goedkope wasmachine ook zuinig?</h3>
+<p>Dat kan prima: drie van de vijf machines in deze lijst hebben energielabel A of beter (A-30%). Alleen in het echte budgetsegment (rond de €250) lever je in op het energielabel — dat loont alleen als je weinig draait.</p>
+<h3>Hoeveel kilo trommelinhoud heb ik nodig?</h3>
+<p>Vuistregel: 7-8 kg voor 1-3 personen, 8-9 kg voor een gezin. In onze <a href="/gidsen/wasmachine-8-of-9-kg">gids over vulgewicht</a> rekenen we het precies voor.</p>
+<h3>Waar moet ik op letten bij een wasmachine onder de €500?</h3>
+<p>Drie dingen: het energielabel (bepaalt je stroomkosten voor jaren), het toerental (1400 toeren centrifugeert de was droger, scheelt droogtijd) en de trommelinhoud. Onze <a href="/gidsen/wasmachine-kopen-waar-op-letten">complete wasmachine-koopgids</a> loopt alle specificaties langs.</p>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Wat is de beste wasmachine onder de €500?","acceptedAnswer":{"@type":"Answer","text":"De Hisense WF3S8043BW3 is volgens ons de beste koop: 8 kg, 1400 toeren en energielabel A-30% voor rond de €350, leverbaar bij meerdere winkels."}},
+{"@type":"Question","name":"Is een goedkope wasmachine ook zuinig?","acceptedAnswer":{"@type":"Answer","text":"Dat kan prima: drie van de vijf machines in deze lijst hebben energielabel A of beter (A-30%). Alleen in het echte budgetsegment (rond de €250) lever je in op het energielabel."}},
+{"@type":"Question","name":"Hoeveel kilo trommelinhoud heb ik nodig?","acceptedAnswer":{"@type":"Answer","text":"Vuistregel: 7-8 kg voor 1-3 personen, 8-9 kg voor een gezin."}},
+{"@type":"Question","name":"Waar moet ik op letten bij een wasmachine onder de €500?","acceptedAnswer":{"@type":"Answer","text":"Het energielabel (stroomkosten), het toerental (1400 toeren centrifugeert droger) en de trommelinhoud passend bij je huishouden."}}]}
+</script>
+""",
+    },
+    {
         'slug': 'beste-koelkast-2026',
         'title': 'De 5 beste koelkasten van 2026',
         'excerpt': 'Vijf winnaars voor elk huishouden — van compact tafelmodel tot Amerikaanse blikvanger — mét wat elke koelkast per jaar aan stroom kost. Met video.',

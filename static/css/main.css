@@ -392,6 +392,61 @@ body {
     white-space: nowrap;
 }
 
+/* --- Winkelbalk (trust bar) op de homepage: grijs en niet klikbaar --- */
+.stores-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px 4px;
+}
+
+.stores-bar-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.stores-bar-logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 22px;
+}
+
+.stores-bar-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray);
+}
+
+.stores-bar-item img {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    filter: grayscale(1) opacity(0.7);
+    transition: filter 0.2s;
+}
+
+.stores-bar-item:hover img {
+    filter: none;
+}
+
+/* Winkellogo in de aanbiedingsrij op de productpagina (kleur: daar wil
+   je juist herkenning) */
+.offer-retailer-logo {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    vertical-align: -4px;
+    margin-right: 8px;
+}
+
 .hero-content h1 {
     font-size: 48px;
     font-weight: 700;

@@ -42,6 +42,23 @@
         <span class="usp-item">&#10003; {{ t('home.usp3') }}</span>
     </div>
 
+    {# Winkelbalk (trust bar): welke winkels we vergelijken. Bewust niet
+       klikbaar naar de winkels (kale homepage-klik = geen commissiecontext
+       en weggelekte bezoeker); grijstinten via CSS zodat de balk niet
+       schreeuwt naast de eigen knoppen. #}
+    <div class="stores-bar">
+        <span class="stores-bar-title">{{ t('home.stores_title') }}</span>
+        <div class="stores-bar-logos">
+            {% for code, naam in [('bol', 'Bol.com'), ('coolblue', 'Coolblue'),
+                                  ('mediamarkt', 'MediaMarkt'), ('expert', 'Expert'),
+                                  ('alternate', 'Alternate'), ('ep', 'EP')] %}
+            <span class="stores-bar-item"><img
+                src="{{ url_for('static', filename='img/winkels/' + code + '.png') }}"
+                alt="{{ naam }}" width="20" height="20" loading="lazy">{{ naam }}</span>
+            {% endfor %}
+        </div>
+    </div>
+
     <!-- Categories Carousel -->
     <section class="categories-section">
         <h2>{{ t('home.categories_title') }}</h2>

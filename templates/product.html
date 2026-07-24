@@ -76,7 +76,10 @@
                 <ul class="offers-list">
                     {% for offer in offers %}
                     <li class="offer-row{% if loop.first and offers|length > 1 %} offer-row-best{% endif %}">
-                        <span class="offer-retailer">{{ offer.retailer_name }}</span>
+                        <span class="offer-retailer"><img class="offer-retailer-logo"
+                            src="{{ url_for('static', filename='img/winkels/' + offer.retailer + '.png') }}"
+                            alt="" width="20" height="20" loading="lazy"
+                            onerror="this.style.display='none'">{{ offer.retailer_name }}</span>
                         <span class="offer-price">
                             € {{ offer.price|euro }}
                             {% if offer.strikethrough_price %}

@@ -187,6 +187,19 @@
             {% endif %}
         </div>
     </div>
+
+    {% if faq %}
+    <section class="category-faq">
+        <h2>Veelgestelde vragen over {{ category.name|lower }}</h2>
+        {% for item in faq %}
+        <details class="category-faq-item"{% if loop.first %} open{% endif %}>
+            <summary>{{ item.vraag }}</summary>
+            <p>{{ item.antwoord }}</p>
+        </details>
+        {% endfor %}
+    </section>
+    <script type="application/ld+json">{{ faq_jsonld | tojson }}</script>
+    {% endif %}
 </div>
 
 <script>

@@ -110,6 +110,70 @@ def _category_structured_data(category, page_products, extra_crumb=None, list_na
     return [item_list, breadcrumbs]
 
 
+def _category_faq(category, brand_facet, spec_facets):
+    """Veelgestelde vragen voor de categoriepagina, uit LIVE aanbodsdata.
+
+    Bewust geen verzonnen redactietekst: elke prijs, merkenteller en
+    energielabel komt uit het actuele aanbod en ademt dus mee met de
+    syncs. Alleen op de hoofd-categoriepagina (niet op facetpagina's,
+    anders staat dezelfde FAQ op tientallen URL's). Minder dan 5
+    leverbare producten -> geen FAQ (te dun om iets te beweren).
+    """
+    from models import db
+    naam = category.name.lower()
+    prijzen = sorted(r[0] for r in db.session.query(Product.price)
+                     .filter(Product.category_id == category.id,
+                             Product.is_available == True,
+                             Product.price.isnot(None),
+                             Product.price > 0).all())
+    if len(prijzen) < 5:
+        return []
+
+    def euro(bedrag):
+        return ('€ ' + f"{bedrag:,.0f}").replace(',', '.')
+
+    p25 = prijzen[len(prijzen) // 4]
+    p75 = prijzen[(len(prijzen) * 3) // 4]
+    faq = [{
+        'vraag': f"Wat kosten {naam} op dit moment?",
+        'antwoord': (f"De {len(prijzen)} leverbare {naam} in onze vergelijker lopen "
+                     f"van {euro(prijzen[0])} tot {euro(prijzen[-1])}; de middenmoot zit "
+                     f"tussen {euro(p25)} en {euro(p75)}. Per apparaat tonen we altijd "
+                     "de laagste actuele prijs, inclusief het prijsverloop over tijd."),
+    }]
+    if brand_facet:
+        top = ", ".join(f"{b['value']} ({b['count']})" for b in brand_facet[:5])
+        faq.append({
+            'vraag': f"Welke merken {naam} kun je hier vergelijken?",
+            'antwoord': (f"Momenteel vergelijken we {len(brand_facet)} merken, "
+                         f"waaronder {top}. Via de filters of de merkenpagina's "
+                         "bekijk je het aanbod per merk."),
+        })
+    energie = next((f for f in spec_facets
+                    if 'energielabel' in f['key'].lower()), None)
+    if energie and energie['options']:
+        letters = sorted({o['value'].strip()[:1].upper()
+                          for o in energie['options'] if o['value'].strip()})
+        beste = letters[0]
+        aantal = sum(o['count'] for o in energie['options']
+                     if o['value'].strip().upper().startswith(beste))
+        faq.append({
+            'vraag': f"Wat is het zuinigste energielabel bij {naam} dat nu te koop is?",
+            'antwoord': (f"Energielabel {beste} — daarvan telt onze vergelijker op dit "
+                         f"moment {aantal} {naam}. Een zuiniger label betekent lagere "
+                         "stroomkosten; waar de gegevens beschikbaar zijn rekenen we de "
+                         "geschatte energiekosten per jaar voor je uit."),
+        })
+    faq.append({
+        'vraag': "Hoe actueel zijn deze prijzen?",
+        'antwoord': ("We verversen de prijzen van Bol, Coolblue, MediaMarkt, Expert, "
+                     "Alternate en EP meerdere keren per dag, volledig automatisch via "
+                     "hun officiële productfeeds. De goedkoopste leverbare aanbieding "
+                     "staat altijd bovenaan; winkels kunnen hun positie niet kopen."),
+    })
+    return faq
+
+
 @main_bp.route('/api/sync-status')
 def sync_status():
     """Diagnose-overzicht van de syncs (alleen-lezen, geen gevoelige data).
@@ -310,6 +374,21 @@ def category(slug):
     from wizard import WIZARD_QUESTIONS
     has_wizard = slug in WIZARD_QUESTIONS
 
+    # Data-gedreven FAQ + FAQPage-schema (SEO-audit punt 6); alleen hier,
+    # niet op de facetpagina's (die renderen via _render_facet_page).
+    faq = _category_faq(category, brand_facet, spec_facets)
+    faq_jsonld = None
+    if faq:
+        faq_jsonld = {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            'mainEntity': [{
+                '@type': 'Question',
+                'name': item['vraag'],
+                'acceptedAnswer': {'@type': 'Answer', 'text': item['antwoord']},
+            } for item in faq],
+        }
+
     # Subcategorie-facetlinks (voorlader/bovenlader, warmtepomp/condens):
     # los opgehaald, want deze specs zitten niet altijd in de (top-6)
     # spec_facets-cache hierboven. Alleen voor de 2 categorieën met schone
@@ -340,6 +419,8 @@ def category(slug):
         has_wizard=has_wizard,
         subtype_options=subtype_options,
         pros_cons_by_ean=_pros_cons_by_ean(),
+        faq=faq,
+        faq_jsonld=faq_jsonld,
     )
 
 

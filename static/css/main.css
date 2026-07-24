@@ -224,6 +224,37 @@ body {
     color: var(--primary);
 }
 
+/* --- Data-gedreven FAQ op de categoriepagina --- */
+.category-faq {
+    margin: 40px 0 24px;
+    max-width: 820px;
+}
+
+.category-faq h2 {
+    font-size: 22px;
+    margin-bottom: 16px;
+}
+
+.category-faq-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--light);
+    margin-bottom: 10px;
+    padding: 0 16px;
+}
+
+.category-faq-item summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 14px 0;
+}
+
+.category-faq-item p {
+    padding: 0 0 14px;
+    color: var(--gray);
+    line-height: 1.6;
+}
+
 /* ============================================
    HERO SECTION
    ============================================ */

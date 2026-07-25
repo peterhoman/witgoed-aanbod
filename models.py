@@ -94,10 +94,23 @@ class Product(db.Model):
 
     @property
     def available_offers(self):
-        """Leverbare aanbiedingen, goedkoopste eerst; bij gelijke prijs op
-        winkelnaam zodat geen enkele winkel structureel wordt voorgetrokken."""
-        return sorted((o for o in self.offers if o.is_available),
-                      key=lambda o: (o.price, o.retailer or ''))
+        """Leverbare aanbiedingen, goedkoopste eerst.
+
+        Bij een gelijke prijs -- wat vaker voorkomt dan je zou denken, want
+        winkels volgen elkaars adviesprijs -- besliste voorheen het alfabet
+        wie bovenaan kwam. Dat is niet uit te leggen aan de winkel die
+        tweede staat tegen dezelfde prijs. Nu bepalen de bezorgkosten de
+        volgorde: bij een gelijke prijs is de goedkoopste bezorging
+        objectief het betere aanbod. Levert een winkel geen bezorgkosten in
+        de feed, dan telt dat als nul, zodat een ontbrekend veld niemand
+        benadeelt. Blijft het gelijk, dan alsnog op naam.
+        """
+        return sorted(
+            (o for o in self.offers if o.is_available),
+            key=lambda o: (o.price,
+                           o.delivery_cost if o.delivery_cost is not None else 0,
+                           o.retailer or ''),
+        )
 
     @property
     def best_offer(self):

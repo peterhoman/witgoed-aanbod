@@ -101,9 +101,16 @@
                             Prijs bij 1 winkel
                             {%- endif -%}
                         </span>
+                        {% set gelijk = offers|selectattr('price', 'equalto', laagste.price)|list|length if laagste else 0 %}
                         <span class="offers-price-row">
                             <span class="offers-price">&euro; {{ product.lowest_price|euro }}</span>
-                            {% if laagste %}<span class="offers-price-shop">bij {{ laagste.retailer_name }}</span>{% endif %}
+                            {# Delen meerdere winkels de laagste prijs, dan hier
+                               geen naam: er is er niet één de goedkoopste. #}
+                            {% if gelijk > 1 %}
+                            <span class="offers-price-shop">bij {{ gelijk }} winkels</span>
+                            {% elif laagste %}
+                            <span class="offers-price-shop">bij {{ laagste.retailer_name }}</span>
+                            {% endif %}
                         </span>
                     </div>
                     {% if hoogste and hoogste.price > laagste.price %}
@@ -132,7 +139,7 @@
                 {% elif offers %}
                 <ul class="offers-list">
                     {% for offer in offers %}
-                    <li class="offer-row{% if loop.first and offers|length > 1 %} offer-row-best{% endif %}">
+                    <li class="offer-row{% if offers|length > 1 and offer.price == laagste.price %} offer-row-best{% endif %}">
                         <img class="offer-retailer-logo"
                              src="{{ url_for('static', filename='img/winkels/' + offer.retailer + '.png') }}"
                              alt="{{ offer.retailer_name }}" loading="lazy"
@@ -151,8 +158,13 @@
                         </span>
                         <span class="offer-price-col">
                             <span class="offer-price">&euro; {{ offer.price|euro }}</span>
+                            {# Bij een gelijke prijs krijgt élke winkel het label
+                               "laagste", niet alleen de bovenste. "+ € 0,00"
+                               is geen verschil, en één winkel "laagste" noemen
+                               terwijl een ander hetzelfde vraagt is niet uit
+                               te leggen aan die ander. #}
                             {% if offers|length > 1 %}
-                            {% if loop.first %}
+                            {% if offer.price == laagste.price %}
                             <span class="offer-diff offer-diff-best">laagste</span>
                             {% else %}
                             <span class="offer-diff">+ &euro; {{ (offer.price - laagste.price)|euro }}</span>

@@ -2474,7 +2474,7 @@ section h2 {
 
 .filters-sidebar {
     background: var(--light);
-    padding: 24px;
+    padding: 20px;
     border-radius: var(--radius);
     border: 1px solid var(--border);
     height: fit-content;
@@ -2497,10 +2497,13 @@ section h2 {
     cursor: pointer;
 }
 
+/* Was 20px. Dichtgeklapt kwam de zijbalk op 732px uit, twaalf pixels boven
+   een viewport van 720px -- net te lang om op een kleine laptop in beeld te
+   passen. Deze marge plus de padding hierboven scheelt precies genoeg. */
 .filters-sidebar h3 {
     font-size: 18px;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .filters-form {

@@ -58,8 +58,12 @@
                 {% for label, waarde in kernspecs[:6] %}
                 {% set tekst = waarde|string|trim %}
                 {% set kaal = tekst|replace(',', '')|replace('.', '')|replace(' ', '') %}
+                {# Ook ja/nee-waarden overslaan: een badge met alleen "Ja"
+                   zegt niets zonder het label erbij, en die stonden er bij
+                   koffiemachines twee keer naast elkaar. #}
                 {% if 'energielabel' not in label|lower and tekst|length <= 18
-                      and not kaal.isdigit() %}
+                      and not kaal.isdigit()
+                      and tekst|lower not in ['ja', 'nee', 'yes', 'no', 'n.v.t.', 'nvt'] %}
                 <span class="badge-spec">{{ tekst }}</span>
                 {% endif %}
                 {% endfor %}

@@ -3794,3 +3794,54 @@ details[open].filter-group summary::after {
         margin-top: 6px;
     }
 }
+
+
+/* --- Laatste reviewpunten fase 3 --- */
+
+/* Metaregel echt neutraal grijs. De vorige waarde (#5d626e) is
+   technisch blauwgrijs, maar oogde in reviews groenig; groen is in dit
+   ontwerp voorbehouden aan besparing. */
+.category-header p.category-meta,
+.category-header p {
+    color: #6f7276;
+}
+
+/* "Koopgidsen" was een tweede oranje knop naast de oranje zoekknop.
+   Oranje betekent op de kaarten "hier koop je"; in de header verwatert
+   dat. Nu een blauwe tekstlink met accent. */
+.header .nav-secondary .nav-cta {
+    background: none;
+    color: var(--primary);
+    font-weight: 700;
+    padding: 0;
+    border-radius: 0;
+}
+
+.header .nav-secondary .nav-cta:hover {
+    background: none;
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* Categoriebalk: tweede regel links uitlijnen i.p.v. gecentreerd */
+@media (min-width: 900px) {
+    .nav-categories {
+        justify-content: flex-start;
+    }
+}
+
+/* Babbelbot vrij van het productgrid */
+#babbelbot-knop {
+    bottom: 28px !important;
+    right: 28px !important;
+}
+
+/* Ruimte vrijhouden voor de chat-widget: tussen 769 en 1400px is de
+   marge naast de container te smal, waardoor de knop op het productgrid
+   viel. Boven 1400px ontstaat die ruimte vanzelf. */
+@media (min-width: 769px) and (max-width: 1400px) {
+    .category-products,
+    .search-results {
+        padding-right: 52px;
+    }
+}

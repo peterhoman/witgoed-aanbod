@@ -63,6 +63,11 @@ TRANSLATIONS = {
         # Filters
         'filters.title': 'Filters',
         'filters.close': 'Filter sluiten',
+        'filters.clear': 'Wissen',
+        'filters.price': 'Prijs',
+        'filters.active': 'Actief:',
+        'filters.show_count': '{count} resultaten tonen',
+        'offer.spread': 'verschil',
         'filters.min_price': 'Min. prijs',
         'filters.max_price': 'Max. prijs',
         'filters.brand': 'Merk',
@@ -232,6 +237,11 @@ TRANSLATIONS = {
 
         'filters.title': 'Filters',
         'filters.close': 'Close filters',
+        'filters.clear': 'Clear',
+        'filters.price': 'Price',
+        'filters.active': 'Active:',
+        'filters.show_count': 'Show {count} results',
+        'offer.spread': 'difference',
         'filters.min_price': 'Min. price',
         'filters.max_price': 'Max. price',
         'filters.brand': 'Brand',

@@ -117,6 +117,51 @@ class Product(db.Model):
         """Aantal winkels met een leverbare aanbieding voor dit apparaat."""
         return len(self.available_offers)
 
+    @property
+    def offer_retailers(self):
+        """Winkelcodes met een leverbare aanbieding — voor de
+        winkeldekking-streepjes op de productkaart (redesign fase 1)."""
+        return [o.retailer for o in self.available_offers]
+
+    @property
+    def price_spread(self):
+        """Prijsverschil tussen de duurste en goedkoopste leverbare
+        aanbieding. None bij minder dan 2 winkels of een verschil onder
+        de euro — dan is "€ 0 verschil" alleen maar ruis op de kaart."""
+        offers = self.available_offers
+        if len(offers) < 2:
+            return None
+        verschil = max(o.price for o in offers) - min(o.price for o in offers)
+        return verschil if verschil >= 1 else None
+
+    @property
+    def energielabel(self):
+        """Energielabel-letter (A-G) uit de specs, of None. Voor de groene
+        badge op de productkaart."""
+        for key, waarde in (self.specs or {}).items():
+            if 'energielabel' in key.lower():
+                letter = str(waarde or '').strip()[:1].upper()
+                if letter in 'ABCDEFG':
+                    return letter
+        return None
+
+    @property
+    def capaciteit_badge(self):
+        """Korte capaciteitsaanduiding voor op de kaart ('8 kg',
+        '300 liter', '14 couverts'), of None. Alleen sleutels met schone
+        data (zelfde selectie als de keuzehulp)."""
+        specs = self.specs or {}
+        for key, suffix in (('Laadvermogen wasmachine', ''),
+                            ('Laadvermogen wasdroger', ''),
+                            ('Volume in liters', ' liter'),
+                            ('Aantal couverts', ' couverts')):
+            waarde = str(specs.get(key) or '').strip()
+            if waarde:
+                if suffix and suffix.strip() not in waarde.lower():
+                    waarde += suffix
+                return waarde[:16]
+        return None
+
     def refresh_pricing(self):
         """Zet price/strikethrough_price/is_available gelijk aan de beste
         aanbieding. De categorie- en zoekpagina's filteren en sorteren op de

@@ -2714,3 +2714,477 @@ section h2 {
         font-size: 24px;
     }
 }
+
+/* ============================================================
+   REDESIGN FASE 1 (design-handoff turn 4a/4b, 25-07-2026)
+   Productkaarten, filter-sidebar en mobiel filterpaneel.
+   Bewust als laatste hoofdstuk: overschrijft de oudere regels
+   hierboven zonder ze te slopen (compare- en productpagina
+   gebruiken een deel ervan nog).
+   ============================================================ */
+
+:root {
+    /* Neutralen + groen uit de design tokens; blauw en oranje blijven
+       de bestaande merkkleuren (--primary/--accent). */
+    --canvas: #f7f8fa;
+    --kaart: #fdfdfe;
+    --lijn: #e2e5ea;
+    --lijn-licht: #eef0f4;
+    --vlak: #f0f2f6;
+    --blauw-licht: #e8f2fd;
+    --ink-2: #5d626e;
+    --ink-3: #7b8090;
+    --groen: #218358;
+}
+
+body {
+    background: var(--canvas);
+}
+
+/* --- Productkaart --- */
+.product-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--kaart);
+    border: 1px solid var(--lijn);
+    border-radius: 12px;
+    box-shadow: none;
+    overflow: hidden;
+    transition: border-color 120ms ease;
+}
+
+.product-card:hover {
+    border-color: #8fb4e0;
+    box-shadow: none;
+    transform: none;
+}
+
+.product-card .product-image {
+    height: 168px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-bottom: 1px solid var(--lijn-licht);
+}
+
+.product-card .product-image img {
+    max-height: 150px;
+    max-width: 88%;
+    object-fit: contain;
+}
+
+.product-card .product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px;
+    flex: 1;
+}
+
+.product-card .brand {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-3);
+    margin: 0;
+}
+
+.product-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.32;
+    min-height: 37px;
+    margin: 0;
+}
+
+.product-card h3 a {
+    color: var(--dark);
+    text-decoration: none;
+}
+
+.spec-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.spec-badge {
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-variant-numeric: tabular-nums;
+}
+
+.spec-badge-energy {
+    background: var(--groen);
+    color: #fff;
+}
+
+.spec-badge-outline {
+    border: 1px solid var(--lijn);
+    color: var(--ink-2);
+}
+
+.card-bottom {
+    margin-top: auto;
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.price-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.product-card .price {
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+    color: var(--dark);
+}
+
+.product-card .price-from {
+    font-size: 10.5px;
+    font-weight: 400;
+    color: var(--ink-3);
+    margin-right: 2px;
+}
+
+.price-spread {
+    color: var(--groen);
+    font-size: 10.5px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.dekking {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.dekking-dash {
+    flex: 1;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--lijn);
+}
+
+.dekking-dash.is-actief {
+    background: var(--primary);
+}
+
+.dekking-count {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--ink-3);
+    margin-left: 5px;
+    font-variant-numeric: tabular-nums;
+}
+
+.product-card .btn-buy {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 11px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.product-card .compare-label {
+    font-size: 11.5px;
+    color: var(--ink-3);
+}
+
+/* Grid: drie kaarten per rij naast de sidebar (handoff 4a) */
+@media (min-width: 769px) {
+    .category-products .product-grid,
+    .search-results .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+}
+
+/* --- Filter-sidebar (desktop) --- */
+.filters-sidebar {
+    background: var(--kaart);
+    border: 1px solid var(--lijn);
+    border-radius: 12px;
+    padding: 0;
+}
+
+.filters-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--lijn-licht);
+}
+
+.filters-head h3 {
+    font-size: 15px;
+    margin: 0;
+}
+
+.filters-clear {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.filters-sidebar .filters-form {
+    display: block;
+    padding-bottom: 14px;
+}
+
+.filters-actief[hidden] {
+    display: none;
+}
+
+.filters-actief {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    background: var(--blauw-licht);
+    padding: 10px 16px;
+    font-size: 11.5px;
+    color: var(--ink-2);
+}
+
+.filter-chip {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+details.filter-group {
+    border-bottom: 1px solid var(--lijn-licht);
+}
+
+details.filter-group summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 16px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--dark);
+    cursor: pointer;
+    user-select: none;
+}
+
+details.filter-group summary::-webkit-details-marker {
+    display: none;
+}
+
+details.filter-group summary:hover {
+    background: var(--canvas);
+}
+
+.filter-group-naam {
+    flex: 1;
+}
+
+.filter-hint {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--ink-3);
+}
+
+details.filter-group summary::after {
+    content: "\25BE";
+    color: var(--primary);
+    font-size: 11px;
+}
+
+details[open].filter-group summary::after {
+    content: "\25B4";
+}
+
+.filter-group-body {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 0 16px 14px;
+}
+
+.filter-group-body label {
+    font-weight: 400;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: var(--primary);
+    flex-shrink: 0;
+}
+
+.checkbox-tekst {
+    flex: 1;
+}
+
+.checkbox-label:hover .checkbox-tekst {
+    color: var(--primary);
+}
+
+.checkbox-count {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+}
+
+.filters-submit {
+    display: block;
+    width: calc(100% - 32px);
+    margin: 14px 16px 0;
+    border-radius: 8px;
+}
+
+/* --- Mobiel: filterbalk, paneel-chips en productrijen --- */
+@media (max-width: 768px) {
+    .filters-toggle {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 13.5px;
+        font-weight: 700;
+    }
+
+    .filters-toggle .filters-toggle-arrow {
+        color: #fff;
+    }
+
+    .filters-sidebar {
+        border: none;
+        border-radius: 10px;
+        background: var(--vlak);
+    }
+
+    /* Opties als aantikbare chips i.p.v. checkboxrijen */
+    .filter-group-body.brand-checkboxes {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 7px;
+        max-height: none;
+        overflow: visible;
+    }
+
+    .filter-group-body .checkbox-label {
+        position: relative;
+        background: #fff;
+        border: 1px solid var(--lijn);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 12.5px;
+        gap: 6px;
+        min-height: 44px;
+        align-items: center;
+    }
+
+    .filter-group-body .checkbox-label input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .filter-group-body .checkbox-label:has(input:checked) {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+    }
+
+    .filter-group-body .checkbox-label:has(input:checked) .checkbox-count {
+        color: var(--blauw-licht);
+    }
+
+    /* Productrijen i.p.v. een grid van kaartjes */
+    .product-grid {
+        display: block;
+    }
+
+    .product-card {
+        display: grid;
+        grid-template-columns: 82px minmax(0, 1fr);
+        gap: 6px 13px;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--lijn-licht);
+        border-radius: 0;
+        padding: 14px 0;
+        overflow: visible;
+    }
+
+    .product-card:hover {
+        border-color: var(--lijn-licht);
+    }
+
+    .product-card .product-image {
+        grid-column: 1;
+        height: 96px;
+        border: 1px solid var(--lijn);
+        border-radius: 8px;
+        background: #fff;
+    }
+
+    .product-card .product-image img {
+        max-height: 84px;
+    }
+
+    .product-card .product-info {
+        grid-column: 2;
+        padding: 0;
+        gap: 6px;
+    }
+
+    .product-card .wishlist-toggle {
+        top: 18px;
+        left: 58px;
+        right: auto;
+    }
+
+    .product-card h3 {
+        font-size: 13.5px;
+        line-height: 1.3;
+        min-height: 0;
+    }
+
+    .product-card .brand {
+        font-size: 11px;
+    }
+
+    .product-card .price {
+        font-size: 20px;
+    }
+
+    .dekking-dash {
+        height: 4px;
+    }
+}

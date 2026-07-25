@@ -22,27 +22,20 @@
             data-product-title="{{ product.title }}"
             aria-label="{{ t('wishlist.toggle_aria') }}" title="{{ t('wishlist.toggle_aria') }}">&#9825;</button>
     <div class="product-info">
-        <h3><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
+        {# Redesign fase 1 (handoff turn 4a/4b): merk boven titel, specbadges,
+           prijs + prijsverschil, winkeldekking-streepjes, één oranje CTA.
+           Links, rel-attributen en data-hooks zijn identiek aan voorheen. #}
         <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
+        <h3><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
         {% if show_excerpt and product.description %}
         <p class="excerpt">{{ product.description[:100] }}...</p>
         {% endif %}
-        <div class="product-meta">
-            <span class="price">
-                {% if product.retailer_count > 1 %}<small class="price-from">{{ t('offer.from') }}</small> {% endif %}€ {{ product.lowest_price|euro }}
-            </span>
-            {% if best and best.strikethrough_price %}
-            <span class="price-old">€ {{ best.strikethrough_price|euro }}</span>
-            <span class="discount-badge">-{{ ((1 - best.price / best.strikethrough_price) * 100)|round|int }}%</span>
-            {% endif %}
-            {% if product.retailer_count > 1 %}
-            <span class="shops-count">{{ t('offer.at_shops', count=product.retailer_count) }}</span>
-            {% elif product.is_available %}
-            <span class="availability available">{{ t('product.in_stock') }}</span>
-            {% else %}
-            <span class="availability unavailable">{{ t('product.out_of_stock') }}</span>
-            {% endif %}
+        {% if product.energielabel or product.capaciteit_badge %}
+        <div class="spec-badges">
+            {% if product.energielabel %}<span class="spec-badge spec-badge-energy">{{ product.energielabel }}</span>{% endif %}
+            {% if product.capaciteit_badge %}<span class="spec-badge spec-badge-outline">{{ product.capaciteit_badge }}</span>{% endif %}
         </div>
+        {% endif %}
         {% if pc %}
         {# Redactionele pros/cons, hergebruikt uit een van de videogidsen
            (guide_cards.collect_pros_cons_by_ean) — alleen zichtbaar voor
@@ -56,16 +49,39 @@
         {% if product.is_example %}
         <span class="badge-example badge-example-block">{{ t('product.example_badge') }}</span>
         {% endif %}
-        <label class="compare-label">
-            <input type="checkbox" class="compare-checkbox" data-product-id="{{ product.id }}" data-product-title="{{ product.title }}">
-            {{ t('product.compare_label') }}
-        </label>
-        {% if product.retailer_count > 1 %}
-        <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('offer.compare_cta') }}</a>
-        <span class="btn-buy-trust">&#10003; {{ t('offer.at_shops', count=product.retailer_count) }}</span>
-        {% else %}
-        <a href="{{ best.link if best else (product.affiliate_url or product.bol_url) }}" target="_blank" rel="nofollow sponsored" class="btn-buy">{{ t('product.view_offer') }}</a>
-        {% endif %}
+        <div class="card-bottom">
+            <div class="price-row">
+                <span class="price">
+                    {% if product.retailer_count > 1 %}<small class="price-from">{{ t('offer.from') }}</small> {% endif %}€ {{ product.lowest_price|euro }}
+                </span>
+                {% if best and best.strikethrough_price %}
+                <span class="price-old">€ {{ best.strikethrough_price|euro }}</span>
+                <span class="discount-badge">-{{ ((1 - best.price / best.strikethrough_price) * 100)|round|int }}%</span>
+                {% elif product.price_spread %}
+                <span class="price-spread">€ {{ product.price_spread|round|int }} {{ t('offer.spread') }}</span>
+                {% endif %}
+            </div>
+            {% if product.is_available %}
+            {% set dekking = product.offer_retailers %}
+            <div class="dekking" title="{{ t('offer.at_shops', count=product.retailer_count) }}">
+                {% for winkel in ['bol', 'coolblue', 'mediamarkt', 'expert', 'alternate', 'ep'] %}
+                <span class="dekking-dash{% if winkel in dekking %} is-actief{% endif %}"></span>
+                {% endfor %}
+                <span class="dekking-count">{{ product.retailer_count }}/6</span>
+            </div>
+            {% else %}
+            <span class="availability unavailable">{{ t('product.out_of_stock') }}</span>
+            {% endif %}
+            {% if product.retailer_count > 1 %}
+            <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('offer.compare_cta') }}</a>
+            {% else %}
+            <a href="{{ best.link if best else (product.affiliate_url or product.bol_url) }}" target="_blank" rel="nofollow sponsored" class="btn-buy">{{ t('product.view_offer') }}</a>
+            {% endif %}
+            <label class="compare-label">
+                <input type="checkbox" class="compare-checkbox" data-product-id="{{ product.id }}" data-product-title="{{ product.title }}">
+                {{ t('product.compare_label') }}
+            </label>
+        </div>
     </div>
 </article>
 {% endmacro %}

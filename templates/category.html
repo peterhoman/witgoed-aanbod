@@ -97,51 +97,77 @@
             <span class="filters-toggle-arrow" aria-hidden="true">▾</span>
         </button>
         <aside class="filters-sidebar" id="filters-sidebar">
-            <h3>{{ t('filters.title') }}</h3>
+            {# Redesign fase 1: kaart-styling, inklapbare groepen (Prijs en
+               Merk open, specs dicht), actieve-filterchips en een teller op
+               de knop. Het formulier eronder is ongewijzigd: zelfde action,
+               zelfde name-attributen, zelfde URL-parameters. #}
+            <div class="filters-head">
+                <h3>{{ t('filters.title') }}</h3>
+                {% if actieve_filters %}<a href="{{ request.path }}" class="filters-clear">{{ t('filters.clear') }}</a>{% endif %}
+            </div>
 
             <form method="get" action="" class="filters-form">
-                <!-- Price Range -->
-                <div class="filter-group">
-                    <label for="min_price">{{ t('filters.min_price') }}: €<span id="min-price-label">{{ min_price|int }}</span></label>
-                    <input type="range" id="min_price" name="min_price" min="0" max="10000" step="50" value="{{ min_price|int }}">
-
-                    <label for="max_price">{{ t('filters.max_price') }}: €<span id="max-price-label">{{ max_price|int }}</span></label>
-                    <input type="range" id="max_price" name="max_price" min="0" max="10000" step="50" value="{{ max_price|int }}">
+                <div class="filters-actief" id="filters-actief" hidden>
+                    <span class="filters-actief-label">{{ t('filters.active') }}</span>
+                    <span class="filters-actief-chips" id="filters-actief-chips"></span>
                 </div>
+
+                <!-- Price Range -->
+                <details class="filter-group" open>
+                    <summary>
+                        <span class="filter-group-naam">{{ t('filters.price') }}</span>
+                        <span class="filter-hint">€ {{ min_price|int }} – € {{ max_price|int }}</span>
+                    </summary>
+                    <div class="filter-group-body">
+                        <label for="min_price">{{ t('filters.min_price') }}: €<span id="min-price-label">{{ min_price|int }}</span></label>
+                        <input type="range" id="min_price" name="min_price" min="0" max="10000" step="50" value="{{ min_price|int }}">
+
+                        <label for="max_price">{{ t('filters.max_price') }}: €<span id="max-price-label">{{ max_price|int }}</span></label>
+                        <input type="range" id="max_price" name="max_price" min="0" max="10000" step="50" value="{{ max_price|int }}">
+                    </div>
+                </details>
 
                 <!-- Brand -->
                 {% if brand_facet %}
-                <div class="filter-group">
-                    <label>{{ t('filters.brand') }}</label>
-                    <div class="brand-checkboxes">
+                <details class="filter-group" open>
+                    <summary>
+                        <span class="filter-group-naam">{{ t('filters.brand') }}</span>
+                        {% if selected_brands %}<span class="filter-hint">{{ selected_brands|length }} ✓</span>{% endif %}
+                    </summary>
+                    <div class="filter-group-body brand-checkboxes">
                         {% for option in brand_facet %}
                         <label class="checkbox-label">
                             <input type="checkbox" name="brand" value="{{ option.value }}"
                                 {% if option.value in selected_brands %}checked{% endif %}>
-                            {{ option.value }} ({{ option.count }})
+                            <span class="checkbox-tekst">{{ option.value }}</span>
+                            <span class="checkbox-count">{{ option.count }}</span>
                         </label>
                         {% endfor %}
                     </div>
-                </div>
+                </details>
                 {% endif %}
 
                 <!-- Dynamic spec filters -->
                 {% for facet in spec_facets %}
-                <div class="filter-group">
-                    <label>{{ facet.key }}</label>
-                    <div class="brand-checkboxes">
+                <details class="filter-group"{% if selected_specs.get(facet.key) %} open{% endif %}>
+                    <summary>
+                        <span class="filter-group-naam">{{ facet.key }}</span>
+                        {% if selected_specs.get(facet.key) %}<span class="filter-hint">{{ selected_specs[facet.key]|length }} ✓</span>{% endif %}
+                    </summary>
+                    <div class="filter-group-body brand-checkboxes">
                         {% for option in facet.options %}
                         <label class="checkbox-label">
                             <input type="checkbox" name="spec" value="{{ facet.key }}::{{ option.value }}"
                                 {% if option.value in selected_specs.get(facet.key, []) %}checked{% endif %}>
-                            {{ option.value }} ({{ option.count }})
+                            <span class="checkbox-tekst">{{ option.value }}</span>
+                            <span class="checkbox-count">{{ option.count }}</span>
                         </label>
                         {% endfor %}
                     </div>
-                </div>
+                </details>
                 {% endfor %}
 
-                <button type="submit" class="btn-primary">{{ t('filters.apply') }}</button>
+                <button type="submit" class="btn-primary filters-submit">{{ t('filters.show_count', count=pagination.total) }}</button>
             </form>
         </aside>
 
@@ -209,6 +235,31 @@ document.getElementById('min_price').addEventListener('input', function() {
 document.getElementById('max_price').addEventListener('input', function() {
     document.getElementById('max-price-label').textContent = this.value;
 });
+
+// Actieve-filterchips (redesign fase 1): opgebouwd uit de aangevinkte
+// checkboxes; een klik op de × haalt het filter weg en past direct toe.
+(function () {
+    var balk = document.getElementById('filters-actief');
+    var houder = document.getElementById('filters-actief-chips');
+    if (!balk || !houder) return;
+    var form = balk.closest('form');
+    var checked = form.querySelectorAll('input[type="checkbox"]:checked');
+    if (!checked.length) return;
+    checked.forEach(function (input) {
+        var chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'filter-chip';
+        var tekst = input.value.indexOf('::') > -1 ? input.value.split('::')[1] : input.value;
+        chip.innerHTML = tekst + ' <span aria-hidden="true">×</span>';
+        chip.setAttribute('aria-label', tekst + ' verwijderen');
+        chip.addEventListener('click', function () {
+            input.checked = false;
+            form.submit();
+        });
+        houder.appendChild(chip);
+    });
+    balk.hidden = false;
+})();
 
 var filtersToggle = document.getElementById('filters-toggle');
 if (filtersToggle) {

@@ -2616,16 +2616,6 @@ section h2 {
     white-space: nowrap;
 }
 
-/* Vertrouwenssignaal vlak bij de koopknop zelf, niet alleen boven in de
-   kaart — zichtbaar op het moment dat iemand op het punt staat te klikken. */
-.btn-buy-trust {
-    display: block;
-    text-align: center;
-    font-size: 11px;
-    color: var(--gray);
-    margin-top: 6px;
-}
-
 @media (max-width: 480px) {
     .offer-btn {
         width: 100%;

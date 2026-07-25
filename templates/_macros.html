@@ -67,9 +67,11 @@
            nu juist de informatie die deze site onderscheidt: specificaties,
            stroomkosten, prijsverloop. De stap naar de winkel gebeurt daar,
            met een knop die zegt waar je heen gaat. #}
+        {# Geen tweede winkelteller onder de knop: hetzelfde "bij 4 winkels"
+           stond al als blauw blokje bij de prijs. Twee keer hetzelfde zeggen
+           maakt het niet overtuigender, alleen drukker. #}
         {% if product.retailer_count > 1 %}
         <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('offer.compare_cta') }}</a>
-        <span class="btn-buy-trust">&#10003; {{ t('offer.at_shops', count=product.retailer_count) }}</span>
         {% else %}
         <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('product.view_specs') }}</a>
         {% endif %}

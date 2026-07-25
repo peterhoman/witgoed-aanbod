@@ -183,6 +183,12 @@ def create_app(config_name=None):
     app.register_blueprint(alerts_bp)
     app.register_blueprint(chat_bp)
 
+    # Telt paginaweergaven per soort per dag. Geen cookies, geen IP, geen
+    # sessie -- alleen aantallen, zodat zichtbaar is of bezoekers dieper de
+    # site in komen zonder dat er toestemming voor nodig is.
+    from pageviews import registreer as registreer_paginateller
+    registreer_paginateller(app)
+
     @app.context_processor
     def inject_chat_enabled():
         # Babbelbot-widget alleen tonen als er echt geadviseerd kan worden

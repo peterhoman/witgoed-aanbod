@@ -175,6 +175,15 @@ def _category_faq(category, brand_facet, spec_facets):
     return faq
 
 
+def _paginaweergaven():
+    """Tellingen uit pageviews.py; faalt stil als de tabel er nog niet is."""
+    try:
+        from pageviews import overzicht
+        return overzicht()
+    except Exception as e:
+        return {'nog_geen_data': str(e)[:120]}
+
+
 def _winkeldekking():
     """Per categorie en totaal: hoeveel leverbare apparaten hebben meer dan
     één leverbare aanbieding, oftewel bij hoeveel valt er iets te vergelijken.
@@ -266,6 +275,10 @@ def sync_status():
         # cookies of toestemming te meten. Berekend in SQL over de hele
         # catalogus, niet over de eerste pagina van een categorie.
         'winkeldekking': _winkeldekking(),
+        # Paginaweergaven per soort per dag (geen cookies, geen bezoekersdata).
+        # 'product_per_categorie' is het cijfer om te volgen: hoeveel
+        # productpagina's er per categoriepagina worden bekeken.
+        'paginaweergaven': _paginaweergaven(),
         'omgeving': {
             'flask_env': os.getenv('FLASK_ENV'),
             'railway_environment': os.getenv('RAILWAY_ENVIRONMENT'),

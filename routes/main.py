@@ -175,6 +175,58 @@ def _category_faq(category, brand_facet, spec_facets):
     return faq
 
 
+def _winkeldekking():
+    """Per categorie en totaal: hoeveel leverbare apparaten hebben meer dan
+    één leverbare aanbieding, oftewel bij hoeveel valt er iets te vergelijken.
+
+    In SQL en niet via Product.retailer_count, want die property laadt de
+    aanbiedingen per product; over duizenden producten zou dat het endpoint
+    onbruikbaar traag maken.
+    """
+    from models import db, Category, Offer, Product
+
+    winkels_per_product = (
+        db.session.query(Offer.product_id.label('pid'),
+                         db.func.count(Offer.id).label('n'))
+        .filter(Offer.is_available.is_(True))
+        .group_by(Offer.product_id)
+        .subquery()
+    )
+    rijen = (
+        db.session.query(
+            Category.slug,
+            db.func.count(Product.id),
+            db.func.sum(db.case((winkels_per_product.c.n > 1, 1), else_=0)),
+        )
+        .select_from(Product)
+        .join(Category, Category.id == Product.category_id)
+        .outerjoin(winkels_per_product, winkels_per_product.c.pid == Product.id)
+        .filter(Product.is_available.is_(True))
+        .group_by(Category.slug)
+        .all()
+    )
+
+    per_categorie, totaal, totaal_multi = {}, 0, 0
+    for slug, aantal, multi in sorted(rijen, key=lambda r: -(r[2] or 0) / max(r[1], 1)):
+        multi = int(multi or 0)
+        per_categorie[slug] = {
+            'producten': aantal,
+            'meerdere_winkels': multi,
+            'dekking_pct': round(100 * multi / aantal) if aantal else 0,
+        }
+        totaal += aantal
+        totaal_multi += multi
+
+    return {
+        'totaal': {
+            'producten': totaal,
+            'meerdere_winkels': totaal_multi,
+            'dekking_pct': round(100 * totaal_multi / totaal) if totaal else 0,
+        },
+        'per_categorie': per_categorie,
+    }
+
+
 @main_bp.route('/api/sync-status')
 def sync_status():
     """Diagnose-overzicht van de syncs (alleen-lezen, geen gevoelige data).
@@ -204,6 +256,12 @@ def sync_status():
     }
     import os
     return jsonify({
+        # Dekking: bij hoeveel apparaten valt er daadwerkelijk iets te
+        # vergelijken (meer dan één leverbare winkel). Dit is de enige harde
+        # maatstaf voor wat de site onderscheidt van een webshop, en zonder
+        # cookies of toestemming te meten. Berekend in SQL over de hele
+        # catalogus, niet over de eerste pagina van een categorie.
+        'winkeldekking': _winkeldekking(),
         'omgeving': {
             'flask_env': os.getenv('FLASK_ENV'),
             'railway_environment': os.getenv('RAILWAY_ENVIRONMENT'),

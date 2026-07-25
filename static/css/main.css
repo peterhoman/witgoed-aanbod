@@ -47,6 +47,18 @@
     --dark: #212529;
     --border: #E0E0E0;
     --radius: 8px;
+
+    /* Neutralen uit de designspec. Blauw en oranje blijven de bestaande
+       merkkleuren (--primary/--accent): de spec schrijft voor die te
+       hergebruiken en alleen de ontbrekende neutralen toe te voegen. */
+    --tekst-secundair: #5d626e;
+    --tekst-tertiair: #7b8090;
+    --kaart: #fdfdfe;
+    --vlak: #f7f8fa;
+    --blauw-licht: #e8f2fd;
+    --groen: #218358;
+    --lijn: #e2e5ea;
+    --lijn-licht: #eef0f4;
 }
 
 * {
@@ -990,37 +1002,56 @@ body {
 
 /* --- Prijsalert (productpagina + resultaatpagina's) --- */
 .price-alert-section {
-    background: var(--secondary-light);
-    border: 1px solid var(--secondary);
-    border-radius: var(--radius);
-    padding: 20px 24px;
+    background: var(--blauw-licht);
+    border: 1px solid #a8cbf0;
+    border-radius: 12px;
+    padding: 18px 20px;
     margin-bottom: 24px;
 }
 
 .price-alert-section h2 {
-    font-size: 18px;
+    font-size: 16px;
+    font-weight: 700;
     margin-bottom: 6px;
 }
 
 .price-alert-intro {
-    font-size: 14px;
-    color: var(--gray);
+    font-size: 13px;
+    color: var(--tekst-secundair);
     margin-bottom: 14px;
 }
 
+/* E-mailveld en knop als één witte pil: het veld heeft geen eigen rand, de
+   pil eromheen vormt de omlijsting. Zo leest het als één handeling. */
 .price-alert-form {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    background: #fff;
+    border: 1px solid var(--lijn);
+    border-radius: 999px;
+    padding: 4px;
 }
 
 .price-alert-form input[type="email"] {
     flex: 1;
-    min-width: 220px;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    font-size: 15px;
+    min-width: 0;
+    padding: 8px 14px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.price-alert-form input[type="email"]:focus {
+    outline: none;
+}
+
+.price-alert-form .btn-primary {
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-size: 13.5px;
+    white-space: nowrap;
 }
 
 .price-alert-privacy {
@@ -1592,11 +1623,14 @@ section h2 {
     display: block;
 }
 
+/* Niet clampen: op de detailpagina hoort de volledige titel te staan. */
 .product-details h1 {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 29px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.14;
     margin-bottom: 6px;
-    line-height: 1.3;
+    text-wrap: pretty;
 }
 
 .product-details .brand {
@@ -1605,72 +1639,131 @@ section h2 {
     margin-bottom: 10px;
 }
 
-.price-section {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 16px 0 24px;
-}
-
-.price-large {
-    font-size: 30px;
-    font-weight: 700;
-    color: var(--dark);
-}
-
-.description-section,
-.specs-section {
+.description-section {
     margin-bottom: 28px;
 }
 
-.description-section h2,
-.specs-section h2 {
-    font-size: 18px;
-    font-weight: 600;
+.description-section h2 {
+    font-size: 17px;
+    font-weight: 700;
     margin-bottom: 10px;
 }
 
-.specs-section dl {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 4px 24px;
-    border-top: 1px solid var(--border);
-    padding-top: 12px;
+.description-section p {
+    color: var(--tekst-secundair);
+    line-height: 1.62;
+    text-wrap: pretty;
 }
 
-.specs-section dt {
-    font-size: 13px;
-    color: var(--gray);
-    grid-column: 1;
+/* Vier regels zichtbaar; de rest staat er wel, maar afgekapt. Alleen
+   visueel: de volledige tekst blijft in de DOM voor indexering. */
+.description-tekst {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.specs-section dd {
-    font-size: 14px;
-    font-weight: 500;
-    margin: 0 0 10px;
-    grid-column: 1;
-}
-
-.cta-section {
-    margin-top: 24px;
-}
-
-.affiliate-disclosure {
+.description-tekst.description-open {
     display: block;
-    margin-top: 10px;
-    color: var(--gray);
-    line-height: 1.5;
+    overflow: visible;
 }
 
-/* Bovenaan de aanbiedingen (vóór de koopknoppen), iets leesbaarder dan de
-   voorheen weggestopte <small>-variant: transparantie werkt vertrouwenwekkend
-   juist als ze zichtbaar is vóórdat je klikt, niet pas erna. */
-.affiliate-disclosure-top {
+.description-meer {
+    margin-top: 8px;
+    padding: 0;
+    background: none;
+    border: none;
+    font-family: inherit;
     font-size: 13px;
-    margin: 10px 0 14px;
-    padding: 8px 12px;
-    background: var(--light);
-    border-radius: var(--radius);
+    font-weight: 700;
+    color: var(--primary);
+    cursor: pointer;
+}
+
+.description-meer:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   SPECIFICATIES (design 5a)
+   ============================================
+   De feeds leveren tot 77 velden in winkelvolgorde. Bovenaan staan de acht
+   velden die per categorie zijn gekozen (zie product_specs.py); de rest
+   staat gegroepeerd achter de knop, met het echte aantal erin. Alles blijft
+   in de DOM zodat er geen indexeerbare inhoud verdwijnt. */
+
+.specs-card {
+    background: var(--kaart);
+    border: 1px solid var(--lijn);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin: 28px 0;
+}
+
+.specs-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.specs-head h2 {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.specs-toggle {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--primary);
+    cursor: pointer;
+}
+
+.specs-toggle:hover {
+    text-decoration: underline;
+}
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 32px;
+}
+
+.spec-rij {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--lijn-licht);
+}
+
+.spec-rij dt {
+    font-size: 13.5px;
+    color: var(--tekst-secundair);
+}
+
+.spec-rij dd {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.specs-groep-kop {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--tekst-tertiair);
+    margin: 20px 0 2px;
 }
 
 /* --- Video-thumbnail op gidskaarten (gidsenoverzicht) --- */
@@ -1868,46 +1961,265 @@ section h2 {
 }
 
 /* --- Stroomkosten (uit energielabel-specs) --- */
-.energy-costs-section {
-    margin: 28px 0;
+/* ============================================
+   KOSTEN OVER DE LEVENSDUUR (design 5a)
+   ============================================
+   Het inhoudelijk sterkste blok van deze pagina: een webshop vertelt niet
+   dat een machine van honderd euro meer over tien jaar goedkoper is. Alleen
+   getoond als het kWh-verbruik bekend is — geen schatting, geen
+   "onbekend"-kaart. */
+
+.cost-cards {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0;
 }
 
-.energy-costs-section h2 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 10px;
+.cost-card {
+    flex: 1;
+    border: 1px solid var(--lijn);
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: var(--kaart);
 }
 
-.energy-costs-row {
+.cost-card-label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--tekst-secundair);
+}
+
+.cost-card-value {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    margin: 2px 0 4px;
+}
+
+.cost-card-note {
+    display: block;
+    font-size: 11.5px;
+    color: var(--tekst-tertiair);
+    line-height: 1.45;
+}
+
+/* ============================================
+   PRODUCTKOP, ÉÉN-WINKEL-BLOK EN ALTERNATIEVEN (design 5a / 5c)
+   ============================================ */
+
+/* Eén winkel (5c): compactere kop. Er valt minder te beslissen, dus de foto
+   mag kleiner en de titel hoeft niet het halve scherm te vullen. */
+.product-main-solo {
+    grid-template-columns: 84px 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.product-main-solo .product-image-section {
+    position: static;
+}
+
+.product-main-solo .product-image-large {
+    height: 100px;
+    object-fit: contain;
+}
+
+.product-main-solo h1 {
+    font-size: 22px;
+}
+
+/* Koopknop over de volle breedte in plaats van een tabelrij met één regel. */
+.solo-koop {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    padding: 14px 18px;
+}
+
+.solo-koop-winkel {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex: 1;
+    min-width: 120px;
 }
 
-.energy-label-badge {
-    display: inline-block;
-    padding: 3px 12px;
-    border-radius: 4px;
-    font-weight: 700;
-    font-size: 15px;
-    /* achtergrond- en tekstkleur per energielabel-letter via inline style */
+.solo-koop-btn {
+    flex: 1 1 100%;
+    text-align: center;
+    justify-content: center;
 }
 
-.energy-costs-main {
-    font-size: 15px;
-}
-
-.energy-costs-sub {
-    color: var(--gray);
-    font-size: 13px;
-    margin-left: 6px;
-}
-
-.energy-costs-note {
-    margin-top: 8px;
+.product-eyebrow {
     font-size: 12px;
-    color: var(--gray);
-    line-height: 1.5;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--tekst-tertiair);
+    margin-bottom: 4px;
+}
+
+.product-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0 14px;
+}
+
+.badge-energy {
+    background: var(--groen);
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 4px;
+}
+
+.badge-spec {
+    border: 1px solid var(--lijn);
+    color: var(--tekst-secundair);
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 4px;
+}
+
+/* Eén winkel (5c): geen excuus voor ontbrekende data, maar laten zien dat
+   we actief zoeken. De prijsalert wordt hier de tweede hoofdactie in plaats
+   van een bijzaak onderaan de pagina. */
+.solo-notice {
+    background: var(--blauw-licht);
+    border-left: 5px solid var(--primary);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 18px;
+    margin: 20px 0;
+}
+
+.solo-notice-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.solo-notice-text {
+    font-size: 12.5px;
+    color: var(--tekst-secundair);
+    margin-bottom: 12px;
+}
+
+.solo-alert-form {
+    margin-bottom: 12px;
+}
+
+/* Dekkingsbalkje: dezelfde visuele taal als op de categoriekaarten, zodat
+   de bezoeker herkent wat "1 van 6" betekent. */
+.dekkingsbalk {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 5px;
+}
+
+.dekkingsbalk-deel {
+    height: 6px;
+    width: 22px;
+    border-radius: 3px;
+    background: #cfe0f5;
+}
+
+.dekkingsbalk-deel-vol {
+    background: var(--primary);
+}
+
+.dekkingsbalk-label {
+    font-size: 11.5px;
+    color: var(--tekst-secundair);
+}
+
+.alternatieven {
+    margin: 28px 0;
+}
+
+.alternatieven h2 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.alternatieven-lijst {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.alternatieven-lijst a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border: 1px solid var(--lijn);
+    border-radius: 10px;
+    background: var(--kaart);
+    text-decoration: none;
+    color: inherit;
+}
+
+.alternatieven-lijst a:hover {
+    border-color: #8fb4e0;
+}
+
+.alternatieven-lijst img {
+    width: 46px;
+    height: 54px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.alternatief-mid {
+    flex: 1;
+    min-width: 0;
+}
+
+.alternatief-naam {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.alternatief-winkels {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--groen);
+}
+
+.alternatief-prijs {
+    font-size: 14.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+}
+
+/* Prijsverloop en prijsalert naast elkaar onder het bovenblok. */
+.product-lower {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding-top: 8px;
+}
+
+.product-lower > * {
+    flex: 1;
+    min-width: 0;
+}
+
+.product-lower > .price-alert-section,
+.product-lower > .category-guides {
+    flex: 0 0 330px;
 }
 
 /* --- Placeholder voor producten zonder foto --- */
@@ -2073,102 +2385,218 @@ section h2 {
 }
 
 /* --- Aanbiedingen per winkel (meerdere winkels per product) --- */
-.offers-section {
-    margin: 16px 0 24px;
+/* ============================================
+   AANBIEDINGENBLOK (design 5a)
+   ============================================
+   De winkellijst is de hoofdzaak van deze pagina: dit is waar het verschil
+   met een webshop zichtbaar wordt. Eén kaart met een gekleurde kop, één rij
+   per winkel, altijd oplopend op prijs. */
+
+.offers-card {
+    border: 1px solid var(--lijn);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--kaart);
+    margin: 16px 0 20px;
 }
 
-.offers-best-bar {
+.offers-card-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 18px;
+    background: var(--blauw-licht);
+    border-bottom: 1px solid #cfe0f5;
+}
+
+.offers-eyebrow {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #3a6ea8;
+    margin-bottom: 4px;
+}
+
+.offers-price-row {
     display: flex;
     align-items: baseline;
+    gap: 8px;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 14px;
 }
 
-.offers-best-label {
-    font-size: 12px;
+.offers-price {
+    font-size: 34px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--gray);
-}
-
-.offers-best-price {
-    font-size: 30px;
-    font-weight: 800;
+    letter-spacing: -0.035em;
+    font-variant-numeric: tabular-nums;
     color: var(--dark);
+    line-height: 1.1;
 }
 
-.offers-count {
+.offers-price-shop {
     font-size: 13px;
-    color: var(--gray);
+    color: var(--tekst-secundair);
+}
+
+.offers-card-head-right {
+    text-align: right;
+}
+
+/* Groen betekent op deze site besparing: prijsverschil, energielabel,
+   prijsdaling. Niet voor voorraad. */
+.offers-spread {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--groen);
+}
+
+.offers-highest {
+    display: block;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--tekst-tertiair);
 }
 
 .offers-list {
     list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
 
+/* flex-wrap als vangnet: tussen 769px en ~1100px is er niet genoeg breedte
+   voor logo, tekst, prijs én knop naast elkaar. Zonder dit werd de
+   tekstkolom tot 65px platgeknepen en brak "Morgen bezorgd" over twee
+   regels. Nu zakt de knop naar de volgende regel in plaats van de tekst te
+   verminken. */
 .offer-row {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 10px 14px;
-    padding: 12px 16px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: #fff;
+    gap: 10px 16px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--lijn-licht);
 }
 
-/* Verzendinfo per winkelrij (audit-punt 14): volle breedte onder de knop,
-   gedempt — informatief, niet schreeuwerig. */
-.offer-delivery {
-    flex-basis: 100%;
-    font-size: 12.5px;
-    color: var(--gray);
+.offer-row:last-child {
+    border-bottom: none;
 }
 
-/* Goedkoopste aanbieding krijgt een groen randje (alleen bij >1 winkel) */
 .offer-row-best {
-    border-color: var(--success);
-    box-shadow: inset 0 0 0 1px var(--success);
+    background: #f2f7fd;
 }
 
-.offer-retailer {
+.offer-retailer-logo {
+    width: 108px;
+    height: 26px;
+    object-fit: contain;
+    object-position: left center;
+    flex-shrink: 0;
+}
+
+/* Vangnet als het winkellogo ontbreekt: dan de naam, geen kapot icoon. */
+.offer-retailer-naam {
+    width: 108px;
+    flex-shrink: 0;
+    font-size: 13px;
     font-weight: 700;
+}
+
+/* Twee regels hoog, ook als de tweede leeg is. Niet elke winkel levert
+   bezorgkosten (Expert bijvoorbeeld niet); zonder deze ondergrens worden de
+   rijen ongelijk hoog en krijgt de tabel een rommelig ritme — precies waar
+   je bij een prijsvergelijking op scant. */
+.offer-mid {
+    flex: 1;
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    /* Twee regels: 20.8px levertijd + 18.4px bezorgkosten + 2px gap. */
+    min-height: 42px;
+}
+
+.offer-delivery {
+    font-size: 13px;
     color: var(--dark);
-    flex: 1 1 110px;
+}
+
+/* Bezorgkosten horen hier: € 649 met € 29,95 bezorging is duurder dan
+   € 669 gratis bezorgd. Ontbreekt het veld in de feed, dan valt de regel
+   weg — er wordt niets aangenomen. */
+.offer-shipping {
+    font-size: 11.5px;
+    color: var(--tekst-tertiair);
+}
+
+.offer-price-col {
+    text-align: right;
+    flex-shrink: 0;
 }
 
 .offer-price {
-    font-size: 20px;
+    display: block;
+    font-size: 19px;
     font-weight: 700;
+    font-variant-numeric: tabular-nums;
     color: var(--dark);
     white-space: nowrap;
 }
 
-.offer-price .price-old {
-    font-size: 13px;
-    margin-left: 6px;
+.offer-diff {
+    display: block;
+    font-size: 12px;
+    color: var(--tekst-tertiair);
+    font-variant-numeric: tabular-nums;
 }
 
-.offer-badge-best {
-    background: #E8F5E9;
-    color: var(--success);
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
+.offer-diff-best {
+    color: var(--groen);
+    font-weight: 600;
 }
 
-/* Knop rechts uitlijnen; op smalle schermen valt hij onder de prijs */
+/* Alleen de goedkoopste rij is oranje. De andere winkels blijven zichtbaar
+   met een witte knop, zodat oranje één betekenis houdt. */
 .offer-btn {
-    width: auto;
-    margin-left: auto;
+    flex-shrink: 0;
+    padding: 11px 17px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    text-decoration: none;
     white-space: nowrap;
+    border: 1px solid var(--lijn);
+    background: #fff;
+    color: var(--dark);
+}
+
+.offer-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.offer-btn-best {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.offer-btn-best:hover {
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
+    color: #fff;
+}
+
+/* Affiliate-disclosure blijft verplicht zichtbaar. */
+.offers-foot {
+    padding: 10px 18px;
+    background: var(--vlak);
+    font-size: 11.5px;
+    color: var(--tekst-secundair);
+    border-top: 1px solid var(--lijn-licht);
 }
 
 /* "vanaf" voor de prijs en "bij X winkels" op productkaarten */
@@ -2711,6 +3139,77 @@ section h2 {
 .pagination a,
 .pagination .page-info {
     padding: 8px 16px;
+}
+
+/* --- Productpagina mobiel (design 5b) --- */
+@media (max-width: 768px) {
+    .product-details h1 {
+        font-size: 20px;
+        letter-spacing: -0.028em;
+    }
+
+    .product-badges .badge-energy,
+    .product-badges .badge-spec {
+        font-size: 10.5px;
+    }
+
+    /* Winkelrijen worden losse kaartjes; de bezorgvoorwaarde valt weg omdat
+       er te weinig ruimte is (die staat op de winkelpagina zelf). */
+    .offer-row {
+        flex-wrap: wrap;
+        gap: 8px 12px;
+    }
+
+    .offer-shipping {
+        display: none;
+    }
+
+    .offer-retailer-logo,
+    .offer-retailer-naam {
+        width: 84px;
+    }
+
+    .offers-price {
+        font-size: 30px;
+    }
+
+    .cost-cards {
+        gap: 8px;
+    }
+
+    /* Alleen bedrag en label; de berekeningsregel is op deze breedte ruis. */
+    .cost-card-note {
+        display: none;
+    }
+
+    .specs-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .product-lower {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .product-lower > .price-alert-section,
+    .product-lower > .category-guides {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+
+    /* Elke tikbare regel minimaal 44px hoog. */
+    .offer-btn,
+    .alternatieven-lijst a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+
+    .offer-btn {
+        justify-content: center;
+        width: 100%;
+    }
 }
 
 /* ============================================

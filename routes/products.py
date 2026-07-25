@@ -73,6 +73,91 @@ def _product_structured_data(product):
     return [data, breadcrumbs]
 
 
+# Het veld dat "vergelijkbaar formaat" bepaalt, per categorie. Zonder zo'n
+# veld matchen we alleen op energielabel — beter een ruimere selectie dan
+# geen alternatieven.
+_FORMAAT_VELD = {
+    'wasmachines': 'Laadvermogen wasmachine',
+    'wasdroogcombinaties': 'Laadvermogen wasmachine',
+    'drogers': 'Laadvermogen wasdroger',
+    'koelkasten': 'Volume in liters',
+    'vaatwassers': 'Aantal couverts',
+    'ovens': 'Volume in liters',
+    'magnetrons': 'Ovenvermogen',
+}
+
+
+def _vergelijkbare_alternatieven(product, aantal=4):
+    """Apparaten die lijken op dit product én bij meerdere winkels liggen.
+
+    Voor de één-winkel-pagina: bij één aanbieding valt er niets te
+    vergelijken, en dan is een doodlopende pagina het slechtste antwoord.
+    Deze lijst wijst door naar precies de producten waar de vergelijker wél
+    werkt, gesorteerd op het aantal winkels.
+
+    Geeft een lege lijst als er niets vergelijkbaars is; de sectie verdwijnt
+    dan, in plaats van zich te vullen met willekeurige producten.
+    """
+    from models import db, Offer
+    specs = product.specs or {}
+    slug = product.category.slug if product.category else ''
+
+    winkels = (
+        db.session.query(Offer.product_id.label('pid'),
+                         db.func.count(Offer.id).label('n'))
+        .filter(Offer.is_available.is_(True))
+        .group_by(Offer.product_id)
+        .subquery()
+    )
+    basis = (
+        db.session.query(Product, winkels.c.n)
+        .join(winkels, winkels.c.pid == Product.id)
+        .filter(Product.category_id == product.category_id,
+                Product.id != product.id,
+                Product.is_available.is_(True),
+                winkels.c.n > 1)
+        .order_by(winkels.c.n.desc(), Product.price.asc())
+    )
+
+    label = str(specs.get('Waarde energielabel') or '').strip()
+    formaat_veld = _FORMAAT_VELD.get(slug)
+    formaat = str(specs.get(formaat_veld) or '').strip() if formaat_veld else ''
+
+    # Van specifiek naar ruim: eerst zelfde formaat én label, dan alleen
+    # label, dan alles uit de categorie met meerdere winkels.
+    pogingen = []
+    if formaat and label:
+        pogingen.append([Product.specs[formaat_veld].as_string() == formaat,
+                         Product.specs['Waarde energielabel'].as_string() == label])
+    if label:
+        pogingen.append([Product.specs['Waarde energielabel'].as_string() == label])
+    pogingen.append([])
+
+    gezien, resultaat = set(), []
+    for filters in pogingen:
+        for kandidaat, n in basis.filter(*filters).limit(aantal * 2).all():
+            if kandidaat.id in gezien:
+                continue
+            gezien.add(kandidaat.id)
+            resultaat.append(kandidaat)
+            if len(resultaat) >= aantal:
+                return resultaat
+    return resultaat
+
+
+def _alternatieven_kenmerk(product):
+    """Korte omschrijving van waarop de alternatieven lijken: "9 kg, label A"."""
+    specs = product.specs or {}
+    slug = product.category.slug if product.category else ''
+    delen = []
+    veld = _FORMAAT_VELD.get(slug)
+    if veld and specs.get(veld):
+        delen.append(str(specs[veld]).strip())
+    if specs.get('Waarde energielabel'):
+        delen.append('label ' + str(specs['Waarde energielabel']).strip())
+    return ', '.join(delen)
+
+
 @products_bp.route('/product/<slug>')
 def product_detail(slug):
     # Ook niet-leverbare producten tonen (met "tijdelijk niet leverbaar"):
@@ -95,12 +180,24 @@ def product_detail(slug):
 
     from price_chart import build_price_history
     from energy_costs import bereken_energiekosten
+    from product_specs import kernspecs, groepeer_specs, modelnummer
+
+    # De één-winkel-variant (design 5c) geldt voor ruim de helft van de
+    # producten; alleen dáár halen we alternatieven op, zodat de gewone
+    # pagina geen extra query kost.
+    een_winkel = product.is_available and product.retailer_count <= 1
     return render_template('product.html', product=product,
                            related_products=related_products,
                            category_guides=category_guides,
                            structured_data=_product_structured_data(product),
                            price_history=build_price_history(product),
-                           energiekosten=bereken_energiekosten(product))
+                           energiekosten=bereken_energiekosten(product),
+                           kernspecs=kernspecs(product),
+                           spec_groepen=groepeer_specs(product),
+                           modelnummer=modelnummer(product),
+                           een_winkel=een_winkel,
+                           alternatieven=_vergelijkbare_alternatieven(product) if een_winkel else [],
+                           alternatieven_kenmerk=_alternatieven_kenmerk(product) if een_winkel else '')
 
 
 @products_bp.route('/search')

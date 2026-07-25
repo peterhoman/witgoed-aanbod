@@ -16,6 +16,7 @@
 {% endblock %}
 
 {% block content %}
+{% set offers = product.available_offers %}
 <div class="container product-detail">
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs">
@@ -24,7 +25,7 @@
         <span>{{ product.title[:50] }}</span>
     </nav>
 
-    <div class="product-main">
+    <div class="product-main{% if een_winkel %} product-main-solo{% endif %}">
         <!-- Product Image -->
         <div class="product-image-section">
             {% if product.image_url %}
@@ -36,8 +37,30 @@
 
         <!-- Product Info -->
         <div class="product-details">
+            {# Eyebrow: merk in kapitalen, plus het modelnummer als het
+               Model-veld gevuld is. Nooit uit de titel gegokt — dat gaat mis
+               bij was/droog-sets met twee modelnummers in de naam. #}
+            <p class="product-eyebrow">{{ (product.brand or t('product.brand_unknown'))|upper }}{% if modelnummer %} &middot; {{ modelnummer }}{% endif %}</p>
             <h1>{{ product.title }}</h1>
-            <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
+
+            {# Badgerij: energielabel groen, daarna maximaal vier kernspecs
+               met alleen een rand. Groen betekent op deze site besparing. #}
+            {% if energiekosten and energiekosten.label or kernspecs %}
+            <div class="product-badges">
+                {% if energiekosten and energiekosten.label %}
+                <span class="badge-energy">{{ energiekosten.label }}</span>
+                {% endif %}
+                {# Alleen korte waarden: "8 kg" en "1400 toeren" lezen als badge,
+                   "Automatische wasmiddeldosering (UniversalDose)" niet. Die
+                   staat gewoon in de specificatietabel. #}
+                {% for label, waarde in kernspecs[:6] %}
+                {% if 'energielabel' not in label|lower and waarde|string|length <= 18 %}
+                <span class="badge-spec">{{ waarde }}</span>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <button type="button" class="wishlist-toggle wishlist-toggle-large" data-product-id="{{ product.id }}"
                     data-product-title="{{ product.title }}">
                 <span aria-hidden="true">&#9825;</span> <span class="wishlist-toggle-label">{{ t('wishlist.toggle_cta') }}</span>
@@ -58,183 +81,277 @@
             </div>
             {% endif %}
 
-            <!-- Aanbiedingen per winkel: laagste bovenaan, neutraal weergegeven -->
-            {% set offers = product.available_offers %}
             {% if product.is_available %}
-            <div class="offers-section">
-                <div class="offers-best-bar">
-                    <span class="offers-best-label">{{ t('offer.best_price') }}</span>
-                    <span class="offers-best-price">€ {{ product.lowest_price|euro }}</span>
-                    {% if product.retailer_count > 1 %}
-                    <span class="offers-count">{{ t('offer.at_shops', count=product.retailer_count) }}</span>
+            {% set laagste = offers[0] if offers else none %}
+            {% set hoogste = offers[-1] if offers and offers|length > 1 else none %}
+            <div class="offers-card">
+                <div class="offers-card-head">
+                    <div class="offers-card-head-left">
+                        {# Bij één winkel niet "laagste prijs": er is niets om
+                           laagste van te zijn. #}
+                        <span class="offers-eyebrow">
+                            {%- if product.retailer_count > 1 -%}
+                            Laagste van {{ product.retailer_count }} winkels
+                            {%- else -%}
+                            Prijs bij 1 winkel
+                            {%- endif -%}
+                        </span>
+                        <span class="offers-price-row">
+                            <span class="offers-price">&euro; {{ product.lowest_price|euro }}</span>
+                            {% if laagste %}<span class="offers-price-shop">bij {{ laagste.retailer_name }}</span>{% endif %}
+                        </span>
+                    </div>
+                    {% if hoogste and hoogste.price > laagste.price %}
+                    <div class="offers-card-head-right">
+                        <span class="offers-spread">&euro; {{ (hoogste.price - laagste.price)|euro }} verschil tussen winkels</span>
+                        <span class="offers-highest">hoogste &euro; {{ hoogste.price|euro }}</span>
+                    </div>
                     {% endif %}
                 </div>
 
-                <p class="affiliate-disclosure affiliate-disclosure-top">{{ t('product.affiliate_disclosure') }}</p>
-
-                {% if offers %}
+                {% if een_winkel and laagste %}
+                {# Eén winkel: geen tabel met één rij, maar winkel plus
+                   levertijd en een koopknop over de volle breedte. Er valt
+                   niets te vergelijken, dus er valt ook niets uit te lijnen. #}
+                <div class="solo-koop">
+                    <span class="solo-koop-winkel">
+                        <img class="offer-retailer-logo"
+                             src="{{ url_for('static', filename='img/winkels/' + laagste.retailer + '.png') }}"
+                             alt="{{ laagste.retailer_name }}" loading="lazy"
+                             onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'offer-retailer-naam',textContent:this.alt}))">
+                        {% if laagste.delivery_time %}<span class="offer-delivery">{{ laagste.delivery_time }}</span>{% endif %}
+                    </span>
+                    <a href="{{ laagste.link }}" target="_blank" rel="nofollow sponsored"
+                       class="offer-btn offer-btn-best solo-koop-btn">{{ t('offer.view_at', retailer=laagste.retailer_name) }} &rarr;</a>
+                </div>
+                {% elif offers %}
                 <ul class="offers-list">
                     {% for offer in offers %}
                     <li class="offer-row{% if loop.first and offers|length > 1 %} offer-row-best{% endif %}">
-                        <span class="offer-retailer"><img class="offer-retailer-logo"
-                            src="{{ url_for('static', filename='img/winkels/' + offer.retailer + '.png') }}"
-                            alt="" width="20" height="20" loading="lazy"
-                            onerror="this.style.display='none'">{{ offer.retailer_name }}</span>
-                        <span class="offer-price">
-                            € {{ offer.price|euro }}
-                            {% if offer.strikethrough_price %}
-                            <span class="price-old">€ {{ offer.strikethrough_price|euro }}</span>
+                        <img class="offer-retailer-logo"
+                             src="{{ url_for('static', filename='img/winkels/' + offer.retailer + '.png') }}"
+                             alt="{{ offer.retailer_name }}" loading="lazy"
+                             onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'offer-retailer-naam',textContent:this.alt}))">
+                        <span class="offer-mid">
+                            {% if offer.delivery_time %}<span class="offer-delivery">{{ offer.delivery_time }}</span>{% endif %}
+                            {# Bezorgkosten alleen tonen als de feed ze levert:
+                               € 649 met € 29,95 bezorging is duurder dan € 669
+                               gratis bezorgd, dus hier niets aannemen. #}
+                            {% if offer.delivery_cost is not none %}
+                            <span class="offer-shipping">
+                                {%- if offer.delivery_cost == 0 -%}{{ t('offer.free_shipping') }}
+                                {%- else -%}Bezorging &euro; {{ offer.delivery_cost|euro }}{%- endif -%}
+                            </span>
                             {% endif %}
                         </span>
-                        {% if loop.first and offers|length > 1 %}
-                        <span class="offer-badge-best">{{ t('offer.lowest_badge') }}</span>
-                        {% endif %}
-                        <a href="{{ offer.link }}" target="_blank" rel="nofollow sponsored" class="btn-buy offer-btn">{{ t('offer.view_at', retailer=offer.retailer_name) }} →</a>
-                        {# Verzendinfo uit de winkel-feed: alleen tonen wat we
-                           écht weten, niets forceren waar de data ontbreekt. #}
-                        {% set verzenddelen = [] %}
-                        {% if offer.delivery_cost is not none %}
-                            {% if offer.delivery_cost == 0 %}
-                                {% set _ = verzenddelen.append(t('offer.free_shipping')) %}
+                        <span class="offer-price-col">
+                            <span class="offer-price">&euro; {{ offer.price|euro }}</span>
+                            {% if offers|length > 1 %}
+                            {% if loop.first %}
+                            <span class="offer-diff offer-diff-best">laagste</span>
                             {% else %}
-                                {% set _ = verzenddelen.append('€ ' + (offer.delivery_cost|euro) + ' ' + t('offer.shipping')) %}
+                            <span class="offer-diff">+ &euro; {{ (offer.price - laagste.price)|euro }}</span>
                             {% endif %}
-                        {% endif %}
-                        {% if offer.delivery_time %}
-                            {% set _ = verzenddelen.append(offer.delivery_time) %}
-                        {% endif %}
-                        {% if verzenddelen %}
-                        <span class="offer-delivery">{{ verzenddelen | join(' · ') }}</span>
-                        {% endif %}
+                            {% endif %}
+                        </span>
+                        {# Alleen de goedkoopste rij krijgt oranje: zo houdt die
+                           kleur één betekenis en is de aanbevolen actie meteen
+                           duidelijk, zonder de andere winkels te verstoppen. #}
+                        <a href="{{ offer.link }}" target="_blank" rel="nofollow sponsored"
+                           class="offer-btn{% if loop.first %} offer-btn-best{% endif %}">Bekijk &rarr;</a>
                     </li>
                     {% endfor %}
                 </ul>
                 {% else %}
-                <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" rel="nofollow sponsored" class="btn-large btn-buy">{{ t('product.view_offer') }} →</a>
-                {% endif %}
-            </div>
-            {% endif %}
-
-            <!-- Stroomkosten: berekend uit de energielabel-specs -->
-            {% if energiekosten %}
-            <div class="energy-costs-section">
-                <h2>Stroomkosten</h2>
-                <div class="energy-costs-row">
-                    {% if energiekosten.label %}
-                    <span class="energy-label-badge"
-                          style="background:{{ energiekosten.label_kleur }};color:{{ energiekosten.label_tekstkleur }}">{{ energiekosten.label }}</span>
-                    {% endif %}
-                    <span class="energy-costs-main">
-                        &plusmn; <strong>&euro; {{ energiekosten.jaar_kosten }} per jaar</strong>
-                        <span class="energy-costs-sub">(&euro; {{ energiekosten.vijf_jaar_kosten }} over 5 jaar)</span>
-                    </span>
+                <div class="offers-list">
+                    <a href="{{ product.affiliate_url or product.bol_url }}" target="_blank" rel="nofollow sponsored" class="btn-large btn-buy">{{ t('product.view_offer') }} &rarr;</a>
                 </div>
-                <p class="energy-costs-note">Schatting: {{ energiekosten.jaar_kwh }} kWh per jaar
-                    ({{ energiekosten.basis }}) &times; &euro; {{ energiekosten.stroomprijs }} per kWh.
-                    Handig om modellen te vergelijken; je werkelijke verbruik hangt af van gebruik en tarief.</p>
+                {% endif %}
+
+                <p class="offers-foot">{{ t('product.affiliate_disclosure') }}</p>
             </div>
             {% endif %}
 
-            <!-- Prijsverloop: eigen meetdata, verschijnt zodra er historie is -->
-            {% if price_history %}
-            <div class="price-history-section">
-                <h2>Prijsverloop</h2>
-                <p class="price-history-lowest">
-                    Laagste prijs sinds {{ price_history.sinds }}:
-                    <strong>&euro; {{ price_history.laagste_prijs }}</strong>
-                    {% if price_history.laagste_is_nu %}
-                    <span class="price-history-badge">nu de laagste prijs</span>
-                    {% endif %}
-                </p>
-                {% if price_history.koopadvies %}
-                <p class="price-history-advies">{{ price_history.koopadvies | safe }}</p>
-                {% endif %}
-                {% if price_history.svg %}
-                {{ price_history.svg | safe }}
-                {% if price_history.legenda | length > 1 %}
-                <ul class="price-history-legend">
-                    {% for reeks in price_history.legenda %}
-                    <li><span class="legend-dot" style="background:{{ reeks.kleur }}"></span>
-                        {{ reeks.winkel }} (&euro; {{ reeks.prijs_nu }})</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-                {% endif %}
-                <details class="price-history-table">
-                    <summary>Alle prijswijzigingen ({{ price_history.tabel | length }})</summary>
-                    <table>
-                        <thead><tr><th>Datum</th><th>Winkel</th><th>Prijs</th></tr></thead>
-                        <tbody>
-                            {% for rij in price_history.tabel %}
-                            <tr><td>{{ rij.datum }}</td><td>{{ rij.winkel }}</td><td>&euro; {{ rij.prijs }}</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </details>
-            </div>
-            {% endif %}
-
-            {% if alerts_enabled and product.is_available %}
-            <!-- Prijsalert: double opt-in, zie routes/alerts.py. Bewust vlak
-                 onder het prijsverloop: wie de grafiek bekijkt, wacht op een
-                 betere prijs — precies de bezoeker die dit wil. -->
-            <div class="price-alert-section">
-                <h2>&#128276; {{ t('alert.form_title') }}</h2>
-                <p class="price-alert-intro">{{ t('alert.form_intro') }}</p>
-                <form method="post" action="/prijsalert" class="price-alert-form">
+            {# Eén winkel: benoem de situatie en maak er iets nuttigs van, in
+               plaats van een kale prijs die de site defect laat lijken. #}
+            {% if een_winkel and alerts_enabled %}
+            <div class="solo-notice">
+                <p class="solo-notice-title">Dit model verkoopt nu bij één van onze zes winkels.</p>
+                <p class="solo-notice-text">Wij checken de andere vijf dagelijks. Komt hij ergens goedkoper, dan mailen wij je.</p>
+                <form method="post" action="/prijsalert" class="price-alert-form solo-alert-form">
                     <input type="hidden" name="product_id" value="{{ product.id }}">
                     <input type="email" name="email" required maxlength="255"
                            placeholder="{{ t('alert.email_placeholder') }}" autocomplete="email">
-                    <button type="submit" class="btn-primary">{{ t('alert.submit') }}</button>
+                    <button type="submit" class="btn-primary">Houd bij</button>
                 </form>
-                <p class="price-alert-privacy">{{ t('alert.privacy_note') }}
-                    <a href="/privacy">{{ t('footer.privacy') }}</a></p>
+                <div class="dekkingsbalk" aria-hidden="true">
+                    {% for i in range(6) %}<span class="dekkingsbalk-deel{% if i < 1 %} dekkingsbalk-deel-vol{% endif %}"></span>{% endfor %}
+                </div>
+                <span class="dekkingsbalk-label">1 van 6 winkels</span>
             </div>
             {% endif %}
 
-            <!-- Product Description -->
-            {% if product.ai_description or product.description %}
-            <div class="description-section">
-                <h2>{{ t('product.description_title') }}</h2>
-                <p>{{ product.ai_description or product.description }}</p>
-            </div>
-            {% endif %}
-
-            <!-- Specifications -->
-            {% if product.specs %}
-            <div class="specs-section{% if product.specs|length > 8 %} specs-collapsed{% endif %}" id="specs-section">
-                <h2>{{ t('product.specs_title') }}</h2>
-                <dl>
-                    {% for key, value in product.specs.items() %}
-                    <dt{% if loop.index > 8 %} class="spec-extra"{% endif %}>{{ key }}</dt>
-                    <dd{% if loop.index > 8 %} class="spec-extra"{% endif %}>{{ value }}</dd>
-                    {% endfor %}
-                </dl>
-                {% if product.specs|length > 8 %}
-                <button type="button" class="specs-toggle" id="specs-toggle"
-                        data-more="{{ t('product.show_more') }}" data-less="{{ t('product.show_less') }}">
-                    &#9660; {{ t('product.show_more') }}
-                </button>
+            <!-- Kosten over de levensduur: uit de energielabel-specs -->
+            {% if energiekosten %}
+            <div class="cost-cards">
+                <div class="cost-card">
+                    <span class="cost-card-label">Stroomkosten per jaar</span>
+                    <span class="cost-card-value">&plusmn; &euro; {{ energiekosten.jaar_kosten }}</span>
+                    <span class="cost-card-note">{{ energiekosten.basis }} &middot; {{ energiekosten.jaar_kwh }} kWh/jaar &middot; &euro; {{ energiekosten.stroomprijs }}/kWh</span>
+                </div>
+                {% if energiekosten.tien_jaar_kosten %}
+                <div class="cost-card">
+                    <span class="cost-card-label">Over 10 jaar</span>
+                    <span class="cost-card-value">&euro; {{ energiekosten.tien_jaar_kosten }}</span>
+                    <span class="cost-card-note">aanschaf plus stroom{% if energiekosten.meerkosten_slechter_label %} &mdash; label {{ energiekosten.meerkosten_slechter_label.label }} kost &euro; {{ energiekosten.meerkosten_slechter_label.bedrag }} meer{% endif %}</span>
+                </div>
                 {% endif %}
             </div>
             {% endif %}
         </div>
     </div>
 
-    <!-- Koopgidsen en tips uit dezelfde categorie (interne links) -->
-    {% if category_guides %}
-    <section class="category-guides">
-        <h2>{{ t('product.guides_title') }}</h2>
-        <ul class="category-guides-list">
-            {% for guide in category_guides %}
+    {# Wel te vergelijken: wijst door naar producten waar de vergelijker wél
+       werkt, in plaats van een doodlopende pagina. #}
+    {% if alternatieven %}
+    <section class="alternatieven">
+        <h2>Wel te vergelijken{% if alternatieven_kenmerk %}: {{ alternatieven_kenmerk }}{% endif %}</h2>
+        <ul class="alternatieven-lijst">
+            {% for alt in alternatieven %}
             <li>
-                <a href="{{ '/blog/' if guide.post_type == 'blog' else '/gidsen/' }}{{ guide.slug }}">{{ guide.title }}</a>
-                {% if guide.excerpt %}<span class="category-guide-excerpt">{{ guide.excerpt }}</span>{% endif %}
+                <a href="/product/{{ alt.slug }}">
+                    {% if alt.image_url %}<img src="{{ alt.image_url|foto(120) }}" alt="" loading="lazy">{% endif %}
+                    <span class="alternatief-mid">
+                        <span class="alternatief-naam">{{ alt.title }}</span>
+                        <span class="alternatief-winkels">{{ t('offer.at_shops', count=alt.retailer_count) }}</span>
+                    </span>
+                    <span class="alternatief-prijs">&euro; {{ alt.lowest_price|euro }}</span>
+                </a>
             </li>
             {% endfor %}
         </ul>
     </section>
     {% endif %}
+
+    <div class="product-lower">
+        <!-- Prijsverloop: eigen meetdata, verschijnt zodra er historie is -->
+        {% if price_history %}
+        <div class="price-history-section">
+            <h2>Prijsverloop</h2>
+            <p class="price-history-lowest">
+                Laagste prijs sinds {{ price_history.sinds }}:
+                <strong>&euro; {{ price_history.laagste_prijs }}</strong>
+                {% if price_history.laagste_is_nu %}
+                <span class="price-history-badge">nu de laagste prijs</span>
+                {% endif %}
+            </p>
+            {% if price_history.koopadvies %}
+            <p class="price-history-advies">{{ price_history.koopadvies | safe }}</p>
+            {% endif %}
+            {% if price_history.svg %}
+            {{ price_history.svg | safe }}
+            {% if price_history.legenda | length > 1 %}
+            <ul class="price-history-legend">
+                {% for reeks in price_history.legenda %}
+                <li><span class="legend-dot" style="background:{{ reeks.kleur }}"></span>
+                    {{ reeks.winkel }} (&euro; {{ reeks.prijs_nu }})</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endif %}
+            <details class="price-history-table">
+                <summary>Alle prijswijzigingen ({{ price_history.tabel | length }})</summary>
+                <table>
+                    <thead><tr><th>Datum</th><th>Winkel</th><th>Prijs</th></tr></thead>
+                    <tbody>
+                        {% for rij in price_history.tabel %}
+                        <tr><td>{{ rij.datum }}</td><td>{{ rij.winkel }}</td><td>&euro; {{ rij.prijs }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </details>
+        </div>
+        {% endif %}
+
+        {# Prijsalert staat bij één winkel al in het uitlegblok hierboven,
+           als tweede hoofdactie in plaats van een bijzaak onderaan. #}
+        {% if alerts_enabled and product.is_available and not een_winkel %}
+        <div class="price-alert-section">
+            <h2>Wachten op een lagere prijs?</h2>
+            <p class="price-alert-intro">Wij mailen zodra een van de {{ product.retailer_count }} winkels de prijs verlaagt. Gratis, afmelden met één klik.</p>
+            <form method="post" action="/prijsalert" class="price-alert-form">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="email" name="email" required maxlength="255"
+                       placeholder="{{ t('alert.email_placeholder') }}" autocomplete="email">
+                <button type="submit" class="btn-primary">Zet alert</button>
+            </form>
+            <p class="price-alert-privacy">{{ t('alert.privacy_note') }}
+                <a href="/privacy">{{ t('footer.privacy') }}</a></p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Specificaties: gekozen kernvelden bovenaan, de rest gegroepeerd -->
+    {% if kernspecs %}
+    <section class="specs-card" id="specs-section">
+        <div class="specs-head">
+            <h2>{{ t('product.specs_title') }}</h2>
+            {% if product.specs|length > kernspecs|length %}
+            <button type="button" class="specs-toggle" id="specs-toggle"
+                    data-more="Alle {{ product.specs|length }} specificaties &rarr;"
+                    data-less="Toon minder">Alle {{ product.specs|length }} specificaties &rarr;</button>
+            {% endif %}
+        </div>
+        <dl class="specs-grid">
+            {% for label, waarde in kernspecs %}
+            <div class="spec-rij"><dt>{{ label }}</dt><dd>{{ waarde }}</dd></div>
+            {% endfor %}
+        </dl>
+
+        {# Alles blijft in de DOM, alleen visueel ingeklapt: er verdwijnt geen
+           indexeerbare inhoud. #}
+        <div class="specs-alles" id="specs-alles" hidden>
+            {% for groep, rijen in spec_groepen %}
+            <h3 class="specs-groep-kop">{{ groep }}</h3>
+            <dl class="specs-grid">
+                {% for label, waarde in rijen %}
+                <div class="spec-rij"><dt>{{ label }}</dt><dd>{{ waarde }}</dd></div>
+                {% endfor %}
+            </dl>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <div class="product-lower">
+        <!-- Product Description -->
+        {# Ingekort tot vier regels, maar de volledige tekst blijft in de DOM:
+           alleen visueel afgekapt, zodat er geen indexeerbare inhoud
+           verdwijnt. #}
+        {% if product.ai_description or product.description %}
+        <div class="description-section">
+            <h2>{{ t('product.description_title') }}</h2>
+            <p class="description-tekst" id="beschrijving">{{ product.ai_description or product.description }}</p>
+            <button type="button" class="description-meer" id="beschrijving-meer"
+                    data-more="Lees de volledige beschrijving &rarr;" data-less="Toon minder">Lees de volledige beschrijving &rarr;</button>
+        </div>
+        {% endif %}
+
+        <!-- Koopgidsen en tips uit dezelfde categorie (interne links) -->
+        {% if category_guides %}
+        <section class="category-guides">
+            <h2>{{ t('product.guides_title') }}</h2>
+            <ul class="category-guides-list">
+                {% for guide in category_guides %}
+                <li>
+                    <a href="{{ '/blog/' if guide.post_type == 'blog' else '/gidsen/' }}{{ guide.slug }}">{{ guide.title }}</a>
+                    {% if guide.excerpt %}<span class="category-guide-excerpt">{{ guide.excerpt }}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+    </div>
 
     <!-- Related Products -->
     {% if related_products %}
@@ -256,14 +373,30 @@
 <script>
 (function() {
     var toggle = document.getElementById('specs-toggle');
-    if (!toggle) return;
-    toggle.addEventListener('click', function() {
-        var section = document.getElementById('specs-section');
-        var collapsed = section.classList.toggle('specs-collapsed');
-        this.innerHTML = collapsed
-            ? '&#9660; ' + this.dataset.more
-            : '&#9650; ' + this.dataset.less;
-    });
+    var alles = document.getElementById('specs-alles');
+    if (toggle && alles) {
+        toggle.addEventListener('click', function() {
+            var open = alles.hasAttribute('hidden');
+            if (open) { alles.removeAttribute('hidden'); } else { alles.setAttribute('hidden', ''); }
+            this.innerHTML = open ? this.dataset.less : this.dataset.more;
+        });
+    }
+
+    // Beschrijving: knop alleen tonen als de tekst daadwerkelijk langer is
+    // dan de vier regels die zichtbaar zijn. Bij een korte beschrijving zou
+    // een "lees meer" die niets uitklapt een lege belofte zijn.
+    var tekst = document.getElementById('beschrijving');
+    var meer = document.getElementById('beschrijving-meer');
+    if (tekst && meer) {
+        if (tekst.scrollHeight <= tekst.clientHeight + 2) {
+            meer.remove();
+        } else {
+            meer.addEventListener('click', function() {
+                var open = tekst.classList.toggle('description-open');
+                this.innerHTML = open ? this.dataset.less : this.dataset.more;
+            });
+        }
+    }
 })();
 </script>
 {% endblock %}

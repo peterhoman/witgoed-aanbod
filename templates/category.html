@@ -275,6 +275,30 @@ document.getElementById('max_price').addEventListener('input', function() {
     document.getElementById('max-price-label').textContent = this.value;
 });
 
+// Op mobiel de videogids ná de resultaten plaatsen: de keuzehulp levert
+// bovenaan meer op, en zo staat het eerste product eerder in beeld
+// (design-handoff turn 4b). De link blijft in de DOM, dus de interne
+// linkwaarde gaat niet verloren.
+(function () {
+    var video = document.querySelector('.teaser-rij .category-video-teaser, .teaser-rij .guide-teaser');
+    var producten = document.querySelector('.category-products');
+    if (!video || !producten) return;
+    var origineel = video.parentNode;
+    var verplaatst = false;
+    function pasAan() {
+        var smal = window.innerWidth <= 768;
+        if (smal && !verplaatst) {
+            producten.appendChild(video);
+            verplaatst = true;
+        } else if (!smal && verplaatst) {
+            origineel.appendChild(video);
+            verplaatst = false;
+        }
+    }
+    window.addEventListener('resize', pasAan);
+    pasAan();
+})();
+
 var filtersToggle = document.getElementById('filters-toggle');
 if (filtersToggle) {
     var filtersLabel = filtersToggle.querySelector('span');

@@ -206,14 +206,18 @@ def _winkeldekking():
         .all()
     )
 
-    per_categorie, totaal, totaal_multi = {}, 0, 0
+    # Lijst en geen dict: Flask sorteert JSON-sleutels alfabetisch, waardoor
+    # een gesorteerde dict zijn volgorde verliest. Zwakste categorie onderaan
+    # is precies wat je wilt zien als je aan de dekking gaat werken.
+    per_categorie, totaal, totaal_multi = [], 0, 0
     for slug, aantal, multi in sorted(rijen, key=lambda r: -(r[2] or 0) / max(r[1], 1)):
         multi = int(multi or 0)
-        per_categorie[slug] = {
+        per_categorie.append({
+            'categorie': slug,
             'producten': aantal,
             'meerdere_winkels': multi,
             'dekking_pct': round(100 * multi / aantal) if aantal else 0,
-        }
+        })
         totaal += aantal
         totaal_multi += multi
 

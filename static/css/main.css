@@ -91,7 +91,7 @@ body {
     gap: 30px;
 }
 
-.logo h1 {
+.logo h1, .logo .logo-tekst {
     font-size: 24px;
     font-weight: 700;
     color: var(--primary);
@@ -3575,7 +3575,7 @@ details[open].filter-group summary::after {
         padding-bottom: 8px;
     }
 
-    .header .logo h1 {
+    .header .logo h1, .logo .logo-tekst {
         font-size: 19px;
     }
 
@@ -3735,7 +3735,7 @@ details[open].filter-group summary::after {
     .header .lang-switcher { grid-area: lang; }
     .nav-hamburger { grid-area: burger; }
 
-    .header .logo h1 {
+    .header .logo h1, .logo .logo-tekst {
         font-size: 18px;
         margin: 0;
     }
@@ -3843,5 +3843,68 @@ details[open].filter-group summary::after {
     .category-products,
     .search-results {
         padding-right: 52px;
+    }
+}
+
+
+/* --- Microwinsten uit de laatste design-review --- */
+
+/* Vergelijk-vinkje in de fotohoek onder het hartje: als losse regel
+   kostte het ~30px per rij (bij vijf zichtbare producten ~150px). */
+.product-card .compare-hoek {
+    position: absolute;
+    top: 44px;
+    right: 10px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: #fff;
+    border: 1px solid var(--lijn);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: border-color 120ms ease;
+}
+
+.product-card .compare-hoek:hover {
+    border-color: var(--primary);
+}
+
+.product-card .compare-hoek input[type="checkbox"] {
+    width: 13px;
+    height: 13px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+/* Tekstlabel alleen voor schermlezers; de tooltip legt het visueel uit */
+.product-card .compare-hoek .compare-tekst {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* Chat-widget iets kleiner en lager (44px i.p.v. 48px) */
+#babbelbot-knop.compact {
+    width: 44px !important;
+    height: 44px !important;
+    line-height: 44px !important;
+    font-size: 18px !important;
+}
+
+@media (max-width: 768px) {
+    /* De kaart is op mobiel een tweekolomsraster; het vinkje hoort bij de
+       foto (links), niet aan de rechterrand naast de titel. */
+    .product-card .compare-hoek {
+        top: 46px;
+        left: 58px;
+        right: auto;
+        width: 24px;
+        height: 24px;
     }
 }

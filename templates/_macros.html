@@ -19,10 +19,16 @@
         {% endif %}
         <span class="image-placeholder" aria-hidden="true">&#128247;</span>
     </a>
-    {# Verlanglijst-hartje: puur client-side (localStorage), zie WISHLIST in main.js #}
+    {# Verlanglijst-hartje en vergelijk-vinkje in de fotohoek: als losse
+       regel onder de kaart kostte "Vergelijken" ~30px per productrij
+       (design-review 25-07). Zelfde inputs, zelfde data-hooks. #}
     <button type="button" class="wishlist-toggle" data-product-id="{{ product.id }}"
             data-product-title="{{ product.title }}"
             aria-label="{{ t('wishlist.toggle_aria') }}" title="{{ t('wishlist.toggle_aria') }}">&#9825;</button>
+    <label class="compare-label compare-hoek" title="{{ t('product.compare_label') }}">
+        <input type="checkbox" class="compare-checkbox" data-product-id="{{ product.id }}" data-product-title="{{ product.title }}">
+        <span class="compare-tekst">{{ t('product.compare_label') }}</span>
+    </label>
     <div class="product-info">
         {# Redesign fase 1 (handoff turn 4a/4b): merk boven titel, specbadges,
            prijs + prijsverschil, winkeldekking-streepjes, één oranje CTA.
@@ -94,10 +100,6 @@
             {% else %}
             <a href="{{ best.link if best else (product.affiliate_url or product.bol_url) }}" target="_blank" rel="nofollow sponsored" class="btn-buy">{{ t('product.view_offer') }}</a>
             {% endif %}
-            <label class="compare-label">
-                <input type="checkbox" class="compare-checkbox" data-product-id="{{ product.id }}" data-product-title="{{ product.title }}">
-                {{ t('product.compare_label') }}
-            </label>
         </div>
     </div>
 </article>

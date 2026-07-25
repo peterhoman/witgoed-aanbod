@@ -53,8 +53,12 @@
     <header class="header">
         <div class="container">
             <div class="header-top">
+                {# Het logo was een <h1>, waardoor elke pagina er twee had
+                   (logo + paginakop). Eén h1 per pagina is de norm en de
+                   paginakop hoort dat te zijn; een span met dezelfde
+                   styling verandert visueel niets. #}
                 <a href="/" class="logo">
-                    <h1>WitgoedAanbod.nl</h1>
+                    <span class="logo-tekst">WitgoedAanbod.nl</span>
                 </a>
                 <form action="/search" method="get" class="search-form">
                     <input type="text" name="q" placeholder="{{ t('search.placeholder') }}" required>

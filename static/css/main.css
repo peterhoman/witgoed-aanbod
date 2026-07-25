@@ -3499,3 +3499,298 @@ details[open].filter-group summary::after {
         margin: 14px 0 4px;
     }
 }
+
+
+/* ============================================================
+   REDESIGN FASE 3: compacte mobiele header
+   Doel: scrollafstand tot het eerste product ruim onder 500px
+   (nulmeting 25-07: 950px).
+   ============================================================ */
+
+.nav-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 42px;
+    height: 42px;
+    padding: 0 10px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.nav-hamburger span {
+    display: block;
+    height: 2px;
+    background: var(--dark);
+    border-radius: 2px;
+    transition: transform 150ms ease, opacity 150ms ease;
+}
+
+.nav-hamburger.is-open span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.nav-hamburger.is-open span:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-hamburger.is-open span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Metaregel onder de h1 expliciet neutraal: groen betekent in dit
+   ontwerp besparing, en deze regel claimt niets. */
+.category-header p.category-meta {
+    color: var(--ink-2);
+}
+
+@media (max-width: 768px) {
+    .nav-hamburger {
+        display: flex;
+    }
+
+    /* Categorieën ingeklapt tot de hamburger ze opent */
+    .nav-categories {
+        display: none;
+        border-top: 1px solid var(--border);
+        padding: 6px 0 10px;
+    }
+
+    .nav-categories.open {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    /* Secundaire links (Koopgidsen, Blog, Privacy...) horen niet vóór
+       de producten: op mobiel staan ze in de footer, die ze al bevat. */
+    .header .nav-secondary {
+        display: none;
+    }
+
+    .header .header-top {
+        gap: 8px;
+        padding-bottom: 8px;
+    }
+
+    .header .logo h1 {
+        font-size: 19px;
+    }
+
+    /* Keuzehulp compacter: één regel tekst i.p.v. drie */
+    .teaser-rij .wizard-teaser {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+
+    .teaser-rij .wizard-teaser-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+
+    .teaser-rij .wizard-teaser-info strong {
+        font-size: 13.5px;
+    }
+
+    .teaser-rij .wizard-teaser-info span {
+        font-size: 12px;
+    }
+}
+
+
+/* --- Flexcontainer voor de volgorde onder de kop (CSS i.p.v. JS,
+   zodat er na het laden niets verspringt: geen layout shift). --- */
+.pagina-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.pagina-flow > .wizard-teaser {
+    flex: 1 1 320px;
+    margin: 0;
+    padding: 12px 16px;
+    border-radius: 10px;
+    align-items: center;
+}
+
+.pagina-flow > .category-video-teaser,
+.pagina-flow > .guide-teaser {
+    flex: 0 0 400px;
+    margin: 0;
+    padding: 12px 16px;
+    border-radius: 10px;
+    align-items: center;
+}
+
+.pagina-flow > .category-facet-links,
+.pagina-flow > .category-layout {
+    flex: 1 1 100%;
+    margin: 0;
+}
+
+@media (max-width: 900px) {
+    .pagina-flow > .category-video-teaser,
+    .pagina-flow > .guide-teaser {
+        flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Resultaten eerst; videogids en merkchips zakken eronder.
+       Puur `order`, dus de HTML-volgorde (en daarmee de crawlbare
+       linkstructuur) blijft ongewijzigd. */
+    .pagina-flow {
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .pagina-flow > .category-layout {
+        order: 1;
+    }
+
+    .pagina-flow > .category-video-teaser,
+    .pagina-flow > .guide-teaser {
+        order: 5;
+    }
+
+    .pagina-flow > .category-facet-links {
+        order: 6;
+    }
+
+    /* Compactere kop-elementen boven de resultaten */
+    .breadcrumbs {
+        margin-bottom: 6px;
+        font-size: 12px;
+    }
+
+    .products-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding-bottom: 10px;
+    }
+
+    .products-toolbar .sort-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12.5px;
+    }
+
+    .products-toolbar select {
+        padding: 6px 8px;
+        font-size: 12.5px;
+    }
+
+    .category-header {
+        margin-bottom: 0;
+    }
+
+    .header .search-form {
+        margin: 0;
+    }
+
+    .header .search-form input {
+        padding: 9px 12px;
+        font-size: 14px;
+    }
+
+    .header .search-form button {
+        padding: 9px 14px;
+        font-size: 14px;
+    }
+
+    .header .wishlist-nav-link,
+    .header .lang-switcher {
+        font-size: 13px;
+    }
+}
+
+
+/* --- Mobiele header echt compact (fase 3) ---
+   De header-top wrapte over vier regels (199px voor 66px aan inhoud).
+   Nu een vast raster: logo + acties op regel 1, zoekbalk op regel 2. */
+@media (max-width: 768px) {
+    .header .header-top {
+        display: grid;
+        grid-template-columns: 1fr auto auto auto;
+        grid-template-areas:
+            "logo wish lang burger"
+            "zoek zoek zoek zoek";
+        align-items: center;
+        gap: 8px 10px;
+        padding: 10px 0 8px;
+    }
+
+    .header .logo { grid-area: logo; }
+    .header .search-form { grid-area: zoek; }
+    .header .wishlist-nav-link { grid-area: wish; }
+    .header .lang-switcher { grid-area: lang; }
+    .nav-hamburger { grid-area: burger; }
+
+    .header .logo h1 {
+        font-size: 18px;
+        margin: 0;
+    }
+
+    /* Keuzehulp tot één regel: titel + startknop. De uitleg staat al op
+       de keuzehulppagina zelf. */
+    .pagina-flow > .wizard-teaser {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+
+    .pagina-flow > .wizard-teaser .wizard-teaser-info span {
+        display: none;
+    }
+
+    .pagina-flow > .wizard-teaser .wizard-teaser-info strong {
+        font-size: 13.5px;
+    }
+
+    .pagina-flow > .wizard-teaser .wizard-teaser-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 15px;
+    }
+
+    /* Metaregel korter: het tijdstip van bijwerken staat ook in de FAQ
+       onderaan ("Hoe actueel zijn deze prijzen?"). */
+    .category-meta .meta-bijgewerkt {
+        display: none;
+    }
+
+    .category-header h1 {
+        margin-bottom: 4px;
+    }
+
+    .kerncijfers {
+        margin-top: 8px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Breadcrumb nam 45px voor één regel tekst */
+    .category-page .breadcrumbs,
+    .breadcrumbs {
+        padding: 8px 0 0;
+        margin-bottom: 4px;
+        line-height: 1.3;
+    }
+}
+
+@media (max-width: 768px) {
+    /* margin-top van 20px erbij: op mobiel begint de pagina direct
+       onder de header, daar is geen extra lucht nodig. */
+    .category-page .breadcrumbs,
+    .breadcrumbs {
+        margin-top: 6px;
+    }
+}

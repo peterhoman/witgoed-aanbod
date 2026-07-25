@@ -93,11 +93,14 @@
 
         // Zodra er gescrold wordt: inklappen tot rond icoon, zodat de
         // knop nooit een koopknop in de resultatenlijst afdekt.
-        // Op smalle schermen begint de knop al compact: in ruststand lag
-        // de volle pil over de derde productkaart (design-review 25-07).
+        // Altijd een rond icoon zodra de bezoeker op een pagina met
+        // productkaarten is: de volle pil lag zowel op mobiel als op
+        // desktop over een koopknop (design-review 25-07). Alleen op
+        // pagina's zonder kaarten blijft het label bovenaan staan.
+        var heeftKaarten = !!document.querySelector('.product-card');
         var compact = false;
         function pasCompactAan() {
-            var moetCompact = window.scrollY > 120 || window.innerWidth <= 768;
+            var moetCompact = heeftKaarten || window.scrollY > 120 || window.innerWidth <= 768;
             if (moetCompact !== compact) {
                 compact = moetCompact;
                 knop.classList.toggle('compact', compact);

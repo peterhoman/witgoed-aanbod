@@ -29,7 +29,7 @@
             {% if facet_intro %}
             <p>{{ facet_intro }}</p>
             {% elif not facet_title and kerncijfers %}
-            <p class="category-meta">{{ pagination.total }} modellen{% if merkenaantal %} van {{ merkenaantal }} merken{% endif %}, prijzen van {{ kerncijfers.winkels }} winkels naast elkaar.{% if kerncijfers.bijgewerkt %} Bijgewerkt om {{ kerncijfers.bijgewerkt.strftime('%H:%M') }}.{% endif %}</p>
+            <p class="category-meta">{{ pagination.total }} modellen{% if merkenaantal %} van {{ merkenaantal }} merken{% endif %}, prijzen van {{ kerncijfers.winkels }} winkels naast elkaar.{% if kerncijfers.bijgewerkt %}<span class="meta-bijgewerkt"> Bijgewerkt om {{ kerncijfers.bijgewerkt.strftime('%H:%M') }}.</span>{% endif %}</p>
             {% elif category.ai_intro %}
             <p>{{ category.ai_intro }}</p>
             {% else %}
@@ -52,10 +52,12 @@
         {% endif %}
     </header>
 
-    {# Keuzehulp en videogids naast elkaar i.p.v. onder elkaar: scheelt
-       hoogte, zodat het eerste product eerder in beeld komt. #}
-    {% if has_wizard or video_id or category_guide %}
-    <div class="teaser-rij">
+    {# Alles onder de kop staat in één flexcontainer, zodat de volgorde
+       op mobiel puur met CSS `order` kan (videogids en merkchips ná de
+       resultaten). Geen JS die de DOM herschikt: dat zou na het laden
+       zichtbaar verspringen en als layout shift meetellen in de Core
+       Web Vitals (design-review 25-07). #}
+    <div class="pagina-flow">
         {% if has_wizard %}
         <a href="/category/{{ category.slug }}/keuzehulp" class="wizard-teaser">
             <span class="wizard-teaser-icon" aria-hidden="true">?</span>
@@ -86,8 +88,6 @@
             <span class="guide-teaser-cta">{{ t('category.guide_teaser_cta') }} &rarr;</span>
         </a>
         {% endif %}
-    </div>
-    {% endif %}
 
     {% if not facet_title and (brand_facet or spec_facets) %}
     {# Echte <a>-links naar de merk-/energielabel-facetpagina's: de checkbox-
@@ -252,6 +252,7 @@
             {% endif %}
         </div>
     </div>
+    </div><!-- /.pagina-flow -->
 
     {% if faq %}
     <section class="category-faq">
@@ -274,30 +275,6 @@ document.getElementById('min_price').addEventListener('input', function() {
 document.getElementById('max_price').addEventListener('input', function() {
     document.getElementById('max-price-label').textContent = this.value;
 });
-
-// Op mobiel de videogids ná de resultaten plaatsen: de keuzehulp levert
-// bovenaan meer op, en zo staat het eerste product eerder in beeld
-// (design-handoff turn 4b). De link blijft in de DOM, dus de interne
-// linkwaarde gaat niet verloren.
-(function () {
-    var video = document.querySelector('.teaser-rij .category-video-teaser, .teaser-rij .guide-teaser');
-    var producten = document.querySelector('.category-products');
-    if (!video || !producten) return;
-    var origineel = video.parentNode;
-    var verplaatst = false;
-    function pasAan() {
-        var smal = window.innerWidth <= 768;
-        if (smal && !verplaatst) {
-            producten.appendChild(video);
-            verplaatst = true;
-        } else if (!smal && verplaatst) {
-            origineel.appendChild(video);
-            verplaatst = false;
-        }
-    }
-    window.addEventListener('resize', pasAan);
-    pasAan();
-})();
 
 var filtersToggle = document.getElementById('filters-toggle');
 if (filtersToggle) {

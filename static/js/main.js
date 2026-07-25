@@ -384,3 +384,20 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+
+// --- Mobiele categorieën achter de hamburger (redesign fase 3) ---
+// De twaalf categorielinks stonden op mobiel over vier regels uitgeklapt
+// en kostten ~130px scrollhoogte vóór het eerste product. Ze blijven in
+// de DOM staan (crawlbaar, geen verlies van interne links), maar zijn
+// ingeklapt tot de bezoeker ze opvraagt.
+document.addEventListener('DOMContentLoaded', function () {
+    var knop = document.getElementById('nav-hamburger');
+    var balk = document.getElementById('nav-categories');
+    if (!knop || !balk) return;
+    knop.addEventListener('click', function () {
+        var open = balk.classList.toggle('open');
+        knop.setAttribute('aria-expanded', open ? 'true' : 'false');
+        knop.classList.toggle('is-open', open);
+    });
+});

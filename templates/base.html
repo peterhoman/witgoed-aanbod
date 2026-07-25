@@ -74,10 +74,19 @@
                     <a href="/disclaimer">{{ t('nav.disclaimer') }}</a>
                     <a href="/contact">{{ t('nav.contact') }}</a>
                 </nav>
+                {# Hamburger: alleen zichtbaar op mobiel, klapt de
+                   categorieënbalk uit. De twaalf links staan gewoon in de
+                   DOM (SEO + crawlers), maar nemen ingeklapt geen 130px
+                   scrollhoogte meer in vóór het eerste product. #}
+                <button type="button" class="nav-hamburger" id="nav-hamburger"
+                        aria-expanded="false" aria-controls="nav-categories"
+                        aria-label="{{ t('nav.menu') }}">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
 
             <!-- Categories Navigation -->
-            <nav class="nav-categories">
+            <nav class="nav-categories" id="nav-categories">
                 <a href="/category/wasmachines">{{ t('nav.wasmachines') }}</a>
                 <a href="/category/drogers">{{ t('nav.drogers') }}</a>
                 <a href="/category/wasdroogcombinaties">{{ t('nav.wasdroogcombinaties') }}</a>

@@ -3,7 +3,8 @@ import time
 from flask import Blueprint, render_template, request, redirect, current_app, abort
 from models import Category, Product, Guide
 from sqlalchemy import or_
-from filter_helpers import compute_brand_facet, compute_spec_facets, parse_spec_filters, slugify
+from filter_helpers import (compute_brand_facet, compute_spec_facets, expand_spec_values,
+                            parse_spec_filters, slugify)
 
 main_bp = Blueprint('main', __name__)
 
@@ -347,7 +348,10 @@ def category(slug):
         q = q.filter(or_(*[Product.brand.ilike(b) for b in brand_filter]))
 
     for key, values in selected_specs.items():
-        q = q.filter(Product.specs[key].as_string().in_(values))
+        # Bij Kleur zitten achter één knop meerdere ruwe schrijfwijzen
+        # ("Wit" en "wit"); expand_spec_values vertaalt terug naar wat er
+        # daadwerkelijk in de database staat.
+        q = q.filter(Product.specs[key].as_string().in_(expand_spec_values(spec_facets, key, values)))
 
     sort = request.args.get('sort', '')
     if sort == 'price_asc':
@@ -648,7 +652,10 @@ def wizard_count(slug):
     '397 wasmachines'-teller tijdens het doorlopen van de wizard."""
     from flask import jsonify
     category = Category.query.filter_by(slug=slug).first_or_404()
+    _, spec_facets, _ = _category_facets(category)
     q = Product.query.filter_by(category_id=category.id, is_available=True)
     for key, values in parse_spec_filters(request.args.getlist('spec')).items():
-        q = q.filter(Product.specs[key].as_string().in_(values))
+        # Zelfde vertaalslag als de categoriepagina, anders zou de teller een
+        # ander aantal geven dan de pagina waar hij naartoe leidt.
+        q = q.filter(Product.specs[key].as_string().in_(expand_spec_values(spec_facets, key, values)))
     return jsonify({'aantal': q.count()})

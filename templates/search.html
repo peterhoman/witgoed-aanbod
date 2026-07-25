@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from '_macros.html' import product_card with context %}
+{% from '_macros.html' import product_card, filter_opties with context %}
 
 {% block title %}Zoekresultaten: {{ query }} | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}Zoekresultaten voor '{{ query }}' op WitgoedAanbod.nl. Vergelijk prijzen en specs.{% endblock %}
@@ -57,15 +57,7 @@
                 {% if available_brands %}
                 <div class="filter-group">
                     <label>{{ t('filters.brand') }}</label>
-                    <div class="brand-checkboxes">
-                        {% for brand in available_brands %}
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="brand" value="{{ brand }}"
-                                {% if brand in selected_brands %}checked{% endif %}>
-                            {{ brand }}
-                        </label>
-                        {% endfor %}
-                    </div>
+                    {{ filter_opties(available_brands, 'brand', selected_brands) }}
                 </div>
                 {% endif %}
 

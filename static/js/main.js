@@ -384,3 +384,18 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+// ============================================
+// FILTER: "MEER (N)" IN DE ZIJBALK
+// ============================================
+// Lange optielijsten (merken, kleuren) tonen de eerste zes; de rest zit
+// achter deze knop. Voorheen stonden ze allemaal in een blok met een vaste
+// hoogte en een eigen scrollbalk, wat scrollen boven de zijbalk kaapte.
+document.querySelectorAll('.filter-meer').forEach(function (knop) {
+    knop.addEventListener('click', function () {
+        const lijst = knop.previousElementSibling;
+        if (!lijst || !lijst.classList.contains('filter-opties')) return;
+        lijst.classList.add('toont-alles');
+        knop.remove();
+    });
+});

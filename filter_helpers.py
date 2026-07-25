@@ -119,13 +119,75 @@ def compute_brand_facet(products):
     return facet
 
 
-def compute_spec_facets(products, max_filters=6, max_options=10):
+# Kleur is het enige spec-veld waar de feeds structureel rommel in leveren:
+# naast "Wit" en "wit" staan er varianten waarin de capaciteit ("Wit/Zwart
+# 9kg Autodose") of zelfs een korting ("Zwart - -30%") in het kleurveld is
+# beland. Tien "kleuren" voor 46 wasmachines, terwijl witgoed in de praktijk
+# wit, zwart of rvs is. We bucketen op trefwoord i.p.v. op exacte waarde.
+_KLEUR_TREFWOORDEN = (
+    ('RVS / Inox', ('rvs', 'inox', 'roestvrij')),
+    ('Zwart', ('zwart', 'black', 'antraciet')),
+    ('Wit', ('wit', 'white')),
+    ('Grijs', ('grijs', 'zilver', 'silver')),
+)
+_KLEUR_OVERIG = 'Overig'
+
+
+def _is_kleur_spec(key):
+    return 'kleur' in key.lower()
+
+
+def normaliseer_kleur(waarde):
+    """'Zwart - -30%' -> 'Zwart', 'Wit/Zwart 9kg' -> 'Overig'.
+
+    Eén herkende kleur in de waarde bepaalt de bucket; ruis eromheen
+    (capaciteit, kortingspercentage) verdwijnt daarmee vanzelf. Bevat de
+    waarde méér dan één kleur, dan is het een tweekleurig apparaat en is
+    geen enkele bucket juist -- die gaan naar Overig, net als waarden waar
+    we niets in herkennen.
+    """
+    tekst = str(waarde or '').lower()
+    gevonden = [naam for naam, trefwoorden in _KLEUR_TREFWOORDEN
+                if any(tw in tekst for tw in trefwoorden)]
+    if len(gevonden) == 1:
+        return gevonden[0]
+    return _KLEUR_OVERIG
+
+
+def expand_spec_values(spec_facets, key, gekozen):
+    """Vertaal getoonde filterwaarden terug naar wat er in de database staat.
+
+    Voor de meeste facetten is dat één-op-één, maar bij Kleur staat er achter
+    "Wit" een reeks ruwe waarden ("Wit", "wit"). Zonder deze vertaling zou
+    een klik op "Wit" alleen de exacte "Wit"-rijen vinden en zou het filter
+    opnieuw liegen, nu over zijn resultaten in plaats van zijn aantallen.
+    """
+    facet = next((f for f in spec_facets if f['key'] == key), None)
+    if not facet:
+        return gekozen
+    ruw = []
+    for waarde in gekozen:
+        optie = next((o for o in facet['options'] if o['value'] == waarde), None)
+        ruw.extend(optie['raw'] if optie else [waarde])
+    return ruw
+
+
+def compute_spec_facets(products, max_filters=6, max_options=None):
     """Derive the most common spec fields across the given products.
 
-    Returns a list of {'key': str, 'options': [{'value': str, 'count': int}]},
+    Returns a list of {'key': str, 'options': [{'value', 'count', 'raw'}]},
     ordered by how many products have that spec key (most common first).
-    Only the top `max_filters` keys are returned, each capped at `max_options`
-    distinct values (also sorted by count desc).
+    Only the top `max_filters` keys are returned.
+
+    `max_options` stond op 10 en kapte de waardenlijst stil af: de zijbalk
+    toonde tien "kleuren" zonder te melden dat er meer waren, en een filter
+    dat een deel van zijn eigen assortiment verzwijgt geeft verkeerde
+    antwoorden. Standaard nu ongelimiteerd; de sjabloon toont de eerste zes
+    met een "Meer (n)"-knop, zodat de zijbalk kort blijft zonder te liegen.
+
+    `raw` bevat de oorspronkelijke databasewaarden achter een optie. Voor de
+    meeste facetten is dat de waarde zelf; bij Kleur zitten er meerdere ruwe
+    schrijfwijzen achter één knop (zie normaliseer_kleur).
     """
     key_frequency = Counter()
     value_counts = defaultdict(Counter)
@@ -145,12 +207,25 @@ def compute_spec_facets(products, max_filters=6, max_options=10):
 
     facets = []
     for key in top_keys:
-        counted = value_counts[key].most_common(max_options)
-        if _is_priority_spec(key):
-            # Oplopend i.p.v. "meeste eerst": energielabel A boven G,
-            # toerental 1200 vóór 1600.
-            counted = sorted(counted, key=lambda vc: _waarde_sorteersleutel(vc[0]))
-        options = [{'value': value, 'count': count} for value, count in counted]
+        if _is_kleur_spec(key):
+            gebucket = defaultdict(lambda: {'aantal': 0, 'raw': []})
+            for waarde, aantal in value_counts[key].items():
+                bucket = gebucket[normaliseer_kleur(waarde)]
+                bucket['aantal'] += aantal
+                bucket['raw'].append(waarde)
+            options = [{'value': naam, 'count': data['aantal'], 'raw': data['raw']}
+                       for naam, data in gebucket.items()]
+            # Overig hoort onderaan, ook als het toevallig veel producten telt.
+            options.sort(key=lambda o: (o['value'] == _KLEUR_OVERIG, -o['count'], o['value']))
+        else:
+            counted = value_counts[key].most_common(max_options)
+            if _is_priority_spec(key):
+                # Oplopend i.p.v. "meeste eerst": energielabel A boven G,
+                # toerental 1200 vóór 1600.
+                counted = sorted(counted, key=lambda vc: _waarde_sorteersleutel(vc[0]))
+            options = [{'value': value, 'count': count, 'raw': [value]} for value, count in counted]
+        if max_options:
+            options = options[:max_options]
         facets.append({'key': key, 'options': options})
 
     return facets

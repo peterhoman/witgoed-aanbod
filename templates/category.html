@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from '_macros.html' import product_card with context %}
+{% from '_macros.html' import product_card, filter_opties with context %}
 
 {% block title %}{{ facet_title or category.name }} vergelijken - laagste prijs | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}{{ meta_description }}{% endblock %}
@@ -113,15 +113,7 @@
                 {% if brand_facet %}
                 <div class="filter-group">
                     <label>{{ t('filters.brand') }}</label>
-                    <div class="brand-checkboxes">
-                        {% for option in brand_facet %}
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="brand" value="{{ option.value }}"
-                                {% if option.value in selected_brands %}checked{% endif %}>
-                            {{ option.value }} ({{ option.count }})
-                        </label>
-                        {% endfor %}
-                    </div>
+                    {{ filter_opties(brand_facet, 'brand', selected_brands) }}
                 </div>
                 {% endif %}
 
@@ -129,15 +121,7 @@
                 {% for facet in spec_facets %}
                 <div class="filter-group">
                     <label>{{ facet.key }}</label>
-                    <div class="brand-checkboxes">
-                        {% for option in facet.options %}
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="spec" value="{{ facet.key }}::{{ option.value }}"
-                                {% if option.value in selected_specs.get(facet.key, []) %}checked{% endif %}>
-                            {{ option.value }} ({{ option.count }})
-                        </label>
-                        {% endfor %}
-                    </div>
+                    {{ filter_opties(facet.options, 'spec', selected_specs.get(facet.key, []), facet.key ~ '::') }}
                 </div>
                 {% endfor %}
 

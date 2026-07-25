@@ -2524,12 +2524,38 @@ section h2 {
     font-size: 14px;
 }
 
-.brand-checkboxes {
+/* Was .brand-checkboxes met max-height: 300px + overflow-y: auto. Dat gaf een
+   scrollgebied binnen de pagina: stond je muis boven de merkenlijst, dan
+   scrollde die lijst en bewoog de pagina niet. De lange lijsten zitten nu
+   achter een "Meer (n)"-knop, dus de begrenzing is niet meer nodig. */
+.filter-opties {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 300px;
-    overflow-y: auto;
+}
+
+.filter-optie-extra {
+    display: none;
+}
+
+.filter-opties.toont-alles .filter-optie-extra {
+    display: flex;
+}
+
+.filter-meer {
+    margin-top: 10px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.filter-meer:hover {
+    text-decoration: underline;
 }
 
 .checkbox-label {

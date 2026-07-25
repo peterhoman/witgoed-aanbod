@@ -66,6 +66,7 @@ TRANSLATIONS = {
         'filters.min_price': 'Min. prijs',
         'filters.max_price': 'Max. prijs',
         'filters.brand': 'Merk',
+        'filters.more': 'Meer ({count}) →',
         'filters.apply': 'Filter toepassen',
 
         # Sorting / results / pagination
@@ -235,6 +236,7 @@ TRANSLATIONS = {
         'filters.min_price': 'Min. price',
         'filters.max_price': 'Max. price',
         'filters.brand': 'Brand',
+        'filters.more': 'More ({count}) →',
         'filters.apply': 'Apply Filters',
 
         'sort.label': 'Sort by:',

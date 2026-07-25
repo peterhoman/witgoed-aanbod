@@ -69,3 +69,36 @@
     </div>
 </article>
 {% endmacro %}
+
+
+{# Optielijst voor een filtergroep in de zijbalk.
+
+   Toonde eerder álle opties in een blok met max-height + overflow, wat een
+   scrollgebied binnen de pagina opleverde (scrollen met de muis boven de
+   merkenlijst bewoog de pagina niet). Nu staan de eerste `zichtbaar` opties
+   er gewoon en zit de rest achter een "Meer (n)"-knop: geen genest scrollen,
+   en de bezoeker ziet dát er meer is in plaats van een stil afgekapte lijst.
+
+   opties: lijst van {'value', 'count'} of van kale strings (zoekpagina).
+   veld:   name-attribuut van de checkbox ('brand' of 'spec').
+   gekozen: aangevinkte waarden. prefix: voorvoegsel voor spec-waarden. #}
+{% macro filter_opties(opties, veld, gekozen, prefix='', zichtbaar=6) %}
+{% set ns = namespace(verborgen=0) %}
+<div class="filter-opties">
+    {% for optie in opties %}
+    {% set waarde = optie.value if optie is mapping else optie %}
+    {# Een aangevinkte optie blijft altijd staan, ook voorbij de zesde: anders
+       verdwijnt je eigen filter achter de knop zodra de pagina herlaadt. #}
+    {% set verbergen = loop.index > zichtbaar and waarde not in gekozen %}
+    {% if verbergen %}{% set ns.verborgen = ns.verborgen + 1 %}{% endif %}
+    <label class="checkbox-label{% if verbergen %} filter-optie-extra{% endif %}">
+        <input type="checkbox" name="{{ veld }}" value="{{ prefix }}{{ waarde }}"
+            {% if waarde in gekozen %}checked{% endif %}>
+        {{ waarde }}{% if optie is mapping %} ({{ optie.count }}){% endif %}
+    </label>
+    {% endfor %}
+</div>
+{% if ns.verborgen %}
+<button type="button" class="filter-meer">{{ t('filters.more', count=ns.verborgen) }}</button>
+{% endif %}
+{% endmacro %}

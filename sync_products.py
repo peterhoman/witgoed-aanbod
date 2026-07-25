@@ -510,7 +510,13 @@ def sync_products():
                         product.image_url = image_url or product.image_url
                         product.bol_url = bol_url
                         product.retailer = 'bol'
-                        product.specs = specs
+                        # Zelfde vangnet als bij de foto hierboven: mislukt de
+                        # detail-call, dan valt prod_data terug op het
+                        # zoekresultaat en levert extract_specs een lege dict.
+                        # Die mocht de eerder opgehaalde specificaties niet
+                        # wissen -- dat gebeurde wel, en daardoor had 82% van
+                        # de catalogus geen specificaties meer.
+                        product.specs = specs or product.specs
                         product.affiliate_url = product.generate_short_affiliate_url(bitly_client, site_id='1528790')
                         product.is_available = True
                         product.last_synced = utcnow()

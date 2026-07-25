@@ -20,6 +20,7 @@ import requests
 from affiliate_ref import voeg_clickref_toe
 from app import create_app
 from models import db, Product, Category, Offer, SyncLog, utcnow, log_price, prijssprong_melding
+from ean_match import zoek_product
 from sync_products import EXCLUDE_KEYWORDS, MIN_PRICES, guess_brand
 import logging
 
@@ -229,7 +230,7 @@ def sync_coolblue():
 
             seen_eans.add(record['ean'])
 
-            product = Product.query.filter_by(ean=record['ean']).first()
+            product = zoek_product(Product, record['ean'])
             if not product:
                 product = Product(
                     ean=record['ean'],

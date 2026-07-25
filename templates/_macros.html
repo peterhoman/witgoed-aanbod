@@ -60,11 +60,18 @@
             <input type="checkbox" class="compare-checkbox" data-product-id="{{ product.id }}" data-product-title="{{ product.title }}">
             {{ t('product.compare_label') }}
         </label>
+        {# Beide knoppen leiden naar de productpagina, nooit rechtstreeks naar
+           de winkel. "Bekijk aanbieding" stuurde bezoekers meteen weg terwijl
+           ze dachten het apparaat te gaan bekijken -- en dat gold voor de
+           ruim helft van de catalogus die maar één winkel heeft. Daar staat
+           nu juist de informatie die deze site onderscheidt: specificaties,
+           stroomkosten, prijsverloop. De stap naar de winkel gebeurt daar,
+           met een knop die zegt waar je heen gaat. #}
         {% if product.retailer_count > 1 %}
         <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('offer.compare_cta') }}</a>
         <span class="btn-buy-trust">&#10003; {{ t('offer.at_shops', count=product.retailer_count) }}</span>
         {% else %}
-        <a href="{{ best.link if best else (product.affiliate_url or product.bol_url) }}" target="_blank" rel="nofollow sponsored" class="btn-buy">{{ t('product.view_offer') }}</a>
+        <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('product.view_specs') }}</a>
         {% endif %}
     </div>
 </article>

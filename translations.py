@@ -101,6 +101,8 @@ TRANSLATIONS = {
         'product.guides_title': 'Lees ook: koopgidsen en tips',
         'product.compare_label': 'Vergelijken',
         'product.view_offer': 'Bekijk aanbieding',
+        'product.view_specs': 'Bekijk specificaties',
+        'offer.go_to': 'Naar {retailer}',
         'product.show_more': 'Toon meer',
         'product.show_less': 'Toon minder',
 
@@ -278,6 +280,8 @@ TRANSLATIONS = {
         'product.guides_title': 'Read more: buying guides and tips',
         'product.compare_label': 'Compare',
         'product.view_offer': 'View offer',
+        'product.view_specs': 'View specifications',
+        'offer.go_to': 'Go to {retailer}',
         'product.show_more': 'Show more',
         'product.show_less': 'Show less',
 

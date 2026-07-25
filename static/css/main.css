@@ -1047,11 +1047,21 @@ body {
     outline: none;
 }
 
+/* width: auto is hier essentieel: .btn-primary staat standaard op width 100%,
+   waardoor de knop binnen de pil het hele e-mailveld opslokte -- er bleef
+   28px over om in te typen. */
 .price-alert-form .btn-primary {
+    width: auto;
+    flex-shrink: 0;
     border-radius: 999px;
     padding: 9px 18px;
     font-size: 13.5px;
     white-space: nowrap;
+}
+
+/* Het e-mailveld moet breed genoeg blijven om een adres in te kunnen zien. */
+.price-alert-form input[type="email"] {
+    min-width: 140px;
 }
 
 .price-alert-privacy {
@@ -3189,6 +3199,10 @@ section h2 {
     }
 
     /* Elke tikbare regel minimaal 44px hoog. */
+    .price-alert-form .btn-primary {
+        min-height: 44px;
+    }
+
     .offer-btn,
     .alternatieven-lijst a {
         min-height: 44px;

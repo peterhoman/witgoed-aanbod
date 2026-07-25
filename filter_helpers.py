@@ -60,13 +60,63 @@ def _is_excluded_spec(key):
     return any(kw in key_lower for kw in _EXCLUDED_SPEC_KEYWORDS)
 
 
+# Merken waarvan de juiste schrijfwijze geen Titelvorm is. De feeds leveren
+# ze door elkaar ("LG" naast "Lg", "chiq" naast "ChiQ") en dan wint de
+# vaakst-voorkomende variant het, ook als die fout is: bij 8x "Lg" tegen
+# 3x "LG" zou de zijbalk "Lg" tonen. Voor deze merken ligt de naam dus vast.
+_MERK_SCHRIJFWIJZE = {
+    'aeg': 'AEG',
+    'lg': 'LG',
+    'chiq': 'ChiQ',
+    'ok': 'OK',
+    'bsh': 'BSH',
+    'smeg': 'Smeg',
+}
+
+
+def canonical_brand(naam, casing_counts=None):
+    """Weergavenaam voor een merk, ongeacht hoe de feed het spelde.
+
+    Staat het merk in _MERK_SCHRIJFWIJZE, dan wint die vaste schrijfwijze.
+    Anders wint de vaakst voorkomende variant uit `casing_counts` (een
+    Counter van schrijfwijze -> aantal), en zonder die telling de naam zelf.
+    """
+    naam = (naam or '').strip()
+    if not naam:
+        return ''
+    vast = _MERK_SCHRIJFWIJZE.get(naam.lower())
+    if vast:
+        return vast
+    if casing_counts:
+        return casing_counts.most_common(1)[0][0]
+    return naam
+
+
 def compute_brand_facet(products):
-    """Return a list of {'value': brand, 'count': n} sorted by count desc, then name."""
-    counts = Counter(p.brand for p in products if p.brand)
-    return [
-        {'value': brand, 'count': count}
-        for brand, count in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+    """Return a list of {'value': brand, 'count': n} sorted by count desc, then name.
+
+    Schrijfwijze-varianten van hetzelfde merk worden samengevoegd: de feeds
+    leveren "AEG" naast "Aeg" en "Samsung" naast "SAMSUNG", wat de zijbalk
+    twee vinkjes voor één merk gaf met allebei een te laag aantal. Het
+    filteren zelf was al hoofdletter-ongevoelig (Product.brand.ilike), dus
+    "AEG (33)" leverde in werkelijkheid alle 40 AEG-producten op — de
+    getoonde aantallen logen, de resultaten niet.
+    """
+    per_merk = defaultdict(lambda: {'casing': Counter(), 'aantal': 0})
+    for product in products:
+        naam = (product.brand or '').strip()
+        if not naam:
+            continue
+        sleutel = naam.lower()
+        per_merk[sleutel]['casing'][naam] += 1
+        per_merk[sleutel]['aantal'] += 1
+
+    facet = [
+        {'value': canonical_brand(sleutel, data['casing']), 'count': data['aantal']}
+        for sleutel, data in per_merk.items()
     ]
+    facet.sort(key=lambda b: (-b['count'], b['value'].lower()))
+    return facet
 
 
 def compute_spec_facets(products, max_filters=6, max_options=10):
@@ -121,8 +171,8 @@ def compute_global_brand_index(brand_counts):
         per_merk[key]['aantal'] += aantal
 
     resultaat = []
-    for data in per_merk.values():
-        weergavenaam = data['casing'].most_common(1)[0][0]
+    for sleutel, data in per_merk.items():
+        weergavenaam = canonical_brand(sleutel, data['casing'])
         resultaat.append({'naam': weergavenaam, 'slug': slugify(weergavenaam), 'aantal': data['aantal']})
     resultaat.sort(key=lambda m: m['naam'].lower())
     return resultaat

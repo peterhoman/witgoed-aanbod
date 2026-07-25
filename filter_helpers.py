@@ -125,13 +125,26 @@ def compute_brand_facet(products):
 # beland. Tien "kleuren" voor 46 wasmachines, terwijl witgoed in de praktijk
 # wit, zwart of rvs is. We bucketen op trefwoord i.p.v. op exacte waarde.
 # De feeds spellen kleuren ook in het Engels en Duits ("Stainless steel",
-# "Manhattan Gray", "Schwarz"). Zonder die varianten belandden ze in Overig,
-# terwijl het gewoon rvs, grijs en zwart is.
+# "Manhattan Gray", "Schwarz"). Metaallook-woorden (chrome, metallic, stone)
+# vallen onder rvs: dat is wat een koper bedoelt als hij "rvs" zoekt.
 _KLEUR_TREFWOORDEN = (
-    ('RVS / Inox', ('rvs', 'inox', 'roestvrij', 'stainless')),
+    ('RVS / Inox', ('rvs', 'inox', 'roestvrij', 'stainless', 'chrome', 'chroom',
+                    'metallic', 'metaal', 'stone')),
     ('Zwart', ('zwart', 'black', 'antraciet', 'schwarz')),
     ('Wit', ('wit', 'white', 'weiss', 'weiß')),
     ('Grijs', ('grijs', 'zilver', 'silver', 'gray', 'grey')),
+)
+
+# Kleuren die te weinig voorkomen voor een eigen filterregel, maar wél een
+# kleur zijn: die horen in Overig. Staat er geen enkel kleurwoord in de
+# waarde, dan is het geen kleur maar feedrommel ("nvt", "12 liter inhoud")
+# en krijgt het product helemaal geen kleur -- wie op Overig klikt hoort
+# apparaten met een afwijkende kleur te zien, niet met een kapot veld.
+_KLEUR_OVERIGE_WOORDEN = (
+    'groen', 'green', 'beige', 'blauw', 'blue', 'turquoise', 'oranje', 'orange',
+    'bronze', 'brons', 'rood', 'red', 'geel', 'yellow', 'roze', 'pink', 'paars',
+    'purple', 'goud', 'gold', 'koper', 'copper', 'bruin', 'brown', 'creme',
+    'crème', 'ivoor', 'ivory',
 )
 _KLEUR_OVERIG = 'Overig'
 
@@ -141,20 +154,26 @@ def _is_kleur_spec(key):
 
 
 def normaliseer_kleur(waarde):
-    """'Zwart - -30%' -> 'Zwart', 'Wit/Zwart 9kg' -> 'Overig'.
+    """Kleurwaarde -> verzameling buckets. Meerwaardig, want tweekleurig.
 
-    Eén herkende kleur in de waarde bepaalt de bucket; ruis eromheen
-    (capaciteit, kortingspercentage) verdwijnt daarmee vanzelf. Bevat de
-    waarde méér dan één kleur, dan is het een tweekleurig apparaat en is
-    geen enkele bucket juist -- die gaan naar Overig, net als waarden waar
-    we niets in herkennen.
+    'Zwart - -30%'      -> {'Zwart'}          (ruis eromheen verdwijnt)
+    'Wit/Zwart 9kg'     -> {'Wit', 'Zwart'}   (in beide filters te vinden)
+    'Zilver en zwart'   -> {'Grijs', 'Zwart'}
+    'Groen'             -> {'Overig'}         (kleur, te zeldzaam voor eigen regel)
+    '12 liter inhoud'   -> set()              (geen kleur: product krijgt er geen)
+
+    Bewust geen split op scheidingstekens: de feeds gebruiken /, komma,
+    puntkomma, "en" én een kale spatie ("Wit Zwart"). Alle kleurwoorden in de
+    hele waarde opzoeken vangt die varianten allemaal in één keer.
     """
     tekst = str(waarde or '').lower()
-    gevonden = [naam for naam, trefwoorden in _KLEUR_TREFWOORDEN
-                if any(tw in tekst for tw in trefwoorden)]
-    if len(gevonden) == 1:
-        return gevonden[0]
-    return _KLEUR_OVERIG
+    gevonden = {naam for naam, trefwoorden in _KLEUR_TREFWOORDEN
+                if any(tw in tekst for tw in trefwoorden)}
+    if gevonden:
+        return gevonden
+    if any(woord in tekst for woord in _KLEUR_OVERIGE_WOORDEN):
+        return {_KLEUR_OVERIG}
+    return set()
 
 
 def expand_spec_values(spec_facets, key, gekozen):
@@ -213,9 +232,12 @@ def compute_spec_facets(products, max_filters=6, max_options=None):
         if _is_kleur_spec(key):
             gebucket = defaultdict(lambda: {'aantal': 0, 'raw': []})
             for waarde, aantal in value_counts[key].items():
-                bucket = gebucket[normaliseer_kleur(waarde)]
-                bucket['aantal'] += aantal
-                bucket['raw'].append(waarde)
+                # Meerwaardig: een tweekleurig apparaat telt in beide filters,
+                # zodat het opduikt of je nu op Wit of op Zwart zoekt. Een
+                # lege verzameling betekent "geen kleur" en valt dus weg.
+                for naam in normaliseer_kleur(waarde):
+                    gebucket[naam]['aantal'] += aantal
+                    gebucket[naam]['raw'].append(waarde)
             options = [{'value': naam, 'count': data['aantal'], 'raw': data['raw']}
                        for naam, data in gebucket.items()]
             # Overig hoort onderaan, ook als het toevallig veel producten telt.

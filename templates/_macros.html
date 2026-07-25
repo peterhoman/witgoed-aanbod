@@ -82,14 +82,25 @@
    opties: lijst van {'value', 'count'} of van kale strings (zoekpagina).
    veld:   name-attribuut van de checkbox ('brand' of 'spec').
    gekozen: aangevinkte waarden. prefix: voorvoegsel voor spec-waarden. #}
-{% macro filter_opties(opties, veld, gekozen, prefix='', zichtbaar=6) %}
+{% macro filter_opties(opties, veld, gekozen, prefix='', zichtbaar=6, zoek_label='') %}
+{# Boven de 25 opties werkt "Meer (n)" niet meer: bij koffiemachines zou één
+   klik een lijst van 318 merken uitklappen en is de lange zijbalk terug in
+   een nieuwe vorm. Zulke groepen krijgen een zoekveldje en tonen de twintig
+   grootste; de rest bereik je door te typen. #}
+{% set groot = opties|length > 25 %}
+{% set limiet = 20 if groot else zichtbaar %}
 {% set ns = namespace(verborgen=0) %}
+{% if groot %}
+<input type="search" class="filter-zoek" autocomplete="off"
+       placeholder="{{ zoek_label or t('filters.search_options') }}"
+       aria-label="{{ zoek_label or t('filters.search_options') }}">
+{% endif %}
 <div class="filter-opties">
     {% for optie in opties %}
     {% set waarde = optie.value if optie is mapping else optie %}
-    {# Een aangevinkte optie blijft altijd staan, ook voorbij de zesde: anders
-       verdwijnt je eigen filter achter de knop zodra de pagina herlaadt. #}
-    {% set verbergen = loop.index > zichtbaar and waarde not in gekozen %}
+    {# Een aangevinkte optie blijft altijd staan, ook voorbij de limiet: anders
+       verdwijnt je eigen filter uit beeld zodra de pagina herlaadt. #}
+    {% set verbergen = loop.index > limiet and waarde not in gekozen %}
     {% if verbergen %}{% set ns.verborgen = ns.verborgen + 1 %}{% endif %}
     <label class="checkbox-label{% if verbergen %} filter-optie-extra{% endif %}">
         <input type="checkbox" name="{{ veld }}" value="{{ prefix }}{{ waarde }}"
@@ -98,7 +109,7 @@
     </label>
     {% endfor %}
 </div>
-{% if ns.verborgen %}
+{% if ns.verborgen and not groot %}
 <button type="button" class="filter-meer">{{ t('filters.more', count=ns.verborgen) }}</button>
 {% endif %}
 {% endmacro %}
@@ -126,10 +137,15 @@
 {% endmacro %}
 
 
-{# Hint voor een facetgroep: hoeveel je er koos, of hoeveel er te kiezen valt. #}
-{% macro filter_hint(gekozen, totaal, soort='opties') %}
+{# Hint voor een facetgroep.
+
+   Heb je iets gekozen, dan staan de waarden zelf in de kop ("AEG, Bosch"),
+   niet het aantal: "2 gekozen" vertelt je hoeveel, niet wélke, en dat
+   laatste wil je weten zonder de groep te openen. Passen ze niet allemaal,
+   dan volgt "+2". Koos je niets, dan toont de kop wat er te kiezen valt. #}
+{% macro filter_hint(gekozen, totaal, soort='opties', toon=2) %}
 {%- if gekozen -%}
-{{ t('filters.chosen', count=gekozen|length) }}
+{{ gekozen[:toon]|join(', ') }}{% if gekozen|length > toon %} +{{ gekozen|length - toon }}{% endif %}
 {%- elif soort == 'merken' -%}
 {{ t('filters.brands_count' if totaal != 1 else 'filters.brand_one', count=totaal) }}
 {%- else -%}

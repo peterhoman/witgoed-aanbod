@@ -74,6 +74,8 @@ TRANSLATIONS = {
         'filters.brand_one': '1 merk',
         'filters.price_range': '€ {min} – € {max}',
         'filters.title_price': 'Prijs',
+        'filters.search_options': 'Filter opties…',
+        'filters.search_brands': 'Filter merken…',
         'filters.apply': 'Filter toepassen',
 
         # Sorting / results / pagination
@@ -251,6 +253,8 @@ TRANSLATIONS = {
         'filters.brand_one': '1 brand',
         'filters.price_range': '€ {min} – € {max}',
         'filters.title_price': 'Price',
+        'filters.search_options': 'Filter options…',
+        'filters.search_brands': 'Filter brands…',
         'filters.apply': 'Apply Filters',
 
         'sort.label': 'Sort by:',

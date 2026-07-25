@@ -57,9 +57,9 @@
                 <!-- Brand Filter -->
                 {% if available_brands %}
                 {% call filter_groep(t('filters.brand'),
-                                     filter_hint(selected_brands, available_brands|length, 'merken'),
-                                     open=selected_brands|length > 0) %}
-                    {{ filter_opties(available_brands, 'brand', selected_brands) }}
+                                     filter_hint(selected_brands, available_brands|length, 'merken')) %}
+                    {{ filter_opties(available_brands, 'brand', selected_brands,
+                                     zoek_label=t('filters.search_brands')) }}
                 {% endcall %}
                 {% endif %}
 

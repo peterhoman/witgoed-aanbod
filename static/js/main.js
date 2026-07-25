@@ -399,3 +399,25 @@ document.querySelectorAll('.filter-meer').forEach(function (knop) {
         knop.remove();
     });
 });
+
+// ============================================
+// FILTER: ZOEKEN BINNEN EEN GROTE OPTIELIJST
+// ============================================
+// Groepen met meer dan 25 opties tonen de twintig grootste; de rest bereik
+// je door te typen. Leeg veld = terug naar het normale gedrag, dus we halen
+// de inline stijl weg en laten de CSS het weer overnemen.
+document.querySelectorAll('.filter-zoek').forEach(function (veld) {
+    const lijst = veld.nextElementSibling;
+    if (!lijst || !lijst.classList.contains('filter-opties')) return;
+    const labels = Array.prototype.slice.call(lijst.querySelectorAll('.checkbox-label'));
+    veld.addEventListener('input', function () {
+        const zoek = veld.value.trim().toLowerCase();
+        labels.forEach(function (label) {
+            if (!zoek) {
+                label.style.display = '';
+                return;
+            }
+            label.style.display = label.textContent.toLowerCase().indexOf(zoek) !== -1 ? 'flex' : 'none';
+        });
+    });
+});

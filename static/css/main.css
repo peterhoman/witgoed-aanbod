@@ -2480,6 +2480,17 @@ section h2 {
     height: fit-content;
 }
 
+/* Sticky alleen op desktop: op mobiel zit de zijbalk achter de Filters-knop
+   en zou vastzetten juist ruimte kosten. top: 0 en niet 20px, want met alles
+   dichtgeklapt is de zijbalk 715px en past hij precies in een viewport van
+   720px -- een offset zou de onderkant er weer afduwen. */
+@media (min-width: 769px) {
+    .filters-sidebar {
+        position: sticky;
+        top: 0;
+    }
+}
+
 /* Mobiele filter-knop: op desktop onzichtbaar (sidebar staat er gewoon),
    op mobiel klapt hij de sidebar open zodat producten direct in beeld staan. */
 .filters-toggle {
@@ -2603,6 +2614,19 @@ section h2 {
 
 .filter-opties.toont-alles .filter-optie-extra {
     display: flex;
+}
+
+/* Zoekveldje in groepen met veel opties (merken bij koffiemachines: 324).
+   Zonder dit zou "Meer (318)" met één klik een lijst van driehonderd regels
+   uitklappen en was de lange zijbalk terug in een nieuwe vorm. */
+.filter-zoek {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 13px;
 }
 
 .filter-meer {

@@ -100,9 +100,10 @@
             <h3>{{ t('filters.title') }}</h3>
 
             <form method="get" action="" class="filters-form">
-                {# Alleen Prijs staat open bij het laden; de rest is dicht zodat de
-                   zijbalk kort blijft. Een groep met een actief filter opent wel
-                   vanzelf, anders zie je je eigen keuze niet meer staan. #}
+                {# Alleen Prijs staat open bij het laden, de rest dicht -- ook
+                   groepen met een actief filter. Die hoeven niet open, want de
+                   kop toont de gekozen waarden zelf ("AEG, Bosch"). Zo blijft de
+                   zijbalk even hoog, ook als je op drie dingen tegelijk filtert. #}
                 {% call filter_groep(t('filters.title_price'),
                                      t('filters.price_range', min=min_price|euro_kort, max=max_price|euro_kort),
                                      open=true) %}
@@ -116,17 +117,16 @@
                 <!-- Brand -->
                 {% if brand_facet %}
                 {% call filter_groep(t('filters.brand'),
-                                     filter_hint(selected_brands, brand_facet|length, 'merken'),
-                                     open=selected_brands|length > 0) %}
-                    {{ filter_opties(brand_facet, 'brand', selected_brands) }}
+                                     filter_hint(selected_brands, brand_facet|length, 'merken')) %}
+                    {{ filter_opties(brand_facet, 'brand', selected_brands,
+                                     zoek_label=t('filters.search_brands')) }}
                 {% endcall %}
                 {% endif %}
 
                 <!-- Dynamic spec filters -->
                 {% for facet in spec_facets %}
                 {% set gekozen = selected_specs.get(facet.key, []) %}
-                {% call filter_groep(facet.key, filter_hint(gekozen, facet.options|length),
-                                     open=gekozen|length > 0) %}
+                {% call filter_groep(facet.key, filter_hint(gekozen, facet.options|length)) %}
                     {{ filter_opties(facet.options, 'spec', gekozen, facet.key ~ '::') }}
                 {% endcall %}
                 {% endfor %}

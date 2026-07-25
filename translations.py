@@ -67,6 +67,13 @@ TRANSLATIONS = {
         'filters.max_price': 'Max. prijs',
         'filters.brand': 'Merk',
         'filters.more': 'Meer ({count}) →',
+        'filters.chosen': '{count} gekozen',
+        'filters.brands_count': '{count} merken',
+        'filters.options_count': '{count} opties',
+        'filters.option_one': '1 optie',
+        'filters.brand_one': '1 merk',
+        'filters.price_range': '€ {min} – € {max}',
+        'filters.title_price': 'Prijs',
         'filters.apply': 'Filter toepassen',
 
         # Sorting / results / pagination
@@ -237,6 +244,13 @@ TRANSLATIONS = {
         'filters.max_price': 'Max. price',
         'filters.brand': 'Brand',
         'filters.more': 'More ({count}) →',
+        'filters.chosen': '{count} selected',
+        'filters.brands_count': '{count} brands',
+        'filters.options_count': '{count} options',
+        'filters.option_one': '1 option',
+        'filters.brand_one': '1 brand',
+        'filters.price_range': '€ {min} – € {max}',
+        'filters.title_price': 'Price',
         'filters.apply': 'Apply Filters',
 
         'sort.label': 'Sort by:',

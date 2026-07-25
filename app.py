@@ -247,6 +247,15 @@ def create_app(config_name=None):
             return value
         return formatted.replace(",", " ").replace(".", ",").replace(" ", ".")
 
+    @app.template_filter('euro_kort')
+    def euro_kort_filter(value):
+        """Als euro, maar zonder centen: 10000 -> '10.000'. Voor de hint op een
+        dichtgeklapte filterkop, waar '10.000,00' onnodig lang leest."""
+        try:
+            return f"{int(float(value)):,}".replace(",", ".")
+        except (TypeError, ValueError):
+            return value
+
     @app.errorhandler(404)
     def not_found(e):
         return render_template('404.html'), 404

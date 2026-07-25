@@ -102,3 +102,37 @@
 <button type="button" class="filter-meer">{{ t('filters.more', count=ns.verborgen) }}</button>
 {% endif %}
 {% endmacro %}
+
+
+{# Inklapbare filtergroep in de zijbalk.
+
+   <details>/<summary> in plaats van eigen JS: werkt zonder JavaScript, is
+   toetsenbord-toegankelijk en de browser regelt de open/dicht-status zelf.
+   Bewust geen accordeon — wie op merk én energielabel filtert wil beide
+   groepen tegelijk open kunnen hebben.
+
+   De hint staat altijd in de kop, ook dichtgeklapt ("17 merken",
+   "1 gekozen", "€ 0 – € 10.000"), zodat je ziet wat er in een groep zit
+   zonder hem te openen. #}
+{% macro filter_groep(titel, hint='', open=false) %}
+<details class="filter-group"{% if open %} open{% endif %}>
+    <summary class="filter-kop">
+        <span class="filter-kop-naam">{{ titel }}</span>
+        {% if hint %}<span class="filter-kop-hint">{{ hint }}</span>{% endif %}
+        <span class="filter-kop-chevron" aria-hidden="true"></span>
+    </summary>
+    <div class="filter-inhoud">{{ caller() }}</div>
+</details>
+{% endmacro %}
+
+
+{# Hint voor een facetgroep: hoeveel je er koos, of hoeveel er te kiezen valt. #}
+{% macro filter_hint(gekozen, totaal, soort='opties') %}
+{%- if gekozen -%}
+{{ t('filters.chosen', count=gekozen|length) }}
+{%- elif soort == 'merken' -%}
+{{ t('filters.brands_count' if totaal != 1 else 'filters.brand_one', count=totaal) }}
+{%- else -%}
+{{ t('filters.options_count' if totaal != 1 else 'filters.option_one', count=totaal) }}
+{%- endif -%}
+{% endmacro %}

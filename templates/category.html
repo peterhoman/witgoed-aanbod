@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from '_macros.html' import product_card, filter_opties with context %}
+{% from '_macros.html' import product_card, filter_opties, filter_groep, filter_hint with context %}
 
 {% block title %}{{ facet_title or category.name }} vergelijken - laagste prijs | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}{{ meta_description }}{% endblock %}
@@ -100,29 +100,35 @@
             <h3>{{ t('filters.title') }}</h3>
 
             <form method="get" action="" class="filters-form">
-                <!-- Price Range -->
-                <div class="filter-group">
+                {# Alleen Prijs staat open bij het laden; de rest is dicht zodat de
+                   zijbalk kort blijft. Een groep met een actief filter opent wel
+                   vanzelf, anders zie je je eigen keuze niet meer staan. #}
+                {% call filter_groep(t('filters.title_price'),
+                                     t('filters.price_range', min=min_price|euro_kort, max=max_price|euro_kort),
+                                     open=true) %}
                     <label for="min_price">{{ t('filters.min_price') }}: €<span id="min-price-label">{{ min_price|int }}</span></label>
                     <input type="range" id="min_price" name="min_price" min="0" max="10000" step="50" value="{{ min_price|int }}">
 
                     <label for="max_price">{{ t('filters.max_price') }}: €<span id="max-price-label">{{ max_price|int }}</span></label>
                     <input type="range" id="max_price" name="max_price" min="0" max="10000" step="50" value="{{ max_price|int }}">
-                </div>
+                {% endcall %}
 
                 <!-- Brand -->
                 {% if brand_facet %}
-                <div class="filter-group">
-                    <label>{{ t('filters.brand') }}</label>
+                {% call filter_groep(t('filters.brand'),
+                                     filter_hint(selected_brands, brand_facet|length, 'merken'),
+                                     open=selected_brands|length > 0) %}
                     {{ filter_opties(brand_facet, 'brand', selected_brands) }}
-                </div>
+                {% endcall %}
                 {% endif %}
 
                 <!-- Dynamic spec filters -->
                 {% for facet in spec_facets %}
-                <div class="filter-group">
-                    <label>{{ facet.key }}</label>
-                    {{ filter_opties(facet.options, 'spec', selected_specs.get(facet.key, []), facet.key ~ '::') }}
-                </div>
+                {% set gekozen = selected_specs.get(facet.key, []) %}
+                {% call filter_groep(facet.key, filter_hint(gekozen, facet.options|length),
+                                     open=gekozen|length > 0) %}
+                    {{ filter_opties(facet.options, 'spec', gekozen, facet.key ~ '::') }}
+                {% endcall %}
                 {% endfor %}
 
                 <button type="submit" class="btn-primary">{{ t('filters.apply') }}</button>

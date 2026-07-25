@@ -2506,13 +2506,65 @@ section h2 {
 .filters-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    /* Was 20px. Met inklapbare groepen staan de koppen dicht op elkaar en
+       zorgt de scheidingslijn al voor rust; 20px maakte de zijbalk alleen
+       maar langer. */
+    gap: 8px;
 }
 
+/* Filtergroep is een <details>: open/dicht zonder JS, toetsenbord-toegankelijk. */
 .filter-group {
+    display: block;
+    border-bottom: 1px solid var(--border);
+}
+
+.filter-group:last-of-type {
+    border-bottom: none;
+}
+
+.filter-kop {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* 44px: op mobiel een fatsoenlijk raakvlak voor een vinger. */
+    min-height: 44px;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--dark);
+    /* Standaard driehoekje van <summary> weg; we tekenen zelf een chevron. */
+    list-style: none;
+}
+
+.filter-kop::-webkit-details-marker {
+    display: none;
+}
+
+.filter-kop-naam {
+    flex: 1;
+}
+
+.filter-kop-hint {
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--gray);
+}
+
+.filter-kop-chevron::before {
+    content: '\25BE';
+    color: var(--gray);
+}
+
+.filter-group[open] .filter-kop-chevron::before {
+    content: '\25B4';
+}
+
+.filter-inhoud {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    padding-bottom: 14px;
 }
 
 .filter-group label {

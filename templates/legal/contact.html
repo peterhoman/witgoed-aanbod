@@ -7,9 +7,26 @@
     <h1>Contact</h1>
 
     <div class="contact-content">
-        <p class="contact-intro">Heb je een vraag of opmerking? Vul het formulier in en we nemen zo snel mogelijk contact op. Voor onze volledige bedrijfsgegevens, zie ons <a href="/privacy">privacybeleid</a>.</p>
+        <p class="contact-intro">Heb je een vraag of opmerking? Vul het formulier in en we nemen zo snel mogelijk contact op.</p>
 
-        <div class="contact-grid contact-grid-single">
+        {# Adres hier voluit in plaats van een verwijzing naar het
+           privacybeleid: wie op Contact klikt zoekt contactgegevens, en dan
+           moet je niet doorverwezen worden naar een andere pagina. #}
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h3>Gegevens</h3>
+                <p>
+                    <strong>Avantius</strong> (WitgoedAanbod.nl)<br>
+                    J.J. van Rhijnstraat 27<br>
+                    2171 PT Sassenheim<br>
+                    Nederland
+                </p>
+                <p>
+                    KvK: 87572508<br>
+                    BTW: NL864334503B01
+                </p>
+                <p>Zie ook ons <a href="/privacy">privacybeleid</a> en <a href="/over-ons">Over ons</a>.</p>
+            </div>
             <div class="contact-form">
                 <div id="contact-message" style="display:none;"></div>
                 <form id="contact-form" method="post" action="/contact" class="form">

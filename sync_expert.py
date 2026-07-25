@@ -17,6 +17,7 @@ import os
 import urllib.request
 
 from affiliate_ref import voeg_clickref_toe
+from ean_match import ean_sleutel
 from app import create_app
 from models import db, Product, Offer, SyncLog, utcnow, log_price, prijssprong_melding
 
@@ -65,7 +66,7 @@ def _feed_records(feed_url):
         except (TypeError, ValueError):
             verzendkosten = None
         levertijd = (_eerste(props.get('deliveryTime')) or '').strip()[:120] or None
-        records[str(ean)] = {
+        records[ean_sleutel(ean)] = {
             'price': float(prijs),
             'strikethrough_price': van_prijs if (van_prijs and van_prijs > float(prijs)) else None,
             'url': voeg_clickref_toe(url, 'tradetracker', ean),
@@ -98,7 +99,7 @@ def sync_expert():
         # andere winkels uit het assortiment is, kan via Expert weer
         # leverbaar worden (en de pagina herstelt dan vanzelf).
         for product in Product.query.filter_by(is_example=False).all():
-            record = records.get(str(product.ean))
+            record = records.get(ean_sleutel(product.ean))
             if record is None:
                 continue
             offer = Offer.query.filter_by(product_id=product.id,

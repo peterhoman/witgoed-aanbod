@@ -21,6 +21,7 @@ import requests
 from affiliate_ref import voeg_clickref_toe
 from app import create_app
 from models import db, Product, Category, Offer, SyncLog, utcnow, log_price, prijssprong_melding
+from ean_match import zoek_product
 from sync_products import EXCLUDE_KEYWORDS, MIN_PRICES, guess_brand
 import logging
 
@@ -287,7 +288,7 @@ def sync_mediamarkt():
                 skipped += 1
                 continue
 
-            product = Product.query.filter_by(ean=ean).first()
+            product = zoek_product(Product, ean)
             if not product:
                 product = Product(
                     ean=ean,

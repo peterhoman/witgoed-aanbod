@@ -110,6 +110,28 @@ def _category_structured_data(category, page_products, extra_crumb=None, list_na
     return [item_list, breadcrumbs]
 
 
+def _actieve_filterchips():
+    """Actieve merk-/spec-filters als chips met een verwijder-URL.
+
+    Server-side i.p.v. client-side (design-review 25-07, punt 2): zo zie
+    je waarop je filtert óók als het filterpaneel dicht is, werkt het
+    zonder JavaScript, en is elke chip een gewone link.
+    """
+    from urllib.parse import urlencode
+    chips = []
+    args = list(request.args.items(multi=True))
+    for i, (sleutel, waarde) in enumerate(args):
+        if sleutel not in ('brand', 'spec'):
+            continue
+        label = waarde.split('::', 1)[1] if '::' in waarde else waarde
+        rest = [(k, v) for j, (k, v) in enumerate(args)
+                if j != i and k != 'page']
+        query = urlencode(rest)
+        chips.append({'label': label,
+                      'url': request.path + ('?' + query if query else '')})
+    return chips
+
+
 def _category_faq(category, brand_facet, spec_facets):
     """Veelgestelde vragen voor de categoriepagina, uit LIVE aanbodsdata.
 
@@ -421,6 +443,7 @@ def category(slug):
         pros_cons_by_ean=_pros_cons_by_ean(),
         faq=faq,
         faq_jsonld=faq_jsonld,
+        filterchips=_actieve_filterchips(),
     )
 
 

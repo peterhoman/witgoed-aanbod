@@ -15,8 +15,16 @@
         '#babbelbot-knop{position:fixed;bottom:20px;right:20px;z-index:9000;',
         ' background:var(--primary,#0090DA);color:#fff;border:none;border-radius:24px;',
         ' padding:12px 20px;font-size:15px;font-weight:600;cursor:pointer;',
-        ' box-shadow:0 2px 10px rgba(0,0,0,.2);font-family:inherit;}',
+        ' box-shadow:0 2px 10px rgba(0,0,0,.2);font-family:inherit;',
+        ' transition:padding .18s ease,border-radius .18s ease;}',
         '#babbelbot-knop:hover{background:var(--primary-dark,#0072AD);}',
+        /* Zodra de bezoeker scrollt krimpt de knop tot een rond icoon:
+           de volle pil dekte op mobiel de oranje koopknop van het tweede
+           product af (design-review 25-07, punt 1) — direct verlies aan
+           doorkliks. Bovenaan de pagina blijft het label staan. */
+        '#babbelbot-knop.compact{padding:0;width:48px;height:48px;border-radius:50%;',
+        ' font-size:20px;line-height:48px;}',
+        '#babbelbot-knop.compact .babbelbot-knop-tekst{display:none;}',
         /* Geopend venster verticaal gecentreerd (feedback Peter): zo hangt
            het typvak rond het midden van het scherm i.p.v. in de onderhoek.
            De knop zelf blijft op de vertrouwde chat-plek rechtsonder. */
@@ -65,7 +73,8 @@
         stijl.textContent = css;
         document.head.appendChild(stijl);
 
-        var knop = maakElement('<button id="babbelbot-knop" type="button">&#128172; Vraag de Babbelbot</button>');
+        var knop = maakElement('<button id="babbelbot-knop" type="button" aria-label="Vraag de Babbelbot">' +
+            '&#128172;<span class="babbelbot-knop-tekst"> Vraag de Babbelbot</span></button>');
         var venster = maakElement(
             '<div id="babbelbot-venster" role="dialog" aria-label="Babbelbot productadvies">' +
             '<div id="babbelbot-kop"><div><strong>Babbelbot</strong>' +
@@ -81,6 +90,19 @@
             '</div>');
         document.body.appendChild(knop);
         document.body.appendChild(venster);
+
+        // Zodra er gescrold wordt: inklappen tot rond icoon, zodat de
+        // knop nooit een koopknop in de resultatenlijst afdekt.
+        var compact = false;
+        function pasCompactAan() {
+            var moetCompact = window.scrollY > 120;
+            if (moetCompact !== compact) {
+                compact = moetCompact;
+                knop.classList.toggle('compact', compact);
+            }
+        }
+        window.addEventListener('scroll', pasCompactAan, {passive: true});
+        pasCompactAan();
 
         var berichten = venster.querySelector('#babbelbot-berichten');
         var formulier = venster.querySelector('#babbelbot-invoer');

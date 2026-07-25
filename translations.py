@@ -107,6 +107,7 @@ TRANSLATIONS = {
         'offer.free_shipping': 'Gratis verzending',
         'offer.shipping': 'verzendkosten',
         'offer.compare_cta': 'Vergelijk prijzen',
+        'offer.compare_count': 'Vergelijk {count} prijzen',
         'offer.view_at': 'Bekijk bij {retailer}',
 
         'compare.title': 'Vergelijk producten',
@@ -279,6 +280,7 @@ TRANSLATIONS = {
         'offer.free_shipping': 'Free shipping',
         'offer.shipping': 'shipping',
         'offer.compare_cta': 'Compare prices',
+        'offer.compare_count': 'Compare {count} prices',
         'offer.view_at': 'View at {retailer}',
 
         'compare.title': 'Compare products',

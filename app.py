@@ -221,6 +221,21 @@ def create_app(config_name=None):
         from filter_helpers import slugify
         return slugify(value)
 
+    @app.template_filter('spec_label')
+    def spec_label_filter(key, gebruikt=None):
+        """Nette weergavenaam voor een spec-sleutel in de filterlijst
+        ('Waarde energielabel' -> 'Energielabel'). De sleutel in de URL
+        blijft ongewijzigd; dit is puur weergave."""
+        from filter_helpers import spec_label
+        # Jinja geeft een list mee (mutable); set-gedrag hier nabootsen.
+        if gebruikt is None:
+            return spec_label(key)
+        label = spec_label(key)
+        if label in gebruikt:
+            label = key
+        gebruikt.append(label)
+        return label
+
     @app.template_filter('foto')
     def foto_filter(url, breedte=400):
         """Winkelfoto's via de gratis verkleinservice wsrv.nl (Cloudflare-CDN).

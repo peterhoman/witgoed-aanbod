@@ -61,7 +61,10 @@
                 <span class="price-spread">€ {{ product.price_spread|round|int }} {{ t('offer.spread') }}</span>
                 {% endif %}
             </div>
-            {% if product.is_available %}
+            {# Dekkingsbalkje alleen bij meerdere winkels: bij één winkel
+               lezen vijf lege streepjes als "hier is bijna niets"
+               (design-review 25-07, punt 5). #}
+            {% if product.retailer_count > 1 %}
             {% set dekking = product.offer_retailers %}
             <div class="dekking" title="{{ t('offer.at_shops', count=product.retailer_count) }}">
                 {% for winkel in ['bol', 'coolblue', 'mediamarkt', 'expert', 'alternate', 'ep'] %}
@@ -69,11 +72,13 @@
                 {% endfor %}
                 <span class="dekking-count">{{ product.retailer_count }}/6</span>
             </div>
-            {% else %}
+            {% elif not product.is_available %}
             <span class="availability unavailable">{{ t('product.out_of_stock') }}</span>
             {% endif %}
             {% if product.retailer_count > 1 %}
-            <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('offer.compare_cta') }}</a>
+            {# Knoplabel noemt het aantal prijzen: een belofte i.p.v. een
+               vlakke doorverwijzing. #}
+            <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('offer.compare_count', count=product.retailer_count) }}</a>
             {% else %}
             <a href="{{ best.link if best else (product.affiliate_url or product.bol_url) }}" target="_blank" rel="nofollow sponsored" class="btn-buy">{{ t('product.view_offer') }}</a>
             {% endif %}

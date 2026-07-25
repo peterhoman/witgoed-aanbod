@@ -136,6 +136,40 @@ def slugify(value):
     return slug
 
 
+# Nette weergavenamen voor spec-sleutels uit de winkel-feeds. De feeds
+# schrijven technisch ("Waarde energielabel", "Laadvermogen wasmachine");
+# in de filterlijst leest dat als jargon en zetten twee bijna gelijke
+# namen de bezoeker op het verkeerde been (design-review 25-07, punt 6).
+# Alleen de weergave verandert — de sleutel in de URL blijft identiek.
+SPEC_LABELS = {
+    'waarde energielabel': 'Energielabel',
+    'energielabel': 'Energielabel',
+    'laadvermogen wasmachine': 'Vulgewicht',
+    'laadvermogen wasdroger': 'Vulgewicht',
+    'toerental centrifuge': 'Toerental',
+    'top load of voorlader': 'Type',
+    'type droger': 'Type droger',
+    'aantal couverts': 'Aantal couverts',
+    'volume in liters': 'Inhoud',
+    'geluidsniveau drogen': 'Geluidsniveau',
+    'energieverbruik per 100 cycli': 'Energieverbruik',
+}
+
+
+def spec_label(key, gebruikt=None):
+    """Weergavenaam voor een spec-sleutel; valt terug op de sleutel zelf.
+
+    `gebruikt` (een set) voorkomt dat twee verschillende sleutels dezelfde
+    naam in de filterlijst krijgen: de tweede houdt dan zijn eigen tekst.
+    """
+    label = SPEC_LABELS.get((key or '').strip().lower(), key)
+    if gebruikt is not None:
+        if label in gebruikt:
+            label = key
+        gebruikt.add(label)
+    return label
+
+
 def parse_spec_filters(raw_values):
     """Parse ['Merk::Bosch', 'Vulgewicht::9 kg'] into {'Merk': ['Bosch'], 'Vulgewicht': ['9 kg']}."""
     parsed = defaultdict(list)

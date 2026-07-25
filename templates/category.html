@@ -93,9 +93,13 @@
         <button type="button" class="filters-toggle" id="filters-toggle"
                 aria-expanded="false" aria-controls="filters-sidebar"
                 data-label-sluiten="{{ t('filters.close') }}">
-            <span>{{ t('filters.title') }}{% if actieve_filters %} ({{ actieve_filters }}){% endif %}</span>
+            <span>{{ t('filters.title') }}</span>
+            {# Teller als badge (design-review punt 2): ingeklapt moet
+               zichtbaar blijven dát er gefilterd wordt. #}
+            {% if actieve_filters %}<span class="filters-teller">{{ actieve_filters }}</span>{% endif %}
             <span class="filters-toggle-arrow" aria-hidden="true">▾</span>
         </button>
+
         <aside class="filters-sidebar" id="filters-sidebar">
             {# Redesign fase 1: kaart-styling, inklapbare groepen (Prijs en
                Merk open, specs dicht), actieve-filterchips en een teller op
@@ -107,11 +111,6 @@
             </div>
 
             <form method="get" action="" class="filters-form">
-                <div class="filters-actief" id="filters-actief" hidden>
-                    <span class="filters-actief-label">{{ t('filters.active') }}</span>
-                    <span class="filters-actief-chips" id="filters-actief-chips"></span>
-                </div>
-
                 <!-- Price Range -->
                 <details class="filter-group" open>
                     <summary>
@@ -148,10 +147,11 @@
                 {% endif %}
 
                 <!-- Dynamic spec filters -->
+                {% set gebruikte_labels = [] %}
                 {% for facet in spec_facets %}
                 <details class="filter-group"{% if selected_specs.get(facet.key) %} open{% endif %}>
                     <summary>
-                        <span class="filter-group-naam">{{ facet.key }}</span>
+                        <span class="filter-group-naam">{{ facet.key|spec_label(gebruikte_labels) }}</span>
                         {% if selected_specs.get(facet.key) %}<span class="filter-hint">{{ selected_specs[facet.key]|length }} ✓</span>{% endif %}
                     </summary>
                     <div class="filter-group-body brand-checkboxes">
@@ -173,6 +173,18 @@
 
         <!-- Products Grid -->
         <div class="category-products">
+            {% if filterchips %}
+            {# Actieve filters als chips boven de resultaten: ook zichtbaar
+               als het filterpaneel dicht is (design-review punt 2).
+               Gewone links, dus werkt zonder JavaScript. #}
+            <div class="filterchips">
+                <span class="filterchips-label">{{ t('filters.active') }}</span>
+                {% for chip in filterchips %}
+                <a href="{{ chip.url }}" class="filter-chip">{{ chip.label }} <span aria-hidden="true">&times;</span></a>
+                {% endfor %}
+                <a href="{{ request.path }}" class="filterchips-wissen">{{ t('filters.clear') }}</a>
+            </div>
+            {% endif %}
             <div class="products-toolbar">
                 <span class="results-count">{{ pagination.total }} {{ t('results.count') }}</span>
                 <label for="sort-select" class="sort-label">
@@ -235,31 +247,6 @@ document.getElementById('min_price').addEventListener('input', function() {
 document.getElementById('max_price').addEventListener('input', function() {
     document.getElementById('max-price-label').textContent = this.value;
 });
-
-// Actieve-filterchips (redesign fase 1): opgebouwd uit de aangevinkte
-// checkboxes; een klik op de × haalt het filter weg en past direct toe.
-(function () {
-    var balk = document.getElementById('filters-actief');
-    var houder = document.getElementById('filters-actief-chips');
-    if (!balk || !houder) return;
-    var form = balk.closest('form');
-    var checked = form.querySelectorAll('input[type="checkbox"]:checked');
-    if (!checked.length) return;
-    checked.forEach(function (input) {
-        var chip = document.createElement('button');
-        chip.type = 'button';
-        chip.className = 'filter-chip';
-        var tekst = input.value.indexOf('::') > -1 ? input.value.split('::')[1] : input.value;
-        chip.innerHTML = tekst + ' <span aria-hidden="true">×</span>';
-        chip.setAttribute('aria-label', tekst + ' verwijderen');
-        chip.addEventListener('click', function () {
-            input.checked = false;
-            form.submit();
-        });
-        houder.appendChild(chip);
-    });
-    balk.hidden = false;
-})();
 
 var filtersToggle = document.getElementById('filters-toggle');
 if (filtersToggle) {

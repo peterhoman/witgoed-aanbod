@@ -2850,6 +2850,8 @@ body {
     letter-spacing: -0.025em;
     font-variant-numeric: tabular-nums;
     color: var(--dark);
+    /* Euroteken mag nooit los van het bedrag afbreken */
+    white-space: nowrap;
 }
 
 .product-card .price-from {
@@ -2901,9 +2903,25 @@ body {
     font-weight: 700;
 }
 
+/* Vergelijken-checkbox subtiel houden: mag niet met de koopknop
+   concurreren (design-review punt 7) — geen kader, geen vlak. */
 .product-card .compare-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 11.5px;
     color: var(--ink-3);
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.product-card .compare-label input[type="checkbox"] {
+    width: 13px;
+    height: 13px;
+    accent-color: var(--primary);
+    margin: 0;
 }
 
 /* Grid: drie kaarten per rij naast de sidebar (handoff 4a) */
@@ -2948,31 +2966,75 @@ body {
     padding-bottom: 14px;
 }
 
-.filters-actief[hidden] {
-    display: none;
-}
-
-.filters-actief {
+/* Actieve-filterchips: staan buiten de sidebar zodat ze ook zichtbaar
+   zijn als het filterpaneel dicht is (design-review punt 2). */
+.filterchips {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
     background: var(--blauw-licht);
-    padding: 10px 16px;
+    border: 1px solid #cfe2f8;
+    border-radius: 8px;
+    padding: 9px 12px;
+    margin-bottom: 14px;
     font-size: 11.5px;
     color: var(--ink-2);
 }
 
+.filterchips-label {
+    font-weight: 600;
+}
+
 .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     background: var(--primary);
     color: #fff;
     border: none;
     border-radius: 999px;
-    padding: 4px 10px;
+    padding: 5px 11px;
     font-size: 11.5px;
     font-weight: 600;
     font-family: inherit;
+    text-decoration: none;
     cursor: pointer;
+}
+
+.filter-chip:hover {
+    background: var(--primary-dark);
+}
+
+.filterchips-wissen {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 2px;
+}
+
+/* Teller op de mobiele Filters-knop */
+.filters-teller {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    margin-left: 7px;
+    background: #fff;
+    color: var(--primary);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Prijs-sliders in merkblauw i.p.v. de browserstandaard (punt 3) */
+.filters-form input[type="range"] {
+    accent-color: var(--primary);
+    padding: 0;
+    border: none;
 }
 
 details.filter-group {
@@ -3186,5 +3248,40 @@ details[open].filter-group summary::after {
 
     .dekking-dash {
         height: 4px;
+    }
+
+    /* Prijs en koopknop náást elkaar i.p.v. onder elkaar: scheelt ruim
+       40px per rij, waardoor er twee producten per scherm passen
+       (design-review punt 4 — precies waar de testgroep over viel). */
+    .card-bottom {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 5px 12px;
+        padding-top: 4px;
+    }
+
+    .price-row {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .dekking {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .product-card .btn-buy {
+        grid-column: 2;
+        grid-row: 1 / 3;
+        width: auto;
+        padding: 10px 15px;
+        white-space: nowrap;
+        font-size: 13px;
+    }
+
+    .product-card .compare-label {
+        grid-column: 1 / -1;
+        grid-row: 3;
     }
 }

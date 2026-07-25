@@ -59,13 +59,6 @@
     --groen: #218358;
     --lijn: #e2e5ea;
     --lijn-licht: #eef0f4;
-
-    /* De spec vraagt IBM Plex Mono voor prijzen, met tabular-nums als reden.
-       Gemeten: Nunito's cijfers zijn al tabulair ("1111" en "8888" allebei
-       96px op 40px), dus die reden vervalt en een tweede zelfgehost
-       lettertype is niet nodig. Staat hier als variabele zodat omzetten
-       later één regel is. */
-    --font-mono: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 * {
@@ -1703,7 +1696,6 @@ section h2 {
 
 .spec-rij dd {
     margin: 0;
-    font-family: var(--font-mono);
     font-size: 13px;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
@@ -1944,7 +1936,6 @@ section h2 {
 
 .cost-card-value {
     display: block;
-    font-family: var(--font-mono);
     font-size: 22px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
@@ -1963,7 +1954,6 @@ section h2 {
    ============================================ */
 
 .product-eyebrow {
-    font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -1981,7 +1971,6 @@ section h2 {
 .badge-energy {
     background: var(--groen);
     color: #fff;
-    font-family: var(--font-mono);
     font-size: 11.5px;
     font-weight: 700;
     padding: 3px 9px;
@@ -2044,7 +2033,6 @@ section h2 {
 }
 
 .dekkingsbalk-label {
-    font-family: var(--font-mono);
     font-size: 11.5px;
     color: var(--tekst-secundair);
 }
@@ -2111,7 +2099,6 @@ section h2 {
 }
 
 .alternatief-prijs {
-    font-family: var(--font-mono);
     font-size: 14.5px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
@@ -2343,7 +2330,6 @@ section h2 {
 }
 
 .offers-price {
-    font-family: var(--font-mono);
     font-size: 34px;
     font-weight: 700;
     letter-spacing: -0.035em;
@@ -2372,7 +2358,6 @@ section h2 {
 
 .offers-highest {
     display: block;
-    font-family: var(--font-mono);
     font-size: 12px;
     font-variant-numeric: tabular-nums;
     color: var(--tekst-tertiair);
@@ -2382,10 +2367,16 @@ section h2 {
     list-style: none;
 }
 
+/* flex-wrap als vangnet: tussen 769px en ~1100px is er niet genoeg breedte
+   voor logo, tekst, prijs én knop naast elkaar. Zonder dit werd de
+   tekstkolom tot 65px platgeknepen en brak "Morgen bezorgd" over twee
+   regels. Nu zakt de knop naar de volgende regel in plaats van de tekst te
+   verminken. */
 .offer-row {
     display: flex;
     align-items: center;
-    gap: 16px;
+    flex-wrap: wrap;
+    gap: 10px 16px;
     padding: 14px 18px;
     border-bottom: 1px solid var(--lijn-licht);
 }
@@ -2414,12 +2405,19 @@ section h2 {
     font-weight: 700;
 }
 
+/* Twee regels hoog, ook als de tweede leeg is. Niet elke winkel levert
+   bezorgkosten (Expert bijvoorbeeld niet); zonder deze ondergrens worden de
+   rijen ongelijk hoog en krijgt de tabel een rommelig ritme — precies waar
+   je bij een prijsvergelijking op scant. */
 .offer-mid {
     flex: 1;
-    min-width: 0;
+    min-width: 120px;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 2px;
+    /* Twee regels: 20.8px levertijd + 18.4px bezorgkosten + 2px gap. */
+    min-height: 42px;
 }
 
 .offer-delivery {
@@ -2442,7 +2440,6 @@ section h2 {
 
 .offer-price {
     display: block;
-    font-family: var(--font-mono);
     font-size: 19px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;

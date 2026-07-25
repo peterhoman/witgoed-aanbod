@@ -2539,7 +2539,10 @@ section h2 {
     gap: 8px;
 }
 
-.filter-optie-extra {
+/* Via .filter-opties en niet als losse .filter-optie-extra: die zou even
+   zwaar wegen als .checkbox-label (display: flex), en omdat die verderop in
+   dit bestand staat won hij -- de "verborgen" opties bleven gewoon staan. */
+.filter-opties .filter-optie-extra {
     display: none;
 }
 

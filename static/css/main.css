@@ -82,15 +82,21 @@ body {
     z-index: 100;
 }
 
+/* flex-wrap: tussen ongeveer 769px en 1100px pasten logo, zoekbalk,
+   taalswitcher en het menu niet naast elkaar. Zonder wrap liep de balk
+   buiten beeld en kon je de héle site horizontaal scrollen -- gemeten op
+   827px: inhoud tot 1099px. Nu zakt het menu naar een tweede regel. */
 .header-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     padding: 20px 0;
-    gap: 30px;
+    gap: 16px 30px;
 }
 
-.logo h1 {
+.logo-tekst {
+    display: inline-block;
     font-size: 24px;
     font-weight: 700;
     color: var(--primary);

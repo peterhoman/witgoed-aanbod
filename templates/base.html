@@ -53,8 +53,13 @@
     <header class="header">
         <div class="container">
             <div class="header-top">
+                {# Bewust geen <h1>: die stond op élke pagina en was overal
+                   identiek ("WitgoedAanbod.nl"). De h1 hoort te zeggen waar
+                   díe pagina over gaat, en elke pagina heeft er al een eigen.
+                   Twee h1's waarvan de eerste nietszeggend is verspilt het
+                   sterkste on-page signaal dat er is. #}
                 <a href="/" class="logo">
-                    <h1>WitgoedAanbod.nl</h1>
+                    <span class="logo-tekst">WitgoedAanbod.nl</span>
                 </a>
                 <form action="/search" method="get" class="search-form">
                     <input type="text" name="q" placeholder="{{ t('search.placeholder') }}" required>

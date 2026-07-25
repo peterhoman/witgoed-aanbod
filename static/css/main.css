@@ -175,8 +175,12 @@ body {
 
 /* Koopgidsen verdient een opvallende plek in het menu: oranje pil in
    plaats van een grijze tekstlink tussen de juridische pagina's. */
+/* Blauw en niet oranje: de header had twee oranje elementen die om dezelfde
+   aandacht vroegen, de zoekknop en deze. Oranje is nu voorbehouden aan de
+   zoekknop -- dat is de handeling waarvoor mensen komen. Koopgidsen blijft
+   een opvallende pil, maar in de navigatiekleur. */
 .nav-secondary a.nav-cta {
-    background: var(--accent);
+    background: var(--primary);
     color: #fff;
     font-weight: 600;
     padding: 5px 14px;
@@ -184,7 +188,7 @@ body {
 }
 
 .nav-secondary a.nav-cta:hover {
-    background: var(--accent-dark);
+    background: var(--primary-dark);
     color: #fff;
 }
 

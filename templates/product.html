@@ -109,7 +109,22 @@
                     {% endif %}
                 </div>
 
-                {% if offers %}
+                {% if een_winkel and laagste %}
+                {# Eén winkel: geen tabel met één rij, maar winkel plus
+                   levertijd en een koopknop over de volle breedte. Er valt
+                   niets te vergelijken, dus er valt ook niets uit te lijnen. #}
+                <div class="solo-koop">
+                    <span class="solo-koop-winkel">
+                        <img class="offer-retailer-logo"
+                             src="{{ url_for('static', filename='img/winkels/' + laagste.retailer + '.png') }}"
+                             alt="{{ laagste.retailer_name }}" loading="lazy"
+                             onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'offer-retailer-naam',textContent:this.alt}))">
+                        {% if laagste.delivery_time %}<span class="offer-delivery">{{ laagste.delivery_time }}</span>{% endif %}
+                    </span>
+                    <a href="{{ laagste.link }}" target="_blank" rel="nofollow sponsored"
+                       class="offer-btn offer-btn-best solo-koop-btn">{{ t('offer.view_at', retailer=laagste.retailer_name) }} &rarr;</a>
+                </div>
+                {% elif offers %}
                 <ul class="offers-list">
                     {% for offer in offers %}
                     <li class="offer-row{% if loop.first and offers|length > 1 %} offer-row-best{% endif %}">
@@ -310,10 +325,15 @@
 
     <div class="product-lower">
         <!-- Product Description -->
+        {# Ingekort tot vier regels, maar de volledige tekst blijft in de DOM:
+           alleen visueel afgekapt, zodat er geen indexeerbare inhoud
+           verdwijnt. #}
         {% if product.ai_description or product.description %}
         <div class="description-section">
             <h2>{{ t('product.description_title') }}</h2>
-            <p>{{ product.ai_description or product.description }}</p>
+            <p class="description-tekst" id="beschrijving">{{ product.ai_description or product.description }}</p>
+            <button type="button" class="description-meer" id="beschrijving-meer"
+                    data-more="Lees de volledige beschrijving &rarr;" data-less="Toon minder">Lees de volledige beschrijving &rarr;</button>
         </div>
         {% endif %}
 
@@ -354,12 +374,29 @@
 (function() {
     var toggle = document.getElementById('specs-toggle');
     var alles = document.getElementById('specs-alles');
-    if (!toggle || !alles) return;
-    toggle.addEventListener('click', function() {
-        var open = alles.hasAttribute('hidden');
-        if (open) { alles.removeAttribute('hidden'); } else { alles.setAttribute('hidden', ''); }
-        this.innerHTML = open ? this.dataset.less : this.dataset.more;
-    });
+    if (toggle && alles) {
+        toggle.addEventListener('click', function() {
+            var open = alles.hasAttribute('hidden');
+            if (open) { alles.removeAttribute('hidden'); } else { alles.setAttribute('hidden', ''); }
+            this.innerHTML = open ? this.dataset.less : this.dataset.more;
+        });
+    }
+
+    // Beschrijving: knop alleen tonen als de tekst daadwerkelijk langer is
+    // dan de vier regels die zichtbaar zijn. Bij een korte beschrijving zou
+    // een "lees meer" die niets uitklapt een lege belofte zijn.
+    var tekst = document.getElementById('beschrijving');
+    var meer = document.getElementById('beschrijving-meer');
+    if (tekst && meer) {
+        if (tekst.scrollHeight <= tekst.clientHeight + 2) {
+            meer.remove();
+        } else {
+            meer.addEventListener('click', function() {
+                var open = tekst.classList.toggle('description-open');
+                this.innerHTML = open ? this.dataset.less : this.dataset.more;
+            });
+        }
+    }
 })();
 </script>
 {% endblock %}

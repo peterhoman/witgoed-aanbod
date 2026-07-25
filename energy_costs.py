@@ -133,12 +133,19 @@ def _gemiddeld_kwh_per_label(slug):
     if hit and nu - hit[0] < _LABEL_TTL:
         return hit[1]
 
-    from models import Category, Product
+    from models import db, Category, Product
     per_label = {}
     categorie = Category.query.filter_by(slug=slug).first()
     if categorie:
-        for p in Product.query.filter_by(category_id=categorie.id, is_available=True).all():
-            specs = p.specs or {}
+        # Alleen de specs-kolom ophalen, geen volledige productrijen: bij
+        # koelkasten zijn dat 557 records inclusief beschrijvingsteksten, en
+        # daar hebben we hier niets aan.
+        rijen = (db.session.query(Product.specs)
+                 .filter(Product.category_id == categorie.id,
+                         Product.is_available.is_(True))
+                 .all())
+        for (specs,) in rijen:
+            specs = specs or {}
             letter = str(specs.get('Waarde energielabel') or '').strip().upper()[:1]
             if not letter:
                 continue

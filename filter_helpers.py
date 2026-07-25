@@ -124,11 +124,14 @@ def compute_brand_facet(products):
 # 9kg Autodose") of zelfs een korting ("Zwart - -30%") in het kleurveld is
 # beland. Tien "kleuren" voor 46 wasmachines, terwijl witgoed in de praktijk
 # wit, zwart of rvs is. We bucketen op trefwoord i.p.v. op exacte waarde.
+# De feeds spellen kleuren ook in het Engels en Duits ("Stainless steel",
+# "Manhattan Gray", "Schwarz"). Zonder die varianten belandden ze in Overig,
+# terwijl het gewoon rvs, grijs en zwart is.
 _KLEUR_TREFWOORDEN = (
-    ('RVS / Inox', ('rvs', 'inox', 'roestvrij')),
-    ('Zwart', ('zwart', 'black', 'antraciet')),
-    ('Wit', ('wit', 'white')),
-    ('Grijs', ('grijs', 'zilver', 'silver')),
+    ('RVS / Inox', ('rvs', 'inox', 'roestvrij', 'stainless')),
+    ('Zwart', ('zwart', 'black', 'antraciet', 'schwarz')),
+    ('Wit', ('wit', 'white', 'weiss', 'weiß')),
+    ('Grijs', ('grijs', 'zilver', 'silver', 'gray', 'grey')),
 )
 _KLEUR_OVERIG = 'Overig'
 

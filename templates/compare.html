@@ -46,11 +46,15 @@
                     <td></td>
                     {% for product in products %}
                     <td>
+                        {# Ook hier beide naar de productpagina: twee knoppen die
+                           er hetzelfde uitzien maar de een blijft op de site en
+                           de ander niet, is precies de verwarring die we
+                           wegnemen. De vergelijktabel toont bovendien geen
+                           prijsverloop, stroomkosten of winkelaanbod. #}
                         {% if product.retailer_count > 1 %}
                         <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('offer.compare_cta') }}</a>
                         {% else %}
-                        {% set best = product.best_offer %}
-                        <a href="{{ best.link if best else (product.affiliate_url or product.bol_url) }}" target="_blank" rel="nofollow sponsored" class="btn-buy">{{ t('product.view_offer') }}</a>
+                        <a href="/product/{{ product.slug }}" class="btn-buy">{{ t('product.view_specs') }}</a>
                         {% endif %}
                     </td>
                     {% endfor %}

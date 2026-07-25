@@ -127,7 +127,7 @@
                         {% if laagste.delivery_time %}<span class="offer-delivery">{{ laagste.delivery_time }}</span>{% endif %}
                     </span>
                     <a href="{{ laagste.link }}" target="_blank" rel="nofollow sponsored"
-                       class="offer-btn offer-btn-best solo-koop-btn">{{ t('offer.view_at', retailer=laagste.retailer_name) }} &rarr;</a>
+                       class="offer-btn offer-btn-best solo-koop-btn">{{ t('offer.go_to', retailer=laagste.retailer_name) }} &rarr;</a>
                 </div>
                 {% elif offers %}
                 <ul class="offers-list">
@@ -162,8 +162,10 @@
                         {# Alleen de goedkoopste rij krijgt oranje: zo houdt die
                            kleur één betekenis en is de aanbevolen actie meteen
                            duidelijk, zonder de andere winkels te verstoppen. #}
+                        {# "Naar Coolblue" en niet "Bekijk": deze knop verlaat de
+                           site, en dat hoort te staan waar je heen gaat. #}
                         <a href="{{ offer.link }}" target="_blank" rel="nofollow sponsored"
-                           class="offer-btn{% if loop.first %} offer-btn-best{% endif %}">Bekijk &rarr;</a>
+                           class="offer-btn{% if loop.first %} offer-btn-best{% endif %}">{{ t('offer.go_to', retailer=offer.retailer_name) }} &rarr;</a>
                     </li>
                     {% endfor %}
                 </ul>

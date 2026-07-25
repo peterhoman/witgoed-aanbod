@@ -98,17 +98,30 @@ KERNVELDEN = {
 # het eerste blok waarvan een trefwoord in de veldnaam voorkomt; wat nergens
 # past belandt in Overig.
 SPEC_GROEPEN = (
+    # Volgorde telt: een veld valt in het eerste blok dat matcht. Identificatie
+    # en garantie staan vooraan omdat hun woorden ook elders voorkomen.
+    # Geen 'ean' als trefwoord: dat zit ook in "cleansing", waardoor "Maximum
+    # cleansing temperatuur" hier belandde in plaats van bij Prestaties.
+    ('Merk en model', ('merk', 'model', 'mpn', 'fabrikant', 'markering')),
+    ('Garantie en service', ('garantie', 'reparatie', 'reserveonderdelen',
+                             'ondersteuning', 'updates')),
+    ('Slim en verbonden', ('app', 'internet', 'wifi', 'bluetooth', 'smart', 'slim',
+                           'gebruikersgegevens', 'data', 'compatibel', 'mobiele',
+                           'diensten', 'besturingssyteem', 'besturingssysteem')),
     ('Verbruik en kosten', ('energie', 'kwh', 'verbruik', 'water', 'label', 'stroom')),
     ('Prestaties', ('toerental', 'vermogen', 'capaciteit', 'laadvermogen', 'couverts',
                     'volume', 'geluid', 'temperatuur', 'sensor', 'droogklasse',
-                    'wasresultaat', 'centrifuge')),
+                    'resultaat', 'centrifuge', 'balans', 'motor', 'professioneel',
+                    'load', 'cleansing')),
     ('Afmetingen en installatie', ('hoogte', 'breedte', 'lengte', 'diepte', 'gewicht',
-                                   'afmeting', 'inbouw', 'snoer', 'deur', 'scharnier',
-                                   'installatie', 'materiaal', 'kleur')),
-    ("Programma's en functies", ('programma', 'functie', 'display', 'app', 'slim',
-                                 'internet', 'kinderslot', 'indicat', 'timer',
-                                 'uitgesteld', 'automat', 'stoom', 'grill', 'ontdooi',
-                                 'bediening', 'alarm', 'signaal')),
+                                   'afmeting', 'verpakking', 'inbouw', 'snoer', 'deur',
+                                   'scharnier', 'installatie', 'materiaal', 'kleur',
+                                   'tuimelaar')),
+    ("Programma's en functies", ('programma', 'functie', 'display', 'kinderslot',
+                                 'indicat', 'timer', 'uitstel', 'automat', 'stoom',
+                                 'grill', 'ontdooi', 'bediening', 'alarm', 'signaal',
+                                 'verlichting', 'lade', 'kreuk', 'toevoegen',
+                                 'meegeleverd', 'taal', 'beurt')),
 )
 OVERIG = 'Overig'
 

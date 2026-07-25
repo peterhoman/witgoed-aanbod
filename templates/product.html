@@ -50,12 +50,17 @@
                 {% if energiekosten and energiekosten.label %}
                 <span class="badge-energy">{{ energiekosten.label }}</span>
                 {% endif %}
-                {# Alleen korte waarden: "8 kg" en "1400 toeren" lezen als badge,
-                   "Automatische wasmiddeldosering (UniversalDose)" niet. Die
-                   staat gewoon in de specificatietabel. #}
+                {# Alleen waarden die zichzelf uitleggen. "8 kg" en "1400 r/min"
+                   lezen als badge; "Automatische wasmiddeldosering
+                   (UniversalDose)" is te lang, en een kaal "71" zegt niets
+                   zonder eenheid — dat was het geluidsniveau in decibel. Beide
+                   staan gewoon in de specificatietabel. #}
                 {% for label, waarde in kernspecs[:6] %}
-                {% if 'energielabel' not in label|lower and waarde|string|length <= 18 %}
-                <span class="badge-spec">{{ waarde }}</span>
+                {% set tekst = waarde|string|trim %}
+                {% set kaal = tekst|replace(',', '')|replace('.', '')|replace(' ', '') %}
+                {% if 'energielabel' not in label|lower and tekst|length <= 18
+                      and not kaal.isdigit() %}
+                <span class="badge-spec">{{ tekst }}</span>
                 {% endif %}
                 {% endfor %}
             </div>

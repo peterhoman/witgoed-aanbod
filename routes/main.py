@@ -110,6 +110,26 @@ def _category_structured_data(category, page_products, extra_crumb=None, list_na
     return [item_list, breadcrumbs]
 
 
+def _energielabel_links(spec_facets):
+    """Eén chip per energielabel-letter, met de tellingen opgeteld.
+
+    De feeds leveren meerdere sleutels ('Energielabel', 'Waarde
+    energielabel') en per sleutel varianten ('A', 'A -10%', 'A-30%').
+    Zonder samenvoegen stond "Label A" zes keer in de chiprij — en
+    omdat dit indexeerbare interne links zijn, leverde dat ook dubbele
+    URL's op (design-review 25-07, punt 1).
+    """
+    per_letter = {}
+    for facet in spec_facets:
+        if 'energielabel' not in facet['key'].lower():
+            continue
+        for optie in facet['options']:
+            letter = (optie['value'] or '').strip()[:1].upper()
+            if letter in 'ABCDEFG':
+                per_letter[letter] = per_letter.get(letter, 0) + optie['count']
+    return [{'letter': l, 'count': c} for l, c in sorted(per_letter.items())]
+
+
 def _actieve_filterchips():
     """Actieve merk-/spec-filters als chips met een verwijder-URL.
 
@@ -444,6 +464,7 @@ def category(slug):
         faq=faq,
         faq_jsonld=faq_jsonld,
         filterchips=_actieve_filterchips(),
+        energielabel_links=_energielabel_links(spec_facets),
     )
 
 

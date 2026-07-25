@@ -93,9 +93,11 @@
 
         // Zodra er gescrold wordt: inklappen tot rond icoon, zodat de
         // knop nooit een koopknop in de resultatenlijst afdekt.
+        // Op smalle schermen begint de knop al compact: in ruststand lag
+        // de volle pil over de derde productkaart (design-review 25-07).
         var compact = false;
         function pasCompactAan() {
-            var moetCompact = window.scrollY > 120;
+            var moetCompact = window.scrollY > 120 || window.innerWidth <= 768;
             if (moetCompact !== compact) {
                 compact = moetCompact;
                 knop.classList.toggle('compact', compact);

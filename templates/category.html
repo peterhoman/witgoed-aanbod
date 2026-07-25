@@ -71,10 +71,10 @@
         {% for option in brand_facet[:12] %}
         <a href="/category/{{ category.slug }}/merk/{{ option.value|slugify }}">{{ option.value }} ({{ option.count }})</a>
         {% endfor %}
-        {% for facet in spec_facets if 'energielabel' in facet.key|lower %}
-        {% for opt in facet.options %}
-        <a href="/category/{{ category.slug }}/energielabel/{{ opt.value[:1]|lower }}">{{ t('category.energielabel_link', letter=opt.value[:1]) }} ({{ opt.count }})</a>
-        {% endfor %}
+        {# Eén chip per letter (server-side ontdubbeld, zie
+           _energielabel_links) — anders dubbele chips én dubbele URL's. #}
+        {% for label in energielabel_links or [] %}
+        <a href="/category/{{ category.slug }}/energielabel/{{ label.letter|lower }}">{{ t('category.energielabel_link', letter=label.letter) }} ({{ label.count }})</a>
         {% endfor %}
         {% for opt in subtype_options or [] %}
         <a href="/category/{{ category.slug }}/type/{{ opt.value|slugify }}">{{ opt.value }} ({{ opt.count }})</a>

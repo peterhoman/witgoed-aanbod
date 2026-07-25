@@ -2868,6 +2868,38 @@ body {
     white-space: nowrap;
 }
 
+/* Oude prijs + kortingsbadge op één regel: anders wordt een
+   kortingskaart anderhalve rij hoger dan de rest (design-review). */
+.price-korting {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+/* Korting in hetzelfde groen als de andere besparingssignalen —
+   rood naast de oranje knop zijn twee warme kleuren die vechten. */
+.product-card .discount-badge {
+    background: var(--groen);
+    color: #fff;
+}
+
+.product-card .price-old {
+    font-size: 11.5px;
+}
+
+/* Fallback als de winkelfoto niet laadt: placeholder i.p.v. kapot icoon */
+.product-card .product-image .image-placeholder {
+    display: none;
+}
+
+.product-card .product-image.image-fallback .image-placeholder,
+.product-card .product-image:not(:has(img)) .image-placeholder {
+    display: block;
+    font-size: 30px;
+    opacity: 0.28;
+}
+
 .dekking {
     display: flex;
     align-items: center;

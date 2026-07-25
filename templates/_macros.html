@@ -25,9 +25,10 @@
     <button type="button" class="wishlist-toggle" data-product-id="{{ product.id }}"
             data-product-title="{{ product.title }}"
             aria-label="{{ t('wishlist.toggle_aria') }}" title="{{ t('wishlist.toggle_aria') }}">&#9825;</button>
-    <label class="compare-label compare-hoek" title="{{ t('product.compare_label') }}">
-        <input type="checkbox" class="compare-checkbox" data-product-id="{{ product.id }}" data-product-title="{{ product.title }}">
-        <span class="compare-tekst">{{ t('product.compare_label') }}</span>
+    <label class="compare-label compare-hoek" title="{{ t('product.compare_add') }}">
+        <input type="checkbox" class="compare-checkbox" data-product-id="{{ product.id }}"
+               data-product-title="{{ product.title }}" aria-label="{{ t('product.compare_add') }}">
+        <span class="compare-tekst">{{ t('product.compare_add') }}</span>
     </label>
     <div class="product-info">
         {# Redesign fase 1 (handoff turn 4a/4b): merk boven titel, specbadges,

@@ -676,10 +676,15 @@ body {
     margin-bottom: 12px;
 }
 
+/* Prijs bewust niet in var(--primary): dat is exact de kleur van de
+   titellink hierboven (.product-info a), waardoor de prijs eruitzag als
+   iets waarop je kon klikken terwijl hij nergens heen leidt. Blauw is op
+   deze site navigatie; de prijs is informatie en staat dus in de
+   tekstkleur. Het gewicht (700) houdt hem het opvallendste op de kaart. */
 .price {
     font-size: 18px;
     font-weight: 700;
-    color: var(--primary);
+    color: var(--dark);
 }
 
 .availability {

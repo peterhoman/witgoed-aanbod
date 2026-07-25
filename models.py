@@ -390,3 +390,30 @@ class Guide(db.Model):
 
     def __repr__(self):
         return f'<Guide {self.title}>'
+
+
+class PageView(db.Model):
+    """Aantal paginaweergaven per soort per dag. Geen bezoekersmeting.
+
+    Bewust geen IP, geen sessie, geen cookie, geen user-agent: puur een
+    teller per paginasoort ('product', 'categorie', 'zoeken', ...) per dag.
+    Daarmee is te zien of bezoekers dieper de site in komen -- bijvoorbeeld
+    of het aantal productpagina's stijgt ten opzichte van categoriepagina's
+    nadat de kaartknoppen daarheen zijn gaan wijzen.
+
+    Dit vervangt geen analytics; het beantwoordt één vraag, zonder
+    toestemming nodig te hebben.
+    """
+    __tablename__ = 'page_views'
+
+    id = db.Column(db.Integer, primary_key=True)
+    datum = db.Column(db.Date, nullable=False)
+    soort = db.Column(db.String(30), nullable=False)
+    aantal = db.Column(db.Integer, nullable=False, default=0)
+
+    __table_args__ = (
+        db.UniqueConstraint('datum', 'soort', name='uq_pageview_datum_soort'),
+    )
+
+    def __repr__(self):
+        return f'<PageView {self.datum} {self.soort}={self.aantal}>'

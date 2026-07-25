@@ -74,10 +74,13 @@
                lezen vijf lege streepjes als "hier is bijna niets"
                (design-review 25-07, punt 5). #}
             {% if product.retailer_count > 1 %}
-            {% set dekking = product.offer_retailers %}
+            {# Vult aaneengesloten vanaf links: dit is een hoeveelheids-
+               meter ("bij hoeveel winkels"), geen kaart van wélke winkel
+               welk slot heeft. Per-winkel markeren gaf gaten in de balk
+               (design-review 25-07). #}
             <div class="dekking" title="{{ t('offer.at_shops', count=product.retailer_count) }}">
-                {% for winkel in ['bol', 'coolblue', 'mediamarkt', 'expert', 'alternate', 'ep'] %}
-                <span class="dekking-dash{% if winkel in dekking %} is-actief{% endif %}"></span>
+                {% for i in range(6) %}
+                <span class="dekking-dash{% if i < product.retailer_count %} is-actief{% endif %}"></span>
                 {% endfor %}
                 <span class="dekking-count">{{ product.retailer_count }}/6</span>
             </div>

@@ -20,46 +20,73 @@
     </nav>
 
     <!-- Category Header -->
+    {# Fase 2 (handoff turn 4a): kop links, kerncijfers rechts. Het
+       gemiddelde prijsverschil is het argument van een vergelijker en
+       hoort daarom bovenaan de pagina, niet ergens in een voettekst. #}
     <header class="category-header">
-        <h1>{{ facet_title or category.name }}</h1>
-        {% if facet_intro %}
-        <p>{{ facet_intro }}</p>
-        {% elif category.ai_intro %}
-        <p>{{ category.ai_intro }}</p>
-        {% else %}
-        <p>Vergelijk en vind de beste {{ category.name }}. Alle producten, prijzen en aanbiedingen op één plek.</p>
+        <div class="category-header-tekst">
+            <h1>{{ facet_title or category.name }}</h1>
+            {% if facet_intro %}
+            <p>{{ facet_intro }}</p>
+            {% elif not facet_title and kerncijfers %}
+            <p class="category-meta">{{ pagination.total }} modellen{% if merkenaantal %} van {{ merkenaantal }} merken{% endif %}, prijzen van {{ kerncijfers.winkels }} winkels naast elkaar.{% if kerncijfers.bijgewerkt %} Bijgewerkt om {{ kerncijfers.bijgewerkt.strftime('%H:%M') }}.{% endif %}</p>
+            {% elif category.ai_intro %}
+            <p>{{ category.ai_intro }}</p>
+            {% else %}
+            <p>Vergelijk en vind de beste {{ category.name }}. Alle producten, prijzen en aanbiedingen op één plek.</p>
+            {% endif %}
+        </div>
+        {% if not facet_title and kerncijfers and kerncijfers.winkels %}
+        <div class="kerncijfers">
+            <div class="kerncijfer">
+                <span class="kerncijfer-waarde">{{ kerncijfers.winkels }}</span>
+                <span class="kerncijfer-label">winkels vergeleken</span>
+            </div>
+            {% if kerncijfers.prijsverschil %}
+            <div class="kerncijfer">
+                <span class="kerncijfer-waarde kerncijfer-groen">&euro; {{ kerncijfers.prijsverschil }}</span>
+                <span class="kerncijfer-label">gem. prijsverschil</span>
+            </div>
+            {% endif %}
+        </div>
         {% endif %}
     </header>
 
-    {% if has_wizard %}
-    <a href="/category/{{ category.slug }}/keuzehulp" class="wizard-teaser">
-        <span class="wizard-teaser-icon" aria-hidden="true">🧭</span>
-        <span class="wizard-teaser-info">
-            <strong>Nog niet zeker wat je nodig hebt?</strong>
-            <span>Doe de keuzehulp — 3 korte vragen, direct de juiste {{ category.name|lower }} eruit gefilterd.</span>
-        </span>
-        <span class="wizard-teaser-cta">Start →</span>
-    </a>
-    {% endif %}
+    {# Keuzehulp en videogids naast elkaar i.p.v. onder elkaar: scheelt
+       hoogte, zodat het eerste product eerder in beeld komt. #}
+    {% if has_wizard or video_id or category_guide %}
+    <div class="teaser-rij">
+        {% if has_wizard %}
+        <a href="/category/{{ category.slug }}/keuzehulp" class="wizard-teaser">
+            <span class="wizard-teaser-icon" aria-hidden="true">?</span>
+            <span class="wizard-teaser-info">
+                <strong>Nog niet zeker wat je nodig hebt?</strong>
+                <span>3 korte vragen &mdash; wij filteren de juiste {{ category.name|lower }} eruit.</span>
+            </span>
+            <span class="wizard-teaser-cta">Start &rarr;</span>
+        </a>
+        {% endif %}
 
-    {% if video_id %}
-    <a href="/gidsen/{{ category_guide.slug }}" class="category-video-teaser">
-        <span class="category-video-teaser-thumb">
-            <img src="https://i.ytimg.com/vi/{{ video_id }}/hqdefault.jpg" alt="Video: {{ category_guide.title }}" loading="lazy">
-            <span class="guide-video-play">&#9654;</span>
-        </span>
-        <span class="category-video-teaser-info">
-            <span class="guide-teaser-label">{{ t('category.video_teaser') }}</span>
+        {% if video_id %}
+        <a href="/gidsen/{{ category_guide.slug }}" class="category-video-teaser">
+            <span class="category-video-teaser-thumb">
+                <img src="https://i.ytimg.com/vi/{{ video_id }}/hqdefault.jpg" alt="Video: {{ category_guide.title }}" loading="lazy">
+                <span class="guide-video-play">&#9654;</span>
+            </span>
+            <span class="category-video-teaser-info">
+                <span class="guide-teaser-label">{{ t('category.video_teaser') }}</span>
+                <strong>{{ category_guide.title }}</strong>
+                <span class="guide-teaser-cta">{{ t('category.guide_teaser_cta') }} &rarr;</span>
+            </span>
+        </a>
+        {% elif category_guide %}
+        <a href="/gidsen/{{ category_guide.slug }}" class="guide-teaser">
+            <span class="guide-teaser-label">{{ t('category.guide_teaser') }}</span>
             <strong>{{ category_guide.title }}</strong>
-            <span class="guide-teaser-cta">{{ t('category.guide_teaser_cta') }} →</span>
-        </span>
-    </a>
-    {% elif category_guide %}
-    <a href="/gidsen/{{ category_guide.slug }}" class="guide-teaser">
-        <span class="guide-teaser-label">{{ t('category.guide_teaser') }}</span>
-        <strong>{{ category_guide.title }}</strong>
-        <span class="guide-teaser-cta">{{ t('category.guide_teaser_cta') }} →</span>
-    </a>
+            <span class="guide-teaser-cta">{{ t('category.guide_teaser_cta') }} &rarr;</span>
+        </a>
+        {% endif %}
+    </div>
     {% endif %}
 
     {% if not facet_title and (brand_facet or spec_facets) %}

@@ -110,6 +110,46 @@ def _category_structured_data(category, page_products, extra_crumb=None, list_na
     return [item_list, breadcrumbs]
 
 
+def _category_kerncijfers(category):
+    """Cijfers voor de paginakop: aantal vergeleken winkels, het
+    gemiddelde prijsverschil tussen duurste en goedkoopste winkel, en
+    wanneer de prijzen voor het laatst zijn ververst.
+
+    Het prijsverschil is het bestaansrecht van een vergelijker, dus dat
+    hoort bovenaan de pagina (design-handoff turn 4a). Eén GROUP BY-query
+    i.p.v. per product de aanbiedingen ophalen.
+    """
+    from models import db, Offer
+    from sqlalchemy import func
+
+    rijen = (db.session.query(Offer.product_id,
+                              func.min(Offer.price).label('laag'),
+                              func.max(Offer.price).label('hoog'))
+             .join(Product, Product.id == Offer.product_id)
+             .filter(Product.category_id == category.id,
+                     Product.is_available.is_(True),
+                     Offer.is_available.is_(True))
+             .group_by(Offer.product_id).all())
+
+    verschillen = [r.hoog - r.laag for r in rijen
+                   if r.hoog and r.laag and (r.hoog - r.laag) >= 1]
+    winkels = (db.session.query(func.count(func.distinct(Offer.retailer)))
+               .join(Product, Product.id == Offer.product_id)
+               .filter(Product.category_id == category.id,
+                       Product.is_available.is_(True),
+                       Offer.is_available.is_(True)).scalar() or 0)
+    laatste = (db.session.query(func.max(Offer.last_synced))
+               .join(Product, Product.id == Offer.product_id)
+               .filter(Product.category_id == category.id).scalar())
+
+    return {
+        'winkels': winkels,
+        'prijsverschil': round(sum(verschillen) / len(verschillen))
+                         if verschillen else None,
+        'bijgewerkt': laatste,
+    }
+
+
 def _energielabel_links(spec_facets):
     """Eén chip per energielabel-letter, met de tellingen opgeteld.
 
@@ -465,6 +505,8 @@ def category(slug):
         faq_jsonld=faq_jsonld,
         filterchips=_actieve_filterchips(),
         energielabel_links=_energielabel_links(spec_facets),
+        kerncijfers=_category_kerncijfers(category),
+        merkenaantal=len(brand_facet),
     )
 
 

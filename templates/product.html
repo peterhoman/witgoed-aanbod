@@ -272,6 +272,23 @@
     </section>
     {% endif %}
 
+    {# Verfijningslinks: echte <a>'s naar facetpagina's die al bestaan en al in
+       de sitemap staan. Een productpagina wees tot nu toe alleen omhoog naar
+       zijn categorie; de merk-, energielabel- en subtypepagina's daaronder
+       kregen alleen links vanaf de categoriepagina zelf.
+       Bewust geen nieuwe filtercombinaties: die zouden honderden extra dunne
+       pagina's opleveren. Zie facet_links.py. #}
+    {% if verfijningslinks %}
+    <nav class="facet-links" aria-label="{{ verfijningslinks.kop }}">
+        <h2>{{ verfijningslinks.kop }}</h2>
+        <ul>
+            {% for link in verfijningslinks.links %}
+            <li><a href="{{ link.url }}">{{ link.tekst }} <span class="facet-links-aantal">({{ link.aantal }})</span></a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+
     {# Wel te vergelijken: wijst door naar producten waar de vergelijker wél
        werkt, in plaats van een doodlopende pagina. #}
     {% if alternatieven %}

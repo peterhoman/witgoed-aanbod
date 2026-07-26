@@ -68,7 +68,11 @@
        Google's crawler. Deze links geven diezelfde deelverzamelingen een
        eigen, indexeerbare URL (long-tail zoekverkeer als "Bosch witgoed"). #}
     <nav class="category-facet-links" aria-label="{{ t('filters.brand') }}">
-        {% for option in brand_facet[:12] %}
+        {# Alle merken, niet de eerste twaalf. Dit is de enige crawlbare route
+           naar de merkfacetpagina's, en die zijn op hun beurt de kortste route
+           naar de producten erachter. Twaalf tonen liet zeven merken per
+           categorie onbereikbaar, terwijl het geen enkele nieuwe URL kost. #}
+        {% for option in brand_facet %}
         <a href="/category/{{ category.slug }}/merk/{{ option.value|slugify }}">{{ option.value }} ({{ option.count }})</a>
         {% endfor %}
         {% for facet in spec_facets if 'energielabel' in facet.key|lower %}

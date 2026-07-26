@@ -29,11 +29,16 @@ KLEUR_OVERIG = '#898781'
 # Chrome-inkt (past bij de lichte site-achtergrond)
 INK_SECUNDAIR = '#52514e'
 INK_GEDEMPT = '#898781'
-GRIDLIJN = '#e1e0d9'
 BASISLIJN = '#c3c2b7'
+# Groen betekent op deze site besparing (zie de designspec). De punt op de
+# huidige laagste prijs is het enige groene element in de grafiek.
+GROEN = '#218358'
 
-BREEDTE, HOOGTE = 640, 220
-MARGE_L, MARGE_R, MARGE_T, MARGE_B = 56, 12, 12, 26
+# 640x150 in plaats van 640x220: de designspec vraagt om een compactere
+# grafiek. De SVG schaalt mee via viewBox met width:100%, dus op de smalste
+# mobiele kolom (~358px) komt dat uit op 84px hoog — precies wat 5b vraagt.
+BREEDTE, HOOGTE = 640, 150
+MARGE_L, MARGE_R, MARGE_T, MARGE_B = 52, 46, 12, 24
 
 
 def _euro(bedrag):
@@ -198,6 +203,9 @@ def build_price_history(product):
         t1 = t0 + timedelta(hours=1)
     prijzen = [p for _, p in alle_punten]
     p_min, p_max = min(prijzen), max(prijzen)
+    # De echte uitersten apart bewaren: die komen als aslabel op de grafiek,
+    # en de opgerekte waarden hieronder zijn tekenruimte, geen meting.
+    echt_min, echt_max = p_min, p_max
     if p_max - p_min < 1:  # vlakke lijn: wat lucht eromheen
         p_min, p_max = p_min - 5, p_max + 5
     rek = (p_max - p_min) * 0.12
@@ -215,22 +223,34 @@ def build_price_history(product):
 
     delen = []
 
-    # Gridlijnen + y-labels (3 niveaus)
-    for i in range(3):
-        prijs = p_min + (p_max - p_min) * i / 2
-        yy = y(prijs)
-        delen.append(f'<line x1="{MARGE_L}" y1="{yy:.1f}" x2="{BREEDTE - MARGE_R}" '
-                     f'y2="{yy:.1f}" stroke="{GRIDLIJN}" stroke-width="1"/>')
-        delen.append(f'<text x="{MARGE_L - 8}" y="{yy + 4:.1f}" text-anchor="end" '
-                     f'font-size="11" fill="{INK_GEDEMPT}">&#8364; {_euro(prijs)}</text>')
-
-    # Basislijn + x-labels (eerste en laatste datum)
+    # Assen als twee lijnen, geen raster. De designspec wil border-left en
+    # border-bottom; een raster over een grafiek van twaalf dagen suggereert
+    # een precisie die de meting niet heeft.
+    delen.append(f'<line x1="{MARGE_L}" y1="{MARGE_T}" x2="{MARGE_L}" '
+                 f'y2="{MARGE_T + plot_h}" stroke="{BASISLIJN}" stroke-width="1"/>')
     delen.append(f'<line x1="{MARGE_L}" y1="{MARGE_T + plot_h}" '
                  f'x2="{BREEDTE - MARGE_R}" y2="{MARGE_T + plot_h}" '
                  f'stroke="{BASISLIJN}" stroke-width="1"/>')
-    delen.append(f'<text x="{MARGE_L}" y="{HOOGTE - 8}" font-size="11" '
+
+    # Twee prijslabels langs de as in plaats van drie rasterniveaus. De spec
+    # noemt ze niet, maar zonder enige schaal is een lijn geen grafiek: dan
+    # staat er een vorm zonder eenheid. Alleen de uitersten, gedempt.
+    #
+    # Is de laagste ooit gemeten prijs ook de prijs van nu, dan staat datzelfde
+    # bedrag hieronder al als groene punt. Twee keer € 649 op dezelfde hoogte
+    # leest als een fout, dus dan valt het aslabel weg.
+    huidige_laagste = min(actuele.values()) if actuele else None
+    aslabels = [p for p in (echt_max, echt_min)
+                if huidige_laagste is None or abs(p - huidige_laagste) >= 0.01]
+    for prijs in aslabels:
+        delen.append(f'<text x="{MARGE_L - 8}" y="{y(prijs) + 4:.1f}" text-anchor="end" '
+                     f'font-size="11" fill="{INK_GEDEMPT}">&#8364; {_euro(prijs)}</text>')
+
+    # X-labels: de echte meetperiode. Geen maandlabels zoals de spec vraagt --
+    # die gaan uit van 90 dagen, en dan staat er twaalf keer dezelfde maand.
+    delen.append(f'<text x="{MARGE_L}" y="{HOOGTE - 6}" font-size="11" '
                  f'fill="{INK_GEDEMPT}">{_datum(t0)}</text>')
-    delen.append(f'<text x="{BREEDTE - MARGE_R}" y="{HOOGTE - 8}" text-anchor="end" '
+    delen.append(f'<text x="{BREEDTE - MARGE_R}" y="{HOOGTE - 6}" text-anchor="end" '
                  f'font-size="11" fill="{INK_GEDEMPT}">vandaag</text>')
 
     # Lijnen per winkel (traptreden: prijs geldt tot de volgende wijziging)
@@ -243,11 +263,12 @@ def build_price_history(product):
             pad += (f' H {x(punten[j][0]):.1f}'
                     f' V {y(punten[j][1]):.1f}')
         delen.append(f'<path d="{pad}" fill="none" stroke="{kleur}" '
-                     f'stroke-width="2" stroke-linejoin="round"/>')
-        # Markers op de echte wijzigingsmomenten, met native tooltip
+                     f'stroke-width="2.5" stroke-linejoin="round"/>')
+        # Markers op de echte wijzigingsmomenten, met native tooltip. Geen
+        # tooltipbibliotheek: <title> is een SVG-element, geen dependency.
         for dt, prijs in punten[:-1]:
             delen.append(
-                f'<circle cx="{x(dt):.1f}" cy="{y(prijs):.1f}" r="4" fill="{kleur}" '
+                f'<circle cx="{x(dt):.1f}" cy="{y(prijs):.1f}" r="3.5" fill="{kleur}" '
                 f'stroke="#ffffff" stroke-width="2">'
                 f'<title>{_datum(dt)}: &#8364; {_euro(prijs)} '
                 f'({retailer_label(retailer)})</title></circle>')
@@ -256,6 +277,26 @@ def build_price_history(product):
             'kleur': kleur,
             'prijs_nu': _euro(punten[-1][1]),
         })
+
+    # Punt op de huidige laagste prijs, met het bedrag ernaast. Bij meerdere
+    # winkels krijgt alleen de goedkoopste hem: er hoort er per grafiek één te
+    # zijn.
+    #
+    # Groen alleen als die prijs ook de laagste is die wij ooit maten. De
+    # designspec schrijft "een groene punt op de huidige waarde", maar dat gaat
+    # uit van goed nieuws ("nu € 40 onder het gemiddelde"). Bij een stijgende
+    # prijs staat die punt op het duurste moment ooit, en groen betekent op
+    # deze site besparing. Dan is het een positiemarkering in gewone inkt, geen
+    # aanbeveling.
+    if huidige_laagste is not None:
+        is_laagste_ooit = huidige_laagste <= echt_min + 0.01
+        kleur_punt = GROEN if is_laagste_ooit else INK_SECUNDAIR
+        eind_x, eind_y = x(t1), y(huidige_laagste)
+        delen.append(f'<circle cx="{eind_x:.1f}" cy="{eind_y:.1f}" r="4.5" '
+                     f'fill="{kleur_punt}" stroke="#ffffff" stroke-width="2"/>')
+        delen.append(f'<text x="{eind_x + 8:.1f}" y="{eind_y + 4:.1f}" font-size="12" '
+                     f'font-weight="700" fill="{kleur_punt}">'
+                     f'&#8364; {_euro(huidige_laagste)}</text>')
 
     svg = (f'<svg viewBox="0 0 {BREEDTE} {HOOGTE}" role="img" '
            f'aria-label="Prijsverloop sinds {_datum(sinds)}" '

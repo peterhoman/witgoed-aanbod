@@ -443,8 +443,13 @@ def feed_velden_debug(winkel):
         token = current_app.config.get('TRADEDOUBLER_TOKEN')
         if not token:
             return jsonify({'fout': 'TRADEDOUBLER_TOKEN ontbreekt'}), 503
-        records = sm.fetch_paged_feed(token, sm.MAIN_FEED_ID)[:grens]
-        velden = beschrijf(records, uitpakken=('identifiers', 'attributes'))
+        # Hele feed, niet de eerste zoveel: de opbrengst hieronder moet over de
+        # complete catalogus gerekend worden. Bij Coolblue bleek een steekproef
+        # van 1500 nul treffers te geven, puur omdat hun feed met accessoires
+        # begint en het witgoed verderop staat.
+        alle = sm.fetch_full_feed(token, sm.MAIN_FEED_ID)
+        velden = beschrijf(alle[:grens], uitpakken=('identifiers', 'attributes'))
+        records = alle
     elif winkel == 'coolblue':
         import sync_coolblue as sc
         apikey = current_app.config.get('AWIN_FEED_APIKEY')
@@ -458,10 +463,10 @@ def feed_velden_debug(winkel):
         origineel = sc.FEED_COLUMNS
         try:
             sc.FEED_COLUMNS = origineel + extra
-            records = sc.fetch_feed(apikey)[:grens]
+            records = sc.fetch_feed(apikey)
         finally:
             sc.FEED_COLUMNS = origineel
-        velden = beschrijf(records)
+        velden = beschrijf(records[:grens])
     else:
         from flask import abort
         abort(404)
@@ -508,8 +513,9 @@ def feed_velden_debug(winkel):
                     opbrengst[veld]['voorbeelden'].append(
                         {'titel': (product.title or '')[:60], 'code': waarde[:40]})
 
-    return jsonify({'winkel': winkel, 'onderzochte_records': len(records),
-                    'onze_producten_in_deze_steekproef': gematcht_totaal,
+    return jsonify({'winkel': winkel, 'records_in_feed': len(records),
+                    'velden_beschreven_over': min(grens, len(records)),
+                    'onze_producten_gevonden': gematcht_totaal,
                     'opbrengst_per_veld': opbrengst,
                     'velden': velden})
 

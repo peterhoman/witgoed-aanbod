@@ -113,6 +113,26 @@ def weergavenaam(key):
     return _WEERGAVENAAM.get((key or '').strip().lower(), key)
 
 
+# EU-energielabels, van zuinig naar onzuinig.
+ENERGIELADDER = 'ABCDEFG'
+
+
+def energielabel_letter(waarde):
+    """'A' -> 'A'. Alles wat geen kale letter A t/m G is -> None.
+
+    Bewust niet de eerste letter van de waarde. Ovens leveren als energielabel
+    de tekst "Energielabel niet van toepassing", en die begint met een E. Op
+    die ene waarde was een facetpagina /category/ovens/energielabel/e ontstaan
+    die in de sitemap stond en beweerde het zuinigste model te tonen -- een
+    pizzaoven zonder energielabel.
+
+    De lengtecheck hoort erbij: `'AB' in 'ABCDEFG'` is ook waar, dus een kale
+    substring-test accepteert lege en samengestelde waarden.
+    """
+    tekst = str(waarde or '').strip().upper()
+    return tekst if len(tekst) == 1 and tekst in ENERGIELADDER else None
+
+
 def _is_excluded_spec(key):
     key_lower = key.lower()
     if key_lower in _EXCLUDED_SPEC_KEYS:

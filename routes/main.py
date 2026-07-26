@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request, redirect, current_app, ab
 from models import Category, Product, Guide
 from sqlalchemy import or_
 from filter_helpers import (compute_brand_facet, compute_spec_facets, expand_spec_values,
-                            parse_spec_filters, slugify)
+                            energielabel_letter, parse_spec_filters, slugify)
 
 main_bp = Blueprint('main', __name__)
 
@@ -152,12 +152,18 @@ def _category_faq(category, brand_facet, spec_facets):
         })
     energie = next((f for f in spec_facets
                     if 'energielabel' in f['key'].lower()), None)
-    if energie and energie['options']:
-        letters = sorted({o['value'].strip()[:1].upper()
-                          for o in energie['options'] if o['value'].strip()})
+    # Alleen kale letters A t/m G. Ovens leveren "Energielabel niet van
+    # toepassing"; die waarde maakte via de eerste letter E het "zuinigste
+    # label van de categorie", op gezag van één pizzaoven zonder label. Die
+    # bewering stond in de FAQPage-structured-data en kon dus als rich result
+    # bij Google verschijnen. Blijft er geen geldige letter over, dan vervalt
+    # deze vraag -- geen antwoord is beter dan een verzonnen antwoord.
+    letters = sorted({energielabel_letter(o['value'])
+                      for o in (energie['options'] if energie else [])} - {None})
+    if letters:
         beste = letters[0]
         aantal = sum(o['count'] for o in energie['options']
-                     if o['value'].strip().upper().startswith(beste))
+                     if energielabel_letter(o['value']) == beste)
         faq.append({
             'vraag': f"Wat is het zuinigste energielabel bij {naam} dat nu te koop is?",
             'antwoord': (f"Energielabel {beste} — daarvan telt onze vergelijker op dit "
@@ -629,17 +635,29 @@ def category_energielabel(slug, letter):
         abort(404)
     _, spec_facets, _ = _category_facets(category)
     energie_facet = next((f for f in spec_facets if 'energielabel' in f['key'].lower()), None)
+    # Exact op een kale letter matchen, niet op startswith: ovens leveren
+    # "Energielabel niet van toepassing" en dat gaf een pagina voor label E
+    # met één pizzaoven erop, die ook nog in de sitemap belandde.
     match = next((o for o in (energie_facet['options'] if energie_facet else [])
-                 if o['value'].strip().upper().startswith(letter)), None)
+                 if energielabel_letter(o['value']) == letter), None)
     if not match:
         abort(404)
 
     naam_lower = category.name.lower()
-    intro = (f"Dit zijn de {match['count']} zuinigste modellen (energielabel {letter}) "
-            f"in onze {naam_lower}-vergelijker, met de actuele prijs per winkel.")
-    meta_description = (f"Energielabel {letter} {naam_lower} vergelijken: {match['count']} "
-                        f"zuinige modellen op prijs, bij Bol, Coolblue, MediaMarkt, "
-                        f"Expert, Alternate en EP.")[:160]
+    aantal = match['count']
+    # Niet "de n zuinigste modellen": op /energielabel/g klopt dat precies
+    # andersom -- dat zijn juist de minst zuinige apparaten die wij volgen.
+    # Deze formulering is waar voor elke letter, en enkelvoud leest als
+    # enkelvoud in plaats van "de 1 zuinigste modellen".
+    if aantal == 1:
+        intro = (f"Dit is het enige model met energielabel {letter} in onze "
+                 f"{naam_lower}-vergelijker, met de actuele prijs per winkel.")
+    else:
+        intro = (f"Dit zijn de {aantal} modellen met energielabel {letter} in onze "
+                 f"{naam_lower}-vergelijker, met de actuele prijs per winkel.")
+    meta_description = (f"Energielabel {letter} {naam_lower} vergelijken: {aantal} "
+                        f"{'model' if aantal == 1 else 'modellen'} op prijs, bij Bol, "
+                        f"Coolblue, MediaMarkt, Expert, Alternate en EP.")[:160]
 
     return _render_facet_page(
         category, Product.specs[energie_facet['key']].as_string().ilike(f"{letter}%"),

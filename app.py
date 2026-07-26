@@ -253,6 +253,26 @@ def create_app(config_name=None):
             return value
         return formatted.replace(",", " ").replace(".", ",").replace(" ", ".")
 
+    @app.context_processor
+    def _canonical_url():
+        """Canonical met dezelfde percent-codering als de sitemap.
+
+        De sitemap codeert product-URL's netjes (%2B, %27, %28); de canonical
+        gebruikte request.base_url, en dat is het pad zoals Werkzeug het al
+        gedecodeerd heeft. Daardoor stond er in de sitemap
+        ".../dyson-clean-%2B-wash-..." en in de canonical
+        ".../dyson-clean-+-wash-...". Dat raakt 453 van de 2813
+        productpagina's (16%), waarvan 106 met een plus -- en juist een plus
+        in een pad wordt door veel systemen als spatie gelezen.
+
+        Host uit SITE_URL en niet uit het verzoek, zodat een bezoek zonder
+        www nooit een andere canonical oplevert dan de sitemap.
+        """
+        from flask import request
+        from urllib.parse import quote
+        basis = app.config['SITE_URL'].rstrip('/')
+        return {'canonical_url': basis + quote(request.path, safe='/-._~')}
+
     @app.template_filter('euro_kort')
     def euro_kort_filter(value):
         """Als euro, maar zonder centen: 10000 -> '10.000'. Voor de hint op een

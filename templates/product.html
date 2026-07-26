@@ -2,7 +2,11 @@
 {% from '_macros.html' import product_card with context %}
 
 {% block title %}{{ product.title }} | WitgoedAanbod.nl{% endblock %}
-{% block meta_description %}{{ product.ai_meta_description or (product.description or product.title)[:160] }}{% endblock %}
+{# Eigen meta-description vóór de leveranciersbeschrijving: die laatste werd
+   hard op 160 tekens afgekapt en brak op 84% van de pagina's midden in een
+   woord, én stond woordelijk ook bij Bol en de fabrikant. Zie
+   category_context.meta_beschrijving. #}
+{% block meta_description %}{{ meta_beschrijving or product.ai_meta_description or (product.description or product.title)[:160] }}{% endblock %}
 {% block og_image %}{{ product.image_url or '/static/img/og-image.png' }}{% endblock %}
 {# Niet-leverbare producten uit de index houden (soft-404-risico), maar de
    links op de pagina blijven volgbaar; komt het product terug, dan wordt

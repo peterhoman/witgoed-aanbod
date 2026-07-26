@@ -208,7 +208,7 @@ def product_detail(slug):
     from price_chart import build_price_history
     from energy_costs import bereken_energiekosten
     from product_specs import kernspecs, groepeer_specs, modelnummer
-    from category_context import bepaal_categoriecontext
+    from category_context import bepaal_categoriecontext, meta_beschrijving
     from facet_links import merk_facetpagina, verfijningslinks
 
     # De één-winkel-variant (design 5c) geldt voor ruim de helft van de
@@ -233,6 +233,10 @@ def product_detail(slug):
                            # anders staat. Gecachet per categorie, dus dit
                            # kost niet elke paginaweergave een query.
                            categoriecontext=bepaal_categoriecontext(product),
+                           # Uit dezelfde gecachete meting: een
+                           # meta-description die per pagina uniek is
+                           # en niet uit de feed komt.
+                           meta_beschrijving=meta_beschrijving(product),
                            # Links naar facetpagina's die al bestaan en al in
                            # de sitemap staan. Ook gecachet per categorie.
                            verfijningslinks=verfijningslinks(product),

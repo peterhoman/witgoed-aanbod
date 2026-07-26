@@ -2345,6 +2345,15 @@ section h2 {
     margin: -6px 0 12px;
 }
 
+/* Te weinig historie: één nuchtere regel in plaats van een "laagste
+   prijs"-claim, een badge en een grafiek die beweging suggereert die er
+   niet is. */
+.price-history-kort {
+    font-size: 13.5px;
+    color: var(--tekst-secundair);
+    margin-bottom: 4px;
+}
+
 .price-history-legend {
     list-style: none;
     display: flex;

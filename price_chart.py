@@ -48,6 +48,51 @@ def _datum(dt):
     return f"{dt.day} {maanden[dt.month - 1]}"
 
 
+def _ontdubbel_per_dag(rows):
+    """Eén meting per winkel per dag: de laatste van die dag.
+
+    De syncs draaien meerdere keren per dag, en winkels met een repricer
+    veranderen hun prijs binnen een dag heen en weer. Zonder ontdubbelen
+    staat dezelfde dag twee keer in de tabel met twee prijzen, wat als een
+    fout leest. De laatste meting van een dag is de stand aan het eind van
+    die dag; dat is wat een prijsverloop hoort te tonen.
+    """
+    per_dag = {}
+    for r in rows:                       # rows staan oplopend op tijd
+        per_dag[(r.retailer, r.recorded_at.date())] = r
+    return sorted(per_dag.values(), key=lambda r: r.recorded_at)
+
+
+def _prijswijzigingen(rows):
+    """Aantal keer dat een winkel echt van prijs verandert (geen herhalingen)."""
+    laatst, aantal = {}, 0
+    for r in rows:
+        if r.retailer in laatst and laatst[r.retailer] != r.price:
+            aantal += 1
+        laatst[r.retailer] = r.price
+    return aantal
+
+
+def _wisselende_winkel(rows, nu, dagen=7, drempel=3):
+    """Winkel die de afgelopen `dagen` vaker dan `drempel` van prijs wisselde.
+
+    Dat is repricer-gedrag, geen prijsontwikkeling. Voor zo'n winkel is
+    "dit is de laagste prijs" misleidend: morgen staat hij waarschijnlijk
+    weer hoger. Geeft (winkel, laagste, hoogste) terug, of None.
+    """
+    grens = nu - timedelta(days=dagen)
+    per_winkel = {}
+    for r in rows:
+        if r.recorded_at >= grens:
+            per_winkel.setdefault(r.retailer, []).append(r.price)
+
+    for retailer, prijzen in per_winkel.items():
+        wisselingen = sum(1 for a, b in zip(prijzen, prijzen[1:]) if a != b)
+        if wisselingen > drempel:
+            return retailer, min(prijzen), max(prijzen)
+    return None
+
+
 def build_price_history(product):
     """Verzamel alles wat de productpagina over het prijsverloop toont.
 
@@ -64,6 +109,13 @@ def build_price_history(product):
         return None
 
     nu = utcnow()
+    # De ruwe metingen apart houden: het ontdubbelen hieronder wist juist het
+    # bewijs van repricer-gedrag. Elf prijswisselingen binnen twee dagen
+    # worden na ontdubbelen twee metingen, en dan valt er niets meer te
+    # detecteren. Tabel en grafiek gebruiken de ontdubbelde reeks, de
+    # gedragsanalyse de volledige.
+    ruwe_rows = rows
+    rows = _ontdubbel_per_dag(rows)
 
     # Series per winkel; elke lijn loopt door tot "nu" met de huidige prijs,
     # maar alleen voor winkels die het apparaat nog leverbaar aanbieden.
@@ -91,8 +143,21 @@ def build_price_history(product):
     # Koopadvies: alleen een uitspraak doen als de data dat eerlijk onderbouwt
     # — geen kunstmatige urgentie. Is de huidige prijs niet de laagste ooit,
     # dan melden we neutraal wat de laagste prijs was, zonder aan te sporen.
+    # Beide op de ruwe reeks: of de prijs bewóóg is een feit over de metingen,
+    # niet over wat we ervan tonen.
+    wijzigingen = _prijswijzigingen(ruwe_rows)
+    dagen_historie = (nu - sinds).days
+    wisselaar = _wisselende_winkel(ruwe_rows, nu)
+
     koopadvies = None
-    if laagste_is_nu and len(rows) > 1:
+    if wisselaar:
+        # Repricer: de prijs pendelt heen en weer. "Laagste prijs ooit" is dan
+        # een momentopname, geen bevinding. Wat een koper hieraan heeft is de
+        # bandbreedte: zie je vandaag de bovenkant, wacht dan een dag.
+        winkel, laag, hoog = wisselaar
+        koopadvies = (f'Deze prijs wisselt bij {retailer_label(winkel)} regelmatig '
+                      f'tussen &euro; {_euro(laag)} en &euro; {_euro(hoog)}.')
+    elif laagste_is_nu and len(rows) > 1:
         koopadvies = 'Dit is de laagste prijs sinds we dit apparaat volgen — een goed moment om te kopen.'
     elif actuele:
         huidige_laagste = min(actuele.values())
@@ -112,12 +177,20 @@ def build_price_history(product):
         'tabel': tabel,
         'svg': None,
         'legenda': [],
+        'te_kort': None,
     }
 
-    # Grafiek pas tekenen als er iets te zien is: minstens twee meetdagen
-    # of minstens één echte prijswijziging.
-    dagen = (nu - sinds).days
-    if dagen < 1 and len(rows) <= len(series):
+    # Te weinig historie: geen grafiek en geen conclusie. Bij drie dagen
+    # meten en een vlakke lijn is "dit is de laagste prijs" een tautologie,
+    # en een as van € 503 tot € 516 rond een rechte lijn suggereert beweging
+    # die er niet is. Dan liever één eerlijke zin.
+    if dagen_historie < 14 or wijzigingen == 0:
+        resultaat['koopadvies'] = None
+        resultaat['te_kort'] = (
+            f'We volgen dit apparaat sinds {_datum(sinds)}. De prijs is sindsdien niet veranderd.'
+            if wijzigingen == 0 else
+            f'We volgen dit apparaat sinds {_datum(sinds)} — nog te kort voor een betrouwbaar prijsverloop.'
+        )
         return resultaat
 
     t0, t1 = sinds, nu

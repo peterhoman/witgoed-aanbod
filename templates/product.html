@@ -270,6 +270,12 @@
         {% if price_history %}
         <div class="price-history-section">
             <h2>Prijsverloop</h2>
+            {# Te weinig historie: geen "laagste prijs"-claim en geen badge.
+               Bij drie dagen meten zonder één wijziging is de laagste prijs
+               ook de enige prijs, en dat is geen bevinding. #}
+            {% if price_history.te_kort %}
+            <p class="price-history-kort">{{ price_history.te_kort }}</p>
+            {% else %}
             <p class="price-history-lowest">
                 Laagste prijs sinds {{ price_history.sinds }}:
                 <strong>&euro; {{ price_history.laagste_prijs }}</strong>
@@ -277,6 +283,7 @@
                 <span class="price-history-badge">nu de laagste prijs</span>
                 {% endif %}
             </p>
+            {% endif %}
             {% if price_history.koopadvies %}
             <p class="price-history-advies">{{ price_history.koopadvies | safe }}</p>
             {% endif %}

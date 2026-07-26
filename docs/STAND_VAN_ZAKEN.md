@@ -1,6 +1,6 @@
 # Stand van zaken
 
-Laatst bijgewerkt: 26 juli 2026. Alles hieronder staat live tenzij anders vermeld.
+Laatst bijgewerkt: 26 juli 2026 (na de SEO-ronde). Alles hieronder staat live tenzij anders vermeld.
 
 ---
 
@@ -53,15 +53,27 @@ Kijk bij **Indexeren → Pagina's**:
 | Reden | Stand 26 juli | Betekenis |
 |---|---|---|
 | Geïndexeerd | 137 | het getal dat omhoog moet |
-| Gevonden – niet geïndexeerd | 340 | wachtrij, geen actie nodig |
+| **Gevonden – niet geïndexeerd** | **340** | **Google kent de URL en besluit hem niet te crawlen** |
 | Gecrawld – niet geïndexeerd | 100 | Google vond ze te dun: specs en dekking |
 | Pagina met omleiding | 7 | correcte 301's, geen actie |
 | Serverfout (5xx) | 1 | opgelost 26-07, validatie loopt |
 | Niet gevonden (404) | 1 | opgeruimde pannenset, geen actie |
 
+**Hier stond dat die 340 een wachtrij was waar geen actie voor nodig is. Dat
+klopt niet.** De designchat wees erop en heeft gelijk: "gevonden – niet
+geïndexeerd" is Google die de URL kent en besluit hem niét op te halen. Het is
+het grootste getal van de drie, en het is een structuurprobleem, geen
+inhoudsprobleem. Daar zit het meeste verlies.
+
 **Waar je op moet letten:** een nieuwe reden die erbij komt, of "Gecrawld – niet
 geïndexeerd" dat hard oploopt. Dat laatste betekent dat Google steeds meer
 pagina's te dun vindt.
+
+**Vanaf nu per soort af te lezen.** De sitemap is opgesplitst in zeven
+bestanden (producten, categorieën, merken, merk-per-categorie, facetten, gidsen,
+overig) met `/sitemap.xml` als index. Search Console rapporteert dekking per
+bestand, dus je ziet nu of die 137 productpagina's zijn of categoriepagina's —
+en dus of een ingreep werkt. Zonder die splitsing was er niets te meten.
 
 Verschijnt er weer een **serverfout**, behandel die niet als klein. Op 26 juli
 bleek één 5xx te komen door acht productpagina's die via interne links
@@ -113,11 +125,67 @@ zat, een "vanaf"-weergave die al werkte, een specblok dat wél bestond, en een
 prijsverschil-cijfer dat nergens stond. Verifieer eerst, bouw daarna. Meld het
 ook terug — dat scheelt hun de volgende ronde.
 
+**Een leesfout plant zich voort.** "Energielabel niet van toepassing" werd via
+`waarde[:1]` een label E, en die ene fout stond op vijf plaatsen: de sitemap, de
+facetroute, de FAQ, de categoriecontext en het sjabloon. Vier repareren en de
+vijfde vergeten leverde een interne link naar een 404 op. Zit een regel op meer
+dan één plek, zet hem dan op één plek en laat de rest hem gebruiken.
+
 **Nooit naar `main` pushen.** Railway zet main automatisch live. Werken op een
 branch, pull request, de eigenaar merget zelf.
 
 **Schermafbeeldingen renderen op dubbele schaal.** Een header die 750px lijkt
 is er 376. Meet met JavaScript, kijk niet naar het plaatje.
+
+---
+
+## Wat er 26 juli 's middags bij kwam — de SEO-ronde
+
+Acht ingrepen, allemaal gericht op één ding: pagina's die Google wel crawlt maar
+niet indexeert.
+
+**Categoriecontext op elke productpagina.** Een alinea met onze eigen meting over
+de categorie: "Dit model kost € 157: van de 422 andere stofzuigers die wij volgen
+zijn er 333 duurder en 88 goedkoper." Werkt op élke pagina, ook de 65% zonder
+specificaties en de 57% met één winkel — precies de dunne. Lopende tekst en geen
+cijferraster, want het probleem is dat er te wéinig inhoud staat.
+
+**Eigen meta-descriptions.** 84% van de productpagina's had de
+leveranciersbeschrijving, hard afgekapt midden in een woord ("...8 automatische
+pr") — en die tekst staat woordelijk ook bij Bol en de fabrikant. Nu komt hij uit
+onze database en is hij per pagina uniek.
+
+**Sitemapdatums klopten niet.** `lastmod` gaf onvoorwaardelijk de datum van
+vandaag, voor alle 3281 URL's. Een sitemap die dagelijks beweert dat alles
+veranderd is, leert Google om `lastmod` hier te negeren. `products.updated_at`
+was geen oplossing: `last_synced` wordt bij elke sync onvoorwaardelijk gezet, dus
+dat veld schuift mee. Nu komt de datum uit `price_history`, want dat schrijft
+alleen weg bij een échte prijswijziging.
+
+**Crawldiepte van 12 naar 2.** De categoriepagina toont 24 producten met alleen
+vorige/volgende, dus het laatste product ligt elf klikken diep. De merkfacetten
+zijn de korte route, maar die kapten zelf ook op 24 af — 31 facetten zijn groter,
+samen 437 producten. Nu 100 per pagina, en alle merken worden gelinkt in plaats
+van de eerste twaalf.
+
+**Verfijningslinks en kruimelpad met merk.** Elke productpagina wijst nu ook naar
+zijn merk-, energielabel- en subtypepagina, en het kruimelpad heeft een merkstap
+die ook in de structured data staat. Uitsluitend naar pagina's die al bestaan;
+geen nieuwe filtercombinaties.
+
+**Filterzijbalk gerepareerd.** Van "Waarde energielabel / Toerental centrifuge /
+Stand display / Positie deur scharnier" naar "Energielabel / Vulgewicht /
+Toerental / Type lader". Vulgewicht ontbrak door toeval: vrijwel élk spec-veld
+zit op dezelfde 46 van de 255 wasmachines, dus bij dat gelijkspel besliste de
+feedvolgorde.
+
+**Twee verzonnen uitspraken over energielabels weg.** Ovens leveren "Energielabel
+niet van toepassing"; de eerste letter daarvan is een E. Daardoor stond er een
+facetpagina in de sitemap die beweerde het zuinigste model te tonen (een
+pizzaoven), en beantwoordde de categoriepagina "wat is het zuinigste label?" met
+"E" — in FAQPage-structured-data, dus zichtbaar in Google.
+
+**Sitemap opgesplitst per soort.** Zie hierboven bij Search Console.
 
 ---
 
@@ -178,10 +246,53 @@ Concrete ideeën die nog niet gebouwd zijn:
 - De grote vraag: is Bol wel de juiste basis voor de catalogus? Nu bepaalt Bol wat
   er bestaat en kunnen de anderen alleen aansluiten.
 
-### 2. Prijsverloop-grafiek
-Nog niet gebouwd volgens de designspec (periodeknoppen 90 dagen / 1 jaar, 150px hoog,
-groene punt op de huidige waarde, maandlabels). De bestaande grafiek staat er nog.
-Raakt `price_chart.py`, dus eigen stuk werk.
+### 2. Prijsverloop-grafiek — grotendeels af, drie onderdelen wachten op tijd
+Compacter (640×150), raster vervangen door twee assen, punt op de huidige prijs.
+Die punt is alleen groen als de huidige prijs ook de laagste is die wij ooit
+maten: de spec vroeg altijd groen, maar bij een stijgende prijs staat hij dan op
+het duurste moment ooit.
+
+**Niet gebouwd, en dat is bewust.** Periodeknoppen "90 dagen / 1 jaar",
+maandlabels en "nu € 40 onder het gemiddelde" gaan alle drie uit van maanden
+historie. Wij meten sinds 14 juli. Steekproef van 45 productpagina's op 26 juli:
+**nul met een grafiek**, 23 "te weinig dagen", 22 "prijs niet veranderd".
+
+De drempel staat op 14 dagen, dus rond **28 juli** verschijnt de grafiek voor het
+eerst op producten met een prijswijziging. Dat is het moment om te kijken of hij
+klopt — niemand heeft hem ooit op productie gezien.
+
+### 2b. Modelcode en EPREL — het spoor dat spec-vulling kan oplossen
+De EU-energielabeldatabase EPREL is verplicht voor wasmachines, drogers,
+koelkasten, vaatwassers en ovens, en bevat precies de velden die bij ons leeg
+zijn: label, kWh, vulgewicht, toerental, geluid, waterverbruik, afmetingen.
+Officiële bron, dus te vermelden op de site — een vertrouwenssignaal dat geen
+webshop heeft.
+
+Twee horden, allebei gemeten op 26 juli:
+
+- **De API vraagt een sleutel.** Elk eindpunt geeft 403 "Missing Authentication
+  Token". Aan te vragen bij de Europese Commissie. Zonder sleutel geen data.
+- **EPREL matcht op modelcode.** Ons `Model`-veld is bij 74% leeg, en van de 26%
+  die gevuld is bevat een deel geen code maar rommel ("Amerikaanse koelkast").
+
+Onderzocht en uitgesloten als bron voor die modelcode: Expert (9049 producten,
+geen modelveld), EP (4629, geen modelveld), Alternate (levert wél MPN bij 26169
+producten, maar nul overlap met onze catalogus — 0 van 39 in een steekproef).
+Bol levert zijn specificaties compleet; het lege `Model`-veld is Bol's data, geen
+fout in onze verwerking. MediaMarkt en Coolblue zijn nog niet bekeken; daarvoor
+staat `/api/feed-velden/<winkel>` klaar.
+
+**Wat het wél kansrijk maakt: 69% van de producttitels bevat een
+modelcode-vorm** (steekproef van 49; één had meerdere kandidaten, en dat was een
+was/droog-set). Dat botst niet met de regel "nooit een modelnummer uit de titel
+gokken", want de kandidaat wordt niet getoond maar aan EPREL voorgelegd. Bevestigt
+EPREL hem niet, dan gebeurt er niets. Geen bewering zonder bron.
+
+### 2c. Wat de designchat voorstelde en niet doorgaat
+Zij stelden voor de catalogus te bouwen op EAN's die in twee of meer feeds
+voorkomen, en de circa 1600 solo-producten op `noindex` te zetten. **Afgewezen.**
+Het spreekt de koers tegen (volledige catalogus behouden) en het haalt de
+categoriecontext weg bij precies de pagina's waarvoor die gebouwd is.
 
 ### 3. Voordeligwitgoed.nl via TradeTracker
 Aanvraag loopt, winkel moet nog goedkeuren. 447 producten, dagelijks ververst.

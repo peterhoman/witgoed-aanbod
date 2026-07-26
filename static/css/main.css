@@ -2472,6 +2472,18 @@ section h2 {
     color: var(--tekst-tertiair);
 }
 
+/* Eén regel boven de lijst als alle winkels dezelfde prijs vragen. Vervangt
+   het label "laagste" bij elke rij: dat woord drie keer herhalen zegt niets,
+   deze zin wijst naar waar het verschil wél zit. */
+.offers-gelijk {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--tekst-secundair);
+    background: #f7f9fc;
+    border-bottom: 1px solid var(--lijn-licht);
+}
+
 .offers-list {
     list-style: none;
 }

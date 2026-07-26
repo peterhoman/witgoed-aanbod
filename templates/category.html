@@ -126,7 +126,9 @@
                 <!-- Dynamic spec filters -->
                 {% for facet in spec_facets %}
                 {% set gekozen = selected_specs.get(facet.key, []) %}
-                {% call filter_groep(facet.key, filter_hint(gekozen, facet.options|length)) %}
+                {# facet.label is de leesbare kop ("Vulgewicht"); facet.key
+                   blijft de feednaam waarop gefilterd wordt. #}
+                {% call filter_groep(facet.label or facet.key, filter_hint(gekozen, facet.options|length)) %}
                     {{ filter_opties(facet.options, 'spec', gekozen, facet.key ~ '::') }}
                 {% endcall %}
                 {% endfor %}

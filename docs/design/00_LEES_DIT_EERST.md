@@ -10,6 +10,7 @@ in opdracht van de eigenaar. Dit is **geen** productiecode.
 | `DESIGN_SPEC_categoriepagina.md` | Categoriepagina desktop + mobiel, tokens, typografie, alle randvoorwaarden | Grotendeels gebouwd en live |
 | `DESIGN_SPEC_productpagina.md` | Productdetailpagina desktop + mobiel + de één-winkel-variant | Goedgekeurd, nog niet gebouwd |
 | `Witgoed Redesign.dc.html` | Het prototype. Open in een browser. | Referentie |
+| `TERUGKOPPELING_26_juli.md` | Wat er gebouwd is, waar van de spec is afgeweken, Search Console-cijfers en een vraag terug | Van bouwer aan design |
 
 **Let op de bestandsnamen.** Deze documenten heten bewust niet `README.md`, omdat de repo
 zelf al een `README.md` heeft met de installatiehandleiding. Die twee zijn eerder met

@@ -256,6 +256,22 @@
         </div>
     </div>
 
+    {# Categoriecontext: onze eigen meting over de hele categorie, in lopende
+       zinnen. Dit is de enige inhoud op een dunne productpagina die nergens
+       anders staat -- titel, prijs en leveranciersbeschrijving staan woordelijk
+       ook bij Bol en de fabrikant, en dat is waarom Google honderd van deze
+       pagina's wel crawlde maar niet indexeerde. Werkt op elke pagina, ook
+       zonder specificaties en bij één winkel: precies de dunne pagina's.
+       Onderdelen waarvoor de data ontbreekt staan er niet; zie
+       category_context.py. #}
+    {% if categoriecontext %}
+    <section class="cat-context">
+        <h2>{{ categoriecontext.kop }}</h2>
+        <p class="cat-context-tekst">{{ categoriecontext.tekst }}</p>
+        <p class="cat-context-voet">{{ categoriecontext.voet }}</p>
+    </section>
+    {% endif %}
+
     {# Wel te vergelijken: wijst door naar producten waar de vergelijker wél
        werkt, in plaats van een doodlopende pagina. #}
     {% if alternatieven %}

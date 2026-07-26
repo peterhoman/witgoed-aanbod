@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from flask import Blueprint, render_template, request, jsonify, current_app
 from models import Product, Category, Guide, RETAILER_LABELS
+from product_specs import FORMAAT_VELD
 from sqlalchemy import or_
 
 products_bp = Blueprint('products', __name__)
@@ -73,20 +74,6 @@ def _product_structured_data(product):
     return [data, breadcrumbs]
 
 
-# Het veld dat "vergelijkbaar formaat" bepaalt, per categorie. Zonder zo'n
-# veld matchen we alleen op energielabel — beter een ruimere selectie dan
-# geen alternatieven.
-_FORMAAT_VELD = {
-    'wasmachines': 'Laadvermogen wasmachine',
-    'wasdroogcombinaties': 'Laadvermogen wasmachine',
-    'drogers': 'Laadvermogen wasdroger',
-    'koelkasten': 'Volume in liters',
-    'vaatwassers': 'Aantal couverts',
-    'ovens': 'Volume in liters',
-    'magnetrons': 'Ovenvermogen',
-}
-
-
 def _is_set(product):
     """True als dit een combinatie van twee apparaten is, geen los apparaat.
 
@@ -150,7 +137,7 @@ def _vergelijkbare_alternatieven(product, aantal=4):
     )
 
     label = str(specs.get('Waarde energielabel') or '').strip()
-    formaat_veld = _FORMAAT_VELD.get(slug)
+    formaat_veld = FORMAAT_VELD.get(slug)
     formaat = str(specs.get(formaat_veld) or '').strip() if formaat_veld else ''
 
     # Van specifiek naar ruim: eerst zelfde formaat én label, dan alleen
@@ -180,7 +167,7 @@ def _alternatieven_kenmerk(product):
     specs = product.specs or {}
     slug = product.category.slug if product.category else ''
     delen = []
-    veld = _FORMAAT_VELD.get(slug)
+    veld = FORMAAT_VELD.get(slug)
     if veld and specs.get(veld):
         delen.append(str(specs[veld]).strip())
     if specs.get('Waarde energielabel'):
@@ -211,6 +198,7 @@ def product_detail(slug):
     from price_chart import build_price_history
     from energy_costs import bereken_energiekosten
     from product_specs import kernspecs, groepeer_specs, modelnummer
+    from category_context import bepaal_categoriecontext
 
     # De één-winkel-variant (design 5c) geldt voor ruim de helft van de
     # producten; alleen dáár halen we alternatieven op, zodat de gewone
@@ -225,6 +213,11 @@ def product_detail(slug):
                            kernspecs=kernspecs(product),
                            spec_groepen=groepeer_specs(product),
                            modelnummer=modelnummer(product),
+                           # Eigen meting over de hele categorie: de enige
+                           # inhoud op een dunne productpagina die nergens
+                           # anders staat. Gecachet per categorie, dus dit
+                           # kost niet elke paginaweergave een query.
+                           categoriecontext=bepaal_categoriecontext(product),
                            een_winkel=een_winkel,
                            # Niet hardgecodeerd in de tekst: sluit er een
                            # zevende winkel aan, dan klopt "de andere vijf"

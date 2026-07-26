@@ -2115,16 +2115,23 @@ section h2 {
     margin: 20px 0;
 }
 
+/* Zelfde gewicht als de prijsalert op een pagina mét meerdere winkels: bij
+   één winkel is dit de belangrijkste actie, niet een bijzaak. */
 .solo-notice-title {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 700;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .solo-notice-text {
-    font-size: 12.5px;
+    font-size: 13px;
     color: var(--tekst-secundair);
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+}
+
+.solo-notice .price-alert-privacy {
+    margin-top: 10px;
+    margin-bottom: 14px;
 }
 
 .solo-alert-form {

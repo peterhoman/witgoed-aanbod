@@ -90,24 +90,25 @@
             {% set laagste = offers[0] if offers else none %}
             {% set hoogste = offers[-1] if offers and offers|length > 1 else none %}
             <div class="offers-card">
+                {% set gelijk = offers|selectattr('price', 'equalto', laagste.price)|list|length if laagste else 0 %}
+                {# Vragen álle winkels hetzelfde, dan is "laagste van" een lege
+                   mededeling: niemand is lager. Dan alleen de prijs en het
+                   aantal winkels, en verschuift de keuze naar de levertijd. #}
+                {% set allemaal_gelijk = offers|length > 1 and gelijk == offers|length %}
                 <div class="offers-card-head">
                     <div class="offers-card-head-left">
-                        {# Bij één winkel niet "laagste prijs": er is niets om
-                           laagste van te zijn. #}
-                        <span class="offers-eyebrow">
-                            {%- if product.retailer_count > 1 -%}
-                            Laagste van {{ product.retailer_count }} winkels
-                            {%- else -%}
-                            Prijs bij 1 winkel
-                            {%- endif -%}
-                        </span>
-                        {% set gelijk = offers|selectattr('price', 'equalto', laagste.price)|list|length if laagste else 0 %}
+                        {# Bij één winkel geen eyebrow: "Prijs bij 1 winkel
+                           € 1.649,00 bij Coolblue" zegt twee keer hetzelfde.
+                           Dat er één winkel is staat al in het uitlegblok. #}
+                        {% if product.retailer_count > 1 and not allemaal_gelijk %}
+                        <span class="offers-eyebrow">Laagste van {{ product.retailer_count }} winkels</span>
+                        {% endif %}
                         <span class="offers-price-row">
                             <span class="offers-price">&euro; {{ product.lowest_price|euro }}</span>
-                            {# Delen meerdere winkels de laagste prijs, dan hier
-                               geen naam: er is er niet één de goedkoopste. #}
-                            {% if gelijk > 1 %}
-                            <span class="offers-price-shop">bij {{ gelijk }} winkels</span>
+                            {% if allemaal_gelijk %}
+                            <span class="offers-price-shop">bij alle {{ offers|length }} winkels</span>
+                            {% elif gelijk > 1 %}
+                            <span class="offers-price-shop">bij {{ gelijk }} van de {{ offers|length }} winkels</span>
                             {% elif laagste %}
                             <span class="offers-price-shop">bij {{ laagste.retailer_name }}</span>
                             {% endif %}
@@ -137,6 +138,13 @@
                        class="offer-btn offer-btn-best solo-koop-btn">{{ t('offer.go_to', retailer=laagste.retailer_name) }} &rarr;</a>
                 </div>
                 {% elif offers %}
+                {# Bij volledige prijsgelijkheid één regel boven de lijst in
+                   plaats van bij elke rij "laagste". Dat woord drie keer
+                   herhalen voegt niets toe; de zin wijst naar waar het
+                   verschil wél zit. #}
+                {% if allemaal_gelijk %}
+                <p class="offers-gelijk">Alle {{ offers|length }} winkels vragen dezelfde prijs &mdash; kies op levertijd.</p>
+                {% endif %}
                 <ul class="offers-list">
                     {% for offer in offers %}
                     <li class="offer-row{% if offers|length > 1 and offer.price == laagste.price %} offer-row-best{% endif %}">
@@ -163,11 +171,16 @@
                                is geen verschil, en één winkel "laagste" noemen
                                terwijl een ander hetzelfde vraagt is niet uit
                                te leggen aan die ander. #}
-                            {% if offers|length > 1 %}
+                            {# Bij volledige gelijkheid geen labels: dat staat al
+                               als één regel boven de lijst. "€ 159 meer" en niet
+                               "+ € 159,00", want de kop noemt óók een verschil
+                               (tussen goedkoopste en duurste) en dat is iets
+                               anders dan het verschil met de laagste. #}
+                            {% if offers|length > 1 and not allemaal_gelijk %}
                             {% if offer.price == laagste.price %}
                             <span class="offer-diff offer-diff-best">laagste</span>
                             {% else %}
-                            <span class="offer-diff">+ &euro; {{ (offer.price - laagste.price)|euro }}</span>
+                            <span class="offer-diff">&euro; {{ (offer.price - laagste.price)|euro }} meer</span>
                             {% endif %}
                             {% endif %}
                         </span>

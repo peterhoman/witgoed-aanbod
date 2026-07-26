@@ -117,6 +117,31 @@ Van 5a (meerdere winkels), 5b (mobiel) en 5c (één winkel).
 
 ---
 
+## Google Search Console
+
+**Account: `pfmhoman@gmail.com`.** Directe link, sla deze op:
+
+```
+https://search.google.com/u/0/search-console?resource_id=sc-domain:witgoedaanbod.nl
+```
+
+Let op de `/u/0/`. Met meerdere Google-accounts in dezelfde browser komt Search
+Console vaak uit op een ander accountnummer, en dan krijg je het
+welkomstscherm te zien alsof er geen property is. Dat is dan misleidend: de
+property bestaat wel, je kijkt alleen met het verkeerde account.
+
+Het is een **domein-property** (`sc-domain:witgoedaanbod.nl`), dus hij dekt
+www en niet-www, http en https tegelijk. DNS-geverifieerd; het TXT-record
+staat bij TransIP:
+
+```
+google-site-verification=CwTSwDoBq1Hg1yEr9aYxXcjaURT6VlGagjU3YfX2J-0
+```
+
+De losse HTML-verificatietag in `config.py` is iets anders: die is voor
+Merchant Center (gratis Shopping-vermeldingen), zelfde account. Beide moeten
+blijven staan; Google hercontroleert periodiek.
+
 ## Dingen om te weten
 
 - **Lokale database is dun**: 10 producten, 4 spec-velden. Veel is daardoor lokaal

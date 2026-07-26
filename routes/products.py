@@ -87,6 +87,18 @@ _FORMAAT_VELD = {
 }
 
 
+def _is_set(product):
+    """True als dit een combinatie van twee apparaten is, geen los apparaat.
+
+    De feeds zetten zo'n set als "Wisberg WBWM5A5W9ML + Wisberg WBDR5AW9ML" in
+    de titel. Van de 120 wasmachines op de site zijn er 29 zo'n set. Het
+    onderscheid is hard: een was/droogcombinatie van € 1.649 hoort niet
+    vergeleken te worden met een losse wasmachine van € 349, hoe goed het
+    energielabel ook matcht.
+    """
+    return ' + ' in (product.title or '')
+
+
 def _vergelijkbare_alternatieven(product, aantal=4):
     """Apparaten die lijken op dit product én bij meerdere winkels liggen.
 
@@ -109,13 +121,31 @@ def _vergelijkbare_alternatieven(product, aantal=4):
         .group_by(Offer.product_id)
         .subquery()
     )
+    # Twee harde grenzen, ongeacht hoe ruim we verderop zoeken.
+    #
+    # Prijsband 0,6 tot 1,6 keer: op een was/droogcombinatie van € 1.649
+    # stonden losse machines van € 349 en een Miele van € 2.374 als
+    # "wel te vergelijken". Dat is geen alternatief maar een andere aankoop,
+    # en het kost meer vertrouwen dan het oplevert -- juist op de pagina die
+    # het van eerlijkheid moet hebben.
+    #
+    # Set versus los apparaat: een combinatie van wasmachine plus droger
+    # hoort alleen naast andere combinaties te staan.
+    prijs = product.lowest_price or product.price or 0
+    grenzen = [Product.price >= prijs * 0.6, Product.price <= prijs * 1.6] if prijs else []
+    if _is_set(product):
+        grenzen.append(Product.title.like('% + %'))
+    else:
+        grenzen.append(~Product.title.like('% + %'))
+
     basis = (
         db.session.query(Product, winkels.c.n)
         .join(winkels, winkels.c.pid == Product.id)
         .filter(Product.category_id == product.category_id,
                 Product.id != product.id,
                 Product.is_available.is_(True),
-                winkels.c.n > 1)
+                winkels.c.n > 1,
+                *grenzen)
         .order_by(winkels.c.n.desc(), Product.price.asc())
     )
 

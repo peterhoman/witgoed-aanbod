@@ -264,7 +264,7 @@
         <ul class="alternatieven-lijst">
             {% for alt in alternatieven %}
             <li>
-                <a href="/product/{{ alt.slug }}">
+                <a href="/product/{{ alt.slug|urlencode }}">
                     {% if alt.image_url %}<img src="{{ alt.image_url|foto(120) }}" alt="" loading="lazy">{% endif %}
                     <span class="alternatief-mid">
                         <span class="alternatief-naam">{{ alt.title }}</span>

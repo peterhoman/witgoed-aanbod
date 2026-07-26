@@ -15,6 +15,7 @@ onzichtbaar, endpoint weigert); lokaal geeft _mock_advies een deterministisch
 testantwoord zodat de flow end-to-end te testen is, net als de dev-modus
 van mailer.py.
 """
+from urllib.parse import quote
 import difflib
 import json
 import logging
@@ -226,7 +227,9 @@ def beantwoord_vraag(vraag):
         producten.append({
             'naam': p.title,
             'prijs': f"{p.lowest_price:.2f}".replace('.', ','),
-            'url': f"/product/{p.slug}",
+            # Slug percent-coderen: acht producten hebben een % in de
+            # naam ("100%-pfas-vrij") en een kale % maakt de URL ongeldig.
+            'url': f"/product/{quote(p.slug, safe='')}",
             'winkels': p.retailer_count,
             'reden': str(keuze.get('reden', ''))[:300],
         })

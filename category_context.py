@@ -26,7 +26,9 @@ Twee valkuilen uit de productiedata, allebei gemeten via
 
 - Ovens hebben als energielabel de waarde "Energielabel niet van toepassing".
   Wie daar de eerste letter van pakt, telt dat als label E en verzint een
-  vergelijking. Daarom accepteert _labelletter alleen een kale letter A t/m G.
+  vergelijking. Daarom accepteert energielabel_letter (filter_helpers) alleen een kale
+  letter A t/m G; die regel wordt ook door de sitemap en de facetpagina's
+  gebruikt.
 - Zestien magnetrons hebben "0 W" als ovenvermogen. Dat is een leeg veld, geen
   meting, en het zou de laagste waarde van de categorie worden.
 """
@@ -36,6 +38,7 @@ import time
 from bisect import bisect_left, bisect_right
 from collections import Counter, defaultdict
 
+from filter_helpers import ENERGIELADDER, energielabel_letter
 from product_specs import FORMAAT_VELD
 
 # Zelfde patroon en TTL als _category_facets in routes/main.py: dit verandert
@@ -61,7 +64,7 @@ _MIN_MERK = 5
 # een pagina dun maakt.
 _MAX_AANDEEL = 0.9
 
-_LADDER = 'ABCDEFG'
+_LADDER = ENERGIELADDER
 _GETAL = re.compile(r'\s*(\d+(?:[.,]\d+)?)')
 
 # Hoe het formaatveld van de categorie (FORMAAT_VELD, zie product_specs) in een
@@ -99,18 +102,6 @@ def _euro_exact(bedrag):
         return f"{float(bedrag):,.2f}".replace(',', ' ').replace('.', ',').replace(' ', '.')
     except (TypeError, ValueError):
         return str(bedrag)
-
-
-def _labelletter(waarde):
-    """'A' -> 'A'. Alles wat geen kale letter A t/m G is -> None.
-
-    Bewust niet de eerste letter van de waarde: ovens leveren "Energielabel
-    niet van toepassing" en dat zou als label E meetellen. De lengtecheck is
-    er ook met opzet — `'AB' in 'ABCDEFG'` is waar, en een substring-test
-    zonder lengte accepteert dus ook lege en samengestelde waarden.
-    """
-    tekst = str(waarde or '').strip().upper()
-    return tekst if len(tekst) == 1 and tekst in _LADDER else None
 
 
 def _getal(waarde):
@@ -158,7 +149,7 @@ def _bouw_profiel(category_id, slug):
                 per_merk[sleutel].append(prijs)
 
         specs = specs or {}
-        letter = _labelletter(specs.get('Waarde energielabel'))
+        letter = energielabel_letter(specs.get('Waarde energielabel'))
         if letter:
             labels[letter] += 1
         if veld:
@@ -267,7 +258,7 @@ def _labelzin(product, profiel, categorie_naam):
     if gemeten < _MIN_GEMETEN:
         return None
 
-    letter = _labelletter((product.specs or {}).get('Waarde energielabel'))
+    letter = energielabel_letter((product.specs or {}).get('Waarde energielabel'))
     if not letter:
         return None
 

@@ -4,7 +4,8 @@ SEO routes (sitemap, robots.txt)
 
 from flask import Blueprint, render_template_string, current_app
 from models import Product, Category, Guide, utcnow
-from filter_helpers import compute_brand_facet, compute_spec_facets, compute_global_brand_index, slugify
+from filter_helpers import (compute_brand_facet, compute_spec_facets,
+                            compute_global_brand_index, energielabel_letter, slugify)
 from routes.main import SUBCATEGORY_SPECS
 
 seo_bp = Blueprint('seo', __name__)
@@ -69,7 +70,11 @@ def sitemap():
                 continue
             letters_gezien = set()
             for option in facet['options']:
-                letter = option['value'].strip()[:1].lower()
+                # Alleen kale letters A t/m G: op "Energielabel niet van
+                # toepassing" ontstond anders een ovens-facetpagina voor
+                # label E, met één pizzaoven erop.
+                letter = energielabel_letter(option['value'])
+                letter = letter.lower() if letter else None
                 if letter and letter not in letters_gezien:
                     letters_gezien.add(letter)
                     sitemap_entries.append({

@@ -575,7 +575,15 @@ def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_de
     page = request.args.get('page', 1, type=int)
     q = (Product.query.filter_by(category_id=category.id, is_available=True)
          .filter(extra_filter).order_by(Product.price.asc()))
-    products = q.paginate(page=page, per_page=24)
+    # Ruimer dan de 24 van de categoriepagina. Een facetpagina is de kortste
+    # route naar zijn producten: via de categoriepagina liggen ze op diepte 3
+    # tot 12 (de paginatie heeft alleen vorige/volgende, dus Google moet zich
+    # er stap voor stap doorheen klikken), via het merkfacet op diepte 2.
+    # Kapte dat facet ook op 24 af, dan bleef die winst weg: 31 facetten zijn
+    # groter dan 24 en samen hielden ze 437 producten achter paginatie.
+    # Het grootste facet telt 69 producten (Philips-koffiemachines), dus 100
+    # brengt ze allemaal op één pagina met ruimte voor groei.
+    products = q.paginate(page=page, per_page=100)
     if products.total == 0:
         abort(404)
 

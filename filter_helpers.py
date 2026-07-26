@@ -19,13 +19,45 @@ _EXCLUDED_SPEC_KEYS = {'fabrikant naam', 'taal handleiding', 'merk', 'taal bedie
 # dus zinloos om op te filteren; maakte de zijbalk alleen maar langer.
 # 'toerental aanpasbaar' is een Ja/Nee-veld dat een filterplek zou opeten
 # nu 'toerental' een voorrangs-keyword is (zie hieronder).
-_EXCLUDED_SPEC_KEYWORDS = ('verpakking', 'mpn', 'model', 'toerental aanpasbaar')
+#
+# De laatste vier zijn velden die de feeds wel leveren maar waar niemand een
+# apparaat op kiest. Ze aten plekken op in een lijst van zes: op wasmachines
+# stonden "Stand display" en "Positie deur scharnier" in de zijbalk terwijl
+# vulgewicht ontbrak. Alle vier gecontroleerd tegen de 289 veldnamen uit
+# /api/category-specs: samen raken ze precies vijf velden, geen enkel nuttig.
+#
+# De losse buitenmaten en 'CE markering' gaan om dezelfde reden weg. Niemand
+# kiest een koelkast op "Product lengte", maar de drie maten samen bezetten wel
+# drie van de zes plekken -- bij drogers, koelkasten, ovens en koffiemachines
+# deden ze dat ook echt. Op de detailpagina staan ze gewoon, daar voegt
+# _afmetingen() ze al tot één regel samen.
+#
+# Voluit 'product lengte' en niet 'lengte': dat laatste raakt ook 'Snoerlengte'.
+# En niet 'hoogte', want dan verdwijnen 'Nis hoogte' en 'Hoogte instelbaar' --
+# juist de inbouwmaten waar iemand wél op filtert.
+_EXCLUDED_SPEC_KEYWORDS = ('verpakking', 'mpn', 'model', 'toerental aanpasbaar',
+                           'stand display', 'scharnier', 'steenkool',
+                           'professioneel gebruik', 'product hoogte',
+                           'product breedte', 'product lengte', 'ce markering')
 
 # Filters waar bezoekers echt op zoeken krijgen voorrang: die komen direct
-# na het merkblok, ook als andere specs vaker voorkomen — in déze volgorde
-# (energielabel eerst, dan toerental). De waarden van deze filters sorteren
-# we oplopend (energielabel A t/m G, toerental 1200 vóór 1600) i.p.v. op aantal.
-_PRIORITY_SPEC_KEYWORDS = ('energielabel', 'toerental')
+# na het merkblok, ook als andere specs vaker voorkomen — in déze volgorde.
+# De waarden van deze filters sorteren we oplopend (energielabel A t/m G,
+# vulgewicht 6 kg vóór 12 kg, toerental 1200 vóór 1600) i.p.v. op aantal.
+#
+# Formaat (laadvermogen/inhoud/couverts) staat hier sinds duidelijk werd dat
+# de top-6 op frequentie niets te kiezen heeft: op wasmachines zit vrijwel elk
+# spec-veld op exact 46 van de 255 producten -- dezelfde 46 machines die
+# überhaupt specs hebben. Bij zo'n gelijkspel besliste de volgorde waarin de
+# feed zijn velden aanlevert, en zo verloor vulgewicht van "Positie deur
+# scharnier". Dat is toeval, geen keuze.
+#
+# 'volume in liters' staat er voluit: 'volume' alleen raakt ook "Volume
+# koelruimte", "Volume vriesvak" en "Verstelbaar water volume", en dan zou één
+# categorie vier voorrangsfilters krijgen. Om dezelfde reden geen 'vermogen'
+# (negen velden, van "Zuigvermogen" tot "Aantal vermogensstanden").
+_PRIORITY_SPEC_KEYWORDS = ('energielabel', 'laadvermogen', 'volume in liters',
+                           'couverts', 'toerental')
 
 
 def _is_priority_spec(key):
@@ -51,6 +83,34 @@ def _waarde_sorteersleutel(waarde):
     if m:
         return (0, float(m.group(1).replace(',', '.')), str(waarde).lower())
     return (1, 0.0, str(waarde).lower())
+
+
+# Weergavenaam voor de filterkop. De sleutel waarop gefilterd wordt blijft de
+# letterlijke feednaam -- alleen het label verandert.
+#
+# Dit staat er omdat een filter dat je niet herkent voor de bezoeker niet
+# bestaat: bij een beoordeling van tien vergelijkers kreeg de site als minpunt
+# "geen filter op energieklasse", terwijl dat filter er gewoon stond. Het heette
+# alleen "Waarde energielabel" en was dichtgeklapt, dus je leest eroverheen.
+#
+# Alleen velden waarvan de feednaam echt in de weg zit; de rest is prima
+# leesbaar en hoort hier niet bij te staan.
+_WEERGAVENAAM = {
+    'waarde energielabel': 'Energielabel',
+    'laadvermogen wasmachine': 'Vulgewicht',
+    'laadvermogen wasdroger': 'Vulgewicht',
+    'volume in liters': 'Inhoud',
+    'toerental centrifuge': 'Toerental',
+    'top load of voorlader': 'Type lader',
+    'energieverbruik per 100 cycli': 'Energieverbruik',
+    'geluidsniveau centrifuge': 'Geluidsniveau',
+    'stofzuigerzak of zonder stofzak': 'Stofzak',
+}
+
+
+def weergavenaam(key):
+    """De filterkop zoals de bezoeker hem leest; valt terug op de feednaam."""
+    return _WEERGAVENAAM.get((key or '').strip().lower(), key)
 
 
 def _is_excluded_spec(key):
@@ -251,7 +311,21 @@ def compute_spec_facets(products, max_filters=6, max_options=None):
             options = [{'value': value, 'count': count, 'raw': [value]} for value, count in counted]
         if max_options:
             options = options[:max_options]
-        facets.append({'key': key, 'options': options})
+        # 'key' blijft de feednaam: daarop wordt gefilterd en die staat in de
+        # URL. 'label' is puur wat de bezoeker leest.
+        facets.append({'key': key, 'label': weergavenaam(key), 'options': options})
+
+    # Twee velden met dezelfde weergavenaam is erger dan een lelijke feednaam:
+    # wasdroogcombinaties hebben zowel 'Laadvermogen wasmachine' als
+    # 'Laadvermogen wasdroger', en die stonden allebei als "Vulgewicht" in de
+    # zijbalk -- twee identieke koppen met verschillende opties, precies het
+    # soort filter dat niet meer uit te leggen is. Botsen ze, dan vallen ze
+    # allebei terug op hun feednaam; die is lelijk maar ondubbelzinnig.
+    dubbel = {f['label'] for f in facets
+              if sum(1 for g in facets if g['label'] == f['label']) > 1}
+    for facet in facets:
+        if facet['label'] in dubbel:
+            facet['label'] = facet['key']
 
     return facets
 

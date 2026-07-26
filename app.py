@@ -227,6 +227,21 @@ def create_app(config_name=None):
         from filter_helpers import slugify
         return slugify(value)
 
+    @app.template_filter('kort')
+    def kort_filter(value, lengte=50):
+        """Kap een titel af op een woordgrens, zonder streepje te laten hangen.
+
+        Het kruimelpad deed dit met title[:50] en sneed dan midden in een
+        woord. Jinja's truncate lost dat half op: feedtitels zitten vol
+        streepjes ("... - Ecobubble - AI Wash - 11 kg"), en dan blijft er
+        "- Ecobubble -…" staan. Die scheidingstekens gaan er hier af.
+        """
+        tekst = str(value or '').strip()
+        if len(tekst) <= lengte:
+            return tekst
+        afgekapt = tekst[:lengte].rsplit(' ', 1)[0]
+        return afgekapt.rstrip(' -–—,;:/|') + '…'
+
     @app.template_filter('energieletter')
     def energieletter_filter(value):
         """De kale energielabelletter (A t/m G), of leeg als het er geen is.

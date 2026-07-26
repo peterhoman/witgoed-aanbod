@@ -91,6 +91,29 @@ def _index(category_id, slug):
     return data
 
 
+def merk_facetpagina(product):
+    """De merkpagina van dit apparaat binnen zijn categorie, of None.
+
+    Apart opvraagbaar omdat het kruimelpad hem ook gebruikt: "Home /
+    Wasmachines / Bosch / <model>" mag alleen die derde stap tonen als de
+    pagina er echt is. Geeft {'naam', 'url', 'aantal'}.
+    """
+    categorie = product.category
+    if categorie is None:
+        return None
+    index = _index(categorie.id, categorie.slug)
+    # De slug is ongevoelig voor schrijfwijze (slugify verlaagt), dus "Aeg" en
+    # "AEG" wijzen naar dezelfde pagina.
+    merk = index['merken'].get((product.brand or '').strip().lower())
+    if not merk:
+        return None
+    return {
+        'naam': merk['naam'],
+        'url': f"/category/{categorie.slug}/merk/{slugify(merk['naam'])}",
+        'aantal': merk['aantal'],
+    }
+
+
 def verfijningslinks(product):
     """Links naar bestaande facetpagina's die op dit apparaat van toepassing zijn.
 
@@ -109,12 +132,11 @@ def verfijningslinks(product):
     specs = product.specs or {}
     links = []
 
-    # 1. Merk binnen deze categorie. De slug is ongevoelig voor schrijfwijze
-    #    (slugify verlaagt), dus "Aeg" en "AEG" wijzen naar dezelfde pagina.
-    merk = index['merken'].get((product.brand or '').strip().lower())
+    # 1. Merk binnen deze categorie.
+    merk = merk_facetpagina(product)
     if merk:
         links.append({
-            'url': f"/category/{categorie.slug}/merk/{slugify(merk['naam'])}",
+            'url': merk['url'],
             'tekst': f"{merk['naam']} {naam}",
             'aantal': merk['aantal'],
         })

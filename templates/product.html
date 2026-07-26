@@ -18,11 +18,23 @@
 {% block content %}
 {% set offers = product.available_offers %}
 <div class="container product-detail">
-    <!-- Breadcrumbs -->
-    <nav class="breadcrumbs">
-        <a href="/">Home</a> /
-        <a href="/category/{{ product.category.slug }}">{{ product.category.name }}</a> /
-        <span>{{ product.title[:50] }}</span>
+    {# Kruimelpad. De merkstap staat er alleen als die facetpagina echt
+       bestaat (zie facet_links.merk_facetpagina) -- een kruimelpad dat naar
+       een 404 wijst is erger dan een kort kruimelpad. Dezelfde stappen staan
+       in de BreadcrumbList-structured-data, want Google toont dat pad in de
+       zoekresultaten en die twee horen hetzelfde te zeggen.
+       De titel wordt op een woordgrens afgekapt: [:50] sneed midden in een
+       woord, en dat leest als een fout. #}
+    <nav class="breadcrumbs" aria-label="Kruimelpad">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/category/{{ product.category.slug }}">{{ product.category.name }}</a>
+        {% if merk_facet %}
+        <span aria-hidden="true">/</span>
+        <a href="{{ merk_facet.url }}">{{ merk_facet.naam }}</a>
+        {% endif %}
+        <span aria-hidden="true">/</span>
+        <span>{{ product.title|kort(50) }}</span>
     </nav>
 
     <div class="product-main{% if een_winkel %} product-main-solo{% endif %}">

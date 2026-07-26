@@ -8,7 +8,7 @@ from sqlalchemy import or_
 products_bp = Blueprint('products', __name__)
 
 
-def _product_structured_data(product):
+def _product_structured_data(product, merk_facet=None):
     """Schema.org Product + AggregateOffer voor rich results in Google.
 
     De EAN gaat mee als gtin13: daarmee kan Google het apparaat koppelen aan
@@ -60,16 +60,26 @@ def _product_structured_data(product):
             } for o in offers],
         }
 
+    # Zelfde stappen als het zichtbare kruimelpad in product.html. Google toont
+    # dit pad in de zoekresultaten ("witgoedaanbod.nl > Wasmachines > Bosch"),
+    # dus een merkstap maakt het fragment concreter. Hij staat er alleen als de
+    # merk-facetpagina echt bestaat; anders blijft het bij twee niveaus.
+    stappen = [
+        {'@type': 'ListItem', 'position': 1, 'name': 'Home',
+         'item': f"{site_url}/"},
+        {'@type': 'ListItem', 'position': 2, 'name': product.category.name,
+         'item': f"{site_url}/category/{product.category.slug}"},
+    ]
+    if merk_facet:
+        stappen.append({'@type': 'ListItem', 'position': 3,
+                        'name': merk_facet['naam'],
+                        'item': f"{site_url}{merk_facet['url']}"})
+    stappen.append({'@type': 'ListItem', 'position': len(stappen) + 1,
+                    'name': product.title})
     breadcrumbs = {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
-        'itemListElement': [
-            {'@type': 'ListItem', 'position': 1, 'name': 'Home',
-             'item': f"{site_url}/"},
-            {'@type': 'ListItem', 'position': 2, 'name': product.category.name,
-             'item': f"{site_url}/category/{product.category.slug}"},
-            {'@type': 'ListItem', 'position': 3, 'name': product.title},
-        ],
+        'itemListElement': stappen,
     }
     return [data, breadcrumbs]
 
@@ -199,16 +209,20 @@ def product_detail(slug):
     from energy_costs import bereken_energiekosten
     from product_specs import kernspecs, groepeer_specs, modelnummer
     from category_context import bepaal_categoriecontext
-    from facet_links import verfijningslinks
+    from facet_links import merk_facetpagina, verfijningslinks
 
     # De één-winkel-variant (design 5c) geldt voor ruim de helft van de
     # producten; alleen dáár halen we alternatieven op, zodat de gewone
     # pagina geen extra query kost.
     een_winkel = product.is_available and product.retailer_count <= 1
+    # Eén keer opgehaald: het kruimelpad en de structured data moeten dezelfde
+    # stappen tonen. Komt uit dezelfde gecachete index als de verfijningslinks.
+    merk_facet = merk_facetpagina(product)
     return render_template('product.html', product=product,
                            related_products=related_products,
                            category_guides=category_guides,
-                           structured_data=_product_structured_data(product),
+                           merk_facet=merk_facet,
+                           structured_data=_product_structured_data(product, merk_facet),
                            price_history=build_price_history(product),
                            energiekosten=bereken_energiekosten(product),
                            kernspecs=kernspecs(product),

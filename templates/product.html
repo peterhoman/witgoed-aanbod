@@ -211,15 +211,24 @@
             {# Eén winkel: benoem de situatie en maak er iets nuttigs van, in
                plaats van een kale prijs die de site defect laat lijken. #}
             {% if een_winkel and alerts_enabled %}
+            {# Bij één winkel is de prijsalert de belangrijkste actie die er te
+               bieden valt -- er is immers niets te vergelijken. Daarom hier
+               hetzelfde volwaardige blok als op een pagina met meerdere
+               winkels, met de belofte als kop in plaats van een knopje
+               "Houd bij". De aantallen komen uit RETAILER_LABELS: sluit er
+               een zevende winkel aan, dan klopt "de andere vijf" niet meer. #}
             <div class="solo-notice">
-                <p class="solo-notice-title">Dit model verkoopt nu bij één van onze zes winkels.</p>
-                <p class="solo-notice-text">Wij checken de andere vijf dagelijks. Komt hij ergens goedkoper, dan mailen wij je.</p>
+                <h2 class="solo-notice-title">Wij checken de andere {{ aantal_winkels - 1 }} winkels dagelijks</h2>
+                <p class="solo-notice-text">Dit model verkoopt nu bij één van onze {{ aantal_winkels }} winkels.
+                   Komt hij ergens goedkoper, dan mailen wij je. Gratis, afmelden met één klik.</p>
                 <form method="post" action="/prijsalert" class="price-alert-form solo-alert-form">
                     <input type="hidden" name="product_id" value="{{ product.id }}">
                     <input type="email" name="email" required maxlength="255"
                            placeholder="{{ t('alert.email_placeholder') }}" autocomplete="email">
-                    <button type="submit" class="btn-primary">Houd bij</button>
+                    <button type="submit" class="btn-primary">Zet alert</button>
                 </form>
+                <p class="price-alert-privacy">{{ t('alert.privacy_note') }}
+                    <a href="/privacy">{{ t('footer.privacy') }}</a></p>
                 <div class="dekkingsbalk" aria-hidden="true">
                     {% for i in range(6) %}<span class="dekkingsbalk-deel{% if i < 1 %} dekkingsbalk-deel-vol{% endif %}"></span>{% endfor %}
                 </div>

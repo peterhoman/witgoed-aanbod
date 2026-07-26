@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from flask import Blueprint, render_template, request, jsonify, current_app
-from models import Product, Category, Guide
+from models import Product, Category, Guide, RETAILER_LABELS
 from sqlalchemy import or_
 
 products_bp = Blueprint('products', __name__)
@@ -226,6 +226,10 @@ def product_detail(slug):
                            spec_groepen=groepeer_specs(product),
                            modelnummer=modelnummer(product),
                            een_winkel=een_winkel,
+                           # Niet hardgecodeerd in de tekst: sluit er een
+                           # zevende winkel aan, dan klopt "de andere vijf"
+                           # niet meer.
+                           aantal_winkels=len(RETAILER_LABELS),
                            alternatieven=_vergelijkbare_alternatieven(product) if een_winkel else [],
                            alternatieven_kenmerk=_alternatieven_kenmerk(product) if een_winkel else '')
 

@@ -2206,6 +2206,49 @@ section h2 {
     }
 }
 
+/* ============================================
+   VERFIJNINGSLINKS (productpagina)
+   ============================================
+   Zelfde pil-vorm als .category-facet-links op de categoriepagina, zodat de
+   bezoeker herkent dat het om dezelfde soort doorverwijzing gaat. */
+.facet-links {
+    margin: 20px 0 28px;
+}
+
+.facet-links h2 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.facet-links ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.facet-links a {
+    display: inline-block;
+    padding: 6px 13px;
+    border-radius: 14px;
+    background: var(--light);
+    color: var(--dark);
+    font-size: 13px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+}
+
+.facet-links a:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.facet-links-aantal {
+    color: var(--tekst-tertiair);
+    font-variant-numeric: tabular-nums;
+}
+
 .alternatieven {
     margin: 28px 0;
 }

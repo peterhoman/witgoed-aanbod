@@ -199,6 +199,7 @@ def product_detail(slug):
     from energy_costs import bereken_energiekosten
     from product_specs import kernspecs, groepeer_specs, modelnummer
     from category_context import bepaal_categoriecontext
+    from facet_links import verfijningslinks
 
     # De één-winkel-variant (design 5c) geldt voor ruim de helft van de
     # producten; alleen dáár halen we alternatieven op, zodat de gewone
@@ -218,6 +219,9 @@ def product_detail(slug):
                            # anders staat. Gecachet per categorie, dus dit
                            # kost niet elke paginaweergave een query.
                            categoriecontext=bepaal_categoriecontext(product),
+                           # Links naar facetpagina's die al bestaan en al in
+                           # de sitemap staan. Ook gecachet per categorie.
+                           verfijningslinks=verfijningslinks(product),
                            een_winkel=een_winkel,
                            # Niet hardgecodeerd in de tekst: sluit er een
                            # zevende winkel aan, dan klopt "de andere vijf"

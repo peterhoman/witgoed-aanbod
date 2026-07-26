@@ -19,7 +19,7 @@ EAN) are replaced rather than duplicated.
 
 from urllib.parse import quote_plus
 from app import create_app
-from models import db, Category, Product
+from models import db, Category, Offer, PriceAlert, PriceHistory, Product
 
 WASMACHINES = [
     {
@@ -132,13 +132,58 @@ def slugify(title, ean):
     return f"{title[:50].lower().replace(' ', '-').replace('/', '-')}-{ean.lower()}"
 
 
+def _verwijder_voorbeeldproducten():
+    """Verwijder eerder gezaaide voorbeeldproducten, mét alles wat eraan hangt.
+
+    Dit stond hier als Product.query.filter_by(is_example=True).delete(). Zo'n
+    bulk-delete slaat de ORM-cascade over, dus de aanbiedingen en de
+    prijshistorie van die producten bleven staan als weesrijen. In de
+    ontwikkeldatabase liep dat op tot 141 aanbiedingen bij 10 producten.
+
+    Dat is niet alleen rommel. SQLite hergebruikt de id's van verwijderde
+    rijen, dus een nieuw product krijgt het nummer van een oud en erft diens
+    aanbiedingen -- of het aanmaken loopt vast op de unieke sleutel
+    (product_id, retailer). Dat laatste gebeurde bij het testen van de
+    prijsverloop-grafiek.
+
+    Expliciet verwijderen in plaats van op de cascade vertrouwen: PriceHistory
+    heeft alleen een ondelete='CASCADE' op databaseniveau, en SQLite handhaaft
+    dat alleen met PRAGMA foreign_keys aan. Die staat standaard uit.
+    """
+    ids = [rij[0] for rij in db.session.query(Product.id).filter_by(is_example=True).all()]
+    if ids:
+        PriceAlert.query.filter(PriceAlert.product_id.in_(ids)).delete(synchronize_session=False)
+        PriceHistory.query.filter(PriceHistory.product_id.in_(ids)).delete(synchronize_session=False)
+        Offer.query.filter(Offer.product_id.in_(ids)).delete(synchronize_session=False)
+        Product.query.filter(Product.id.in_(ids)).delete(synchronize_session=False)
+    return len(ids)
+
+
+def _ruim_weesrijen_op():
+    """Aanbiedingen en prijshistorie die naar een verdwenen product wijzen.
+
+    Opruimen van wat eerdere runs hebben laten liggen; met de functie hierboven
+    ontstaan er geen nieuwe meer.
+    """
+    bestaande = db.session.query(Product.id)
+    weg = 0
+    for model in (Offer, PriceHistory):
+        weg += model.query.filter(~model.product_id.in_(bestaande)).delete(
+            synchronize_session=False)
+    return weg
+
+
 def seed():
     app = create_app()
 
     with app.app_context():
         # Remove any previously seeded example products so this script is safely re-runnable
-        Product.query.filter_by(is_example=True).delete()
+        verwijderd = _verwijder_voorbeeldproducten()
+        wezen = _ruim_weesrijen_op()
         db.session.commit()
+        if verwijderd or wezen:
+            print(f"[i] {verwijderd} oude voorbeeldproducten verwijderd, "
+                  f"{wezen} weesrijen opgeruimd")
 
         total = 0
         for category_slug, items in CATEGORY_PRODUCTS.items():

@@ -425,7 +425,14 @@ def feed_velden_debug(winkel):
                     # Alleen korte, code-achtige waarden als voorbeeld: dat is
                     # genoeg om een modelcode te herkennen zonder feedinhoud
                     # te publiceren.
-                    if k not in voorbeeld and len(tekst) <= 24 and ' ' not in tekst:
+                    # Identificatievelden mogen hun waarde tonen: een
+                    # modelaanduiding staat op het apparaat zelf en is geen
+                    # beschrijvende feedinhoud. De rest alleen zonder spaties,
+                    # zodat er nooit een stuk verkooptekst in belandt.
+                    identificatie = any(w in k.lower() for w in
+                                        ('model', 'mpn', 'sku', 'gtin', 'ean', 'part'))
+                    if k not in voorbeeld and len(tekst) <= 40 and (
+                            identificatie or ' ' not in tekst):
                         voorbeeld[k] = tekst
         return [{'veld': k, 'aanwezig': n, 'gevuld': gevuld[k],
                  'voorbeeld': voorbeeld.get(k)}
@@ -459,7 +466,51 @@ def feed_velden_debug(winkel):
         from flask import abort
         abort(404)
 
+    # Het cijfer dat beslist: hoeveel van onze producten krijgen hier een
+    # modelcode uit die ze nu niet hebben? Zonder dat getal is de rest een
+    # opsomming van velden zonder opbrengst.
+    from product_specs import modelnummer
+    onze = {(p.ean or '').strip().lstrip('0'): p
+            for p in Product.query.filter_by(is_available=True).all()}
+    ean_veld = {'mediamarkt': 'identifiers.ean', 'coolblue': 'ean'}[winkel]
+    code_velden = [v['veld'] for v in velden
+                   if any(w in v['veld'].lower() for w in ('model', 'mpn'))
+                   and v['gevuld']]
+
+    def plat(r):
+        uit = dict(r)
+        for sleutel in ('identifiers', 'attributes'):
+            genest = r.get(sleutel)
+            if isinstance(genest, dict):
+                uit.update({f'{sleutel}.{k}': v for k, v in genest.items()})
+        return uit
+
+    opbrengst = {veld: {'gematcht': 0, 'model_nu_leeg': 0, 'voorbeelden': []}
+                 for veld in code_velden}
+    gematcht_totaal = 0
+    for r in records:
+        vlak = plat(r)
+        ean = str(vlak.get(ean_veld) or '').strip().lstrip('0')
+        product = onze.get(ean)
+        if not product:
+            continue
+        gematcht_totaal += 1
+        for veld in code_velden:
+            waarde = vlak.get(veld)
+            waarde = waarde[0] if isinstance(waarde, list) and waarde else waarde
+            waarde = str(waarde or '').strip()
+            if not waarde:
+                continue
+            opbrengst[veld]['gematcht'] += 1
+            if not modelnummer(product):
+                opbrengst[veld]['model_nu_leeg'] += 1
+                if len(opbrengst[veld]['voorbeelden']) < 5:
+                    opbrengst[veld]['voorbeelden'].append(
+                        {'titel': (product.title or '')[:60], 'code': waarde[:40]})
+
     return jsonify({'winkel': winkel, 'onderzochte_records': len(records),
+                    'onze_producten_in_deze_steekproef': gematcht_totaal,
+                    'opbrengst_per_veld': opbrengst,
                     'velden': velden})
 
 

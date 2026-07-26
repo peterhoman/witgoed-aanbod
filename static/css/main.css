@@ -2487,6 +2487,14 @@ section h2 {
     font-size: 13px;
 }
 
+/* Eén wijziging: alleen de regel, geen tabelkop (designspec 5a). */
+.price-history-enkel {
+    font-size: 13px;
+    color: var(--tekst-secundair);
+    padding: 8px 0 2px;
+    font-variant-numeric: tabular-nums;
+}
+
 .price-history-table summary {
     cursor: pointer;
     color: var(--gray);

@@ -358,6 +358,12 @@
             {% endif %}
             <details class="price-history-table">
                 <summary>Alle prijswijzigingen ({{ price_history.tabel | length }})</summary>
+                {# Bij één meting geen tabel met kop: drie kolomkoppen boven
+                   één regel is meer opmaak dan inhoud. Dan gewoon de regel. #}
+                {% if price_history.tabel | length == 1 %}
+                {% set rij = price_history.tabel[0] %}
+                <p class="price-history-enkel">{{ rij.datum }} &middot; {{ rij.winkel }} &middot; &euro; {{ rij.prijs }}</p>
+                {% else %}
                 <table>
                     <thead><tr><th>Datum</th><th>Winkel</th><th>Prijs</th></tr></thead>
                     <tbody>
@@ -366,6 +372,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {% endif %}
             </details>
         </div>
         {% endif %}

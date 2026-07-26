@@ -71,6 +71,56 @@ onbereikbaar waren (kale `%` in de slug).
 
 ---
 
+## Werkwijze — lees dit voor je iets bouwt
+
+Deze regels zijn niet vooraf bedacht maar deze week duur geleerd. Elke regel
+staat er omdat het één keer misging.
+
+**Meet op productie, niet lokaal.** De lokale database heeft 10 producten met
+4 spec-velden; productie heeft er 2813 met tot 77. Lokaal ziet alles er goed
+uit. Elke conclusie over hoe iets "eruitziet" of "werkt" moet tegen
+witgoedaanbod.nl gecontroleerd worden. Meerdere keren bleek een bevinding een
+artefact van de dunne lokale data.
+
+**Test in een draaiende pagina, niet alleen in de functie.** Twee keer werkte
+losse logica prima terwijl de pagina iets anders deed:
+- een CSS-regel voor verborgen filteropties verloor op specificiteit, dus de
+  "Meer (n)"-knop toonde het juiste aantal maar verborg niets;
+- een Jinja-filter gebruikte `is number` op een tekstwaarde — dat is altijd
+  onwaar, dus er werd nooit iets weggefilterd.
+Beide gevonden door de knop echt in te drukken.
+
+**Pas op met trefwoorden als deelstring.** `'ean'` zit ook in `cleansing`,
+waardoor "Maximum cleansing temperatuur" bij "Merk en model" belandde. Dit is
+twee keer gebeurd (ook bij de kleurnormalisatie). Test elke trefwoordenlijst
+tegen de echte veldnamen uit `/api/category-specs/<slug>`.
+
+**Beweer niets wat de data niet draagt.** Dit is de rode draad van het hele
+project:
+- geen koopadvies bij drie dagen historie en een vlakke lijn (dat was een
+  tautologie);
+- geen "0 dB" tonen, dat is een leeg veld;
+- geen gegokt modelnummer uit de titel;
+- geen bezorgkosten invullen die de feed niet levert;
+- geen alternatieven tonen die geen alternatief zijn.
+Ontbreekt data, laat het onderdeel weg. Nooit schatten.
+
+**Controleer wat de designchat beweert.** De samenwerking werkt goed — hun
+ontwerpoordeel is consistent scherp — maar ze kennen de code niet en hebben
+zes keer iets beschreven dat er al was of er juist niet was: een branch die
+niet bestond, chevrons die nooit gebouwd waren, een titel-clamp die er al
+zat, een "vanaf"-weergave die al werkte, een specblok dat wél bestond, en een
+prijsverschil-cijfer dat nergens stond. Verifieer eerst, bouw daarna. Meld het
+ook terug — dat scheelt hun de volgende ronde.
+
+**Nooit naar `main` pushen.** Railway zet main automatisch live. Werken op een
+branch, pull request, de eigenaar merget zelf.
+
+**Schermafbeeldingen renderen op dubbele schaal.** Een header die 750px lijkt
+is er 376. Meet met JavaScript, kijk niet naar het plaatje.
+
+---
+
 ## Wat er 25 en 26 juli live is gegaan
 
 Achttien pull requests.

@@ -184,6 +184,55 @@ def _paginaweergaven():
         return {'nog_geen_data': str(e)[:120]}
 
 
+def _winkelbijdrage():
+    """Wat elke winkel bijdraagt aan de vergelijkbaarheid, niet aan de omvang.
+
+    De vraag bij een nieuwe feed is niet "hoeveel producten heeft die winkel"
+    maar "bij hoeveel apparaten maakt die winkel het verschil tussen wél en
+    niet kunnen vergelijken". Expert heeft 9080 producten in de feed en dekt
+    daarvan 21% van onze wasmachines -- dat eerste getal zegt niets.
+
+    'onmisbaar' telt de apparaten met precies twee winkels waarvan deze er
+    één is: verdwijnt die winkel, dan valt daar de vergelijking helemaal weg.
+    Dat is de bovengrens van wat een winkel waard is. Staat dat getal laag,
+    dan levert een zevende winkel waarschijnlijk ook weinig op.
+    """
+    from models import db, Offer
+
+    winkels_per_product = (
+        db.session.query(Offer.product_id.label('pid'),
+                         db.func.count(Offer.id).label('n'))
+        .filter(Offer.is_available.is_(True))
+        .group_by(Offer.product_id)
+        .subquery()
+    )
+    rijen = (
+        db.session.query(
+            Offer.retailer,
+            db.func.count(Offer.id),
+            db.func.sum(db.case((winkels_per_product.c.n == 2, 1), else_=0)),
+            db.func.sum(db.case((winkels_per_product.c.n == 1, 1), else_=0)),
+        )
+        .join(winkels_per_product, winkels_per_product.c.pid == Offer.product_id)
+        .filter(Offer.is_available.is_(True))
+        .group_by(Offer.retailer)
+        .all()
+    )
+
+    uit = []
+    for winkel, aantal, onmisbaar, alleen in rijen:
+        uit.append({
+            'winkel': winkel,
+            'aanbiedingen': aantal,
+            # Apparaten waar deze winkel de tweede is: zonder hem geen vergelijking.
+            'onmisbaar_voor': int(onmisbaar or 0),
+            # Apparaten die alleen deze winkel voert: leveren nu geen vergelijking op.
+            'enige_winkel_bij': int(alleen or 0),
+        })
+    uit.sort(key=lambda w: -w['onmisbaar_voor'])
+    return uit
+
+
 def _winkeldekking():
     """Per categorie en totaal: hoeveel leverbare apparaten hebben meer dan
     één leverbare aanbieding, oftewel bij hoeveel valt er iets te vergelijken.
@@ -275,6 +324,10 @@ def sync_status():
         # cookies of toestemming te meten. Berekend in SQL over de hele
         # catalogus, niet over de eerste pagina van een categorie.
         'winkeldekking': _winkeldekking(),
+        # Per winkel: bij hoeveel apparaten maakt die het verschil tussen wél
+        # en niet kunnen vergelijken. Bedoeld om vóór het aansluiten van een
+        # zevende winkel te weten of dat de moeite waard is.
+        'winkelbijdrage': _winkelbijdrage(),
         # Paginaweergaven per soort per dag (geen cookies, geen bezoekersdata).
         # 'product_per_categorie' is het cijfer om te volgen: hoeveel
         # productpagina's er per categoriepagina worden bekeken.

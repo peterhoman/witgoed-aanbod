@@ -2,7 +2,7 @@
 SEO routes (sitemap, robots.txt)
 """
 
-from flask import Blueprint, render_template_string, current_app
+from flask import Blueprint, abort, render_template_string, current_app
 from models import Product, Category, Guide, utcnow
 from filter_helpers import (compute_brand_facet, compute_spec_facets,
                             compute_global_brand_index, energielabel_letter, slugify)
@@ -54,9 +54,24 @@ def _nieuwste(momenten):
     return max(momenten) if momenten else None
 
 
-@seo_bp.route('/sitemap.xml')
-def sitemap():
-    """Generate sitemap.xml"""
+# De sitemap is opgesplitst per soort pagina, met /sitemap.xml als index. Reden:
+# Search Console rapporteert dekking per ingediende sitemap. Met alles in één
+# bestand zag je één percentage over 3281 URL's — 137 geïndexeerd — zonder te
+# weten of dat productpagina's, categoriepagina's of facetpagina's waren. Per
+# soort is af te lezen wat wel en niet aanslaat, en dus of een ingreep werkt.
+SOORTEN = {
+    'producten': 'productpagina',
+    'categorieen': 'categoriepagina',
+    'merken': 'merkpagina (alle categorieen)',
+    'merk-per-categorie': 'merk binnen een categorie',
+    'facetten': 'energielabel- en subtypepagina',
+    'gidsen': 'koopgids en blog',
+    'overig': 'homepage en juridische paginas',
+}
+
+
+def _bouw_entries():
+    """Alle sitemap-regels, gegroepeerd als {soort: [entry, ...]}."""
     products = Product.query.filter_by(is_available=True).all()
     categories = Category.query.filter_by(parent_id=None).all()
 
@@ -83,20 +98,23 @@ def sitemap():
     sitemap_entries.append({
         'loc': f"{current_app.config['SITE_URL']}/",
         'lastmod': _lastmod(moment_van(products)),
-        'priority': '1.0'
+        'priority': '1.0',
+        'soort': 'overig'
     })
 
     # Merken A-Z + per-merk-pagina (over alle categorieën heen)
     sitemap_entries.append({
         'loc': f"{current_app.config['SITE_URL']}/merken",
         'lastmod': _lastmod(moment_van(products)),
-        'priority': '0.6'
+        'priority': '0.6',
+        'soort': 'overig'
     })
     for merk in compute_global_brand_index((p.brand, 1) for p in products):
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/merk/{merk['slug']}",
             'lastmod': _lastmod(per_merk_globaal.get(merk['slug'])),
-            'priority': '0.5'
+            'priority': '0.5',
+            'soort': 'merken'
         })
 
     # Category pages + hun merk-/energielabel-facetpagina's (long-tail SEO;
@@ -108,7 +126,8 @@ def sitemap():
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}",
             'lastmod': _lastmod(cat_moment),
-            'priority': '0.8'
+            'priority': '0.8',
+            'soort': 'categorieen'
         })
         for brand in compute_brand_facet(cat_products):
             merk_slug = slugify(brand['value'])
@@ -116,12 +135,18 @@ def sitemap():
                 'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}/merk/{merk_slug}",
                 'lastmod': _lastmod(moment_van(
                     p for p in cat_products if slugify(p.brand or '') == merk_slug)),
-                'priority': '0.5'
+                'priority': '0.5',
+                'soort': 'merk-per-categorie'
             })
+        # Buiten de facetlus: er kan meer dan één veld zijn waar "energielabel"
+        # in de naam zit, en dan gaf een per-facet ontdubbeling dezelfde URL
+        # twee keer. Een sitemap die een URL herhaalt is geen ramp, maar het is
+        # wel de soort slordigheid waarop de rest van dit bestand wordt
+        # afgerekend.
+        letters_gezien = set()
         for facet in compute_spec_facets(cat_products):
             if 'energielabel' not in facet['key'].lower():
                 continue
-            letters_gezien = set()
             for option in facet['options']:
                 # Alleen kale letters A t/m G: op "Energielabel niet van
                 # toepassing" ontstond anders een ovens-facetpagina voor
@@ -135,7 +160,8 @@ def sitemap():
                         'lastmod': _lastmod(moment_van(
                             p for p in cat_products
                             if (energielabel_letter((p.specs or {}).get('Waarde energielabel')) or '').lower() == letter)),
-                        'priority': '0.5'
+                        'priority': '0.5',
+                        'soort': 'facetten'
                     })
         # Subcategorie-pagina's (voorlader/bovenlader, warmtepomp/condens):
         # ongelimiteerd berekenen, want dit zijn geen priority-specs en
@@ -151,7 +177,8 @@ def sitemap():
                         'lastmod': _lastmod(moment_van(
                             p for p in cat_products
                             if str((p.specs or {}).get(subtype_key) or '').strip() == option['value'])),
-                        'priority': '0.5'
+                        'priority': '0.5',
+                        'soort': 'facetten'
                     })
 
     # Product pages. Slugs kunnen speciale tekens bevatten (De'Longhi,
@@ -167,7 +194,8 @@ def sitemap():
             # last_synced onvoorwaardelijk wordt gezet. Zie
             # _laatste_wijziging_per_product.
             'lastmod': _lastmod(product_moment(product)),
-            'priority': '0.6'
+            'priority': '0.6',
+            'soort': 'producten'
         })
 
     # Guides
@@ -176,7 +204,8 @@ def sitemap():
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/gidsen/{guide.slug}",
             'lastmod': _lastmod(guide.created_at),
-            'priority': '0.7'
+            'priority': '0.7',
+            'soort': 'gidsen'
         })
 
     # Blog posts
@@ -185,7 +214,8 @@ def sitemap():
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/blog/{post.slug}",
             'lastmod': _lastmod(post.created_at),
-            'priority': '0.6'
+            'priority': '0.6',
+            'soort': 'gidsen'
         })
 
     # Legal pages
@@ -195,10 +225,18 @@ def sitemap():
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/{page}",
             'lastmod': _lastmod(),
-            'priority': '0.5'
+            'priority': '0.5',
+            'soort': 'overig'
         })
 
-    sitemap_xml = render_template_string('''<?xml version="1.0" encoding="UTF-8"?>
+    per_soort = {soort: [] for soort in SOORTEN}
+    for entry in sitemap_entries:
+        per_soort[entry['soort']].append(entry)
+    return per_soort
+
+
+def _urlset(entries):
+    xml = render_template_string('''<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {% for entry in entries %}
     <url>
@@ -207,9 +245,50 @@ def sitemap():
         <priority>{{ entry.priority }}</priority>
     </url>
 {% endfor %}
-</urlset>''', entries=sitemap_entries)
+</urlset>''', entries=entries)
+    return xml, 200, {'Content-Type': 'application/xml'}
 
-    return sitemap_xml, 200, {'Content-Type': 'application/xml'}
+
+@seo_bp.route('/sitemap.xml')
+def sitemap():
+    """Sitemap-index: verwijst naar één bestand per soort pagina.
+
+    Deze URL blijft wat hij was, want hij staat zo in Search Console en in
+    robots.txt. Een index op dezelfde plek hoeft daar niet opnieuw ingediend te
+    worden; Google leest de onderliggende bestanden vanzelf en rapporteert de
+    dekking per bestand.
+    """
+    per_soort = _bouw_entries()
+    onderdelen = []
+    for soort in SOORTEN:
+        entries = per_soort.get(soort) or []
+        if not entries:
+            continue
+        onderdelen.append({
+            'loc': f"{current_app.config['SITE_URL']}/sitemap-{soort}.xml",
+            # De nieuwste datum uit dit bestand; zo weet Google welk onderdeel
+            # het opnieuw moet ophalen zonder ze alle zeven te lezen.
+            'lastmod': max(e['lastmod'] for e in entries),
+        })
+
+    xml = render_template_string('''<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{% for deel in onderdelen %}
+    <sitemap>
+        <loc>{{ deel.loc }}</loc>
+        <lastmod>{{ deel.lastmod }}</lastmod>
+    </sitemap>
+{% endfor %}
+</sitemapindex>''', onderdelen=onderdelen)
+    return xml, 200, {'Content-Type': 'application/xml'}
+
+
+@seo_bp.route('/sitemap-<soort>.xml')
+def sitemap_deel(soort):
+    """Eén sitemapbestand per soort pagina; zie SOORTEN."""
+    if soort not in SOORTEN:
+        abort(404)
+    return _urlset(_bouw_entries().get(soort) or [])
 
 
 @seo_bp.route('/robots.txt')

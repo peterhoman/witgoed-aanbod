@@ -379,6 +379,90 @@ def category_specs_debug(slug):
                                'top_waarden': f['options'][:8]} for f in facets]})
 
 
+@main_bp.route('/api/feed-velden/<winkel>')
+def feed_velden_debug(winkel):
+    """Welke velden een winkelfeed levert, en hoe vaak ze gevuld zijn.
+
+    Alleen-lezen diagnosetool, zelfde soort als /api/category-specs. Aanleiding:
+    het Model-veld is bij 74% van de producten leeg, en dat is precies de sleutel
+    waarop de EU-energielabeldatabase (EPREL) matcht. De vraag is of een van de
+    winkelfeeds een modelcode levert die wij nu weggooien.
+
+    Voor Expert, EP en Alternate was dat lokaal al te meten -- hun TradeTracker-
+    URL bevat geen sleutel. Uitkomst: Expert en EP leveren geen modelveld,
+    Alternate levert MPN maar overlapt niet met onze catalogus (0 van 39 in een
+    steekproef). Blijven over: MediaMarkt en Coolblue, en die feeds zitten achter
+    een token dat alleen op productie staat. Vandaar dit eindpunt.
+
+    Toont veldnamen en aantallen, en alleen bij korte identificatie-achtige
+    waarden een voorbeeld -- geen beschrijvingen of andere feedinhoud, want die
+    is commercieel gelicentieerd. /api/ staat op Disallow in robots.txt.
+    """
+    from flask import jsonify
+    from collections import Counter
+    grens = min(request.args.get('n', 400, type=int), 2000)
+
+    def beschrijf(records, uitpakken=()):
+        """Veldnamen tellen; genest uitpakken waar de feed een object gebruikt."""
+        aanwezig, gevuld, voorbeeld = Counter(), Counter(), {}
+        for r in records:
+            paren = list(r.items())
+            for sleutel in uitpakken:
+                genest = r.get(sleutel)
+                if isinstance(genest, dict):
+                    paren += [(f'{sleutel}.{k}', v) for k, v in genest.items()]
+            for k, v in paren:
+                if isinstance(v, (dict, list)) and not (
+                        isinstance(v, list) and len(v) == 1 and not isinstance(v[0], (dict, list))):
+                    aanwezig[k] += 1
+                    continue
+                if isinstance(v, list):
+                    v = v[0]
+                aanwezig[k] += 1
+                tekst = str(v or '').strip()
+                if tekst:
+                    gevuld[k] += 1
+                    # Alleen korte, code-achtige waarden als voorbeeld: dat is
+                    # genoeg om een modelcode te herkennen zonder feedinhoud
+                    # te publiceren.
+                    if k not in voorbeeld and len(tekst) <= 24 and ' ' not in tekst:
+                        voorbeeld[k] = tekst
+        return [{'veld': k, 'aanwezig': n, 'gevuld': gevuld[k],
+                 'voorbeeld': voorbeeld.get(k)}
+                for k, n in sorted(aanwezig.items(), key=lambda x: -gevuld[x[0]])]
+
+    if winkel == 'mediamarkt':
+        import sync_mediamarkt as sm
+        token = current_app.config.get('TRADEDOUBLER_TOKEN')
+        if not token:
+            return jsonify({'fout': 'TRADEDOUBLER_TOKEN ontbreekt'}), 503
+        records = sm.fetch_paged_feed(token, sm.MAIN_FEED_ID)[:grens]
+        velden = beschrijf(records, uitpakken=('identifiers', 'attributes'))
+    elif winkel == 'coolblue':
+        import sync_coolblue as sc
+        apikey = current_app.config.get('AWIN_FEED_APIKEY')
+        if not apikey:
+            return jsonify({'fout': 'AWIN_FEED_APIKEY ontbreekt'}), 503
+        # Bewust ruimer dan sync_coolblue.FEED_COLUMNS: die vraagt alleen op wat
+        # de site gebruikt, dus een modelkolom zou nooit meekomen. Dit zijn de
+        # AWIN-kolomnamen waar een modelcode in kan zitten.
+        extra = ['mpn', 'model_number', 'product_model', 'specifications',
+                 'manufacturer_part_number', 'product_short_description']
+        origineel = sc.FEED_COLUMNS
+        try:
+            sc.FEED_COLUMNS = origineel + extra
+            records = sc.fetch_feed(apikey)[:grens]
+        finally:
+            sc.FEED_COLUMNS = origineel
+        velden = beschrijf(records)
+    else:
+        from flask import abort
+        abort(404)
+
+    return jsonify({'winkel': winkel, 'onderzochte_records': len(records),
+                    'velden': velden})
+
+
 @main_bp.route('/set-language/<lang>')
 def set_language(lang):
     response = redirect(request.referrer or '/')

@@ -14,6 +14,8 @@ Dit bestand doet twee dingen:
 Beide zijn configuratie, geen logica: staat een veld er niet in de data, dan
 wordt het overgeslagen. Er wordt niets geschat of ingevuld.
 """
+import re
+
 
 # Per categorie de acht velden die bovenaan staan, in deze volgorde. Namen
 # zijn de letterlijke spec-keys uit de feeds (geverifieerd via
@@ -92,6 +94,56 @@ KERNVELDEN = {
         'Bediening',
         'Fabrieksgarantie termijn',
     ],
+    'koffiemachines': [
+        'Soort koffie',
+        'Type melkopschuimer',
+        'Vermogen',
+        'Aantal kopjes per keer',
+        'Afneembare waterreservoir',
+        'Waterfilter',
+        AFMETINGEN,
+        'Fabrieksgarantie termijn',
+    ],
+    'stofzuigers': [
+        'Vermogen',
+        'Airwatts',
+        'Geluidsniveau',
+        'Stofzuigerzak of zonder stofzak',
+        'Capaciteit verzamel reservoir',
+        'Hepa luchtfilter',
+        'Gewicht stofzuiger',
+        'Fabrieksgarantie termijn',
+    ],
+    'fornuizen': [
+        'Aantal kookzones',
+        'Aantal ovens',
+        'Inhoud',
+        'Maximale temperatuur',
+        'Aansluiting op aantal fasen',
+        'Aansluitwaarde',
+        AFMETINGEN,
+        'Bediening',
+    ],
+    'kookplaten': [
+        'Aantal kookzones',
+        'Vermogen per kookzone',
+        'Aansluiting op aantal fasen',
+        'Type bedieningsknoppen',
+        AFMETINGEN,
+        'Snoerlengte',
+        'Materiaal behuizing',
+        'Fabrieksgarantie termijn',
+    ],
+    'afzuigkappen': [
+        'Type afzuigkap',
+        'Zuigvermogen',
+        'Aantal motoren',
+        'Geschikt voor luchtafvoer',
+        'Geschikt voor recirculatie',
+        AFMETINGEN,
+        'Materiaal behuizing',
+        'Fabrieksgarantie termijn',
+    ],
 }
 
 # Blokken voor de uitgeklapte lijst, in weergavevolgorde. Een veld valt in
@@ -112,7 +164,12 @@ SPEC_GROEPEN = (
     ('Prestaties', ('toerental', 'vermogen', 'capaciteit', 'laadvermogen', 'couverts',
                     'volume', 'geluid', 'temperatuur', 'sensor', 'droogklasse',
                     'resultaat', 'centrifuge', 'balans', 'motor', 'professioneel',
-                    'load', 'cleansing')),
+                    'load', 'cleansing',
+                    # koffie, stofzuigen, koken: zonder deze woorden viel het
+                    # halve assortiment buiten wasmachines in Overig
+                    'koffie', 'bonen', 'maal', 'melk', 'kopje', 'espresso',
+                    'zuig', 'stofzak', 'airwatts', 'kookzone', 'druk', 'bar',
+                    'reservoir', 'inhoud', 'watt')),
     ('Afmetingen en installatie', ('hoogte', 'breedte', 'lengte', 'diepte', 'gewicht',
                                    'afmeting', 'verpakking', 'inbouw', 'snoer', 'deur',
                                    'scharnier', 'installatie', 'materiaal', 'kleur',
@@ -126,6 +183,21 @@ SPEC_GROEPEN = (
 OVERIG = 'Overig'
 
 
+# Een nul met een eenheid is bij deze grootheden geen meting maar een leeg
+# veld: een koffiemachine van 0 dB bestaat niet. Bewust beperkt tot de
+# eenheden waar dat zeker is -- bij bijvoorbeeld "0 programma's" of
+# "0 bonenreservoirs" kan nul wél kloppen.
+_NULWAARDE = re.compile(r'^0(?:[.,]0+)?\s*(?:db|kwh|kw|l|liter|lt)?$', re.I)
+
+
+def _is_lege_waarde(waarde):
+    """True als deze spec-waarde niets zegt (leeg, streepje, of nul met eenheid)."""
+    tekst = str(waarde or '').strip()
+    if not tekst or tekst in ('-', '--', 'n.v.t.', 'nvt'):
+        return True
+    return bool(_NULWAARDE.match(tekst))
+
+
 def _afmetingen(specs):
     """'Product hoogte' + breedte + lengte -> één regel 'h x b x d'.
 
@@ -137,16 +209,15 @@ def _afmetingen(specs):
     return ' × '.join(delen) if delen else None
 
 
-def kernspecs(product, aantal=8):
-    """De belangrijkste specs van dit apparaat, als lijst van (label, waarde).
+def _kies_kernspecs(product, aantal=8):
+    """(zichtbare rijen, gebruikte spec-sleutels).
 
-    Staat de categorie niet in KERNVELDEN, of levert de lijst te weinig op,
-    dan vullen we aan met de eerste velden uit de feed — beter iets in de
-    volgorde van de winkel dan een half blok.
+    De tweede waarde heeft groepeer_specs nodig: die velden staan al bovenaan
+    en horen niet nog eens in de uitgeklapte lijst te verschijnen.
     """
     specs = product.specs or {}
     if not specs:
-        return []
+        return [], set()
 
     slug = product.category.slug if product.category else ''
     gekozen, gebruikt = [], set()
@@ -157,7 +228,7 @@ def kernspecs(product, aantal=8):
             if waarde:
                 gekozen.append(('Afmetingen (h × b × d)', waarde))
                 gebruikt.update(('Product hoogte', 'Product breedte', 'Product lengte'))
-        elif specs.get(veld):
+        elif specs.get(veld) and not _is_lege_waarde(specs[veld]):
             gekozen.append((veld, specs[veld]))
             gebruikt.add(veld)
         if len(gekozen) >= aantal:
@@ -166,15 +237,30 @@ def kernspecs(product, aantal=8):
     for sleutel, waarde in specs.items():
         if len(gekozen) >= aantal:
             break
-        if sleutel not in gebruikt and waarde:
+        if sleutel not in gebruikt and not _is_lege_waarde(waarde):
             gekozen.append((sleutel, waarde))
             gebruikt.add(sleutel)
 
-    return gekozen[:aantal]
+    return gekozen[:aantal], gebruikt
+
+
+def kernspecs(product, aantal=8):
+    """De belangrijkste specs van dit apparaat, als lijst van (label, waarde).
+
+    Staat de categorie niet in KERNVELDEN, of levert de lijst te weinig op,
+    dan vullen we aan met de eerste velden uit de feed — beter iets in de
+    volgorde van de winkel dan een half blok.
+    """
+    return _kies_kernspecs(product, aantal)[0]
 
 
 def groepeer_specs(product):
-    """Alle specs verdeeld over benoemde blokken, voor de uitgeklapte lijst.
+    """De overige specs, verdeeld over benoemde blokken.
+
+    "Overige": de velden die bovenaan al als kernspec staan, worden hier
+    overgeslagen. Anders staat elk van die acht twee keer op de pagina --
+    één keer bovenaan en nog eens in zijn groep. Bij een koffiemachine met
+    een lijst van 27 koffiesoorten leest dat als een fout.
 
     Geeft een lijst van (groepsnaam, [(label, waarde), ...]); lege groepen
     vallen weg en Overig staat altijd onderaan.
@@ -183,11 +269,13 @@ def groepeer_specs(product):
     if not specs:
         return []
 
+    _, al_getoond = _kies_kernspecs(product)
+
     per_groep = {naam: [] for naam, _ in SPEC_GROEPEN}
     per_groep[OVERIG] = []
 
     for sleutel, waarde in specs.items():
-        if not waarde:
+        if sleutel in al_getoond or _is_lege_waarde(waarde):
             continue
         laag = sleutel.lower()
         doel = next((naam for naam, trefwoorden in SPEC_GROEPEN

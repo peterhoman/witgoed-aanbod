@@ -227,6 +227,18 @@ def create_app(config_name=None):
         from filter_helpers import slugify
         return slugify(value)
 
+    @app.template_filter('energieletter')
+    def energieletter_filter(value):
+        """De kale energielabelletter (A t/m G), of leeg als het er geen is.
+
+        Zodat het sjabloon dezelfde regel gebruikt als de sitemap, de
+        facetroute en de FAQ. Deed het sjabloon het zelf met value[:1], dan
+        werd "Energielabel niet van toepassing" een link naar
+        /category/ovens/energielabel/e — een pagina die er niet meer is.
+        """
+        from filter_helpers import energielabel_letter
+        return energielabel_letter(value) or ''
+
     @app.template_filter('foto')
     def foto_filter(url, breedte=400):
         """Winkelfoto's via de gratis verkleinservice wsrv.nl (Cloudflare-CDN).

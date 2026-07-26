@@ -73,7 +73,13 @@
         {% endfor %}
         {% for facet in spec_facets if 'energielabel' in facet.key|lower %}
         {% for opt in facet.options %}
-        <a href="/category/{{ category.slug }}/energielabel/{{ opt.value[:1]|lower }}">{{ t('category.energielabel_link', letter=opt.value[:1]) }} ({{ opt.count }})</a>
+        {# Alleen een kale letter A t/m G krijgt een link. Ovens leveren
+           "Energielabel niet van toepassing", en daar maakte value[:1] een
+           link van naar /energielabel/e — een pagina die niet bestaat. #}
+        {% set letter = opt.value|energieletter %}
+        {% if letter %}
+        <a href="/category/{{ category.slug }}/energielabel/{{ letter|lower }}">{{ t('category.energielabel_link', letter=letter) }} ({{ opt.count }})</a>
+        {% endif %}
         {% endfor %}
         {% endfor %}
         {% for opt in subtype_options or [] %}

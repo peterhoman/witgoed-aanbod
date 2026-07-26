@@ -146,6 +146,21 @@ KERNVELDEN = {
     ],
 }
 
+# Het veld dat per categorie "formaat" betekent: vulgewicht, inhoud, couverts.
+# Stond eerst als _FORMAAT_VELD in routes/products.py, maar wordt inmiddels op
+# twee plaatsen gebruikt (vergelijkbare alternatieven en de categoriecontext) en
+# is net als de lijsten hierboven configuratie, geen logica. Staat een categorie
+# er niet in, dan vervalt het onderdeel dat het veld nodig heeft.
+FORMAAT_VELD = {
+    'wasmachines': 'Laadvermogen wasmachine',
+    'wasdroogcombinaties': 'Laadvermogen wasmachine',
+    'drogers': 'Laadvermogen wasdroger',
+    'koelkasten': 'Volume in liters',
+    'vaatwassers': 'Aantal couverts',
+    'ovens': 'Volume in liters',
+    'magnetrons': 'Ovenvermogen',
+}
+
 # Blokken voor de uitgeklapte lijst, in weergavevolgorde. Een veld valt in
 # het eerste blok waarvan een trefwoord in de veldnaam voorkomt; wat nergens
 # past belandt in Overig.

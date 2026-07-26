@@ -2030,6 +2030,15 @@ section h2 {
     position: static;
 }
 
+/* Licht vlak achter de foto: op 84x100px valt een witte wasmachine op een
+   witte pagina helemaal weg -- het leest dan als een leeg kader. */
+.product-main-solo .product-image-section {
+    background: var(--vlak);
+    border: 1px solid var(--lijn);
+    border-radius: 8px;
+    padding: 6px;
+}
+
 .product-main-solo .product-image-large {
     height: 100px;
     object-fit: contain;
@@ -2191,13 +2200,18 @@ section h2 {
     min-width: 0;
 }
 
+/* Twee regels in plaats van één lange. Feedtitels lopen tot 169 tekens
+   ("... - Steam Wash - 1400 toeren - ConnectLife - Inhoud Trom"); op één
+   regel vulde dat de hele breedte voordat de ellips toesloeg. */
 .alternatief-naam {
-    display: block;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: 46ch;
     font-size: 12.5px;
     font-weight: 600;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.35;
 }
 
 .alternatief-winkels {
@@ -3174,20 +3188,54 @@ section h2 {
         font-size: 10.5px;
     }
 
-    /* Winkelrijen worden losse kaartjes; de bezorgvoorwaarde valt weg omdat
-       er te weinig ruimte is (die staat op de winkelpagina zelf). */
+    /* Twee vaste regels per winkelrij in plaats van alles onder elkaar.
+       Met een knop over de volle breedte werd een rij 182px hoog en het hele
+       blok 964px bij vier winkels. Nu: regel 1 winkelnaam en prijs, regel 2
+       levertijd en knop. Rij komt daarmee rond 110px uit.
+
+       Full-bleed was niet nodig voor het raakvlak van 44px -- hoogte en
+       breedte zijn losse variabelen, dus de knop houdt 44px hoogte met
+       width: auto. De bezorgvoorwaarde valt weg; die staat op de
+       winkelpagina zelf. */
     .offer-row {
-        flex-wrap: wrap;
-        gap: 8px 12px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "winkel prijs"
+            "levering knop";
+        align-items: center;
+        gap: 6px 12px;
+        padding: 12px 14px;
+    }
+
+    .offer-retailer-logo,
+    .offer-retailer-naam {
+        grid-area: winkel;
+        width: 84px;
+        justify-self: start;
+    }
+
+    .offer-mid {
+        grid-area: levering;
+        min-height: 0;
+        min-width: 0;
+    }
+
+    .offer-price-col {
+        grid-area: prijs;
+    }
+
+    .offer-btn {
+        grid-area: knop;
     }
 
     .offer-shipping {
         display: none;
     }
 
-    .offer-retailer-logo,
-    .offer-retailer-naam {
-        width: 84px;
+    .offer-delivery {
+        font-size: 11.5px;
+        color: var(--tekst-secundair);
     }
 
     .offers-price {
@@ -3233,7 +3281,8 @@ section h2 {
 
     .offer-btn {
         justify-content: center;
-        width: 100%;
+        width: auto;
+        padding: 0 20px;
     }
 }
 

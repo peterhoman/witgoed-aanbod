@@ -271,15 +271,35 @@ def _labelzin(product, profiel, categorie_naam):
     if not letter:
         return None
 
-    # Alles met een gelijk of beter label: dat is de groep waar dit model in
-    # valt, en dat werkt zonder onderscheid tussen "beste" en "slechtste".
-    zuiniger = sum(aantal for lab, aantal in labels.items()
-                   if _LADDER.index(lab) <= _LADDER.index(letter))
-    if zuiniger / gemeten > _MAX_AANDEEL:
+    eigen = labels.get(letter, 0)
+    beter = sum(aantal for lab, aantal in labels.items()
+                if _LADDER.index(lab) < _LADDER.index(letter))
+    zuiniger_of_gelijk = beter + eigen
+
+    # Onderdrukken alleen als dít label vrijwel de hele categorie is: dan
+    # onderscheidt het niets. Bij wasmachines heeft 45 van de 46 gemeten
+    # modellen label A -- "bij de 45 zuinigste van de 46" is waar en zinloos.
+    #
+    # Bewust op het eigen label en niet op de groep "gelijk of zuiniger". Die
+    # groep is bij het slechtste label van een categorie per definitie 100%,
+    # waardoor ook koelkasten met label E hun zin kwijtraakten -- terwijl daar
+    # juist iets te zeggen valt, alleen andersom (zie hieronder).
+    if eigen / gemeten > _MAX_AANDEEL:
         return None
 
-    return (f"Energielabel {letter}: daarmee hoort dit model bij de {zuiniger} "
-            f"zuinigste van de {gemeten} {categorie_naam} waarvan wij het label kennen.")
+    staart = f"van de {gemeten} {categorie_naam} waarvan wij het label kennen"
+
+    if beter == 0:
+        return (f"Energielabel {letter}: dat is het beste label in deze "
+                f"categorie; {eigen} {staart} halen het.")
+    # Zit meer dan de helft van de categorie op of boven dit label, dan is
+    # "hoort bij de 106 zuinigste van de 106" geen mededeling. Omgekeerd
+    # geformuleerd staat er wel iets: hoeveel modellen zuiniger zijn. Dat is
+    # precies wat een koper van een zuinig apparaat wil weten.
+    if zuiniger_of_gelijk / gemeten > 0.5:
+        return f"Energielabel {letter}: {beter} {staart} zijn zuiniger."
+    return (f"Energielabel {letter}: daarmee hoort dit model bij de "
+            f"{zuiniger_of_gelijk} zuinigste {staart}.")
 
 
 def _merkzin(product, profiel, categorie_naam):

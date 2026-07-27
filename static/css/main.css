@@ -1679,6 +1679,25 @@ section h2 {
     overflow: visible;
 }
 
+/* Onze eigen beschrijving: wel alinea's, geen afkapping. Die teksten zijn
+   50 tot 215 woorden; het afkapknopje hieronder was er voor de veel langere
+   verkooptekst van de winkel. */
+.description-alinea {
+    margin: 0 0 12px;
+}
+
+.description-alinea:last-of-type {
+    margin-bottom: 0;
+}
+
+/* Verantwoording onder de tekst: aanwezig en leesbaar, maar niet in
+   concurrentie met de inhoud erboven. */
+.description-bron {
+    margin-top: 14px;
+    font-size: 13px;
+    color: #71717a;
+}
+
 .description-meer {
     margin-top: 8px;
     padding: 0;

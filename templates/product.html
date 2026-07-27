@@ -436,10 +436,28 @@
         {# Ingekort tot vier regels, maar de volledige tekst blijft in de DOM:
            alleen visueel afgekapt, zodat er geen indexeerbare inhoud
            verdwijnt. #}
-        {% if product.ai_description or product.description %}
+        {% if product.ai_description %}
+        {# Onze eigen beschrijving vervangt die van de winkel; de winkeltekst
+           staat woordelijk ook bij Bol en bij de fabrikant en is precies de
+           dubbele inhoud waarvoor Google 100 van onze 449 beoordeelde
+           pagina's oversloeg. Niet afgekapt: deze teksten zijn 50 tot 215
+           woorden (de winkeltekst was veel langer, vandaar dat knopje daar).
+           De verantwoording eronder staat er omdat Google daarom vraagt waar
+           inhoud grotendeels automatisch tot stand komt. #}
         <div class="description-section">
             <h2>{{ t('product.description_title') }}</h2>
-            <p class="description-tekst" id="beschrijving">{{ product.ai_description or product.description }}</p>
+            {% for alinea in product.ai_description.split('\n\n') %}
+            {% if alinea.strip() %}<p class="description-alinea">{{ alinea.strip() }}</p>{% endif %}
+            {% endfor %}
+            <p class="description-bron">Samengesteld uit de specificaties van de
+               winkels en onze eigen catalogusmeting &mdash;
+               <a href="/productteksten">hoe wij dit doen</a>.</p>
+        </div>
+        {% elif product.description %}
+        {# Terugval zolang dit product nog geen eigen tekst heeft. #}
+        <div class="description-section">
+            <h2>{{ t('product.description_title') }}</h2>
+            <p class="description-tekst" id="beschrijving">{{ product.description }}</p>
             <button type="button" class="description-meer" id="beschrijving-meer"
                     data-more="Lees de volledige beschrijving &rarr;" data-less="Toon minder">Lees de volledige beschrijving &rarr;</button>
         </div>

@@ -312,4 +312,37 @@ def schrijf_beschrijving(product, model=None, api_key=None):
         raise TekstFout("tekst liep tegen het tokenplafond en is afgekapt")
 
     return {'tekst': tekst.strip(), 'kosten': _kosten(antwoord.usage),
-            'model': antwoord.model}
+            'model': antwoord.model, 'bron_specs': len(_specregels(product))}
+
+
+# Hoeveel bruikbare specificaties erbij moeten komen voordat een bestaande
+# tekst opnieuw geschreven wordt.
+#
+# De vergelijking gaat over het aantal specs dat de prompt haalt, en dat is
+# afgetopt op _MAX_SPECS. Groei daarboven is voor de tekst onzichtbaar: van 76
+# naar 78 specs verandert er niets, want in beide gevallen gaan er veertien
+# mee. Vier is waar de tekst aantoonbaar anders wordt -- bij minder verschuift
+# er hooguit een bijzin, en dat is geen cent per product waard.
+_HERSCHRIJF_DREMPEL = 4
+
+
+def moet_herschrijven(product, rij):
+    """Is de data inmiddels zoveel rijker dat deze tekst niet meer klopt?
+
+    Een tekst wordt eenmalig geschreven en blijft staan; dat is de afspraak.
+    De uitzondering is een product dat er specificaties bij krijgt. 65% van de
+    catalogus heeft er nu geen enkele en krijgt daarom een tekst van 65
+    woorden. Levert de feed er later veertig, dan is die korte tekst niet fout
+    maar wel achterhaald, en dan is het een cent waard om hem te vervangen.
+
+    Andersom niet: raakt een product specificaties kwijt, dan blijft de
+    bestaande tekst staan. Die is geschreven toen we meer wisten, en wat toen
+    waar was over het apparaat is dat nu nog.
+    """
+    if rij is None:
+        return True
+    # Onbekend (kolom net toegevoegd, tekst van ervoor): niet herschrijven op
+    # een aanname. Bij de eerstvolgende echte herschrijving vult het zichzelf.
+    if rij.bron_specs is None:
+        return False
+    return len(_specregels(product)) - rij.bron_specs >= _HERSCHRIJF_DREMPEL

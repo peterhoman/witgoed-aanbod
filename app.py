@@ -67,6 +67,29 @@ def _ensure_offers_delivery_columns(db):
         conn.commit()
 
 
+def _ensure_ai_content_bron_column(db):
+    """Boot-migratie: onthoud waarop een gegenereerde tekst gebaseerd was.
+
+    Een producttekst wordt eenmalig geschreven en blijft staan. Dat is goed
+    zolang de gegevens niet veranderen -- maar 65% van de catalogus heeft nu
+    geen enkele specificatie, en feeds worden rijker (toen Coolblue om extra
+    kolommen werd gevraagd, kwam er meer binnen). Zonder deze kolom houdt zo'n
+    product voor altijd de korte tekst van 65 woorden, ook als er later veertig
+    specificaties bij komen.
+
+    Met het aantal bronspecificaties erbij kan ai_content.moet_herschrijven
+    zien wanneer een tekst verouderd is ten opzichte van de data.
+    """
+    inspector = inspect(db.engine)
+    if 'ai_content' not in inspector.get_table_names():
+        return
+    columns = [c['name'] for c in inspector.get_columns('ai_content')]
+    if 'bron_specs' not in columns:
+        with db.engine.connect() as conn:
+            conn.execute(text("ALTER TABLE ai_content ADD COLUMN bron_specs INTEGER"))
+            conn.commit()
+
+
 def _backfill_offers_from_products(db):
     """Fase 1 (multi-winkel): tot nu toe stond prijs/link/voorraad rechtstreeks
     op elke products-rij (alleen Bol). Zet die één-op-één om naar een rij in de
@@ -156,6 +179,7 @@ def create_app(config_name=None):
         _ensure_guides_updated_at_column(db)
         _ensure_products_strikethrough_column(db)
         _ensure_offers_delivery_columns(db)
+        _ensure_ai_content_bron_column(db)
         _ensure_categories(db)
         _backfill_offers_from_products(db)
         # Gidsen en blogposts publiceren zichzelf bij de eerstvolgende deploy;

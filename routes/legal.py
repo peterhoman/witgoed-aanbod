@@ -11,6 +11,22 @@ def over_ons():
     return render_template('legal/over_ons.html')
 
 
+@legal_bp.route('/productteksten')
+def productteksten():
+    """Hoe de productbeschrijvingen tot stand komen.
+
+    Google vraagt hierom: waar automatisering of AI de inhoud grotendeels
+    maakt, hoort erbij te staan hoe en waarom. Dat past niet in een regel
+    onder de tekst zelf -- vandaar een korte verwijzing daar en het hele
+    verhaal hier.
+
+    Nog niet in de navigatie of de sitemap: de beschrijvingen staan op dit
+    moment alleen in de tabel ai_content en nog op geen enkele productpagina.
+    De pagina gaat mee zodra de teksten live gaan.
+    """
+    return render_template('legal/productteksten.html')
+
+
 @legal_bp.route('/privacy')
 def privacy():
     return render_template('legal/privacy.html')

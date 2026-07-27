@@ -318,6 +318,10 @@ class AIContent(db.Model):
     content = db.Column(db.Text, nullable=False)
     tokens_used = db.Column(db.Integer)
     cost = db.Column(db.Float)
+    # Op hoeveel bruikbare specificaties deze tekst gebaseerd is. Een tekst
+    # wordt eenmalig geschreven; dit getal is waaraan te zien is dat de data
+    # inmiddels rijker is dan de tekst (zie ai_content.moet_herschrijven).
+    bron_specs = db.Column(db.Integer)
     generated_at = db.Column(db.DateTime, default=utcnow)
 
     def __repr__(self):

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Hoe wij onze productbeschrijvingen maken | WitgoedAanbod.nl{% endblock %}
+{% block meta_description %}Onze productbeschrijvingen zijn samengesteld uit de specificaties van de winkels en onze eigen prijsmeting over de hele catalogus. Lees welke gegevens we gebruiken, welke bewust niet, en waar taaltechnologie aan te pas komt.{% endblock %}
+
+{% block content %}
+<div class="container legal-page">
+    <h1>Hoe wij onze productbeschrijvingen maken</h1>
+
+    <div class="legal-content">
+        <p>Onder veel apparaten op deze site staat een beschrijving die wij zelf
+        samenstellen. Op deze pagina leggen we uit hoe dat gebeurt, welke
+        gegevens we gebruiken en waar de grenzen liggen. Wie wil weten hoe de
+        vergelijker zelf werkt, vindt dat op <a href="/over-ons#werkwijze">Over
+        ons</a>.</p>
+
+        <h2>Waarom we ze zelf maken</h2>
+        <p>Winkels leveren bij elk apparaat een verkooptekst mee. Die tekst is
+        overal gelijk: hij staat bij de ene webshop woordelijk hetzelfde als bij
+        de andere, en meestal ook op de site van de fabrikant. Wie zo'n
+        beschrijving leest, weet daarna precies evenveel als daarvoor — en op
+        een vergelijkingssite hoort dat anders. Wij hebben gegevens die die
+        winkels niet hebben: wij volgen hetzelfde apparaat bij zes winkels en
+        weten daardoor hoe het zich verhoudt tot alle andere apparaten in zijn
+        categorie.</p>
+
+        <h2>Welke gegevens we gebruiken</h2>
+        <ul>
+            <li><strong>De specificaties uit de winkelfeeds</strong> — vulgewicht,
+            energielabel, toerental, inhoud, geluidsniveau en wat er verder
+            geleverd wordt.</li>
+            <li><strong>Onze eigen catalogusmeting</strong> — hoe groot en hoe
+            zuinig dit apparaat is vergeleken met alle andere apparaten in
+            dezelfde categorie die wij volgen. Die meting maken wij zelf en
+            staat nergens anders.</li>
+            <li><strong>De titel zoals de winkel hem levert</strong>, want daar
+            staat bij veel apparaten het model en soms de enige maat die we
+            hebben.</li>
+        </ul>
+
+        <h2>Welke gegevens we bewust niet gebruiken</h2>
+        <p>De verkooptekst van de winkel gaat er niet in. Dat is een keuze, geen
+        vergeetachtigheid: wie een computer die tekst als bron geeft, krijgt
+        diezelfde tekst in andere woorden terug. Dan is er niets nieuws
+        geschreven, alleen iets ouds herschreven. Door alleen losse feiten aan
+        te leveren en geen lopende tekst, valt er niets te herschrijven.</p>
+
+        <h2>Waar taaltechnologie aan te pas komt</h2>
+        <p>Van die gegevens maakt een taalmodel — Claude, van Anthropic —
+        lopende tekst. Wij bepalen wat het model te zien krijgt en waar het zich
+        aan te houden heeft; het model bepaalt de formulering. Het krijgt
+        uitsluitend gegevens uit onze eigen database en de opdracht om daar
+        niets aan toe te voegen.</p>
+        <p>Wat het model wel mag: uitleggen wat een specificatie in de praktijk
+        betekent. Bij een trommel van negen kilo mag er staan voor wat voor
+        huishouden die maat gangbaar is. Wat het niet mag: iets beweren over de
+        kwaliteit, de betrouwbaarheid of het werkelijke verbruik van dít
+        apparaat. Dat weten wij niet, want wij testen apparaten niet zelf.</p>
+
+        <h2>Wat er nooit in een beschrijving staat</h2>
+        <p>Een beschrijving wordt eenmalig geschreven en blijft daarna staan.
+        Alles wat verandert hoort er dus niet in:</p>
+        <ul>
+            <li><strong>Geen prijzen</strong>, en ook geen oordeel over de prijs
+            — niet "goedkoop", niet "in het hogere segment". Prijzen wijzigen
+            soms meerdere keren per dag; zo'n zin zou binnen een maand onwaar
+            zijn.</li>
+            <li><strong>Geen winkelnamen</strong> en niets over leverbaarheid,
+            levertijd of aanbiedingen. Dat staat elders op de pagina en is daar
+            wél actueel.</li>
+            <li><strong>Geen aansporing om te kopen.</strong> De beschrijving is
+            er om uit te leggen wat voor apparaat dit is.</li>
+        </ul>
+
+        <h2>Als de gegevens tegenstrijdig zijn, zeggen we dat</h2>
+        <p>Soms spreken de gegevens van een winkel elkaar tegen. Een
+        was-droogcombinatie kan in de titel "Energieklasse A" meekrijgen terwijl
+        het label voor de gecombineerde was- en droogcyclus D is: die A geldt
+        dan alleen voor het wassen. Waar we zo'n tegenspraak in onze gegevens
+        aantreffen, benoemen we die in de beschrijving. Dat is precies het soort
+        ding waar een koper iets aan heeft.</p>
+
+        <h2>Korte tekst bij weinig gegevens</h2>
+        <p>Lang niet elk apparaat komt met specificaties bij ons binnen. Bij een
+        apparaat waarvan we weinig weten is de beschrijving kort, en staat er
+        aan het eind dat verdere gegevens ons niet bekend zijn. We vullen zo'n
+        tekst niet aan met algemeenheden over het merk of over waar je op moet
+        letten bij het kopen. Een korte, kloppende tekst is beter dan een lange
+        die is opgerekt.</p>
+
+        <h2>Controle en bijwerken</h2>
+        <p>Elke beschrijving gaat langs een geautomatiseerde controle die
+        nagaat of er niets in staat wat er niet in hoort — een bedrag, een
+        winkelnaam, een prijsoordeel, een aansporing. Wat blijft hangen, komt
+        niet op de site.</p>
+        <p>Krijgen wij later beduidend meer specificaties van een apparaat
+        binnen dan toen de beschrijving werd gemaakt, dan schrijven we die ene
+        beschrijving opnieuw. Andersom niet: raken er gegevens weg bij de
+        winkel, dan blijft de bestaande tekst staan — die is gemaakt toen we
+        méér wisten, en wat toen waar was over het apparaat is dat nu nog.</p>
+
+        <h2>Een fout gezien?</h2>
+        <p>Dan horen we dat graag. Meld het via het <a href="/contact">contactformulier</a>
+        met de link naar de pagina erbij, dan kijken we ernaar en passen we het
+        aan.</p>
+    </div>
+</div>
+{% endblock %}

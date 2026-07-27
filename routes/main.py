@@ -928,48 +928,157 @@ def teksten_ophalen():
     if not lopend:
         return jsonify({'fout': 'er loopt geen batch'}), 404
 
+    # Het id apart zetten voordat er iets met de rij gebeurt: na een delete +
+    # commit is het object leeg en levert lopend.content een uitzondering op.
+    # Dat was fout nummer een in de eerste versie -- de melding kwam pas na het
+    # opslaan, dus hij leek onschuldig, maar hij verbergt wel elke fout die
+    # ervoor gebeurt.
+    batch_id = lopend.content
+
     try:
-        toestand = batch_toestand(lopend.content, sleutel)
+        toestand = batch_toestand(batch_id, sleutel)
     except Exception as e:
         current_app.logger.exception("batchstatus opvragen mislukt")
         return jsonify({'fout': f'{type(e).__name__}: {e}'}), 502
     if not toestand['klaar']:
-        return jsonify({'batch_id': lopend.content, 'klaar': False, **toestand})
+        return jsonify({'batch_id': batch_id, 'klaar': False, **toestand})
 
     producten = {p.id: p for p in Product.query.all()}
     opgeslagen, mislukt, gevlagd, euro = 0, [], 0, 0.0
-    for uitkomst in batch_resultaten(lopend.content, sleutel):
-        product = producten.get(uitkomst['product_id'])
-        if product is None:
-            continue
-        if uitkomst['fout']:
-            mislukt.append({'product_id': uitkomst['product_id'],
-                            'fout': uitkomst['fout']})
-            continue
-        # Al een tekst? Dan die weg -- een product hoort er precies een te
-        # hebben, anders stapelen herhaalde batches rijen op.
-        AIContent.query.filter_by(product_id=product.id,
-                                  content_type=_TEKST_SOORT).delete()
-        k = uitkomst['kosten']
-        db.session.add(AIContent(
-            product_id=product.id, content_type=_TEKST_SOORT,
-            content=uitkomst['tekst'],
-            tokens_used=(k['invoer'] + k['uitvoer']
-                         + k['cache_geschreven'] + k['cache_gelezen']),
-            cost=k['euro'], bron_specs=telbare_specs(product)))
-        opgeslagen += 1
-        euro += k['euro']
-        if controleer(uitkomst['tekst']):
-            gevlagd += 1
+    try:
+        for uitkomst in batch_resultaten(batch_id, sleutel):
+            product = producten.get(uitkomst['product_id'])
+            if product is None:
+                continue
+            if uitkomst['fout']:
+                mislukt.append({'product_id': uitkomst['product_id'],
+                                'fout': uitkomst['fout']})
+                continue
+            # Al een tekst? Dan die weg -- een product hoort er precies een te
+            # hebben, anders stapelen herhaalde batches rijen op.
+            AIContent.query.filter_by(product_id=product.id,
+                                      content_type=_TEKST_SOORT).delete()
+            k = uitkomst['kosten']
+            db.session.add(AIContent(
+                product_id=product.id, content_type=_TEKST_SOORT,
+                content=uitkomst['tekst'],
+                tokens_used=(k['invoer'] + k['uitvoer']
+                             + k['cache_geschreven'] + k['cache_gelezen']),
+                cost=k['euro'], bron_specs=telbare_specs(product)))
+            opgeslagen += 1
+            euro += k['euro']
+            if controleer(uitkomst['tekst']):
+                gevlagd += 1
+            # Tussentijds vastleggen: gaat er verderop iets mis, dan is het
+            # werk tot hier binnen. De teksten zijn al betaald; ze een tweede
+            # keer moeten ophalen is zonde, ze kwijtraken is erger.
+            if opgeslagen % 25 == 0:
+                db.session.commit()
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.exception("batchuitkomst verwerken mislukt")
+        # De administratierij blijft staan, dus opnieuw proberen kan gewoon
+        # nadat de oorzaak weg is. Batchuitkomsten blijven 29 dagen ophaalbaar.
+        return jsonify({'fout': f'{type(e).__name__}: {e}',
+                        'batch_id': batch_id,
+                        'opgeslagen_voor_de_fout': opgeslagen,
+                        'uitleg': 'de batch blijft staan; opnieuw ophalen kan'}), 500
 
     db.session.delete(lopend)
     db.session.commit()
-    return jsonify({'batch_id': lopend.content, 'klaar': True,
+    return jsonify({'batch_id': batch_id, 'klaar': True,
                     'opgeslagen': opgeslagen, 'gevlagd_door_controle': gevlagd,
                     'mislukt': mislukt[:25], 'aantal_mislukt': len(mislukt),
                     'kosten_euro': round(euro, 4),
                     'nog_zonder_tekst': len(_zonder_tekst(3000)),
                     'nalezen': '/api/teksten/nalezen'})
+
+
+@main_bp.route('/api/teksten/diagnose')
+def teksten_diagnose():
+    """Wat er werkelijk in de database staat. Leest alleen, geeft niets uit.
+
+    Bewust zonder sleutel: dit kost niets en verandert niets, en juist bij een
+    storing wil je niet dat het kijken naar de toestand achter hetzelfde slot
+    zit als het veroorzaken ervan.
+    """
+    from flask import jsonify
+    from sqlalchemy import func, inspect
+
+    from models import AIContent, db
+
+    kolommen = [k['name'] for k in inspect(db.engine).get_columns('ai_content')]
+    per_soort = dict(db.session.query(AIContent.content_type,
+                                      func.count(AIContent.id))
+                     .group_by(AIContent.content_type).all())
+    lopend = AIContent.query.filter_by(content_type=_BATCH_SOORT).first()
+    return jsonify({
+        'kolommen_ai_content': kolommen,
+        # De kolom waar de batchroute op schrijft. Ontbreekt hij, dan klapt
+        # het opslaan om op een databasefout en is er niets bewaard.
+        'bron_specs_aanwezig': 'bron_specs' in kolommen,
+        'rijen_per_soort': per_soort,
+        'lopende_batch': lopend.content if lopend else None,
+        'producten_met_zichtbare_tekst': Product.query.filter(
+            Product.ai_description.isnot(None)).count(),
+        'leverbare_producten': Product.query.filter_by(is_available=True).count(),
+    })
+
+
+@main_bp.route('/api/teksten/publiceren')
+def teksten_publiceren():
+    """Zet de opgeslagen teksten op de productpagina's. Dit is de zichtbare stap.
+
+    Alleen teksten die de controle schoon doorkomen: een aangestreepte tekst
+    wordt overgeslagen en blijft in ai_content staan om nagelezen te worden.
+    Zolang een product geen eigen tekst heeft, blijft de winkeltekst staan --
+    anders zou er tijdens de uitrol bij duizenden producten niets staan.
+
+    ?terugdraaien=ja maakt alles in een keer weer ongedaan. Dat is geen luxe:
+    een zichtbare wijziging op 2806 pagina's hoort een knop te hebben waarmee
+    hij terug kan zonder dat er iets herschreven of opnieuw betaald hoeft te
+    worden. De teksten zelf blijven in ai_content staan.
+    """
+    from flask import jsonify
+
+    from ai_content import controleer
+    from models import AIContent, db
+
+    geweigerd = _beheerslot()
+    if geweigerd:
+        return geweigerd
+
+    if request.args.get('terugdraaien') == 'ja':
+        aantal = (Product.query.filter(Product.ai_description.isnot(None))
+                  .update({Product.ai_description: None}, synchronize_session=False))
+        db.session.commit()
+        return jsonify({'teruggedraaid': aantal,
+                        'melding': 'de winkeltekst staat weer op alle pagina\'s; '
+                                   'de eigen teksten staan nog in ai_content'})
+
+    rijen = AIContent.query.filter_by(content_type=_TEKST_SOORT).all()
+    producten = {p.id: p for p in Product.query.all()}
+    gepubliceerd, overgeslagen = 0, []
+    for rij in rijen:
+        product = producten.get(rij.product_id)
+        if product is None or not (rij.content or '').strip():
+            continue
+        vlaggen = controleer(rij.content)
+        if vlaggen:
+            overgeslagen.append({'slug': product.slug,
+                                 'reden': vlaggen[0]['reden'],
+                                 'zin': vlaggen[0]['zin'][:120]})
+            continue
+        product.ai_description = rij.content
+        gepubliceerd += 1
+    db.session.commit()
+
+    return jsonify({'gepubliceerd': gepubliceerd,
+                    'overgeslagen_door_controle': len(overgeslagen),
+                    'overgeslagen': overgeslagen[:25],
+                    'nog_zonder_tekst': len(_zonder_tekst(3000)),
+                    'terugdraaien': '/api/teksten/publiceren?terugdraaien=ja&sleutel=...'})
 
 
 @main_bp.route('/api/teksten/nalezen')

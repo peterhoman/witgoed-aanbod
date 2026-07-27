@@ -1120,9 +1120,16 @@ def teksten_diagnose():
 # Deze zijn afgeleid uit de 19 teksten die de controle aanstreepte plus de
 # steekproef over twaalf categorieen -- niet bedacht maar afgelezen.
 _AFWIJKING_PATRONEN = [
+    # "twee losse apparaten" mag niet kaal: een was-droogcombinatie is juist
+    # EEN apparaat en wordt beschreven als "wast en droogt in een trommel, wat
+    # ruimte scheelt ten opzichte van twee losse apparaten". Op productie
+    # leverde dat 3 vals alarm van de 55. Alleen de vorm waarin ze samen
+    # worden aangeboden telt.
     (r'combinatie van (twee|drie|vier)|betreft geen los apparaat|'
      r'bestaat (volgens de titel )?uit twee|als (een|één) set wordt aangeboden|'
-     r'betreft twee|twee losse apparaten|twee Siemens-typenummers',
+     r'betreft twee|twee \w+-typenummers|twee modelnummers|'
+     r'(titel|vermelding) (wijst op|duidt op|beschrijft|noemt|betreft)|'
+     r'twee losse apparaten (die samen|naast elkaar)',
      'setje: twee of meer apparaten als een artikel'),
     (r'is geen \w+ maar|gaat niet om een apparaat|betreft geen apparaat|'
      r'dit is geen',

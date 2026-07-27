@@ -629,7 +629,8 @@ def tekstproef():
     """
     from flask import jsonify, render_template_string
 
-    from ai_content import TekstFout, controleer, schrijf_beschrijving
+    from ai_content import (TekstFout, controleer, moet_herschrijven,
+                            schrijf_beschrijving)
     from models import AIContent, db
 
     sleutel = current_app.config.get('ANTHROPIC_API_KEY')
@@ -643,7 +644,10 @@ def tekstproef():
     regels, nieuw_euro, nieuw_aantal = [], 0.0, 0
     for product in producten:
         rij, fout = bewaard.get(product.id), None
-        if rij is None:
+        # Niet "is er al een tekst?" maar "klopt de tekst nog bij de data?".
+        # Een product dat er specificaties bij kreeg, krijgt een nieuwe tekst;
+        # de rest komt uit de opslag en kost niets.
+        if moet_herschrijven(product, rij):
             try:
                 uitkomst = schrijf_beschrijving(
                     product,
@@ -656,12 +660,17 @@ def tekstproef():
                 fout = f'{type(e).__name__}: {e}'
             else:
                 k = uitkomst['kosten']
+                # De oude tekst gaat weg: er hoort er per product en soort
+                # precies een te zijn, anders bouwt elke herschrijving een
+                # tweede rij op die niemand meer opruimt.
+                if rij is not None:
+                    db.session.delete(rij)
                 rij = AIContent(
                     product_id=product.id, content_type=_PROEF_VERSIE,
                     content=uitkomst['tekst'],
                     tokens_used=(k['invoer'] + k['uitvoer']
                                  + k['cache_geschreven'] + k['cache_gelezen']),
-                    cost=k['euro'])
+                    cost=k['euro'], bron_specs=uitkomst['bron_specs'])
                 db.session.add(rij)
                 db.session.commit()
                 nieuw_euro += k['euro']

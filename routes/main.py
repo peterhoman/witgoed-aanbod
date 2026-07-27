@@ -605,7 +605,24 @@ def _proefselectie(limiet=16):
     Vaste volgorde op id, zodat de selectie bij elke aanroep dezelfde is en de
     opgeslagen teksten dus ook echt hergebruikt worden.
     """
-    gekozen, gezien = [], set()
+    # Eerst de producten die al een proeftekst hebben. Zonder dit koos deze
+    # functie bij elke aanroep opnieuw, en omdat is_available na een sync
+    # verschuift viel die keuze soms anders uit -- waarna er teksten bij
+    # geschreven werden voor producten die er nog niet bij zaten. Gemeten op
+    # productie: 17 rijen voor proef-v1 en 28 voor proef-v2, terwijl het er
+    # 10 en 16 hadden moeten zijn. Klein bedrag, maar het is het begin van een
+    # generator die zichzelf blijft voeden.
+    from models import AIContent
+
+    bestaand = [r.product_id for r in
+                AIContent.query.filter_by(content_type=_PROEF_VERSIE)
+                .order_by(AIContent.product_id).all() if r.product_id]
+    gekozen = [p for p in Product.query.filter(Product.id.in_(bestaand)).all()] \
+        if bestaand else []
+    gezien = {p.id for p in gekozen}
+    if len(gekozen) >= limiet:
+        return gekozen[:limiet]
+
     for categorie in Category.query.order_by(Category.id).all():
         producten = (Product.query
                      .filter_by(category_id=categorie.id, is_available=True)
@@ -943,37 +960,53 @@ def teksten_ophalen():
     if not toestand['klaar']:
         return jsonify({'batch_id': batch_id, 'klaar': False, **toestand})
 
-    producten = {p.id: p for p in Product.query.all()}
     opgeslagen, mislukt, gevlagd, euro = 0, [], 0, 0.0
     try:
         for uitkomst in batch_resultaten(batch_id, sleutel):
-            product = producten.get(uitkomst['product_id'])
-            if product is None:
-                continue
-            if uitkomst['fout']:
-                mislukt.append({'product_id': uitkomst['product_id'],
-                                'fout': uitkomst['fout']})
-                continue
-            # Al een tekst? Dan die weg -- een product hoort er precies een te
-            # hebben, anders stapelen herhaalde batches rijen op.
-            AIContent.query.filter_by(product_id=product.id,
-                                      content_type=_TEKST_SOORT).delete()
-            k = uitkomst['kosten']
-            db.session.add(AIContent(
-                product_id=product.id, content_type=_TEKST_SOORT,
-                content=uitkomst['tekst'],
-                tokens_used=(k['invoer'] + k['uitvoer']
-                             + k['cache_geschreven'] + k['cache_gelezen']),
-                cost=k['euro'], bron_specs=telbare_specs(product)))
-            opgeslagen += 1
-            euro += k['euro']
-            if controleer(uitkomst['tekst']):
-                gevlagd += 1
-            # Tussentijds vastleggen: gaat er verderop iets mis, dan is het
-            # werk tot hier binnen. De teksten zijn al betaald; ze een tweede
-            # keer moeten ophalen is zonde, ze kwijtraken is erger.
-            if opgeslagen % 25 == 0:
+            # Per uitkomst een eigen vangnet. Een van de vijftig kan een vorm
+            # hebben die de rest van de lus omgooit, en dan zou een enkel raar
+            # antwoord de negenenveertig goede meesleuren -- terwijl die al
+            # betaald zijn.
+            try:
+                if uitkomst['fout']:
+                    mislukt.append({'product_id': uitkomst['product_id'],
+                                    'fout': uitkomst['fout']})
+                    continue
+                # Per id opzoeken in plaats van de hele catalogus in het
+                # geheugen: Product.query.all() zijn 2806 rijen met specs-JSON
+                # en beschrijvingsteksten, en we hebben er vijftig nodig.
+                product = Product.query.get(uitkomst['product_id'])
+                if product is None:
+                    mislukt.append({'product_id': uitkomst['product_id'],
+                                    'fout': 'product bestaat niet meer'})
+                    continue
+                # Al een tekst? Dan die weg -- een product hoort er precies een
+                # te hebben, anders stapelen herhaalde batches rijen op.
+                AIContent.query.filter_by(product_id=product.id,
+                                          content_type=_TEKST_SOORT).delete()
+                k = uitkomst['kosten']
+                db.session.add(AIContent(
+                    product_id=product.id, content_type=_TEKST_SOORT,
+                    content=uitkomst['tekst'],
+                    tokens_used=(k['invoer'] + k['uitvoer']
+                                 + k['cache_geschreven'] + k['cache_gelezen']),
+                    cost=k['euro'], bron_specs=telbare_specs(product)))
+                # Meteen vastleggen, niet per 25. De rollback hieronder gooit
+                # alles weg wat nog niet is vastgelegd, dus met een blok van 25
+                # sleepte een mislukte tekst de goede voor hem alsnog mee. In de
+                # test stond er 'opgeslagen: 2' terwijl er 1 in de database
+                # zat -- een melding die zichzelf tegenspreekt.
                 db.session.commit()
+                opgeslagen += 1
+                euro += k['euro']
+                if controleer(uitkomst['tekst']):
+                    gevlagd += 1
+            except Exception as e:
+                db.session.rollback()
+                current_app.logger.exception(
+                    "tekst verwerken mislukt voor %s", uitkomst.get('product_id'))
+                mislukt.append({'product_id': uitkomst.get('product_id'),
+                                'fout': f'{type(e).__name__}: {e}'})
         db.session.commit()
     except Exception as e:
         db.session.rollback()

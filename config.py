@@ -87,6 +87,16 @@ class Config:
     # 2.5-flash-lite is de huidige goedkoopste opvolger.
     OPENROUTER_MODEL = os.getenv('OPENROUTER_MODEL', 'google/gemini-2.5-flash-lite')
 
+    # Eigen productbeschrijvingen (ai_content.py). Zonder ANTHROPIC_API_KEY
+    # weigert het eindpunt -- zelfde patroon als BREVO_API_KEY en
+    # OPENROUTER_API_KEY hierboven. Let op: tot 27-07 stond hier in productie
+    # de letterlijke tekst "your-claude-api-key", dus "sleutel is gevuld" is
+    # geen bewijs dat hij werkt; alleen een echte aanroep bewijst dat.
+    ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
+    # Model instelbaar zodat er zonder deploy gewisseld kan worden (bv. naar
+    # claude-sonnet-5 als de kosten per tekst tegenvallen).
+    ANTHROPIC_MODEL = os.getenv('ANTHROPIC_MODEL', 'claude-opus-5')
+
     # Sync
     SYNC_INTERVAL = 6  # hours
 

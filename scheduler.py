@@ -149,6 +149,22 @@ def start_scheduler(app=None):
             next_run_time=datetime.now(timezone.utc) + timedelta(minutes=95),
         )
 
+    # Geblokkeerde artikelen opruimen en setjes in hun eigen categorie zetten.
+    # Elk uur, want de syncs lezen de feeds opnieuw en zetten een geblokkeerd
+    # artikel er zo weer in. Kost een paar query's.
+    if app is not None:
+        from catalogus_uitzonderingen import pas_toe as uitzonderingen_toepassen
+        scheduler.add_job(
+            uitzonderingen_toepassen,
+            'interval',
+            hours=1,
+            id='uitzonderingen_job',
+            name='Catalogusuitzonderingen toepassen',
+            replace_existing=True,
+            args=[app],
+            next_run_time=datetime.now(timezone.utc) + timedelta(minutes=3),
+        )
+
     scheduler.start()
     for job in scheduler.get_jobs():
         print(f"[+] {job.name}: eerstvolgende run {job.next_run_time}")

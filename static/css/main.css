@@ -1698,6 +1698,14 @@ section h2 {
     color: #71717a;
 }
 
+/* Zonder deze regel viel de link terug op het standaardblauw van de browser
+   (rgb(0,0,238)) -- op productie gemeten. Dat is de enige plek op de pagina
+   waar dat gebeurt en het valt daardoor op als iets wat er niet hoort. */
+.description-bron a {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
 .description-meer {
     margin-top: 8px;
     padding: 0;

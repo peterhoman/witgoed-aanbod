@@ -134,16 +134,40 @@ alsof de lezer al ziet welk apparaat hij voor zich heeft.
 # een letter en dan is er geen woordgrens. Vandaar stammen met \w* waar de
 # verbuiging vrij is, en hele woorden waar een langer woord iets anders
 # betekent.
+#
+# Na 2806 teksten opnieuw geijkt. De zeef streepte er 87 aan en bij nalezen was
+# er geen enkele die een regel overtrad -- allemaal woorden die op prijs lijken
+# maar het niet zijn. Een zeef die 87 goede teksten tegenhoudt is net zo
+# schadelijk als een die een foute doorlaat: dan ga je hem negeren.
+#
+# Wat er in de praktijk misging, met de aantallen erbij:
+# - "prijsgeeft" (28x): het werkwoord prijsgeven. "wat de winkeltitel prijsgeeft"
+# - "prijsvergelijking" (32x) en "prijsoverzicht" (1x): verwijzingen naar het
+#   vergelijkblok op de pagina zelf, geen bedrag.
+# - "duur" (4x): tijdsduur. "bij dit type bepaalt die duur hoeveel..."
+# - "koop" (2x): het model legde uit dat "Beste Koop Maart 2026" in de
+#   winkeltitel een reclamekreet is en geen eigenschap -- precies wat regel 7
+#   vraagt.
+# - "actie" (1x): "turbo-actie", een functie van het apparaat.
 _VERBODEN = [
-    (r'\bgoedko\w*|\bduurder\w*|\bduurst\w*|\bduur\b|\bprijzig\w*|\bbetaalb\w*',
+    # "duur" kaal is eruit: dat is vaker tijdsduur dan geld. De trap van
+    # vergelijking blijft, want daar gaat een prijsoordeel altijd overheen.
+    (r'\bgoedko\w*|\bduurder\w*|\bduurst\w*|\bprijzig\w*|\bbetaalb\w*',
      'prijsoordeel'),
     (r'\binstap\w*|\btopmodel\w*|\bbudget\w*', 'prijsoordeel'),
-    (r'\bprijs\w*\b', 'noemt de prijs'),
+    # Alles met "prijs" behalve het werkwoord prijsgeven en de verwijzingen
+    # naar ons eigen vergelijkblok.
+    (r'\bprijs(?!geef|geeft|gegeven|geven|vergelijking|overzicht)\w*', 'noemt de prijs'),
     (r'€|\beuro\b', 'noemt een bedrag'),
     (r'\b(bol\.com|coolblue|mediamarkt|expert|alternate|wehkamp)\b', 'winkelnaam'),
-    (r'\b(leverbaar|voorradig|op voorraad|levertijd|aanbieding|korting|actie)\b',
+    # "actie" kaal is eruit (turbo-actie, ontdooiactie); alleen de
+    # aanbiedingsbetekenis blijft.
+    (r'\b(leverbaar|voorradig|op voorraad|levertijd|aanbieding|korting|actieprijs)\b',
      'aanbod verandert'),
-    (r'\b(bekijk|bestel|koop|schaf|profiteer)\b', 'aansporing'),
+    # "koop" kaal is eruit: dat zit in aankoop, koopadvies en in een geciteerde
+    # winkeltitel. Alleen de gebiedende wijs telt als aansporing.
+    (r'\b(bekijk|bestel|profiteer)\b|\bkoop\s+(nu|hier|deze|dit|hem)\b',
+     'aansporing'),
     (r'!', 'uitroepteken'),
     (r'^#|\*\*|^- |^\* ', 'opmaakteken'),
 ]

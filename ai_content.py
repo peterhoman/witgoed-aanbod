@@ -96,17 +96,74 @@ exemplaar.
 Weinig of geen specificaties: 40 tot 80 woorden. Vul nooit aan met algemene \
 zinnen over het merk, over waar je op moet letten bij het kopen, of over de \
 categorie in het algemeen. Een korte tekst is beter dan een opgerekte.
-4. Noem geen enkele winkelnaam en geen prijzen. Die staan elders op de pagina \
-en wisselen per dag; in de tekst zouden ze verouderen.
+4. Schrijf niets wat na verloop van tijd onwaar wordt. Deze tekst wordt een \
+keer geschreven en blijft dan staan, terwijl prijzen dagelijks wijzigen en \
+winkels apparaten uit hun aanbod halen. Dus: geen prijs, en ook geen \
+omschrijving van de prijs -- niet "goedkoop", niet "in het hogere \
+prijssegment", niet "een van de duurdere modellen in zijn soort". Geen \
+winkelnaam, en niets over leverbaarheid, aanbiedingen of levertijd. Schrijf \
+alleen over eigenschappen van het apparaat zelf; die veranderen niet.
 5. Geen aansporing om te kopen, geen "bekijk nu", geen uitroeptekens.
-6. Herhaal de catalogusmeting niet letterlijk. Die staat als apart blok op \
-dezelfde pagina. De meting is er zodat jij weet waar dit apparaat staat -- \
-duur of goedkoop, groot of klein voor zijn soort -- niet om over te schrijven.
-7. Geen kop, geen opsomming, geen markdown. Alleen alinea's gewone tekst, \
+6. De meting die je meekrijgt gaat over maat en energielabel binnen de \
+categorie. Gebruik die om te bepalen of iets ruim of krap, zuinig of \
+onzuinig is voor zijn soort. Schrijf hem niet over: hij staat als apart blok \
+op dezelfde pagina.
+7. Spreken de gegevens elkaar aantoonbaar tegen, benoem dat dan -- dat is voor \
+de lezer het nuttigste wat je kunt doen. Voorbeeld: staat er in de titel van \
+de winkel "Energieklasse A" terwijl het energielabel van de gecombineerde \
+was-droogcyclus D is, zeg dan dat die A alleen voor het wassen geldt. Doe dit \
+alleen bij een echte tegenspraak in de gegevens die je hebt, nooit op \
+vermoeden.
+8. Geen kop, geen opsomming, geen markdown. Alleen alinea's gewone tekst, \
 gescheiden door een lege regel. Begin niet met de productnaam als \
 aankondiging ("De Bosch WGG244FONL is een wasmachine die...") maar schrijf \
 alsof de lezer al ziet welk apparaat hij voor zich heeft.
-8. Schrijf zakelijk en droog. Spreek de lezer niet aan met "u" of "je"."""
+9. Schrijf zakelijk en droog. Spreek de lezer niet aan met "u" of "je"."""
+
+
+# Woorden die er niet in horen, met de reden erbij. Tien teksten kan een mens
+# nalezen, 2806 niet -- dus toetst de machine mee. Aanleiding: proef-v1 leverde
+# drie teksten met een prijsoordeel ("hoort tot de goedkopere modellen"),
+# terwijl regel 4 alleen bedragen verbood. Zulke zinnen zijn vandaag waar en
+# over een maand onwaar, want de tekst wordt eenmalig geschreven.
+#
+# Waar de grens ligt is met de hand nagelopen. Te ruim (kale deelstring) keurt
+# "duurzaam" en "wasduur" af, die niets met prijs te maken hebben. Te strak
+# (alleen hele woorden) laat verbuigingen door: \bgoedkoper\b vond in ronde 1
+# de zin "hoort tot de goedkopere modellen" niet, want na "goedkoper" volgt
+# een letter en dan is er geen woordgrens. Vandaar stammen met \w* waar de
+# verbuiging vrij is, en hele woorden waar een langer woord iets anders
+# betekent.
+_VERBODEN = [
+    (r'\bgoedko\w*|\bduurder\w*|\bduurst\w*|\bduur\b|\bprijzig\w*|\bbetaalb\w*',
+     'prijsoordeel'),
+    (r'\binstap\w*|\btopmodel\w*|\bbudget\w*', 'prijsoordeel'),
+    (r'\bprijs\w*\b', 'noemt de prijs'),
+    (r'€|\beuro\b', 'noemt een bedrag'),
+    (r'\b(bol\.com|coolblue|mediamarkt|expert|alternate|wehkamp)\b', 'winkelnaam'),
+    (r'\b(leverbaar|voorradig|op voorraad|levertijd|aanbieding|korting|actie)\b',
+     'aanbod verandert'),
+    (r'\b(bekijk|bestel|koop|schaf|profiteer)\b', 'aansporing'),
+    (r'!', 'uitroepteken'),
+    (r'^#|\*\*|^- |^\* ', 'opmaakteken'),
+]
+
+
+def controleer(tekst):
+    """Zinnen die tegen een harde regel ingaan, met de reden.
+
+    Geeft een lijst [{'zin', 'reden'}] terug; leeg is goed. Dit is een zeef,
+    geen bewijs: hij vindt wat we eerder fout zagen gaan, niet alles wat fout
+    kan gaan. Een mens leest de steekproef, de zeef bewaakt de rest.
+    """
+    import re
+    gevonden = []
+    for zin in re.split(r'(?<=[.!?])\s+', tekst):
+        for patroon, reden in _VERBODEN:
+            if re.search(patroon, zin, re.IGNORECASE | re.MULTILINE):
+                gevonden.append({'zin': zin.strip(), 'reden': reden})
+                break
+    return gevonden
 
 
 def _specregels(product):
@@ -146,8 +203,6 @@ def bouw_prompt(product):
     krijgt schrijft hem in eigen woorden na. Dan hebben we geen nieuwe tekst
     maar een parafrase van dubbele inhoud.
     """
-    from category_context import bepaal_categoriecontext
-
     delen = [f"Titel zoals de winkel hem levert: {product.title}"]
     if product.brand:
         delen.append(f"Merk: {product.brand}")
@@ -166,10 +221,24 @@ def bouw_prompt(product):
                      "apparaat niets meer bekend dan hierboven staat. Houd de "
                      "tekst navenant kort.")
 
-    context = bepaal_categoriecontext(product)
-    if context:
-        delen.append("\nOnze meting over de hele categorie (niet overschrijven, "
-                     "alleen ter orientatie):\n" + context['tekst'])
+    # Bewust niet bepaal_categoriecontext(): die begint met de prijszinnen, en
+    # daar kwamen in proef-v1 de drie prijsoordelen vandaan die er niet in
+    # horen. Een model dat een feit voorgeschoteld krijgt, gebruikt het -- dus
+    # de betrouwbare oplossing is het feit niet aanleveren, niet het verbieden.
+    # Maat en label blijven wel: die zijn eigenschappen van het apparaat en
+    # veranderen niet, en juist die maken "ruim" of "zuinig" hard.
+    from category_context import _MIN_CATEGORIE, _formaatzin, _labelzin, _profiel
+
+    if product.category is not None:
+        profiel = _profiel(product.category.id, product.category.slug)
+        if len(profiel['prijzen']) >= _MIN_CATEGORIE:
+            naam = product.category.name.lower()
+            meting = [z for z in (_formaatzin(product, profiel, naam),
+                                  _labelzin(product, profiel, naam)) if z]
+            if meting:
+                delen.append("\nOnze meting over deze categorie (ter "
+                             "orientatie, niet overschrijven):\n"
+                             + "\n".join(meting))
 
     return "\n".join(delen)
 

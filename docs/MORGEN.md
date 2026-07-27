@@ -70,6 +70,24 @@ prijsbelofte die wij niet kunnen waarmaken. Uitrekenen mag wel, beweren niet.
 
 ---
 
+## 2b. Waar we op wachten (niets aan te doen, wel in de gaten houden)
+
+Twee dingen liggen bij anderen. Ze staan hier zodat ze niet stilletjes
+verdwijnen; er is geen actie behalve af en toe kijken.
+
+- **EPREL-API (Brussel).** Aanvraag verstuurd op 26 juli 's avonds, nog geen
+  antwoord. Dit is de EU-database met energielabels; hij matcht op de
+  modelaanduiding. Waarom het ertoe doet: 74% van de producten heeft nu een leeg
+  `Model`-veld, en Coolblue levert er 616 aan (van de 1237 die wij van hen
+  volgen). Met de EPREL-sleutel kunnen die codes geverifieerd worden en kunnen
+  we labelgegevens ophalen voor producten waar de winkel ze niet levert.
+  Komt er niets, dan is dat op zichzelf een antwoord: dan blijft het bij wat de
+  feeds leveren.
+- **De laatste winkel (TradeTracker / Voordeligwitgoed.nl).** Feed nog niet
+  binnen. Daarmee zou de vergelijker op zeven winkels komen in plaats van zes.
+
+---
+
 ## 3. Losse einden, geen haast
 
 - **Nieuwe producten zonder tekst.** De routine (`teksten_bijwerken`) draait elke

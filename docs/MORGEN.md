@@ -6,42 +6,14 @@ takenlijst, geen toestandsbeschrijving: de echte stand staat in
 
 ---
 
-## 1. Begin hier: is dat MPN-veld bruikbaar?
+## 1. Afgehandeld op 27 juli: is dat MPN-veld bruikbaar?
 
-De merge van gisteravond is gedaan en de meting is binnen. Coolblue levert veel,
-maar mogelijk het verkeerde.
+Ja, maar bij ongeveer de helft van de merken, en alleen bij Coolblue.
+616 geverifieerde modelcodes van 1237, MediaMarkt levert er nul. De volledige
+uitkomst staat in `STAND_VAN_ZAKEN.md` onder "Modelcode en EPREL".
 
-**De cijfers.** Coolblue's feed telt 17.146 producten. Daarvan staan er **1453 in
-onze catalogus**, en **1370 daarvan hebben een MPN**. Bij **1191** is ons
-`Model`-veld op dit moment leeg. Dat zou de spec-vulling in een klap kunnen
-verdubbelen.
-
-**De twijfel.** De vijf voorbeelden die het eindpunt teruggaf zijn allemaal AEG,
-en zien er zo uit:
-
-    900 258 69     AEG AB51A4DG 5000 Animal
-    900 258 664    AEG AB51C1GG 5000 Clean
-    900258641      AEG AB61A4DB 6000 Animal
-
-Dat is de interne artikelcode van AEG, niet de modelaanduiding. De echte code
-(`AB51A4DG`) staat in de titel. Precies waar `00_LEES_DIT_EERST.md` al voor
-waarschuwde: "MPN is geen alternatief -- AEG levert daar interne codes als
-914 913 271 die geen koper herkent."
-
-EPREL registreert op modelaanduiding. Op een interne artikelcode vindt hij niets.
-
-**Wat er moet gebeuren.** De steekproef is alfabetisch en dus volledig AEG. Bij
-Bosch, Samsung, Siemens of Miele kan het MPN-veld wél de modelcode bevatten. Dat
-is per merk uit te zoeken en kost geen nieuwe wijziging aan de site -- het
-eindpunt staat live. Ik doe dat zelf; er hoeft niets geklikt te worden.
-
-Blijkt MPN onbruikbaar, dan blijft de route over die gisteren al gemeten is:
-**69% van de producttitels bevat een modelcode-vorm**, en die kandidaat laten we
-door EPREL bevestigen. Wordt hij niet gevonden, dan gebeurt er niets. Geen
-bewering zonder bron.
-
-Ook MediaMarkt is nog niet gemeten. Hun `model`-veld is bij 100% gevuld -- dat is
-het tweede dat ik nakijk.
+Wat overblijft: de modelcode uit de titel halen en door EPREL laten bevestigen.
+Dat kan pas als de sleutel er is.
 
 ---
 

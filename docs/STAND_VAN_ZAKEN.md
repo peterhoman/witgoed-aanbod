@@ -261,32 +261,58 @@ De drempel staat op 14 dagen, dus rond **28 juli** verschijnt de grafiek voor he
 eerst op producten met een prijswijziging. Dat is het moment om te kijken of hij
 klopt — niemand heeft hem ooit op productie gezien.
 
-### 2b. Modelcode en EPREL — het spoor dat spec-vulling kan oplossen
+### 2b. Modelcode en EPREL — gemeten op 27 juli
 De EU-energielabeldatabase EPREL is verplicht voor wasmachines, drogers,
 koelkasten, vaatwassers en ovens, en bevat precies de velden die bij ons leeg
-zijn: label, kWh, vulgewicht, toerental, geluid, waterverbruik, afmetingen.
-Officiële bron, dus te vermelden op de site — een vertrouwenssignaal dat geen
-webshop heeft.
+zijn. EPREL kent apparaten alleen onder hun modelaanduiding, dus die code hebben
+we nodig. Bij ons is dat veld bij 74% leeg.
 
-Twee horden, allebei gemeten op 26 juli:
+**Wat de winkelfeeds opleveren, gemeten over de complete feeds:**
 
-- **De API vraagt een sleutel.** Elk eindpunt geeft 403 "Missing Authentication
-  Token". Aan te vragen bij de Europese Commissie. Zonder sleutel geen data.
-- **EPREL matcht op modelcode.** Ons `Model`-veld is bij 74% leeg, en van de 26%
-  die gevuld is bevat een deel geen code maar rommel ("Amerikaanse koelkast").
+| Winkel | Onze producten erin | Bruikbare modelcodes |
+|---|---|---|
+| Coolblue | 1453 | **616 van 1237 (49%)** |
+| MediaMarkt | 1168 | **0** |
+| Expert (9049 prod.) | — | geen modelveld |
+| EP (4629 prod.) | — | geen modelveld |
+| Alternate (26639 prod.) | 0 | wel MPN, geen overlap |
 
-Onderzocht en uitgesloten als bron voor die modelcode: Expert (9049 producten,
-geen modelveld), EP (4629, geen modelveld), Alternate (levert wél MPN bij 26169
-producten, maar nul overlap met onze catalogus — 0 van 39 in een steekproef).
-Bol levert zijn specificaties compleet; het lege `Model`-veld is Bol's data, geen
-fout in onze verwerking. MediaMarkt en Coolblue zijn nog niet bekeken; daarvoor
-staat `/api/feed-velden/<winkel>` klaar.
+**Coolblue is per merk bijna binair.** Bosch (146), Siemens (110), Smeg (32),
+Inventum (23) en Ninja (13) leveren 100% de echte code; Philips 93%, Veripart
+90%, Wisberg 78%, Samsung 72%, Liebherr 68%. Daartegenover AEG (148), Miele
+(82), Beko (46), Whirlpool (40) en ETNA (38) op 0% — die zetten hun interne
+artikelnummer in dat veld ("900 258 69" bij een apparaat dat AB51A4DG heet).
+BSH-merken doen het goed, Electrolux en Miele niet.
 
-**Wat het wél kansrijk maakt: 69% van de producttitels bevat een
-modelcode-vorm** (steekproef van 49; één had meerdere kandidaten, en dat was een
-was/droog-set). Dat botst niet met de regel "nooit een modelnummer uit de titel
-gokken", want de kandidaat wordt niet getoond maar aan EPREL voorgelegd. Bevestigt
-EPREL hem niet, dan gebeurt er niets. Geen bewering zonder bron.
+**MediaMarkt levert niets.** Hun `model`-veld is altijd de volledige
+productnaam ("Sharp Qwna1bf47eweu Vaatwasser - Vrijstaand"), nooit een kale
+code.
+
+**Hoe "bruikbaar" is bepaald.** Twee eisen tegelijk: de code moet ook in de
+producttitel voorkomen (twee onafhankelijke bronnen die hetzelfde zeggen, dus
+geen gok), en het moet een code zijn en geen naam — vier tot twintig tekens,
+hooguit één spatie, minstens één cijfer, niet de merknaam.
+
+Beide eisen zijn er gekomen na een misleidend cijfer:
+
+- Zonder de tweede eis gaf MediaMarkt 78%, puur omdat hun veld de titel zelf is
+  en de toets dus automatisch slaagde.
+- Met "geen spaties" viel Liebherr van 68% naar 2%, want hun code is
+  "Fe 1404-20" — mét spatie. Dat was de toets die fout zat, niet de data.
+
+**Waar dit op uitkomt.** Ongeveer 600 van 2816 producten (21%) krijgen langs
+deze weg een geverifieerde modelcode. Reëel, maar niet de 70-80% waar de
+designchat op rekende.
+
+**De rest moet uit de titels komen.** 69% van de producttitels bevat een
+codevorm (steekproef van 49; één had meerdere kandidaten, en dat was een
+was/droog-set). Die kandidaat mag niet getoond worden — dat is de regel die
+al vastligt — maar wel aan EPREL voorgelegd. Bevestigt EPREL hem niet, dan
+gebeurt er niets.
+
+**Daarmee is de EPREL-sleutel belangrijker dan hij gisteren leek.** Zonder
+sleutel blijft het bij die 600 uit Coolblue. Met sleutel kan het richting 1900.
+De aanvraag is 26 juli 's avonds verstuurd.
 
 ### 2c. Wat de designchat voorstelde en niet doorgaat
 Zij stelden voor de catalogus te bouwen op EAN's die in twee of meer feeds

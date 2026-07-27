@@ -586,6 +586,11 @@ def feed_velden_debug(winkel):
 # gaat door ai_content.controleer.
 _PROEF_VERSIE = 'proef-v2'
 
+# Hoeveel teksten er hoogstens in een enkel verzoek geschreven mogen worden.
+# Naast de geldgrens per etmaal (config.AI_DAGLIMIET_EURO), want die grens
+# merkt een lus pas als het geld op is; deze merkt hem meteen.
+_MAX_NIEUW_PER_AANROEP = 25
+
 
 def _proefselectie(limiet=16):
     """Producten die samen de breedte van de catalogus laten zien.
@@ -629,7 +634,8 @@ def tekstproef():
     """
     from flask import jsonify, render_template_string
 
-    from ai_content import (TekstFout, controleer, moet_herschrijven,
+    from ai_content import (Budgetstop, TekstFout, besteed_vandaag,
+                            bewaak_budget, controleer, moet_herschrijven,
                             schrijf_beschrijving)
     from models import AIContent, db
 
@@ -649,10 +655,19 @@ def tekstproef():
         # de rest komt uit de opslag en kost niets.
         if moet_herschrijven(product, rij):
             try:
+                # Twee remmen voor elke aanroep, niet een keer vooraf: een lus
+                # die duizend teksten maakt moet halverwege stoppen, niet pas
+                # de volgende keer dat er iemand langskomt.
+                if nieuw_aantal >= _MAX_NIEUW_PER_AANROEP:
+                    raise Budgetstop(f"meer dan {_MAX_NIEUW_PER_AANROEP} nieuwe "
+                                     f"teksten in een verzoek")
+                bewaak_budget(current_app.config['AI_DAGLIMIET_EURO'])
                 uitkomst = schrijf_beschrijving(
                     product,
                     model=current_app.config.get('ANTHROPIC_MODEL'),
                     api_key=sleutel)
+            except Budgetstop as e:
+                fout = f'gestopt door de noodrem -- {e}'
             except TekstFout as e:
                 fout = str(e)
             except Exception as e:  # netwerk, ongeldige sleutel, limiet
@@ -706,7 +721,10 @@ def tekstproef():
                                   gemiddeld=gemiddeld, catalogus=catalogus,
                                   raming=gemiddeld * catalogus,
                                   model=current_app.config.get('ANTHROPIC_MODEL'),
-                                  versie=_PROEF_VERSIE)
+                                  versie=_PROEF_VERSIE,
+                                  besteed=besteed_vandaag(),
+                                  daglimiet=current_app.config['AI_DAGLIMIET_EURO'],
+                                  maxnieuw=_MAX_NIEUW_PER_AANROEP)
 
 
 # Bewust een sjabloon in dit bestand en niet in templates/: dit is tijdelijk
@@ -740,6 +758,10 @@ _PROEF_PAGINA = """<!doctype html><html lang="nl"><meta charset="utf-8">
      <b>&euro;&nbsp;{{ '%.2f'|format(raming) }}</b>, of ongeveer
      <b>&euro;&nbsp;{{ '%.2f'|format(raming / 2) }}</b> met de Batch API
      (50% korting, teksten binnen 24 uur klaar).</p>
+  <p><b>Noodrem:</b> &euro;&nbsp;{{ '%.2f'|format(besteed) }} van de
+     &euro;&nbsp;{{ '%.2f'|format(daglimiet) }} die er per etmaal uitgegeven
+     mag worden, en hoogstens {{ maxnieuw }} nieuwe teksten per verzoek.
+     Daarboven stopt het uit zichzelf.</p>
 </div>
 {% for r in regels %}
 <article>

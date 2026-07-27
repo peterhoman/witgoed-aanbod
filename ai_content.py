@@ -270,6 +270,44 @@ class TekstFout(Exception):
     """Het model leverde geen bruikbare tekst. De aanroeper toont de reden."""
 
 
+class Budgetstop(Exception):
+    """De dagelijkse geldgrens is bereikt. Geen fout maar een noodrem."""
+
+
+def besteed_vandaag():
+    """Wat er dit etmaal aan teksten is uitgegeven, in euro's.
+
+    Telt over de hele ai_content-tabel, niet per soort tekst: een noodrem die
+    per categorie apart telt is geen noodrem. Bij een lege of ontbrekende
+    kolom komt er 0 uit -- dat mag, want dan is er ook niets uitgegeven.
+    """
+    from datetime import timedelta
+
+    from sqlalchemy import func
+
+    from models import AIContent, db, utcnow
+
+    grens = utcnow() - timedelta(hours=24)
+    som = (db.session.query(func.coalesce(func.sum(AIContent.cost), 0.0))
+           .filter(AIContent.generated_at >= grens).scalar())
+    return float(som or 0.0)
+
+
+def bewaak_budget(limiet):
+    """Werpt Budgetstop als de geldgrens bereikt is.
+
+    Aanroepen voor elke generatie, niet een keer per verzoek: een lus die
+    duizend teksten maakt moet bij tekst 400 stoppen, niet pas de volgende
+    keer dat er iemand langskomt.
+    """
+    besteed = besteed_vandaag()
+    if besteed >= limiet:
+        raise Budgetstop(
+            f"daggrens bereikt: EUR {besteed:.2f} van EUR {limiet:.2f} in de "
+            f"afgelopen 24 uur. Verhoog AI_DAGLIMIET_EURO bewust, of wacht.")
+    return besteed
+
+
 def schrijf_beschrijving(product, model=None, api_key=None):
     """Een beschrijving voor dit product, plus wat de aanroep kostte.
 

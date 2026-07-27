@@ -498,6 +498,39 @@ def feed_velden_debug(winkel):
     # EPREL registreert op de modelaanduiding, dus alleen het eerste is bruikbaar.
     def kaal(t):
         return ''.join(c for c in str(t or '').upper() if c.isalnum())
+
+    def is_modelcode(waarde, titel, merk):
+        """Is dit een kale modelaanduiding, of iets anders?
+
+        Twee eisen, en de tweede is er bijgekomen na een misleidend cijfer.
+        MediaMarkt's model-veld bleek de volledige productnaam te bevatten
+        ("Sharp Qwna1bf47eweu Vaatwasser - Vrijstaand"), waardoor de toets
+        "staat de code in de titel" automatisch slaagde en 78% opleverde. Dat
+        was een artefact van de meting, geen bruikbare code.
+
+        1. De code komt voor in de titel -- twee onafhankelijke bronnen die
+           hetzelfde zeggen, dus geen gok.
+        2. De code is kort en bevat geen woorden. Een modelaanduiding is
+           AB51A4DG of WGG244FONL; zodra er een spatie, de merknaam of een
+           productwoord in zit is het een naam, geen code.
+
+        EPREL registreert op de modelaanduiding, dus alleen dit is bruikbaar.
+        """
+        tekst = str(waarde or '').strip()
+        if not (4 <= len(tekst) <= 20):
+            return False
+        if ' ' in tekst.strip():
+            return False
+        k = kaal(tekst)
+        if len(k) < 4 or k not in kaal(titel):
+            return False
+        # Niet de merknaam zelf, en niet een woord uit de categorie.
+        if kaal(merk) and k == kaal(merk):
+            return False
+        if not any(c.isdigit() for c in k):
+            return False
+        return True
+
     per_merk = {}
     gematcht_totaal = 0
     for r in records:
@@ -518,7 +551,7 @@ def feed_velden_debug(winkel):
             tel = per_merk.setdefault(merk, {'met_code': 0, 'in_titel': 0,
                                              'voorbeeld': None})
             tel['met_code'] += 1
-            if len(kaal(waarde)) >= 4 and kaal(waarde) in kaal(product.title):
+            if is_modelcode(waarde, product.title, merk):
                 tel['in_titel'] += 1
             elif tel['voorbeeld'] is None:
                 tel['voorbeeld'] = {'code': waarde[:30],
@@ -533,7 +566,7 @@ def feed_velden_debug(winkel):
                     'velden_beschreven_over': min(grens, len(records)),
                     'onze_producten_gevonden': gematcht_totaal,
                     'opbrengst_per_veld': opbrengst,
-                    'code_in_titel_per_merk': dict(sorted(
+                    'bruikbare_modelcodes_per_merk': dict(sorted(
                         per_merk.items(), key=lambda x: -x[1]['met_code'])[:25]),
                     'velden': velden})
 

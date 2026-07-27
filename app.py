@@ -181,6 +181,10 @@ def create_app(config_name=None):
         _ensure_offers_delivery_columns(db)
         _ensure_ai_content_bron_column(db)
         _ensure_categories(db)
+        # De categorie Apparaatsets moet bestaan voordat er producten in gezet
+        # kunnen worden; het opruimen zelf gebeurt in de uurlijkse job.
+        from catalogus_uitzonderingen import zorg_voor_setjescategorie
+        zorg_voor_setjescategorie(db)
         _backfill_offers_from_products(db)
         # Gidsen en blogposts publiceren zichzelf bij de eerstvolgende deploy;
         # wijkt de tekst in de code af van de database, dan wint de code

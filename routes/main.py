@@ -754,11 +754,18 @@ _PROEF_PAGINA = """<!doctype html><html lang="nl"><meta charset="utf-8">
   <p>Nu nieuw geschreven: {{ nieuw_aantal }} stuks, kosten
      &euro;&nbsp;{{ '%.4f'|format(nieuw_euro) }}. De rest kwam uit de opslag en
      kostte niets &mdash; herladen van deze pagina kost dus ook niets.</p>
+  {% if toon_raming|default(true) %}
   <p>Gemiddeld &euro;&nbsp;{{ '%.4f'|format(gemiddeld) }} per tekst.
      Voor alle {{ catalogus }} leverbare producten:
      <b>&euro;&nbsp;{{ '%.2f'|format(raming) }}</b>, of ongeveer
      <b>&euro;&nbsp;{{ '%.2f'|format(raming / 2) }}</b> met de Batch API
      (50% korting, teksten binnen 24 uur klaar).</p>
+  {% else %}
+  <p>Gemiddeld &euro;&nbsp;{{ '%.4f'|format(gemiddeld) }} per tekst,
+     samen <b>&euro;&nbsp;{{ '%.2f'|format(raming) }}</b> tot nu toe.
+     Van de {{ catalogus }} leverbare producten hebben er zoveel al een tekst
+     als hierboven staat.</p>
+  {% endif %}
   <p><b>Noodrem:</b> &euro;&nbsp;{{ '%.2f'|format(besteed) }} van de
      &euro;&nbsp;{{ '%.2f'|format(daglimiet) }} die er per etmaal uitgegeven
      mag worden, en hoogstens {{ maxnieuw }} nieuwe teksten per verzoek.
@@ -783,6 +790,242 @@ _PROEF_PAGINA = """<!doctype html><html lang="nl"><meta charset="utf-8">
 </article>
 {% endfor %}
 </html>"""
+
+
+# De soort waaronder de echte, voor de site bedoelde beschrijvingen staan --
+# los van proef-v2, zodat de proefteksten niet per ongeluk live gaan.
+_TEKST_SOORT = 'beschrijving'
+# Een rij met deze soort is de administratie van een lopende batch: content is
+# het batch-id. Bewust geen nieuwe tabel voor een veld dat hooguit een dag
+# bestaat.
+_BATCH_SOORT = 'batch-lopend'
+
+
+def _beheerslot():
+    """None als de aanroeper langs mag, anders een (json, status) om terug te geven.
+
+    Zonder AI_BEHEER_SLEUTEL in de omgeving bestaan deze eindpunten praktisch
+    niet. Dat is met opzet de standaard: een openbaar adres dat een rekening
+    kan opbouwen hoort niet te bestaan zolang niemand het nodig heeft. Zet de
+    variabele voor de uitrol, haal hem daarna weg.
+    """
+    import secrets
+
+    from flask import jsonify
+
+    verwacht = current_app.config.get('AI_BEHEER_SLEUTEL')
+    if not verwacht:
+        return jsonify({'fout': 'beheereindpunten staan uit',
+                        'uitleg': 'zet AI_BEHEER_SLEUTEL in de omgeving'}), 503
+    # compare_digest en niet ==: een gewone vergelijking stopt bij het eerste
+    # verschillende teken, en dat verschil in tijd is genoeg om een sleutel
+    # teken voor teken te raden.
+    gegeven = request.args.get('sleutel', '')
+    if not secrets.compare_digest(gegeven, verwacht):
+        return jsonify({'fout': 'ongeldige of ontbrekende sleutel'}), 403
+    return None
+
+
+def _zonder_tekst(limiet):
+    """Leverbare producten die nog geen beschrijving hebben, op id.
+
+    Vaste volgorde, zodat een tweede batch verdergaat waar de eerste ophield
+    in plaats van dezelfde producten opnieuw te doen.
+    """
+    from models import AIContent
+
+    klaar = {r.product_id for r in
+             AIContent.query.filter_by(content_type=_TEKST_SOORT).all()}
+    uit = []
+    for product in Product.query.filter_by(is_available=True).order_by(Product.id):
+        if product.id not in klaar:
+            uit.append(product)
+            if len(uit) >= limiet:
+                break
+    return uit
+
+
+@main_bp.route('/api/teksten/start')
+def teksten_start():
+    """Levert een batch beschrijvingen in bij Anthropic. Schrijft niets live.
+
+    Twee sloten, want dit geeft geld uit: bevestig=ja moet in de URL staan, en
+    er mag er maar een tegelijk lopen. Het aantal is begrensd zodat een typefout
+    in de URL niet de hele catalogus inlevert.
+
+    De uitkomst komt niet hier binnen -- een batch mag tot 24 uur duren. Haal
+    hem op met /api/teksten/ophalen.
+    """
+    from flask import jsonify
+
+    from ai_content import TekstFout, dien_batch_in
+    from models import AIContent, db
+
+    geweigerd = _beheerslot()
+    if geweigerd:
+        return geweigerd
+
+    sleutel = current_app.config.get('ANTHROPIC_API_KEY')
+    if not sleutel:
+        return jsonify({'fout': 'ANTHROPIC_API_KEY ontbreekt'}), 503
+    if request.args.get('bevestig') != 'ja':
+        return jsonify({'fout': 'ontbrekende bevestiging',
+                        'uitleg': 'voeg ?bevestig=ja toe; dit geeft geld uit'}), 400
+
+    lopend = AIContent.query.filter_by(content_type=_BATCH_SOORT).first()
+    if lopend:
+        return jsonify({'fout': 'er loopt al een batch',
+                        'batch_id': lopend.content,
+                        'uitleg': 'haal die eerst op met /api/teksten/ophalen'}), 409
+
+    aantal = min(max(request.args.get('aantal', 50, type=int), 1), 3000)
+    producten = _zonder_tekst(aantal)
+    if not producten:
+        return jsonify({'klaar': True,
+                        'melding': 'elk leverbaar product heeft al een tekst'})
+
+    try:
+        batch_id = dien_batch_in(producten,
+                                 model=current_app.config.get('ANTHROPIC_MODEL'),
+                                 api_key=sleutel)
+    except TekstFout as e:
+        return jsonify({'fout': str(e)}), 400
+    except Exception as e:
+        current_app.logger.exception("batch inleveren mislukt")
+        return jsonify({'fout': f'{type(e).__name__}: {e}'}), 502
+
+    db.session.add(AIContent(product_id=None, content_type=_BATCH_SOORT,
+                             content=batch_id, cost=0.0))
+    db.session.commit()
+    return jsonify({'batch_id': batch_id, 'ingeleverd': len(producten),
+                    'nog_zonder_tekst': len(_zonder_tekst(3000)),
+                    'volgende_stap': '/api/teksten/ophalen'})
+
+
+@main_bp.route('/api/teksten/ophalen')
+def teksten_ophalen():
+    """Kijkt of de batch klaar is en slaat de teksten op. Nog steeds niet live.
+
+    Veilig om vaker aan te roepen: zolang de batch niet klaar is verandert er
+    niets, en na het opslaan is de administratierij weg zodat er niets dubbel
+    binnenkomt.
+    """
+    from flask import jsonify
+
+    from ai_content import (batch_resultaten, batch_toestand, controleer,
+                            telbare_specs)
+    from models import AIContent, db
+
+    geweigerd = _beheerslot()
+    if geweigerd:
+        return geweigerd
+
+    sleutel = current_app.config.get('ANTHROPIC_API_KEY')
+    if not sleutel:
+        return jsonify({'fout': 'ANTHROPIC_API_KEY ontbreekt'}), 503
+
+    lopend = AIContent.query.filter_by(content_type=_BATCH_SOORT).first()
+    if not lopend:
+        return jsonify({'fout': 'er loopt geen batch'}), 404
+
+    try:
+        toestand = batch_toestand(lopend.content, sleutel)
+    except Exception as e:
+        current_app.logger.exception("batchstatus opvragen mislukt")
+        return jsonify({'fout': f'{type(e).__name__}: {e}'}), 502
+    if not toestand['klaar']:
+        return jsonify({'batch_id': lopend.content, 'klaar': False, **toestand})
+
+    producten = {p.id: p for p in Product.query.all()}
+    opgeslagen, mislukt, gevlagd, euro = 0, [], 0, 0.0
+    for uitkomst in batch_resultaten(lopend.content, sleutel):
+        product = producten.get(uitkomst['product_id'])
+        if product is None:
+            continue
+        if uitkomst['fout']:
+            mislukt.append({'product_id': uitkomst['product_id'],
+                            'fout': uitkomst['fout']})
+            continue
+        # Al een tekst? Dan die weg -- een product hoort er precies een te
+        # hebben, anders stapelen herhaalde batches rijen op.
+        AIContent.query.filter_by(product_id=product.id,
+                                  content_type=_TEKST_SOORT).delete()
+        k = uitkomst['kosten']
+        db.session.add(AIContent(
+            product_id=product.id, content_type=_TEKST_SOORT,
+            content=uitkomst['tekst'],
+            tokens_used=(k['invoer'] + k['uitvoer']
+                         + k['cache_geschreven'] + k['cache_gelezen']),
+            cost=k['euro'], bron_specs=telbare_specs(product)))
+        opgeslagen += 1
+        euro += k['euro']
+        if controleer(uitkomst['tekst']):
+            gevlagd += 1
+
+    db.session.delete(lopend)
+    db.session.commit()
+    return jsonify({'batch_id': lopend.content, 'klaar': True,
+                    'opgeslagen': opgeslagen, 'gevlagd_door_controle': gevlagd,
+                    'mislukt': mislukt[:25], 'aantal_mislukt': len(mislukt),
+                    'kosten_euro': round(euro, 4),
+                    'nog_zonder_tekst': len(_zonder_tekst(3000)),
+                    'nalezen': '/api/teksten/nalezen'})
+
+
+@main_bp.route('/api/teksten/nalezen')
+def teksten_nalezen():
+    """De opgeslagen beschrijvingen, om te lezen voordat ze live gaan.
+
+    ?vlaggen=1 toont alleen wat de controle heeft aangestreept -- dat is de
+    lijst die je met de hand naloopt. Zonder filter een pagina van 25.
+    """
+    from flask import jsonify, render_template_string
+
+    from ai_content import controleer
+    from models import AIContent
+
+    alleen_vlaggen = request.args.get('vlaggen') == '1'
+    bladzijde = max(request.args.get('p', 1, type=int), 1)
+
+    rijen = (AIContent.query.filter_by(content_type=_TEKST_SOORT)
+             .order_by(AIContent.product_id).all())
+    if not rijen:
+        return jsonify({'melding': 'er staan nog geen beschrijvingen opgeslagen'})
+
+    producten = {p.id: p for p in Product.query.all()}
+    alles = []
+    for rij in rijen:
+        product = producten.get(rij.product_id)
+        if product is None:
+            continue
+        alles.append({
+            'titel': product.title, 'slug': product.slug, 'merk': product.brand,
+            'categorie': product.category.name if product.category else '',
+            'aantal_specs': len(product.specs or {}),
+            'alineas': [a.strip() for a in (rij.content or '').split('\n\n') if a.strip()],
+            'woorden': len((rij.content or '').split()),
+            'euro': rij.cost, 'fout': None,
+            'controle': controleer(rij.content or ''),
+        })
+
+    gevlagd = [r for r in alles if r['controle']]
+    lijst = gevlagd if alleen_vlaggen else alles
+    per_blad = 25
+    deel = lijst[(bladzijde - 1) * per_blad:bladzijde * per_blad]
+
+    return render_template_string(
+        _PROEF_PAGINA, regels=deel, gelukt=len(deel), schoon=len([
+            r for r in deel if not r['controle']]),
+        nieuw_aantal=0, nieuw_euro=0.0,
+        gemiddeld=(sum(r['euro'] or 0 for r in alles) / len(alles)) if alles else 0,
+        catalogus=Product.query.filter_by(is_available=True).count(),
+        raming=sum(r['euro'] or 0 for r in alles),
+        model=current_app.config.get('ANTHROPIC_MODEL'),
+        versie=(f"{_TEKST_SOORT} -- {len(alles)} opgeslagen, {len(gevlagd)} "
+                f"aangestreept, blad {bladzijde}"),
+        besteed=sum(r['euro'] or 0 for r in alles),
+        daglimiet=current_app.config['AI_DAGLIMIET_EURO'],
+        maxnieuw=_MAX_NIEUW_PER_AANROEP, toon_raming=False)
 
 
 @main_bp.route('/set-language/<lang>')

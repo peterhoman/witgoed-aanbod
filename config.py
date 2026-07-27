@@ -108,6 +108,18 @@ class Config:
     # uitrol verhoogt de grens tijdelijk via de omgevingsvariabele.
     AI_DAGLIMIET_EURO = float(os.getenv('AI_DAGLIMIET_EURO', '5'))
 
+    # Slot op de eindpunten die geld uitgeven (/api/teksten/start en
+    # /api/teksten/ophalen). Staat deze variabele niet in de omgeving, dan
+    # zijn die eindpunten uit -- zelfde patroon als BREVO_API_KEY hierboven,
+    # en de veiligste stand: een openbaar adres dat een rekening kan opbouwen
+    # hoort niet te bestaan zolang niemand het nodig heeft.
+    #
+    # Bewust een aparte waarde en niet SECRET_KEY: die tekent de sessies, en
+    # die hoort nooit in een URL of een serverlog te belanden. Deze wel, en
+    # daarom is hij ook wegwerpbaar -- haal de variabele na de uitrol weg,
+    # dan gaan de eindpunten weer op slot.
+    AI_BEHEER_SLEUTEL = os.getenv('AI_BEHEER_SLEUTEL')
+
     # Sync
     SYNC_INTERVAL = 6  # hours
 

@@ -243,6 +243,28 @@ def bouw_prompt(product):
     return "\n".join(delen)
 
 
+def verzoek_velden(product, model):
+    """De velden van een aanvraag, gedeeld door de losse en de batch-route.
+
+    Bewust een functie en niet twee keer dezelfde regels: gaan die uit elkaar
+    lopen, dan voorspelt de proef niet meer wat de batch doet, en dat is
+    precies het soort verschil dat je pas na 2806 teksten ontdekt.
+    """
+    return {
+        'model': model,
+        'max_tokens': _MAX_TOKENS,
+        'system': [{
+            'type': 'text',
+            'text': SYSTEEMINSTRUCTIE,
+            'cache_control': {'type': 'ephemeral'},
+        }],
+        # Lage inspanning: dit is schrijfwerk op een vaste opdracht, geen
+        # redeneerprobleem. Scheelt tokens zonder dat de tekst eronder lijdt.
+        'output_config': {'effort': 'low'},
+        'messages': [{'role': 'user', 'content': bouw_prompt(product)}],
+    }
+
+
 def _kosten(usage):
     """Wat deze ene aanroep kostte, in euro's.
 
@@ -323,19 +345,7 @@ def schrijf_beschrijving(product, model=None, api_key=None):
     naam = model or os.getenv('ANTHROPIC_MODEL') or 'claude-opus-5'
 
     client = Anthropic(api_key=sleutel)
-    antwoord = client.messages.create(
-        model=naam,
-        max_tokens=_MAX_TOKENS,
-        system=[{
-            'type': 'text',
-            'text': SYSTEEMINSTRUCTIE,
-            'cache_control': {'type': 'ephemeral'},
-        }],
-        # Lage inspanning: dit is schrijfwerk op een vaste opdracht, geen
-        # redeneerprobleem. Scheelt tokens zonder dat de tekst eronder lijdt.
-        output_config={'effort': 'low'},
-        messages=[{'role': 'user', 'content': bouw_prompt(product)}],
-    )
+    antwoord = client.messages.create(**verzoek_velden(product, naam))
 
     # Volgorde is niet vrijblijvend: bij een weigering is content leeg, en
     # antwoord.content[0] zou dan een IndexError geven in plaats van een
@@ -364,6 +374,16 @@ def schrijf_beschrijving(product, model=None, api_key=None):
 _HERSCHRIJF_DREMPEL = 4
 
 
+def telbare_specs(product):
+    """Hoeveel specificaties er van dit product in een tekst terechtkomen.
+
+    Publieke naam voor len(_specregels(...)): de batchroute moet dit getal
+    opslaan zonder een functie met een underscore aan te roepen, en het is
+    dezelfde meting die moet_herschrijven gebruikt.
+    """
+    return len(_specregels(product))
+
+
 def moet_herschrijven(product, rij):
     """Is de data inmiddels zoveel rijker dat deze tekst niet meer klopt?
 
@@ -384,3 +404,105 @@ def moet_herschrijven(product, rij):
     if rij.bron_specs is None:
         return False
     return len(_specregels(product)) - rij.bron_specs >= _HERSCHRIJF_DREMPEL
+
+
+# ---------------------------------------------------------------------------
+# Batch: de hele catalogus in een keer, voor de halve prijs
+# ---------------------------------------------------------------------------
+#
+# Waarom niet gewoon 2806 losse aanroepen achter elkaar: dat duurt uren, houdt
+# een webverzoek open dat allang is afgekapt, en kost het dubbele. De Batch API
+# neemt alles in een keer aan, werkt het binnen 24 uur af en rekent de helft.
+#
+# Het custom_id is de enige draad terug naar het product: de resultaten komen
+# in willekeurige volgorde binnen, dus op positie afgaan gaat mis.
+
+_BATCH_PREFIX = 'prod-'
+
+
+def dien_batch_in(producten, model=None, api_key=None):
+    """Levert de teksten voor deze producten in een keer in. Geeft het batch-id.
+
+    Schrijft zelf niets weg: de aanroeper bewaart het id en haalt de uitkomst
+    later op met haal_batch_op. Dat moet ook wel, want tussen inleveren en
+    klaar zit tot 24 uur.
+    """
+    from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
+    from anthropic.types.messages.batch_create_params import Request
+
+    sleutel = api_key or os.getenv('ANTHROPIC_API_KEY')
+    if not sleutel:
+        raise TekstFout("ANTHROPIC_API_KEY ontbreekt")
+    naam = model or os.getenv('ANTHROPIC_MODEL') or 'claude-opus-5'
+    if not producten:
+        raise TekstFout("geen producten om in te leveren")
+
+    verzoeken = [
+        Request(custom_id=f"{_BATCH_PREFIX}{p.id}",
+                params=MessageCreateParamsNonStreaming(**verzoek_velden(p, naam)))
+        for p in producten
+    ]
+    batch = Anthropic(api_key=sleutel).messages.batches.create(requests=verzoeken)
+    logger.info("batch %s ingeleverd met %d teksten", batch.id, len(verzoeken))
+    return batch.id
+
+
+def batch_toestand(batch_id, api_key=None):
+    """Hoe ver de batch is: {'status', 'gelukt', 'mislukt', 'bezig'}."""
+    sleutel = api_key or os.getenv('ANTHROPIC_API_KEY')
+    batch = Anthropic(api_key=sleutel).messages.batches.retrieve(batch_id)
+    tellingen = batch.request_counts
+    return {
+        'status': batch.processing_status,
+        'klaar': batch.processing_status == 'ended',
+        'gelukt': getattr(tellingen, 'succeeded', 0),
+        'mislukt': getattr(tellingen, 'errored', 0) + getattr(tellingen, 'expired', 0),
+        'bezig': getattr(tellingen, 'processing', 0),
+    }
+
+
+def batch_resultaten(batch_id, api_key=None):
+    """Loopt de uitkomsten langs als {'product_id', 'tekst', 'kosten', 'fout'}.
+
+    Halveert de gerapporteerde kosten: de Batch API rekent 50% van het normale
+    tarief, en _kosten rekent met de normale prijslijst. Zonder die correctie
+    zou de teller op de site het dubbele laten zien van wat er werkelijk
+    afgeschreven wordt.
+    """
+    sleutel = api_key or os.getenv('ANTHROPIC_API_KEY')
+    for uitkomst in Anthropic(api_key=sleutel).messages.batches.results(batch_id):
+        cid = uitkomst.custom_id or ''
+        if not cid.startswith(_BATCH_PREFIX):
+            continue
+        try:
+            product_id = int(cid[len(_BATCH_PREFIX):])
+        except ValueError:
+            continue
+
+        soort = uitkomst.result.type
+        if soort != 'succeeded':
+            fout = getattr(getattr(uitkomst.result, 'error', None), 'type', soort)
+            yield {'product_id': product_id, 'tekst': None, 'kosten': None,
+                   'fout': f"batch gaf '{soort}' terug ({fout})"}
+            continue
+
+        bericht = uitkomst.result.message
+        if bericht.stop_reason == 'refusal':
+            yield {'product_id': product_id, 'tekst': None, 'kosten': None,
+                   'fout': "het model weigerde deze opdracht"}
+            continue
+        tekst = next((b.text for b in bericht.content
+                      if b.type == 'text' and b.text.strip()), '')
+        if not tekst:
+            yield {'product_id': product_id, 'tekst': None, 'kosten': None,
+                   'fout': f"leeg antwoord (stop_reason={bericht.stop_reason})"}
+            continue
+        if bericht.stop_reason == 'max_tokens':
+            yield {'product_id': product_id, 'tekst': None, 'kosten': None,
+                   'fout': "tekst liep tegen het tokenplafond en is afgekapt"}
+            continue
+
+        kosten = _kosten(bericht.usage)
+        kosten['euro'] = round(kosten['euro'] / 2, 5)
+        yield {'product_id': product_id, 'tekst': tekst.strip(),
+               'kosten': kosten, 'fout': None}

@@ -573,6 +573,168 @@ def feed_velden_debug(winkel):
                     'velden': velden})
 
 
+# Versie van de proefteksten. Elke geschreven tekst wordt onder deze sleutel
+# opgeslagen en bij een volgend bezoek hergebruikt. Daardoor kost dit eindpunt
+# eenmalig geld en daarna niets meer, hoe vaak het ook wordt aangeroepen -- dat
+# is bewust de beveiliging, in plaats van een wachtwoord in de URL dat in
+# serverlogs en browsergeschiedenis blijft staan. Opnieuw laten schrijven met
+# een aangepaste instructie? Verhoog het nummer. Dat vraagt een deploy, en dat
+# is precies de bedoelde drempel.
+_PROEF_VERSIE = 'proef-v1'
+
+
+def _proefselectie(limiet=10):
+    """Producten die samen de breedte van de catalogus laten zien.
+
+    Per categorie eentje met veel specificaties en eentje zonder. Die tweede
+    groep is de belangrijkste van de proef: 65% van de catalogus heeft geen
+    enkele specificatie, en juist daar moet blijken of er een eerlijke korte
+    tekst uitkomt of opgeklopte vulling. Tien mooie producten uitkiezen zou een
+    vertekend beeld geven van wat dit gaat kosten en opleveren.
+
+    Vaste volgorde op id, zodat de selectie bij elke aanroep dezelfde is en de
+    opgeslagen teksten dus ook echt hergebruikt worden.
+    """
+    gekozen, gezien = [], set()
+    for categorie in Category.query.order_by(Category.id).all():
+        producten = (Product.query
+                     .filter_by(category_id=categorie.id, is_available=True)
+                     .order_by(Product.id).limit(150).all())
+        rijk = [p for p in producten if len(p.specs or {}) >= 8]
+        kaal = [p for p in producten if not (p.specs or {})]
+        for kandidaat in rijk[:1] + kaal[:1]:
+            if kandidaat.id not in gezien:
+                gezien.add(kandidaat.id)
+                gekozen.append(kandidaat)
+    return gekozen[:limiet]
+
+
+@main_bp.route('/api/tekstproef')
+def tekstproef():
+    """Tien eigen productbeschrijvingen, met de kosten erbij.
+
+    Aanleiding: de bodytekst op de productpagina is de beschrijving van de
+    leverancier en staat woordelijk ook bij Bol en bij de fabrikant. Google
+    sloeg 100 van 449 beoordeelde pagina's over met "gecrawld, momenteel niet
+    geindexeerd" -- een oordeel over de inhoud. Dit is de proef of eigen tekst
+    beter is, en wat de hele catalogus zou kosten.
+
+    Schrijft niets naar de productpagina's. De teksten komen in de tabel
+    ai_content onder een eigen soort (zie _PROEF_VERSIE) en zijn nergens op de
+    site zichtbaar. Product.ai_description blijft onaangeroerd.
+    """
+    from flask import jsonify, render_template_string
+
+    from ai_content import TekstFout, schrijf_beschrijving
+    from models import AIContent, db
+
+    sleutel = current_app.config.get('ANTHROPIC_API_KEY')
+    if not sleutel:
+        return jsonify({'fout': 'ANTHROPIC_API_KEY ontbreekt'}), 503
+
+    producten = _proefselectie()
+    bewaard = {r.product_id: r for r in
+               AIContent.query.filter_by(content_type=_PROEF_VERSIE).all()}
+
+    regels, nieuw_euro, nieuw_aantal = [], 0.0, 0
+    for product in producten:
+        rij, fout = bewaard.get(product.id), None
+        if rij is None:
+            try:
+                uitkomst = schrijf_beschrijving(
+                    product,
+                    model=current_app.config.get('ANTHROPIC_MODEL'),
+                    api_key=sleutel)
+            except TekstFout as e:
+                fout = str(e)
+            except Exception as e:  # netwerk, ongeldige sleutel, limiet
+                current_app.logger.exception("tekstproef: %s", product.slug)
+                fout = f'{type(e).__name__}: {e}'
+            else:
+                k = uitkomst['kosten']
+                rij = AIContent(
+                    product_id=product.id, content_type=_PROEF_VERSIE,
+                    content=uitkomst['tekst'],
+                    tokens_used=(k['invoer'] + k['uitvoer']
+                                 + k['cache_geschreven'] + k['cache_gelezen']),
+                    cost=k['euro'])
+                db.session.add(rij)
+                db.session.commit()
+                nieuw_euro += k['euro']
+                nieuw_aantal += 1
+
+        regels.append({
+            'titel': product.title,
+            'slug': product.slug,
+            'merk': product.brand,
+            'categorie': product.category.name if product.category else '',
+            'aantal_specs': len(product.specs or {}),
+            # Lege regels scheiden de alinea's; het model levert platte tekst.
+            'alineas': [a.strip() for a in (rij.content if rij else '').split('\n\n')
+                        if a.strip()],
+            'woorden': len((rij.content if rij else '').split()),
+            'euro': rij.cost if rij else None,
+            'fout': fout,
+        })
+
+    gelukt = [r for r in regels if not r['fout']]
+    gemiddeld = (sum(r['euro'] or 0 for r in gelukt) / len(gelukt)) if gelukt else 0
+    catalogus = Product.query.filter_by(is_available=True).count()
+
+    return render_template_string(_PROEF_PAGINA, regels=regels, gelukt=len(gelukt),
+                                  nieuw_aantal=nieuw_aantal,
+                                  nieuw_euro=round(nieuw_euro, 4),
+                                  gemiddeld=gemiddeld, catalogus=catalogus,
+                                  raming=gemiddeld * catalogus,
+                                  model=current_app.config.get('ANTHROPIC_MODEL'),
+                                  versie=_PROEF_VERSIE)
+
+
+# Bewust een sjabloon in dit bestand en niet in templates/: dit is tijdelijk
+# gereedschap dat na de beslissing in zijn geheel weg kan, en dan hoort er geen
+# los bestand achter te blijven.
+_PROEF_PAGINA = """<!doctype html><html lang="nl"><meta charset="utf-8">
+<title>Tekstproef</title><meta name="robots" content="noindex">
+<style>
+ body{font:16px/1.6 system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem;color:#1a1a1a}
+ h1{font-size:1.5rem} h2{font-size:1.05rem;margin:0 0 .2rem}
+ .kop{background:#f4f4f5;border:1px solid #e4e4e7;border-radius:6px;padding:1rem 1.25rem;margin-bottom:2rem}
+ .kop b{font-size:1.2rem}
+ article{border-top:1px solid #e4e4e7;padding-top:1.25rem;margin-top:1.75rem}
+ .meta{color:#71717a;font-size:.85rem;margin-bottom:.9rem}
+ .fout{background:#fef2f2;border-left:3px solid #dc2626;padding:.6rem .9rem;color:#991b1b}
+ p.tekst{margin:.7rem 0}
+</style>
+<h1>Tekstproef &mdash; {{ gelukt }} van {{ regels|length }} gelukt</h1>
+<div class=kop>
+  <p>Model: <code>{{ model }}</code> &middot; opgeslagen als <code>{{ versie }}</code>.
+     Deze teksten staan <b>nergens op de site</b>; ze zitten alleen in de tabel
+     <code>ai_content</code>.</p>
+  <p>Nu nieuw geschreven: {{ nieuw_aantal }} stuks, kosten
+     &euro;&nbsp;{{ '%.4f'|format(nieuw_euro) }}. De rest kwam uit de opslag en
+     kostte niets &mdash; herladen van deze pagina kost dus ook niets.</p>
+  <p>Gemiddeld &euro;&nbsp;{{ '%.4f'|format(gemiddeld) }} per tekst.
+     Voor alle {{ catalogus }} leverbare producten:
+     <b>&euro;&nbsp;{{ '%.2f'|format(raming) }}</b>, of ongeveer
+     <b>&euro;&nbsp;{{ '%.2f'|format(raming / 2) }}</b> met de Batch API
+     (50% korting, teksten binnen 24 uur klaar).</p>
+</div>
+{% for r in regels %}
+<article>
+  <h2>{{ r.titel }}</h2>
+  <p class=meta>{{ r.categorie }}{% if r.merk %} &middot; {{ r.merk }}{% endif %}
+     &middot; {{ r.aantal_specs }} specificaties in de feed
+     {%- if not r.fout %} &middot; {{ r.woorden }} woorden &middot;
+     &euro;&nbsp;{{ '%.4f'|format(r.euro or 0) }}{% endif %}
+     &middot; <a href="{{ url_for('products.product_detail', slug=r.slug) }}">bekijk de pagina</a></p>
+  {% if r.fout %}<p class=fout>Mislukt: {{ r.fout }}</p>
+  {% else %}{% for alinea in r.alineas %}<p class=tekst>{{ alinea }}</p>{% endfor %}
+  {% endif %}
+</article>
+{% endfor %}
+</html>"""
+
+
 @main_bp.route('/set-language/<lang>')
 def set_language(lang):
     response = redirect(request.referrer or '/')

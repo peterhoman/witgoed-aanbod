@@ -817,6 +817,10 @@ _TEKST_SOORT = 'beschrijving'
 # bestaat.
 _BATCH_SOORT = 'batch-lopend'
 
+# Batchstatus kort onthouden: /api/teksten/diagnose is openbaar, en zonder
+# rem zou elke bezoeker een aanroep naar Anthropic veroorzaken.
+_BATCHSTATUS_CACHE = {}
+
 
 def _beheerslot():
     """None als de aanroeper langs mag, anders een (json, status) om terug te geven.
@@ -1046,8 +1050,31 @@ def teksten_diagnose():
                                       func.count(AIContent.id))
                      .group_by(AIContent.content_type).all())
     lopend = AIContent.query.filter_by(content_type=_BATCH_SOORT).first()
+
+    # Voortgang van een lopende batch mag hier ook staan: het zijn tellingen,
+    # geen inhoud, en de server heeft de sleutel al. Zo hoeft de eigenaar niet
+    # zelf te blijven pollen met zijn beheersleutel in de adresbalk.
+    #
+    # Wel met een korte cache: dit is een openbaar adres, en zonder rem zou
+    # elke bezoeker een aanroep naar Anthropic veroorzaken.
+    voortgang = None
+    if lopend:
+        nu = time.time()
+        gecached = _BATCHSTATUS_CACHE.get(lopend.content)
+        if gecached and nu - gecached[0] < 60:
+            voortgang = gecached[1]
+        else:
+            try:
+                from ai_content import batch_toestand
+                voortgang = batch_toestand(
+                    lopend.content, current_app.config.get('ANTHROPIC_API_KEY'))
+                _BATCHSTATUS_CACHE[lopend.content] = (nu, voortgang)
+            except Exception as e:
+                voortgang = {'fout': f'{type(e).__name__}: {e}'}
+
     return jsonify({
         'kolommen_ai_content': kolommen,
+        'voortgang_batch': voortgang,
         # De kolom waar de batchroute op schrijft. Ontbreekt hij, dan klapt
         # het opslaan om op een databasefout en is er niets bewaard.
         'bron_specs_aanwezig': 'bron_specs' in kolommen,

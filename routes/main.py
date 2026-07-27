@@ -742,7 +742,13 @@ def tekstproef():
                                   versie=_PROEF_VERSIE,
                                   besteed=besteed_vandaag(),
                                   daglimiet=current_app.config['AI_DAGLIMIET_EURO'],
-                                  maxnieuw=_MAX_NIEUW_PER_AANROEP)
+                                  maxnieuw=_MAX_NIEUW_PER_AANROEP,
+                                  # Expliciet meegeven in plaats van leunen op
+                                  # een default in het sjabloon: die default gold
+                                  # maar op een van de drie plekken, waardoor de
+                                  # proefpagina de tekst van de nalees-pagina liet
+                                  # zien.
+                                  is_proef=True, zichtbaar=0)
 
 
 # Bewust een sjabloon in dit bestand en niet in templates/: dit is tijdelijk
@@ -765,13 +771,20 @@ _PROEF_PAGINA = """<!doctype html><html lang="nl"><meta charset="utf-8">
 <h1>Tekstproef &mdash; {{ gelukt }} van {{ regels|length }} geschreven,
     {{ schoon }} door de controle</h1>
 <div class=kop>
-  <p>Model: <code>{{ model }}</code> &middot; opgeslagen als <code>{{ versie }}</code>.
-     Deze teksten staan <b>nergens op de site</b>; ze zitten alleen in de tabel
+  <p>Model: <code>{{ model }}</code> &middot; opgeslagen als <code>{{ versie }}</code>.</p>
+  {% if is_proef %}
+  <p>Deze teksten staan <b>nergens op de site</b>; ze zitten alleen in de tabel
      <code>ai_content</code>.</p>
+  {% else %}
+  <p><b>{{ zichtbaar }}</b> van de {{ catalogus }} leverbare producten tonen op
+     dit moment hun eigen tekst. De rest valt terug op de beschrijving van de
+     winkel: producten zonder tekst, en teksten die de controle heeft
+     aangestreept.</p>
+  {% endif %}
   <p>Nu nieuw geschreven: {{ nieuw_aantal }} stuks, kosten
      &euro;&nbsp;{{ '%.4f'|format(nieuw_euro) }}. De rest kwam uit de opslag en
      kostte niets &mdash; herladen van deze pagina kost dus ook niets.</p>
-  {% if toon_raming|default(true) %}
+  {% if is_proef %}
   <p>Gemiddeld &euro;&nbsp;{{ '%.4f'|format(gemiddeld) }} per tekst.
      Voor alle {{ catalogus }} leverbare producten:
      <b>&euro;&nbsp;{{ '%.2f'|format(raming) }}</b>, of ongeveer
@@ -783,10 +796,14 @@ _PROEF_PAGINA = """<!doctype html><html lang="nl"><meta charset="utf-8">
      Van de {{ catalogus }} leverbare producten hebben er zoveel al een tekst
      als hierboven staat.</p>
   {% endif %}
+  {% if is_proef %}
   <p><b>Noodrem:</b> &euro;&nbsp;{{ '%.2f'|format(besteed) }} van de
      &euro;&nbsp;{{ '%.2f'|format(daglimiet) }} die er per etmaal uitgegeven
      mag worden, en hoogstens {{ maxnieuw }} nieuwe teksten per verzoek.
-     Daarboven stopt het uit zichzelf.</p>
+     Daarboven stopt het uit zichzelf. Die grens geldt voor deze proefpagina en
+     voor de routine die nieuwe producten bijwerkt &mdash; niet voor een batch,
+     die wordt met de hand gestart.</p>
+  {% endif %}
 </div>
 {% for r in regels %}
 <article>
@@ -1207,7 +1224,8 @@ def teksten_nalezen():
                 f"aangestreept, blad {bladzijde}"),
         besteed=sum(r['euro'] or 0 for r in alles),
         daglimiet=current_app.config['AI_DAGLIMIET_EURO'],
-        maxnieuw=_MAX_NIEUW_PER_AANROEP, toon_raming=False)
+        maxnieuw=_MAX_NIEUW_PER_AANROEP, is_proef=False,
+        zichtbaar=Product.query.filter(Product.ai_description.isnot(None)).count())
 
 
 @main_bp.route('/set-language/<lang>')

@@ -127,6 +127,28 @@ def start_scheduler(app=None):
         next_run_time=eerste_run('ep', ep_interval, 80),
     )
 
+    # Nieuwe producten van een eigen beschrijving voorzien. Draait na de syncs
+    # (offset 95 min, de laatste sync zit op 80), zodat de producten van die
+    # ronde er al zijn.
+    #
+    # Bewust hier en niet achter een webadres: dan is er geen beheersleutel
+    # nodig die in adresbalken en serverlogs blijft staan. De grenzen zitten in
+    # teksten_bijwerken zelf -- alleen producten zonder tekst, hoogstens 25 per
+    # ronde, en het dagplafond wordt voor elke tekst opnieuw getoetst.
+    if app is not None:
+        from teksten_bijwerken import vul_ontbrekende_teksten
+        teksten_interval = int(os.getenv('TEKSTEN_INTERVAL', 6))
+        scheduler.add_job(
+            vul_ontbrekende_teksten,
+            'interval',
+            hours=teksten_interval,
+            id='teksten_job',
+            name='Eigen productteksten bijwerken',
+            replace_existing=True,
+            args=[app],
+            next_run_time=datetime.now(timezone.utc) + timedelta(minutes=95),
+        )
+
     scheduler.start()
     for job in scheduler.get_jobs():
         print(f"[+] {job.name}: eerstvolgende run {job.next_run_time}")

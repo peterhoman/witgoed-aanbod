@@ -182,6 +182,24 @@ def _profiel(category_id, slug):
     return data
 
 
+def _kies(product, opties):
+    """Een van de formuleringen, vast gekoppeld aan dit product.
+
+    Waarom niet willekeurig: dan verandert de tekst bij elk bezoek en dus ook
+    tussen twee crawls van Google. Dat is precies het signaal dat je niet wilt
+    afgeven op een pagina waarvan je juist wilt laten zien dat de inhoud vast
+    en eigen is. Op het id gekoppeld blijft de zin per pagina hetzelfde, terwijl
+    de categorie als geheel drie formuleringen door elkaar toont.
+
+    Waarom uberhaupt varianten: dit blok staat op ~2800 pagina's. Beginnen die
+    allemaal met exact dezelfde zinsbouw, dan is het een sjabloon met andere
+    getallen erin -- en een sjabloon is wat Google "gecrawld, niet
+    geindexeerd" oplevert. De feiten blijven identiek; alleen de volgorde en
+    de bewoording verschillen.
+    """
+    return opties[(product.id or 0) % len(opties)]
+
+
 def _prijszinnen(product, profiel, categorie_naam, meegeteld):
     """De prijspositie en de spreiding van de categorie."""
     prijzen = profiel['prijzen']
@@ -196,29 +214,57 @@ def _prijszinnen(product, profiel, categorie_naam, meegeteld):
         andere = totaal - 1
         duurder = totaal - bisect_right(prijzen, prijs)
         goedkoper = bisect_left(prijzen, prijs)
+        bedrag = _euro_exact(prijs)
         if duurder == 0:
-            zinnen.append(f"Dit model kost € {_euro_exact(prijs)}; geen ander apparaat "
-                          f"in deze categorie is duurder.")
+            zinnen.append(_kies(product, [
+                f"Dit model kost € {bedrag}; geen ander apparaat in deze "
+                f"categorie is duurder.",
+                f"Met € {bedrag} is dit het duurste apparaat in deze categorie.",
+                f"Er is in deze categorie geen duurder apparaat: dit model "
+                f"kost € {bedrag}.",
+            ]))
         elif goedkoper == 0:
-            zinnen.append(f"Dit model kost € {_euro_exact(prijs)}; geen ander apparaat "
-                          f"in deze categorie is goedkoper.")
+            zinnen.append(_kies(product, [
+                f"Dit model kost € {bedrag}; geen ander apparaat in deze "
+                f"categorie is goedkoper.",
+                f"Met € {bedrag} is dit het goedkoopste apparaat in deze "
+                f"categorie.",
+                f"Er is in deze categorie geen goedkoper apparaat: dit model "
+                f"kost € {bedrag}.",
+            ]))
         else:
-            zinnen.append(f"Dit model kost € {_euro_exact(prijs)}: van de {andere} andere "
-                          f"{categorie_naam} die wij volgen zijn er {duurder} duurder "
-                          f"en {goedkoper} goedkoper.")
+            zinnen.append(_kies(product, [
+                f"Dit model kost € {bedrag}: van de {andere} andere "
+                f"{categorie_naam} die wij volgen zijn er {duurder} duurder "
+                f"en {goedkoper} goedkoper.",
+                f"Van de {andere} andere {categorie_naam} die wij volgen zijn "
+                f"er {duurder} duurder dan dit model (€ {bedrag}) en "
+                f"{goedkoper} goedkoper.",
+                f"€ {bedrag}. Daarmee is dit model goedkoper dan {duurder} "
+                f"van de {andere} andere {categorie_naam} die wij volgen, en "
+                f"duurder dan {goedkoper}.",
+            ]))
 
     # De spreiding staat er altijd, ook bij een niet-leverbaar apparaat: dat is
     # een uitspraak over de categorie, niet over dit product.
     p25 = prijzen[int(totaal * 0.25)]
     p75 = prijzen[int(totaal * 0.75)]
-    spreiding = (f"De prijs in deze categorie loopt van "
-                 f"€ {_euro(prijzen[0], math.floor)} tot "
-                 f"€ {_euro(prijzen[-1], math.ceil)}")
+    laag = _euro(prijzen[0], math.floor)
+    hoog = _euro(prijzen[-1], math.ceil)
+    basis, aanvulling = _kies(product, [
+        (f"De prijs in deze categorie loopt van € {laag} tot € {hoog}",
+         "; de middelste helft zit tussen € {a} en € {b}"),
+        (f"In deze categorie ligt de laagste prijs op € {laag} en de hoogste "
+         f"op € {hoog}",
+         "; de helft van de apparaten zit tussen € {a} en € {b}"),
+        (f"Alle prijzen in deze categorie liggen tussen € {laag} en € {hoog}",
+         ", de middelste helft tussen € {a} en € {b}"),
+    ])
     # Vallen de kwartielen samen, dan is "de middelste helft zit tussen € 549 en
     # € 549" geen informatie maar een rare zin.
     if p75 > p25:
-        spreiding += f"; de middelste helft zit tussen € {_euro(p25)} en € {_euro(p75)}"
-    zinnen.append(spreiding + '.')
+        basis += aanvulling.format(a=_euro(p25), b=_euro(p75))
+    zinnen.append(basis + '.')
     return zinnen
 
 
@@ -244,11 +290,24 @@ def _formaatzin(product, profiel, categorie_naam):
     tekst = str(ruw).strip()
     # "boven 0 van de 28" is dezelfde lege mededeling als de "+ € 0,00" die
     # eerder bij gelijke winkelprijzen is opgeruimd: nul is geen positie.
+    gemeten = len(formaten)
     if lager == 0:
-        return (f"{kop} {tekst}: dat is de laagste waarde die wij bij de "
-                f"{len(formaten)} gemeten {categorie_naam} tegenkomen.")
-    return (f"{kop} {tekst}: daarmee zit dit model boven {lager} van de "
-            f"{len(formaten)} {categorie_naam} waarvan wij {verwijzing} kennen.")
+        return _kies(product, [
+            f"{kop} {tekst}: dat is de laagste waarde die wij bij de "
+            f"{gemeten} gemeten {categorie_naam} tegenkomen.",
+            f"{kop} {tekst}. Lager komen wij bij de {gemeten} gemeten "
+            f"{categorie_naam} niet tegen.",
+            f"Bij de {gemeten} {categorie_naam} waarvan wij {verwijzing} "
+            f"kennen is {tekst} de laagste waarde.",
+        ])
+    return _kies(product, [
+        f"{kop} {tekst}: daarmee zit dit model boven {lager} van de "
+        f"{gemeten} {categorie_naam} waarvan wij {verwijzing} kennen.",
+        f"Van de {gemeten} {categorie_naam} waarvan wij {verwijzing} kennen "
+        f"zitten er {lager} onder de {tekst} van dit model.",
+        f"{kop} {tekst}. Dat is meer dan bij {lager} van de {gemeten} "
+        f"{categorie_naam} waarvan wij {verwijzing} kennen.",
+    ])
 
 
 def _labelzin(product, profiel, categorie_naam):
@@ -281,16 +340,33 @@ def _labelzin(product, profiel, categorie_naam):
     staart = f"van de {gemeten} {categorie_naam} waarvan wij het label kennen"
 
     if beter == 0:
-        return (f"Energielabel {letter}: dat is het beste label in deze "
-                f"categorie; {eigen} {staart} halen het.")
+        return _kies(product, [
+            f"Energielabel {letter}: dat is het beste label in deze "
+            f"categorie; {eigen} {staart} halen het.",
+            f"Met energielabel {letter} zit dit model op het beste label van "
+            f"de categorie; {eigen} {staart} halen dat.",
+            f"Geen enkel apparaat in deze categorie heeft een beter label dan "
+            f"{letter}; {eigen} {staart} komen daar ook op uit.",
+        ])
     # Zit meer dan de helft van de categorie op of boven dit label, dan is
     # "hoort bij de 106 zuinigste van de 106" geen mededeling. Omgekeerd
     # geformuleerd staat er wel iets: hoeveel modellen zuiniger zijn. Dat is
     # precies wat een koper van een zuinig apparaat wil weten.
     if zuiniger_of_gelijk / gemeten > 0.5:
-        return f"Energielabel {letter}: {beter} {staart} zijn zuiniger."
-    return (f"Energielabel {letter}: daarmee hoort dit model bij de "
-            f"{zuiniger_of_gelijk} zuinigste {staart}.")
+        return _kies(product, [
+            f"Energielabel {letter}: {beter} {staart} zijn zuiniger.",
+            f"Dit model heeft energielabel {letter}; {beter} {staart} scoren "
+            f"beter.",
+            f"Van de {gemeten} {categorie_naam} waarvan wij het label kennen "
+            f"zijn er {beter} zuiniger dan dit model (label {letter}).",
+        ])
+    return _kies(product, [
+        f"Energielabel {letter}: daarmee hoort dit model bij de "
+        f"{zuiniger_of_gelijk} zuinigste {staart}.",
+        f"Met label {letter} zit dit model in de kop: de {zuiniger_of_gelijk} "
+        f"zuinigste {staart}.",
+        f"Energielabel {letter}. Alleen {beter} {staart} zijn zuiniger.",
+    ])
 
 
 def _merkzin(product, profiel, categorie_naam):
@@ -302,11 +378,24 @@ def _merkzin(product, profiel, categorie_naam):
 
     prijs = float(product.lowest_price or 0)
     duurder = len(prijzen) - bisect_right(prijzen, prijs)
+    aantal = len(prijzen)
     if duurder == 0:
-        return (f"Wij volgen {len(prijzen)} {categorie_naam} van {merk}; dit is "
-                f"de duurste daarvan.")
-    return (f"Wij volgen {len(prijzen)} {categorie_naam} van {merk}; {duurder} "
-            f"daarvan zijn duurder dan dit model.")
+        return _kies(product, [
+            f"Wij volgen {aantal} {categorie_naam} van {merk}; dit is de "
+            f"duurste daarvan.",
+            f"Van de {aantal} {categorie_naam} van {merk} die wij volgen is "
+            f"dit de duurste.",
+            f"{merk} heeft {aantal} {categorie_naam} in onze vergelijking, en "
+            f"geen daarvan is duurder dan dit model.",
+        ])
+    return _kies(product, [
+        f"Wij volgen {aantal} {categorie_naam} van {merk}; {duurder} daarvan "
+        f"zijn duurder dan dit model.",
+        f"Van de {aantal} {categorie_naam} van {merk} die wij volgen zijn er "
+        f"{duurder} duurder.",
+        f"{merk} heeft {aantal} {categorie_naam} in onze vergelijking; "
+        f"{duurder} daarvan kosten meer dan dit model.",
+    ])
 
 
 def bepaal_categoriecontext(product):

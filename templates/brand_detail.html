@@ -52,5 +52,23 @@
         <p>{{ t('products.none_found') }}</p>
     </div>
     {% endif %}
+
+    {# Merkpagina's waren eindpunten: je komt er binnen op een zoekopdracht met
+       een merknaam en er staat geen enkele link naar een ander merk, terwijl
+       dat precies de pagina's zijn waar dezelfde bezoeker naar kijkt. Deze
+       merken delen minstens een categorie met dit merk (zie
+       routes/main._verwante_merken) -- geen "gerelateerd" zonder grond.
+       Zelfde opmaak als de verfijningslinks op de productpagina. #}
+    {% if verwante_merken %}
+    <nav class="facet-links" aria-label="Andere merken">
+        <h2>Andere merken in dezelfde categorieën</h2>
+        <ul>
+            {% for m in verwante_merken %}
+            <li><a href="/merk/{{ m.slug }}">{{ m.naam }}
+                <span class="facet-links-aantal">({{ m.aantal }})</span></a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
 </div>
 {% endblock %}

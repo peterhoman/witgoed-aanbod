@@ -492,6 +492,13 @@ def feed_velden_debug(winkel):
 
     opbrengst = {veld: {'gematcht': 0, 'model_nu_leeg': 0, 'voorbeelden': []}
                  for veld in code_velden}
+    # Per merk bijhouden of de code ook in de producttitel voorkomt. Dat is de
+    # beslissende toets: een echte modelaanduiding staat in de titel
+    # ("AEG AB51A4DG 5000 Animal"), een interne artikelcode niet ("900 258 69").
+    # EPREL registreert op de modelaanduiding, dus alleen het eerste is bruikbaar.
+    def kaal(t):
+        return ''.join(c for c in str(t or '').upper() if c.isalnum())
+    per_merk = {}
     gematcht_totaal = 0
     for r in records:
         vlak = plat(r)
@@ -507,6 +514,15 @@ def feed_velden_debug(winkel):
             if not waarde:
                 continue
             opbrengst[veld]['gematcht'] += 1
+            merk = (product.brand or 'onbekend').strip()
+            tel = per_merk.setdefault(merk, {'met_code': 0, 'in_titel': 0,
+                                             'voorbeeld': None})
+            tel['met_code'] += 1
+            if len(kaal(waarde)) >= 4 and kaal(waarde) in kaal(product.title):
+                tel['in_titel'] += 1
+            elif tel['voorbeeld'] is None:
+                tel['voorbeeld'] = {'code': waarde[:30],
+                                    'titel': (product.title or '')[:45]}
             if not modelnummer(product):
                 opbrengst[veld]['model_nu_leeg'] += 1
                 if len(opbrengst[veld]['voorbeelden']) < 5:
@@ -517,6 +533,8 @@ def feed_velden_debug(winkel):
                     'velden_beschreven_over': min(grens, len(records)),
                     'onze_producten_gevonden': gematcht_totaal,
                     'opbrengst_per_veld': opbrengst,
+                    'code_in_titel_per_merk': dict(sorted(
+                        per_merk.items(), key=lambda x: -x[1]['met_code'])[:25]),
                     'velden': velden})
 
 

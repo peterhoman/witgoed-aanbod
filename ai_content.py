@@ -442,7 +442,11 @@ def dien_batch_in(producten, model=None, api_key=None):
                 params=MessageCreateParamsNonStreaming(**verzoek_velden(p, naam)))
         for p in producten
     ]
-    batch = Anthropic(api_key=sleutel).messages.batches.create(requests=verzoeken)
+    # Verbinding in een variabele, net als in batch_resultaten: hier is het
+    # antwoord in een keer binnen en dus ongevaarlijk, maar de schrijfwijze
+    # met de verbinding weggemoffeld in de aanroep is precies de val.
+    verbinding = Anthropic(api_key=sleutel)
+    batch = verbinding.messages.batches.create(requests=verzoeken)
     logger.info("batch %s ingeleverd met %d teksten", batch.id, len(verzoeken))
     return batch.id
 
@@ -450,7 +454,8 @@ def dien_batch_in(producten, model=None, api_key=None):
 def batch_toestand(batch_id, api_key=None):
     """Hoe ver de batch is: {'status', 'gelukt', 'mislukt', 'bezig'}."""
     sleutel = api_key or os.getenv('ANTHROPIC_API_KEY')
-    batch = Anthropic(api_key=sleutel).messages.batches.retrieve(batch_id)
+    verbinding = Anthropic(api_key=sleutel)
+    batch = verbinding.messages.batches.retrieve(batch_id)
     tellingen = batch.request_counts
     return {
         'status': batch.processing_status,
@@ -470,7 +475,16 @@ def batch_resultaten(batch_id, api_key=None):
     afgeschreven wordt.
     """
     sleutel = api_key or os.getenv('ANTHROPIC_API_KEY')
-    for uitkomst in Anthropic(api_key=sleutel).messages.batches.results(batch_id):
+    # De verbinding in een eigen variabele, en die moet blijven bestaan zolang
+    # er uit de stroom gelezen wordt. Stond hier eerst als
+    # Anthropic(...).messages.batches.results(...) op een regel; dan houdt
+    # niemand de verbinding meer vast, ruimt Python hem halverwege op en breekt
+    # het lezen af met "[Errno 9] Bad file descriptor". Op productie kwam
+    # daardoor een van de vijftig teksten binnen en de rest niet -- lokaal viel
+    # het niet op, want daar was geen echte verbinding.
+    verbinding = Anthropic(api_key=sleutel)
+    stroom = verbinding.messages.batches.results(batch_id)
+    for uitkomst in stroom:
         cid = uitkomst.custom_id or ''
         if not cid.startswith(_BATCH_PREFIX):
             continue

@@ -1175,8 +1175,14 @@ def catalogus_afwijkingen():
                             if m.group(0).lower() in z.lower()), '')
                 gevonden[reden].append({
                     'slug': product.slug,
+                    # De EAN erbij: dat is in dit project de identiteit van een
+                    # product (de syncs matchen erop), dus dat is waar een
+                    # uitzonderingenlijst op moet werken. Een slug verandert
+                    # zodra de winkel zijn titel aanpast.
+                    'ean': (product.ean or '').strip(),
                     'categorie': product.category.name if product.category else '',
                     'merk': product.brand,
+                    'titel': (product.title or '')[:90],
                     'zin': zin.strip()[:200],
                 })
                 break

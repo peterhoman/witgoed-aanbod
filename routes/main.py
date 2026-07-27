@@ -580,10 +580,14 @@ def feed_velden_debug(winkel):
 # serverlogs en browsergeschiedenis blijft staan. Opnieuw laten schrijven met
 # een aangepaste instructie? Verhoog het nummer. Dat vraagt een deploy, en dat
 # is precies de bedoelde drempel.
-_PROEF_VERSIE = 'proef-v1'
+#
+# v2: prijszinnen gaan niet meer mee de prompt in (v1 leverde drie teksten met
+# een prijsoordeel, en die worden onwaar zodra de prijs beweegt), en elke tekst
+# gaat door ai_content.controleer.
+_PROEF_VERSIE = 'proef-v2'
 
 
-def _proefselectie(limiet=10):
+def _proefselectie(limiet=16):
     """Producten die samen de breedte van de catalogus laten zien.
 
     Per categorie eentje met veel specificaties en eentje zonder. Die tweede
@@ -625,7 +629,7 @@ def tekstproef():
     """
     from flask import jsonify, render_template_string
 
-    from ai_content import TekstFout, schrijf_beschrijving
+    from ai_content import TekstFout, controleer, schrijf_beschrijving
     from models import AIContent, db
 
     sleutel = current_app.config.get('ANTHROPIC_API_KEY')
@@ -675,13 +679,19 @@ def tekstproef():
             'woorden': len((rij.content if rij else '').split()),
             'euro': rij.cost if rij else None,
             'fout': fout,
+            # De zeef draait bij elk bezoek opnieuw, ook over teksten die uit de
+            # opslag komen. Zo verandert een strengere regel meteen het oordeel
+            # over alles wat er al ligt, zonder opnieuw te hoeven schrijven.
+            'controle': controleer(rij.content) if rij else [],
         })
 
     gelukt = [r for r in regels if not r['fout']]
+    schoon = [r for r in gelukt if not r['controle']]
     gemiddeld = (sum(r['euro'] or 0 for r in gelukt) / len(gelukt)) if gelukt else 0
     catalogus = Product.query.filter_by(is_available=True).count()
 
     return render_template_string(_PROEF_PAGINA, regels=regels, gelukt=len(gelukt),
+                                  schoon=len(schoon),
                                   nieuw_aantal=nieuw_aantal,
                                   nieuw_euro=round(nieuw_euro, 4),
                                   gemiddeld=gemiddeld, catalogus=catalogus,
@@ -703,9 +713,12 @@ _PROEF_PAGINA = """<!doctype html><html lang="nl"><meta charset="utf-8">
  article{border-top:1px solid #e4e4e7;padding-top:1.25rem;margin-top:1.75rem}
  .meta{color:#71717a;font-size:.85rem;margin-bottom:.9rem}
  .fout{background:#fef2f2;border-left:3px solid #dc2626;padding:.6rem .9rem;color:#991b1b}
+ .vlag{background:#fffbeb;border-left:3px solid #d97706;padding:.6rem .9rem;margin:.8rem 0;font-size:.9rem}
+ .vlag b{color:#92400e} .vlag ul{margin:.35rem 0 0;padding-left:1.1rem}
  p.tekst{margin:.7rem 0}
 </style>
-<h1>Tekstproef &mdash; {{ gelukt }} van {{ regels|length }} gelukt</h1>
+<h1>Tekstproef &mdash; {{ gelukt }} van {{ regels|length }} geschreven,
+    {{ schoon }} door de controle</h1>
 <div class=kop>
   <p>Model: <code>{{ model }}</code> &middot; opgeslagen als <code>{{ versie }}</code>.
      Deze teksten staan <b>nergens op de site</b>; ze zitten alleen in de tabel
@@ -728,7 +741,12 @@ _PROEF_PAGINA = """<!doctype html><html lang="nl"><meta charset="utf-8">
      &euro;&nbsp;{{ '%.4f'|format(r.euro or 0) }}{% endif %}
      &middot; <a href="{{ url_for('products.product_detail', slug=r.slug) }}">bekijk de pagina</a></p>
   {% if r.fout %}<p class=fout>Mislukt: {{ r.fout }}</p>
-  {% else %}{% for alinea in r.alineas %}<p class=tekst>{{ alinea }}</p>{% endfor %}
+  {% else %}
+    {% if r.controle %}<div class=vlag><b>Controle: {{ r.controle|length }}
+      zin(nen) tegen een harde regel</b><ul>
+      {% for v in r.controle %}<li>{{ v.reden }}: &ldquo;{{ v.zin }}&rdquo;</li>{% endfor %}
+      </ul></div>{% endif %}
+    {% for alinea in r.alineas %}<p class=tekst>{{ alinea }}</p>{% endfor %}
   {% endif %}
 </article>
 {% endfor %}

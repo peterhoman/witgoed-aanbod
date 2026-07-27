@@ -964,9 +964,20 @@ def teksten_ophalen():
     if not toestand['klaar']:
         return jsonify({'batch_id': batch_id, 'klaar': False, **toestand})
 
-    opgeslagen, mislukt, gevlagd, euro = 0, [], 0, 0.0
+    # Wat er al ligt slaan we over. Bij 2756 teksten duurt het opslaan minuten
+    # en kapt Railway een te lang verzoek af; elke tekst wordt meteen
+    # vastgelegd, dus dan is het werk tot dat punt binnen. Zonder deze regel
+    # begint een tweede poging weer vooraan en loopt hij op dezelfde plek weer
+    # vast. Nu boekt elke poging vooruitgang tot het een keer af is.
+    al_aanwezig = {r.product_id for r in
+                   AIContent.query.filter_by(content_type=_TEKST_SOORT).all()}
+
+    opgeslagen, overgeslagen, mislukt, gevlagd, euro = 0, 0, [], 0, 0.0
     try:
         for uitkomst in batch_resultaten(batch_id, sleutel):
+            if uitkomst['product_id'] in al_aanwezig:
+                overgeslagen += 1
+                continue
             # Per uitkomst een eigen vangnet. Een van de vijftig kan een vorm
             # hebben die de rest van de lus omgooit, en dan zou een enkel raar
             # antwoord de negenenveertig goede meesleuren -- terwijl die al
@@ -1025,7 +1036,9 @@ def teksten_ophalen():
     db.session.delete(lopend)
     db.session.commit()
     return jsonify({'batch_id': batch_id, 'klaar': True,
-                    'opgeslagen': opgeslagen, 'gevlagd_door_controle': gevlagd,
+                    'opgeslagen': opgeslagen,
+                    'overgeslagen_want_al_aanwezig': overgeslagen,
+                    'gevlagd_door_controle': gevlagd,
                     'mislukt': mislukt[:25], 'aantal_mislukt': len(mislukt),
                     'kosten_euro': round(euro, 4),
                     'nog_zonder_tekst': len(_zonder_tekst(3000)),

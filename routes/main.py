@@ -1,4 +1,5 @@
 import time
+from collections import Counter, defaultdict
 
 from flask import Blueprint, render_template, request, redirect, current_app, abort
 from models import Category, Product, Guide
@@ -1132,6 +1133,85 @@ def _global_brand_index():
     return compute_global_brand_index(rows)
 
 
+# Zelfde procescache-patroon en TTL als _category_facets: dit verandert alleen
+# als de syncs draaien.
+_MERKBUUR_CACHE = {}
+_MERKBUUR_TTL = 15 * 60
+
+
+def _merken_per_categorie():
+    """{merksleutel: set(category_id)} plus het totaal per merk.
+
+    Een GROUP BY over merk en categorie, geen productrijen: dat zijn een paar
+    honderd regels in plaats van 2806 records met beschrijvingsteksten erin.
+    Sleutel is merk.lower(), gelijk aan compute_global_brand_index, zodat
+    "AEG" en "Aeg" hier ook een merk zijn.
+    """
+    from sqlalchemy import func
+
+    from models import db
+
+    nu = time.time()
+    hit = _MERKBUUR_CACHE.get('data')
+    if hit and nu - hit[0] < _MERKBUUR_TTL:
+        return hit[1]
+
+    rijen = (db.session.query(Product.brand, Product.category_id,
+                              func.count(Product.id))
+             .filter(Product.is_available.is_(True), Product.brand.isnot(None))
+             .group_by(Product.brand, Product.category_id).all())
+
+    categorieen, totalen = defaultdict(set), Counter()
+    for merk, categorie_id, aantal in rijen:
+        sleutel = (merk or '').strip().lower()
+        if not sleutel or categorie_id is None:
+            continue
+        categorieen[sleutel].add(categorie_id)
+        totalen[sleutel] += aantal
+
+    data = (dict(categorieen), totalen)
+    _MERKBUUR_CACHE['data'] = (nu, data)
+    return data
+
+
+def _verwante_merken(merk, index, hoeveel=6):
+    """Merken die in dezelfde categorieen zitten als dit merk.
+
+    Waarom dit bestaat: de merkpagina's zijn eindpunten. Je komt er binnen via
+    een zoekopdracht op merknaam en dan houdt het op -- er staat geen enkele
+    link naar een andere merkpagina, terwijl dat precies de pagina's zijn waar
+    dezelfde bezoeker naar kijkt. Wie een Bosch-wasmachine overweegt, kijkt
+    ook naar Siemens en AEG.
+
+    Rangschikt op overlap in categorieen, daarna op omvang. Geen willekeur en
+    geen "gerelateerd" zonder grond: staat een merk in geen van onze
+    categorieen, dan staat het er niet bij.
+    """
+    categorieen, totalen = _merken_per_categorie()
+    eigen = categorieen.get(merk.strip().lower())
+    if not eigen:
+        return []
+
+    # Alleen merken met een eigen pagina: de index is de enige plek waar
+    # weergavenaam en slug samen vastliggen, en een link naar een merk dat
+    # daar niet in staat wordt een 404.
+    per_sleutel = {m['naam'].strip().lower(): m for m in index}
+
+    scores = []
+    for sleutel, hun in categorieen.items():
+        if sleutel == merk.strip().lower():
+            continue
+        gedeeld = len(eigen & hun)
+        if not gedeeld:
+            continue
+        vermelding = per_sleutel.get(sleutel)
+        if vermelding:
+            scores.append((gedeeld, totalen[sleutel], vermelding))
+
+    scores.sort(key=lambda s: (-s[0], -s[1], s[2]['naam'].lower()))
+    return [v for _, _, v in scores[:hoeveel]]
+
+
 @main_bp.route('/merken')
 def brands_index():
     """A-Z-overzicht van alle merken die we vergelijken — long-tail
@@ -1184,6 +1264,7 @@ def brand_detail(merk_slug):
     return render_template('brand_detail.html', merk=merk, products=products.items,
                            pagination=products, categorieen=categorieen, intro=intro,
                            meta_description=meta_description, structured_data=structured_data,
+                           verwante_merken=_verwante_merken(merk, index),
                            pros_cons_by_ean=_pros_cons_by_ean())
 
 

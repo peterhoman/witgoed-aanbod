@@ -96,6 +96,17 @@ class Config:
     # Model instelbaar zodat er zonder deploy gewisseld kan worden (bv. naar
     # claude-sonnet-5 als de kosten per tekst tegenvallen).
     ANTHROPIC_MODEL = os.getenv('ANTHROPIC_MODEL', 'claude-opus-5')
+    # Harde geldgrens per etmaal, in euro's. Aanleiding: op een eerdere site
+    # van de eigenaar bleef een generator herschrijven en kostte dat bijna
+    # 800 euro voordat iemand het zag. De redenering dat dat hier niet kan
+    # (ai_content.moet_herschrijven schrijft nooit terug bij krimp, dus elk
+    # product kan hooguit een keer omhoog) is geen plafond -- dit wel.
+    #
+    # Vijf euro is ruim boven een normale dag (nieuwe producten kosten samen
+    # centen) en ruim onder een ongeluk. De hele catalogus in een keer kost
+    # 34 euro en loopt hier dus tegenaan; dat is de bedoeling. Een bewuste
+    # uitrol verhoogt de grens tijdelijk via de omgevingsvariabele.
+    AI_DAGLIMIET_EURO = float(os.getenv('AI_DAGLIMIET_EURO', '5'))
 
     # Sync
     SYNC_INTERVAL = 6  # hours

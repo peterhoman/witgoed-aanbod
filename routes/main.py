@@ -511,21 +511,23 @@ def feed_velden_debug(winkel):
         1. De code komt voor in de titel -- twee onafhankelijke bronnen die
            hetzelfde zeggen, dus geen gok.
         2. De code is kort en bevat geen woorden. Een modelaanduiding is
-           AB51A4DG of WGG244FONL; zodra er een spatie, de merknaam of een
-           productwoord in zit is het een naam, geen code.
+           AB51A4DG of WGG244FONL, en soms "Fe 1404-20" -- Liebherr zet er een
+           spatie in. Eerst wees deze toets alles met een spatie af, en daarmee
+           verdween Liebherr van 68% naar 2%. Hooguit een spatie dus, en de
+           lengtegrens houdt de volledige productnamen van MediaMarkt buiten
+           ("AEG Tr868mb4b - Warmtepompdroger 8 Kg 63 Db" is te lang).
 
         EPREL registreert op de modelaanduiding, dus alleen dit is bruikbaar.
         """
         tekst = str(waarde or '').strip()
         if not (4 <= len(tekst) <= 20):
             return False
-        if ' ' in tekst.strip():
+        if tekst.count(' ') > 1:
+            return False
+        if kaal(merk) and kaal(merk) in kaal(tekst):
             return False
         k = kaal(tekst)
         if len(k) < 4 or k not in kaal(titel):
-            return False
-        # Niet de merknaam zelf, en niet een woord uit de categorie.
-        if kaal(merk) and k == kaal(merk):
             return False
         if not any(c.isdigit() for c in k):
             return False

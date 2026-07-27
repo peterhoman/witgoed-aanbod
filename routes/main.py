@@ -1120,15 +1120,27 @@ def teksten_diagnose():
 # Deze zijn afgeleid uit de 19 teksten die de controle aanstreepte plus de
 # steekproef over twaalf categorieen -- niet bedacht maar afgelezen.
 _AFWIJKING_PATRONEN = [
-    # "twee losse apparaten" mag niet kaal: een was-droogcombinatie is juist
-    # EEN apparaat en wordt beschreven als "wast en droogt in een trommel, wat
-    # ruimte scheelt ten opzichte van twee losse apparaten". Op productie
-    # leverde dat 3 vals alarm van de 55. Alleen de vorm waarin ze samen
-    # worden aangeboden telt.
-    (r'combinatie van (twee|drie|vier)|betreft geen los apparaat|'
-     r'bestaat (volgens de titel )?uit twee|als (een|één) set wordt aangeboden|'
-     r'betreft twee|twee \w+-typenummers|twee modelnummers|'
-     r'(titel|vermelding) (wijst op|duidt op|beschrijft|noemt|betreft)|'
+    # Let op de valkuil die dit patroon al twee keer heeft gehad.
+    #
+    # Ronde 1 (55 treffers) nam "twee losse apparaten" kaal mee en pakte
+    # daarmee 4 zinnen die er niet horen: "twee ledspots", "twee glazen
+    # plateaus", en was-droogcombinaties die juist EEN apparaat zijn ("wast en
+    # droogt in een trommel, wat ruimte scheelt ten opzichte van twee losse
+    # apparaten").
+    #
+    # Ronde 2 voegde "(titel|vermelding) noemt" toe om "de titel wijst op een
+    # combinatie" te vangen -- en "de winkeltitel noemt" staat in honderden
+    # gewone teksten. Dat leverde 46 nieuwe valse treffers op: strikt slechter
+    # dan ronde 1. De toets was uitgevoerd op de 55 zinnen die ronde 1 al had
+    # gevonden, en zo'n toets kan per definitie geen nieuwe valse treffers
+    # laten zien. Toetsen op je eigen vangst bewijst niets.
+    #
+    # Nu alleen zinsneden die zonder omhaal over twee APPARATEN gaan.
+    (r'combinatie van (twee|drie|vier) (losse )?(apparaten|toestellen)|'
+     r'betreft geen los apparaat|betreft geen enkel apparaat|'
+     r'bestaat (volgens de titel )?uit twee \w*\s*apparaten|'
+     r'als (een|één) set wordt aangeboden|'
+     r'twee \w+-typenummers|twee modelnummers|'
      r'twee losse apparaten (die samen|naast elkaar)',
      'setje: twee of meer apparaten als een artikel'),
     (r'is geen \w+ maar|gaat niet om een apparaat|betreft geen apparaat|'
@@ -1175,15 +1187,40 @@ def catalogus_afwijkingen():
                             if m.group(0).lower() in z.lower()), '')
                 gevonden[reden].append({
                     'slug': product.slug,
+                    # De EAN erbij: dat is in dit project de identiteit van een
+                    # product (de syncs matchen erop), dus dat is waar een
+                    # uitzonderingenlijst op moet werken. Een slug verandert
+                    # zodra de winkel zijn titel aanpast.
+                    'ean': (product.ean or '').strip(),
                     'categorie': product.category.name if product.category else '',
                     'merk': product.brand,
+                    'titel': (product.title or '')[:90],
                     'zin': zin.strip()[:200],
                 })
                 break
 
+    # Tweede, onafhankelijke meting: een setje heeft in de praktijk een plus in
+    # de titel ("AEG LR86CB86 + AEG TR86CBC86"). Van de 55 die de teksten
+    # aanwezen hadden er 51 zo'n plus, en die 4 zonder waren juist de valse.
+    # De vraag die dit beantwoordt: hoeveel producten hebben die plus in totaal?
+    # Zit dat rond de 51, dan is de titel op zichzelf een betrouwbaar kenmerk
+    # en hoeft er geen lijst met EAN's onderhouden te worden -- ook nieuwe
+    # setjes worden dan meteen herkend, zonder deploy.
+    met_plus = [p for p in producten.values()
+                if p.is_available and ' + ' in (p.title or '')]
+
     return jsonify({
         'uitleg': 'gevonden door de eigen productteksten te doorzoeken; '
                   'deze artikelen vervuilen de prijsmeting van hun categorie',
+        'titeltoets': {
+            'uitleg': 'producten met " + " in de titel -- tweede, onafhankelijk '
+                      'kenmerk van een setje',
+            'aantal': len(met_plus),
+            'per_categorie': dict(Counter(
+                p.category.name if p.category else '' for p in met_plus)),
+            'voorbeelden': [{'slug': p.slug, 'titel': (p.title or '')[:110]}
+                            for p in met_plus[:40]],
+        },
         'aantallen': {reden: len(rijen) for reden, rijen in gevonden.items()},
         'per_categorie': {
             reden: dict(Counter(r['categorie'] for r in rijen))

@@ -1116,6 +1116,75 @@ def teksten_diagnose():
     })
 
 
+# Zinsneden waarmee het model zelf aangaf dat een artikel geen los apparaat is.
+# Deze zijn afgeleid uit de 19 teksten die de controle aanstreepte plus de
+# steekproef over twaalf categorieen -- niet bedacht maar afgelezen.
+_AFWIJKING_PATRONEN = [
+    (r'combinatie van (twee|drie|vier)|betreft geen los apparaat|'
+     r'bestaat (volgens de titel )?uit twee|als (een|één) set wordt aangeboden|'
+     r'betreft twee|twee losse apparaten|twee Siemens-typenummers',
+     'setje: twee of meer apparaten als een artikel'),
+    (r'is geen \w+ maar|gaat niet om een apparaat|betreft geen apparaat|'
+     r'dit is geen',
+     'geen apparaat: accessoire of onderdeel'),
+]
+
+
+@main_bp.route('/api/catalogus-afwijkingen')
+def catalogus_afwijkingen():
+    """Artikelen die volgens hun eigen beschrijving geen los apparaat zijn.
+
+    De gegenereerde teksten zijn hier gebruikt als audit. Het model heeft bij
+    elk product naar de werkelijke gegevens gekeken en waar het geen los
+    apparaat betrof, schreef het dat op -- een setje wasmachine plus droger,
+    of een doosje waterfilters onder Koffiemachines. Die zinnen zijn hier
+    terug te vinden zonder dat er iets opnieuw gelezen of betaald hoeft te
+    worden.
+
+    Waarom dit ertoe doet: zulke artikelen vervuilen de categoriemeting. Een
+    filterset van 20 euro telt mee in "de prijs van koffiemachines loopt van
+    ... tot ...", en een setje van twee apparaten krijgt een pagina die uitgaat
+    van een specificatietabel en een energielabel.
+
+    Leest alleen, geeft niets uit, geen sleutel nodig.
+    """
+    import re
+
+    from flask import jsonify
+
+    from models import AIContent
+
+    gevonden = {reden: [] for _, reden in _AFWIJKING_PATRONEN}
+    producten = {p.id: p for p in Product.query.all()}
+    for rij in AIContent.query.filter_by(content_type=_TEKST_SOORT).all():
+        product = producten.get(rij.product_id)
+        if product is None or not rij.content:
+            continue
+        for patroon, reden in _AFWIJKING_PATRONEN:
+            m = re.search(patroon, rij.content, re.IGNORECASE)
+            if m:
+                # De hele zin eromheen, want het losse fragment zegt niets.
+                zin = next((z for z in re.split(r'(?<=[.!?])\s+', rij.content)
+                            if m.group(0).lower() in z.lower()), '')
+                gevonden[reden].append({
+                    'slug': product.slug,
+                    'categorie': product.category.name if product.category else '',
+                    'merk': product.brand,
+                    'zin': zin.strip()[:200],
+                })
+                break
+
+    return jsonify({
+        'uitleg': 'gevonden door de eigen productteksten te doorzoeken; '
+                  'deze artikelen vervuilen de prijsmeting van hun categorie',
+        'aantallen': {reden: len(rijen) for reden, rijen in gevonden.items()},
+        'per_categorie': {
+            reden: dict(Counter(r['categorie'] for r in rijen))
+            for reden, rijen in gevonden.items()},
+        'gevallen': {reden: rijen[:60] for reden, rijen in gevonden.items()},
+    })
+
+
 @main_bp.route('/api/teksten/publiceren')
 def teksten_publiceren():
     """Zet de opgeslagen teksten op de productpagina's. Dit is de zichtbare stap.

@@ -45,6 +45,18 @@ def _product_structured_data(product, merk_facet=None):
             'lowPrice': min(prices),
             'highPrice': max(prices),
             'offerCount': len(offers),
+            # Beschikbaarheid hoort hier, op het overkoepelende blok, en niet
+            # alleen bij de losse aanbiedingen hieronder. Gemeten op 28-07:
+            # Merchant Center keurde alle 1383 automatisch gevonden producten
+            # af met "Ontbrekende waarde voor [availability]", terwijl het veld
+            # bij elke geneste Offer wel degelijk stond. Google leest dus het
+            # bovenste blok en niet de nesting -- dat verklaart ook waarom de
+            # prijs wel overkwam (die staat hier) en de beschikbaarheid niet.
+            #
+            # We komen hier alleen als product.available_offers gevuld is, dus
+            # er is minstens een winkel die het apparaat levert. InStock is
+            # daarmee geen aanname maar een weergave van wat de pagina toont.
+            'availability': 'https://schema.org/InStock',
             'offers': [{
                 '@type': 'Offer',
                 'price': o.price,

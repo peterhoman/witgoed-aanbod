@@ -304,7 +304,14 @@ def robots():
     verkeerskanaal. De expliciete Allow-regels documenteren die keuze —
     zonder deze regels was het een stilzwijgende default geweest.
     """
-    robots_txt = f"""User-agent: *
+    robots_txt = f"""# Een crawler volgt ALLEEN de groep die het beste bij hem past en
+# negeert alle andere. Daarom staan de uitsluitingen bij elke groep
+# apart, en niet alleen bij *. Eerder stonden Disallow: /api/ en
+# /admin/ alleen onder * terwijl Googlebot een eigen groep had met
+# uitsluitend "Allow: /" -- die groep won, en daarmee waren /api/ en
+# /admin/ voor Google in het geheel niet afgeschermd.
+
+User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin/
@@ -313,31 +320,49 @@ Sitemap: {current_app.config['SITE_URL']}/sitemap.xml
 
 User-agent: Googlebot
 Allow: /
+Disallow: /api/
+Disallow: /admin/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /api/
+Disallow: /admin/
 
 # AI-zoekmachines en -assistenten: bewust welkom (antwoorden met
 # bronvermelding naar onze vergelijkingen zijn een verkeerskanaal).
 User-agent: GPTBot
 Allow: /
+Disallow: /api/
+Disallow: /admin/
 
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /api/
+Disallow: /admin/
 
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /api/
+Disallow: /admin/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /api/
+Disallow: /admin/
 
 User-agent: Claude-User
 Allow: /
+Disallow: /api/
+Disallow: /admin/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /api/
+Disallow: /admin/
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /api/
+Disallow: /admin/
 """
     return robots_txt, 200, {'Content-Type': 'text/plain'}

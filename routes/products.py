@@ -52,11 +52,26 @@ def _product_structured_data(product, merk_facet=None):
                 'availability': 'https://schema.org/InStock',
                 'url': o.link,
                 'seller': {'@type': 'Organization', 'name': o.retailer_name},
-                # We syncen elke ~12u; een prijs die net gecontroleerd is
-                # blijft dus ruim binnen 24u geldig. Voorkomt dat Google een
-                # stilzwijgend verouderde prijs als "definitief" behandelt.
+                # Zeven dagen, niet 24 uur. De oude redenering was dat een
+                # korte geldigheid voorkomt dat Google een verouderde prijs als
+                # definitief behandelt. Het effect bleek omgekeerd: Google
+                # schrijft "your listing may not display if the priceValidUntil
+                # property indicates a past date", dus een verlopen datum haalt
+                # de vermelding wég in plaats van hem te verversen.
+                #
+                # Gemeten op 28-07 over 80 productpagina's (143 aanbiedingen):
+                # 68% verliep diezelfde dag, de rest de dag erna. Elke pagina
+                # die Google een dag oversloeg was daarmee ongeldig -- en
+                # Search Console meldde tegelijk 918 pagina's "gevonden, niet
+                # geindexeerd", dus overslaan is eerder regel dan uitzondering.
+                # Merchant Center zag 975 actieve artikelen naar 776 zakken.
+                #
+                # Zeven dagen geeft Google ruimte om in zijn eigen tempo langs
+                # te komen. Onze eigen prijzen blijven elke 6 tot 12 uur
+                # ververst; de pagina toont dus altijd de actuele prijs, dit
+                # veld zegt alleen hoe lang Google hem mag blijven geloven.
                 'priceValidUntil': ((o.last_synced or product.last_synced)
-                                    + timedelta(hours=24)).strftime('%Y-%m-%d'),
+                                    + timedelta(days=7)).strftime('%Y-%m-%d'),
             } for o in offers],
         }
 

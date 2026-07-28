@@ -1229,6 +1229,69 @@ def catalogus_afwijkingen():
     })
 
 
+@main_bp.route('/api/setprijzen')
+def setprijzen_meting():
+    """Bij hoeveel setjes lukt de vergelijking met de losse apparaten?
+
+    Meten voordat er iets op de site komt. Bij de setjes-herkenning bleek twee
+    keer dat een patroon dat op een handvol gevallen goed leek, over de hele
+    catalogus iets anders deed. Deze pagina zegt hoe vaak het lukt, waar het
+    misgaat, en wat de uitkomsten zijn -- dan is te zien of de zin de moeite
+    waard is voordat hij ergens verschijnt.
+
+    Leest alleen, geeft niets uit, geen sleutel nodig.
+    """
+    from flask import jsonify
+
+    from catalogus_uitzonderingen import SETJE_SLUG
+    from setprijs import modelcodes_uit_titel, vergelijk_met_los
+
+    categorie = Category.query.filter_by(slug=SETJE_SLUG).first()
+    if categorie is None:
+        return jsonify({'fout': 'categorie Apparaatsets bestaat niet'}), 404
+
+    setjes = Product.query.filter_by(category_id=categorie.id,
+                                     is_available=True).all()
+    gelukt, geen_codes, niet_gevonden = [], [], []
+    for product in setjes:
+        codes = modelcodes_uit_titel(product.title)
+        if not codes:
+            geen_codes.append({'slug': product.slug,
+                               'titel': (product.title or '')[:95]})
+            continue
+        uitkomst = vergelijk_met_los(product)
+        if uitkomst is None:
+            niet_gevonden.append({'slug': product.slug, 'codes': codes,
+                                  'titel': (product.title or '')[:95]})
+            continue
+        gelukt.append({
+            'slug': product.slug,
+            'titel': (product.title or '')[:80],
+            'set': round(uitkomst['set'], 2),
+            'los_totaal': round(uitkomst['los_totaal'], 2),
+            'verschil': round(uitkomst['verschil'], 2),
+            'set_goedkoper': uitkomst['set_goedkoper'],
+            'noemenswaardig': uitkomst['noemenswaardig'],
+            'gevonden': [{'code': a['code'], 'slug': a['product'].slug,
+                          'prijs': round(a['prijs'], 2)}
+                         for a in uitkomst['apparaten']],
+        })
+
+    noemenswaardig = [g for g in gelukt if g['noemenswaardig']]
+    return jsonify({
+        'setjes_totaal': len(setjes),
+        'vergelijking_gelukt': len(gelukt),
+        'waarvan_noemenswaardig_verschil': len(noemenswaardig),
+        'set_goedkoper': sum(1 for g in noemenswaardig if g['set_goedkoper']),
+        'los_goedkoper': sum(1 for g in noemenswaardig if not g['set_goedkoper']),
+        'mislukt_geen_typenummer': len(geen_codes),
+        'mislukt_apparaat_niet_gevonden': len(niet_gevonden),
+        'gelukt': gelukt[:40],
+        'geen_typenummer': geen_codes[:15],
+        'apparaat_niet_gevonden': niet_gevonden[:15],
+    })
+
+
 @main_bp.route('/api/teksten/publiceren')
 def teksten_publiceren():
     """Zet de opgeslagen teksten op de productpagina's. Dit is de zichtbare stap.

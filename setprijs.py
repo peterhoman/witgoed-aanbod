@@ -72,6 +72,40 @@ def modelcodes_uit_titel(titel):
     return codes if len(codes) >= 2 else []
 
 
+_CACHE = {}
+_TTL = 15 * 60
+
+
+def _losse_apparaten():
+    """Alle leverbare niet-setjes, titel in hoofdletters. 15 minuten gecached.
+
+    Een keer ophalen en in het geheugen vergelijken, niet per typenummer een
+    query. De eerste versie deed Product.title.ilike('%code%') per code: een
+    zoektocht door de hele tabel die geen index kan gebruiken, ongeveer honderd
+    keer achter elkaar. Op productie was de meetpagina daardoor na tien minuten
+    nog niet klaar. Tweeduizend titels in het geheugen vergelijken kost niets.
+    """
+    import time
+
+    from catalogus_uitzonderingen import is_setje
+    from models import Product
+
+    nu = time.time()
+    hit = _CACHE.get('data')
+    if hit and nu - hit[0] < _TTL:
+        return hit[1]
+
+    rijen = (Product.query
+             .filter(Product.is_available.is_(True))
+             .with_entities(Product.id, Product.slug, Product.title,
+                            Product.price)
+             .all())
+    data = [(r.id, r.slug, (r.title or '').upper(), r.title, r.price)
+            for r in rijen if not is_setje(r.title)]
+    _CACHE['data'] = (nu, data)
+    return data
+
+
 def _zoek_apparaat(code, uitgezonderd_id):
     """Het losse apparaat met dit typenummer, of None.
 
@@ -79,19 +113,13 @@ def _zoek_apparaat(code, uitgezonderd_id):
     een ander apparaat past (een variant, of een te korte code), en dan weten
     we niet welk bedrag we optellen.
     """
-    from catalogus_uitzonderingen import is_setje
-    from models import Product
-
-    kandidaten = [
-        p for p in Product.query.filter(
-            Product.is_available.is_(True),
-            Product.id != uitgezonderd_id,
-            Product.title.ilike(f'%{code}%')).limit(10).all()
-        # Een ander setje telt niet mee: dan zou de som twee apparaten
-        # bevatten waar er een gevraagd wordt.
-        if not is_setje(p.title)
-    ]
-    return kandidaten[0] if len(kandidaten) == 1 else None
+    naald = code.upper()
+    treffers = [r for r in _losse_apparaten()
+                if r[0] != uitgezonderd_id and naald in r[2]]
+    if len(treffers) != 1:
+        return None
+    pid, slug, _, titel, prijs = treffers[0]
+    return {'id': pid, 'slug': slug, 'title': titel, 'prijs': prijs}
 
 
 def vergelijk_met_los(product):
@@ -115,14 +143,14 @@ def vergelijk_met_los(product):
         gevonden = _zoek_apparaat(code, product.id)
         if gevonden is None:
             return None
-        prijs = float(gevonden.lowest_price or 0)
+        prijs = float(gevonden['prijs'] or 0)
         if prijs <= 0:
             return None
         apparaten.append({'product': gevonden, 'code': code, 'prijs': prijs})
 
     # Zelfde apparaat twee keer gevonden: dan is er iets mis met de codes en
     # klopt de som niet.
-    if len({a['product'].id for a in apparaten}) != len(apparaten):
+    if len({a['product']['id'] for a in apparaten}) != len(apparaten):
         return None
 
     los_totaal = sum(a['prijs'] for a in apparaten)

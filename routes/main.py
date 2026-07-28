@@ -1272,7 +1272,7 @@ def setprijzen_meting():
             'verschil': round(uitkomst['verschil'], 2),
             'set_goedkoper': uitkomst['set_goedkoper'],
             'noemenswaardig': uitkomst['noemenswaardig'],
-            'gevonden': [{'code': a['code'], 'slug': a['product'].slug,
+            'gevonden': [{'code': a['code'], 'slug': a['product']['slug'],
                           'prijs': round(a['prijs'], 2)}
                          for a in uitkomst['apparaten']],
         })

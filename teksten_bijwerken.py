@@ -60,6 +60,61 @@ def _zonder_tekst(limiet):
     return uit
 
 
+def _publiceer_wat_schoon_werd():
+    """Opgeslagen teksten die de controle nu wel doorkomen alsnog zichtbaar maken.
+
+    De controle draait bij elke aanroep opnieuw over alles wat er ligt, dus een
+    verfijning van de regels verandert met terugwerkende kracht het oordeel over
+    bestaande teksten. Zonder deze stap zouden die teksten opgeslagen blijven en
+    onzichtbaar, en zou er een handmatige publicatieronde nodig zijn -- terwijl
+    de tekst er allang is en betaald.
+
+    Aanleiding: de zeef streepte 19 teksten aan, waarvan er 15 alleen het woord
+    "aanbieding" bevatten in de betekenis "dit artikel" ("Deze aanbieding
+    betreft een combinatie van twee losse apparaten"). Na het verfijnen van die
+    regel horen ze gewoon op de site.
+
+    Kost niets: er wordt niets geschreven bij het model, alleen gekopieerd.
+    """
+    from ai_content import controleer
+    from models import AIContent, Product, db
+
+    zonder = {p.id: p for p in Product.query.filter(
+        Product.ai_description.is_(None), Product.is_available.is_(True)).all()}
+    if not zonder:
+        return 0
+
+    aantal = 0
+    for rij in AIContent.query.filter(
+            AIContent.content_type == _SOORT,
+            AIContent.product_id.in_(zonder.keys())).all():
+        if not (rij.content or '').strip() or controleer(rij.content):
+            continue
+        zonder[rij.product_id].ai_description = rij.content
+        aantal += 1
+    if aantal:
+        db.session.commit()
+    return aantal
+
+
+def _ruim_proefteksten_op():
+    """De proefrondes van 27 juli weggooien; die worden nergens gebruikt.
+
+    proef-v1 (17 rijen) en proef-v2 (28 rijen) waren de steekproeven waarmee
+    de instructie is afgesteld voordat de hele catalogus werd geschreven. Ze
+    staan los van de teksten op de site en houden alleen ruimte bezet.
+
+    Zelfbeperkend: zodra ze weg zijn doet deze functie niets meer.
+    """
+    from models import AIContent, db
+
+    aantal = AIContent.query.filter(
+        AIContent.content_type.like('proef-%')).delete(synchronize_session=False)
+    if aantal:
+        db.session.commit()
+    return aantal
+
+
 def vul_ontbrekende_teksten(app):
     """Schrijf beschrijvingen voor producten die er nog geen hebben.
 
@@ -72,6 +127,15 @@ def vul_ontbrekende_teksten(app):
     from models import AIContent, db
 
     with app.app_context():
+        # Deze twee kosten niets en hebben geen sleutel nodig, dus ze staan
+        # vooraan: ook een ronde waarin niets te schrijven valt (of waarin de
+        # sleutel ontbreekt) moet ze uitvoeren.
+        alsnog = _publiceer_wat_schoon_werd()
+        opgeruimd = _ruim_proefteksten_op()
+        if alsnog or opgeruimd:
+            logger.info("teksten bijwerken: %d alsnog zichtbaar gemaakt, "
+                        "%d proefrijen opgeruimd", alsnog, opgeruimd)
+
         sleutel = app.config.get('ANTHROPIC_API_KEY')
         if not sleutel:
             logger.info("teksten bijwerken: geen ANTHROPIC_API_KEY, overgeslagen")

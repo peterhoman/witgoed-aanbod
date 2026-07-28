@@ -1401,7 +1401,11 @@ def teksten_nalezen():
         besteed=sum(r['euro'] or 0 for r in alles),
         daglimiet=current_app.config['AI_DAGLIMIET_EURO'],
         maxnieuw=_MAX_NIEUW_PER_AANROEP, is_proef=False,
-        zichtbaar=Product.query.filter(Product.ai_description.isnot(None)).count())
+        # Alleen leverbare producten tellen, anders staat er 2782 van 2774 en
+        # komt de meter op 101,4% -- producten met een tekst die inmiddels uit
+        # de handel zijn telden mee in de teller maar niet in de noemer.
+        zichtbaar=Product.query.filter(Product.ai_description.isnot(None),
+                                       Product.is_available.is_(True)).count())
 
 
 @main_bp.route('/set-language/<lang>')

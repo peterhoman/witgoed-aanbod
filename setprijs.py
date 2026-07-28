@@ -77,30 +77,46 @@ _TTL = 15 * 60
 
 
 def _losse_apparaten():
-    """Alle leverbare niet-setjes, titel in hoofdletters. 15 minuten gecached.
+    """Alle leverbare niet-setjes met hun laagste winkelprijs. 15 min gecached.
+
+    De prijs komt uit de goedkoopste leverbare aanbieding, met terugval op
+    products.price -- precies wat Product.lowest_price doet en wat de pagina
+    toont. Dat is niet vrijblijvend: de eerste versie las hier het kale
+    price-veld terwijl de set met lowest_price werd gerekend. Dan tel je twee
+    verschillende maten bij elkaar op en klopt het verschil principieel niet,
+    ook al ziet het bedrag er geloofwaardig uit.
 
     Een keer ophalen en in het geheugen vergelijken, niet per typenummer een
-    query. De eerste versie deed Product.title.ilike('%code%') per code: een
-    zoektocht door de hele tabel die geen index kan gebruiken, ongeveer honderd
-    keer achter elkaar. Op productie was de meetpagina daardoor na tien minuten
-    nog niet klaar. Tweeduizend titels in het geheugen vergelijken kost niets.
+    query: Product.title.ilike('%code%') kan geen index gebruiken, en met 59
+    setjes van elk twee of drie codes gebeurde dat ruim honderd keer. Op
+    productie liep de meetpagina daardoor na tien minuten nog niet af.
     """
     import time
 
+    from sqlalchemy import func
+
     from catalogus_uitzonderingen import is_setje
-    from models import Product
+    from models import Offer, Product, db
 
     nu = time.time()
     hit = _CACHE.get('data')
     if hit and nu - hit[0] < _TTL:
         return hit[1]
 
+    # Laagste leverbare winkelprijs per product, in een enkele query.
+    laagste = dict(
+        db.session.query(Offer.product_id, func.min(Offer.price))
+        .filter(Offer.is_available.is_(True), Offer.price.isnot(None),
+                Offer.price > 0)
+        .group_by(Offer.product_id).all())
+
     rijen = (Product.query
              .filter(Product.is_available.is_(True))
              .with_entities(Product.id, Product.slug, Product.title,
                             Product.price)
              .all())
-    data = [(r.id, r.slug, (r.title or '').upper(), r.title, r.price)
+    data = [(r.id, r.slug, (r.title or '').upper(), r.title,
+             laagste.get(r.id, r.price))
             for r in rijen if not is_setje(r.title)]
     _CACHE['data'] = (nu, data)
     return data
@@ -164,4 +180,56 @@ def vergelijk_met_los(product):
         # prijzen bij verschillende winkels bewegen dagelijks meer dan dat.
         'noemenswaardig': verschil >= 25,
         'apparaten': apparaten,
+    }
+
+
+def _euro(bedrag):
+    """1249.0 -> '1.249,00'. Zelfde schrijfwijze als elders op de pagina."""
+    return f"{float(bedrag):,.2f}".replace(',', ' ').replace('.', ',').replace(' ', '.')
+
+
+def setzin(product):
+    """De vergelijking als leesbaar blok, of None.
+
+    Geeft {'kop', 'tekst', 'apparaten'} terug. De apparaten gaan mee zodat de
+    pagina ernaartoe kan linken: dan kan de lezer het zelf nakijken, en het
+    verbindt meteen twee pagina's die anders los van elkaar staan.
+
+    Drie uitkomsten, want alle drie zijn ze informatie:
+    - de set is goedkoper
+    - los kopen is goedkoper (bij 10 van de 28 gemeten sets het geval)
+    - het scheelt vrijwel niets
+
+    Bewust geen woord als "voordeel" of "korting": wij rekenen het uit, de
+    winkel doet de belofte.
+    """
+    uitkomst = vergelijk_met_los(product)
+    if uitkomst is None:
+        return None
+
+    set_bedrag = _euro(uitkomst['set'])
+    los_bedrag = _euro(uitkomst['los_totaal'])
+    verschil = _euro(uitkomst['verschil'])
+    aantal = len(uitkomst['apparaten'])
+    woord = 'twee' if aantal == 2 else 'drie' if aantal == 3 else str(aantal)
+
+    basis = (f"Deze set kost € {set_bedrag}. Dezelfde {woord} apparaten los "
+             f"kosten samen € {los_bedrag}")
+    if not uitkomst['noemenswaardig']:
+        # Een paar tientjes op ruim duizend euro is ruis: prijzen bij
+        # verschillende winkels bewegen dagelijks meer dan dat.
+        staart = " — vrijwel hetzelfde."
+    elif uitkomst['set_goedkoper']:
+        staart = f" — als set bent u € {verschil} goedkoper uit."
+    else:
+        staart = f" — los kopen is hier € {verschil} goedkoper."
+
+    return {
+        'kop': 'Wat kost dit los?',
+        'tekst': basis + staart,
+        'apparaten': [{'slug': a['product']['slug'],
+                       'titel': a['product']['title'],
+                       'prijs': _euro(a['prijs'])} for a in uitkomst['apparaten']],
+        'voet': 'Berekend over de laagste prijs van elk apparaat in onze eigen '
+                'vergelijking, op het moment dat u deze pagina opvraagt.',
     }

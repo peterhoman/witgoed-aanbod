@@ -436,6 +436,24 @@
         {# Ingekort tot vier regels, maar de volledige tekst blijft in de DOM:
            alleen visueel afgekapt, zodat er geen indexeerbare inhoud
            verdwijnt. #}
+        {# Bij een setje: wat kosten dezelfde apparaten los? Bij tien van de
+           achtentwintig gemeten sets is los kopen goedkoper, en dat zegt geen
+           enkele andere site. Valt weg zodra een van beide apparaten niet met
+           zekerheid in onze eigen catalogus terug te vinden is. #}
+        {% if setvergelijking %}
+        <section class="setvergelijking">
+            <h2>{{ setvergelijking.kop }}</h2>
+            <p class="setvergelijking-tekst">{{ setvergelijking.tekst }}</p>
+            <ul class="setvergelijking-apparaten">
+                {% for a in setvergelijking.apparaten %}
+                <li><a href="{{ url_for('products.product_detail', slug=a.slug) }}">{{ a.titel }}</a>
+                    <span class="setvergelijking-prijs">&euro;&nbsp;{{ a.prijs }}</span></li>
+                {% endfor %}
+            </ul>
+            <p class="setvergelijking-voet">{{ setvergelijking.voet }}</p>
+        </section>
+        {% endif %}
+
         {% if product.ai_description %}
         {# Onze eigen beschrijving vervangt die van de winkel; de winkeltekst
            staat woordelijk ook bij Bol en bij de fabrikant en is precies de

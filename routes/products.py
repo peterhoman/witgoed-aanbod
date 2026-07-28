@@ -232,6 +232,7 @@ def product_detail(slug):
     from energy_costs import bereken_energiekosten
     from product_specs import kernspecs, groepeer_specs, modelnummer
     from category_context import bepaal_categoriecontext, meta_beschrijving
+    from setprijs import setzin
     from facet_links import merk_facetpagina, verfijningslinks
 
     # De één-winkel-variant (design 5c) geldt voor ruim de helft van de
@@ -256,6 +257,10 @@ def product_detail(slug):
                            # anders staat. Gecachet per categorie, dus dit
                            # kost niet elke paginaweergave een query.
                            categoriecontext=bepaal_categoriecontext(product),
+                           # Alleen gevuld bij een setje waarvan we allebei
+                           # de apparaten los in de catalogus terugvinden;
+                           # bij al het andere None en dan valt het blok weg.
+                           setvergelijking=setzin(product),
                            # Uit dezelfde gecachete meting: een
                            # meta-description die per pagina uniek is
                            # en niet uit de feed komt.

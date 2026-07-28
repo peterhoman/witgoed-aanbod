@@ -128,20 +128,41 @@ Wat er moet kloppen:
 Klopt er iets niet, kijk dan of de scheduler-job `teksten_job` wel draait —
 zonder die job gebeurt geen van de drie.
 
-### 2. Merchant Center: is de afkeuring opgelost?
+### 2. Merchant Center — elke dag kijken tot het opgelost is
 
 Google keurde **alle 1383** automatisch gevonden producten af met één reden:
 **"Ontbrekende waarde voor [availability]"**. Dat veld stond wel in de markup,
 maar in de geneste aanbiedingen — en Google leest van een `AggregateOffer`
 alleen het overkoepelende blok. Dat is vandaag toegevoegd.
 
-Kijken in Merchant Center → Producten → **Vereist aandacht**. Daalt het aantal?
+Elke dag kijken in Merchant Center → Producten → **Vereist aandacht**, tot dat
+aantal nul is. Zolang het niet daalt is er iets mis met de reparatie, en dat
+wil je binnen een dag weten.
 
 - **Naar nul** → opgelost. Dan pas zien we of dit kanaal iets oplevert; er waren
   nul klikken, maar dat kwam doordat alles was afgekeurd.
 - **Blijft staan** → dan speelt punt 5 hieronder.
 
-### 3. Search Console: over 2 tot 4 weken, niet eerder
+### 3. Search Console — elke dag kijken, maar weet waarnaar
+
+Peter controleert dagelijks, en dat is goed: een storing zie je dan binnen een
+dag in plaats van na een week. Hou wel twee dingen uit elkaar, anders trek je
+conclusies uit ruis.
+
+**Elke dag, om fouten te vangen:** nieuwe 404's, serverfouten, pagina's die
+ineens op noindex staan, een sitemap die niet meer wordt gelezen. Dat zijn
+storingen en die horen dezelfde dag opgelost. Nagaan met de controles onderaan
+dit document — alle sitemap-adressen en interne links moeten 200 geven.
+
+**Elke twee tot vier weken, om vooruitgang te lezen:** de aantallen "gevonden —
+niet geïndexeerd" en "gecrawld — niet geïndexeerd". Die bewegen langzaam omdat
+Google 2800 pagina's opnieuw moet beoordelen. Dagelijkse schommelingen daarin
+zeggen niets; alleen de lijn over weken telt.
+
+Het doel is hoger komen in Google. Daarvoor is de dagelijkse controle het
+vangnet en de wekenlange lijn de uitkomst.
+
+### Waar het nu staat
 
 918 pagina's staan als "Gevonden — momenteel niet geïndexeerd". Dat is een
 derde van de site, en het is een kwaliteitsoordeel: Google kent die adressen

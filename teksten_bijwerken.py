@@ -44,6 +44,17 @@ _PER_RONDE = 25
 # routes.main._TEKST_SOORT.
 _SOORT = 'beschrijving'
 
+# Onder deze soort staat een enkele rij die niets anders doet dan onthouden
+# wanneer deze routine voor het laatst gedraaid heeft. Geen product, geen
+# tekst voor de site -- alleen een datumstempel in generated_at.
+#
+# Waarom in ai_content en niet in een eigen tabel: dat scheelt een migratie
+# op een draaiende database voor een gegeven dat uit één datum bestaat. Alle
+# bestaande overzichten filteren op content_type, dus deze rij komt nergens
+# tussen de teksten terecht; in /api/teksten/diagnose is hij zichtbaar onder
+# rijen_per_soort, wat precies de plek is waar je hem zoekt.
+_MARKERING = 'routine-laatst-gedraaid'
+
 
 def _zonder_tekst(limiet):
     """Leverbare producten zonder eigen beschrijving, op id."""
@@ -115,6 +126,51 @@ def _ruim_proefteksten_op():
     return aantal
 
 
+def laatste_run(app):
+    """Wanneer deze routine voor het laatst gedraaid heeft (naïeve UTC), of None.
+
+    Gelezen door de scheduler om de eerstvolgende run te verankeren aan het
+    laatste échte draaimoment in plaats van aan de processtart. Zie de uitleg
+    bij _noteer_run.
+    """
+    from models import AIContent
+
+    try:
+        with app.app_context():
+            rij = AIContent.query.filter_by(content_type=_MARKERING).first()
+            return rij.generated_at if rij else None
+    except Exception as e:
+        # Een lege of onbereikbare database mag het opstarten niet tegenhouden;
+        # zonder stempel valt de scheduler terug op zijn oude gedrag.
+        logger.warning("teksten bijwerken: laatste draaimoment onbekend -- %s", e)
+        return None
+
+
+def _noteer_run():
+    """Vastleggen dat de routine nu gedraaid heeft.
+
+    Zonder dit stempel bestaat het draaimoment alleen in het geheugen van het
+    proces, en dat is precies wat er bij elke uitrol verdwijnt: een
+    'interval'-job vuurt pas ná het hele interval, dus met een paar deploys op
+    een dag schuift hij telkens vooruit en draait hij niet meer.
+
+    Dit is dezelfde constructie die de zes winkel-syncs al hebben (die haken
+    aan offers.last_synced, zie scheduler.eerste_run). Deze routine schrijft
+    alleen bij als er iets te schrijven valt, dus er is geen bestaand veld dat
+    betrouwbaar zegt dat hij gedraaid heeft -- vandaar een eigen stempel.
+    """
+    from models import AIContent, db, utcnow
+
+    rij = AIContent.query.filter_by(content_type=_MARKERING).first()
+    if rij is None:
+        rij = AIContent(
+            content_type=_MARKERING,
+            content='Markering: wanneer teksten_bijwerken voor het laatst draaide.')
+        db.session.add(rij)
+    rij.generated_at = utcnow()
+    db.session.commit()
+
+
 def vul_ontbrekende_teksten(app):
     """Schrijf beschrijvingen voor producten die er nog geen hebben.
 
@@ -122,78 +178,91 @@ def vul_ontbrekende_teksten(app):
     blijft opgeslagen maar onzichtbaar, zodat het nagelezen kan worden zonder
     dat er iets verkeerds op de site staat.
     """
+    with app.app_context():
+        # Het stempel hoort bij elke afloop gezet te worden, ook bij een ronde
+        # die halverwege stopt op het dagplafond of die zonder sleutel meteen
+        # terugkeert: hij zegt "deze routine is langs geweest", niet "er is
+        # tekst geschreven". Zonder finally zou een ronde zonder werk als
+        # achterstallig blijven gelden.
+        try:
+            _draai_ronde(app)
+        finally:
+            _noteer_run()
+
+
+def _draai_ronde(app):
+    """Het eigenlijke werk. Draait binnen de app-context van de aanroeper."""
     from ai_content import (Budgetstop, TekstFout, bewaak_budget, controleer,
-                            schrijf_beschrijving, telbare_specs)
+                            schrijf_beschrijving)
     from models import AIContent, db
 
-    with app.app_context():
-        # Deze twee kosten niets en hebben geen sleutel nodig, dus ze staan
-        # vooraan: ook een ronde waarin niets te schrijven valt (of waarin de
-        # sleutel ontbreekt) moet ze uitvoeren.
-        alsnog = _publiceer_wat_schoon_werd()
-        opgeruimd = _ruim_proefteksten_op()
-        if alsnog or opgeruimd:
-            logger.info("teksten bijwerken: %d alsnog zichtbaar gemaakt, "
-                        "%d proefrijen opgeruimd", alsnog, opgeruimd)
+    # Deze twee kosten niets en hebben geen sleutel nodig, dus ze staan
+    # vooraan: ook een ronde waarin niets te schrijven valt (of waarin de
+    # sleutel ontbreekt) moet ze uitvoeren.
+    alsnog = _publiceer_wat_schoon_werd()
+    opgeruimd = _ruim_proefteksten_op()
+    if alsnog or opgeruimd:
+        logger.info("teksten bijwerken: %d alsnog zichtbaar gemaakt, "
+                    "%d proefrijen opgeruimd", alsnog, opgeruimd)
 
-        sleutel = app.config.get('ANTHROPIC_API_KEY')
-        if not sleutel:
-            logger.info("teksten bijwerken: geen ANTHROPIC_API_KEY, overgeslagen")
-            return
+    sleutel = app.config.get('ANTHROPIC_API_KEY')
+    if not sleutel:
+        logger.info("teksten bijwerken: geen ANTHROPIC_API_KEY, overgeslagen")
+        return
 
-        producten = _zonder_tekst(_PER_RONDE)
-        if not producten:
-            logger.info("teksten bijwerken: elk leverbaar product heeft al een tekst")
-            return
+    producten = _zonder_tekst(_PER_RONDE)
+    if not producten:
+        logger.info("teksten bijwerken: elk leverbaar product heeft al een tekst")
+        return
 
-        geschreven, gepubliceerd, gevlagd, mislukt, euro = 0, 0, 0, 0, 0.0
-        for product in producten:
-            try:
-                # Voor elke tekst opnieuw toetsen, niet een keer vooraf: anders
-                # merkt een ronde die uit de hand loopt het plafond pas als het
-                # geld op is.
-                bewaak_budget(app.config['AI_DAGLIMIET_EURO'])
-                uitkomst = schrijf_beschrijving(
-                    product, model=app.config.get('ANTHROPIC_MODEL'),
-                    api_key=sleutel)
-            except Budgetstop as e:
-                logger.warning("teksten bijwerken: gestopt door de noodrem -- %s", e)
-                break
-            except TekstFout as e:
-                logger.warning("teksten bijwerken: %s voor %s", e, product.slug)
-                mislukt += 1
-                continue
-            except Exception as e:
-                logger.exception("teksten bijwerken: onverwachte fout bij %s",
-                                 product.slug)
-                mislukt += 1
-                continue
+    geschreven, gepubliceerd, gevlagd, mislukt, euro = 0, 0, 0, 0, 0.0
+    for product in producten:
+        try:
+            # Voor elke tekst opnieuw toetsen, niet een keer vooraf: anders
+            # merkt een ronde die uit de hand loopt het plafond pas als het
+            # geld op is.
+            bewaak_budget(app.config['AI_DAGLIMIET_EURO'])
+            uitkomst = schrijf_beschrijving(
+                product, model=app.config.get('ANTHROPIC_MODEL'),
+                api_key=sleutel)
+        except Budgetstop as e:
+            logger.warning("teksten bijwerken: gestopt door de noodrem -- %s", e)
+            break
+        except TekstFout as e:
+            logger.warning("teksten bijwerken: %s voor %s", e, product.slug)
+            mislukt += 1
+            continue
+        except Exception:
+            logger.exception("teksten bijwerken: onverwachte fout bij %s",
+                             product.slug)
+            mislukt += 1
+            continue
 
-            k = uitkomst['kosten']
-            db.session.add(AIContent(
-                product_id=product.id, content_type=_SOORT,
-                content=uitkomst['tekst'],
-                tokens_used=(k['invoer'] + k['uitvoer']
-                             + k['cache_geschreven'] + k['cache_gelezen']),
-                cost=k['euro'], bron_specs=uitkomst['bron_specs']))
-            # Alleen zichtbaar maken wat schoon is. Een aangestreepte tekst
-            # blijft staan om nagelezen te worden; het product houdt zolang de
-            # winkeltekst, wat beter is dan een zin die over een maand niet
-            # meer klopt.
-            if controleer(uitkomst['tekst']):
-                gevlagd += 1
-            else:
-                product.ai_description = uitkomst['tekst']
-                gepubliceerd += 1
-            # Meteen vastleggen: valt de rest om, dan is dit binnen en is het
-            # betaalde werk niet weg.
-            db.session.commit()
-            geschreven += 1
-            euro += k['euro']
+        k = uitkomst['kosten']
+        db.session.add(AIContent(
+            product_id=product.id, content_type=_SOORT,
+            content=uitkomst['tekst'],
+            tokens_used=(k['invoer'] + k['uitvoer']
+                         + k['cache_geschreven'] + k['cache_gelezen']),
+            cost=k['euro'], bron_specs=uitkomst['bron_specs']))
+        # Alleen zichtbaar maken wat schoon is. Een aangestreepte tekst
+        # blijft staan om nagelezen te worden; het product houdt zolang de
+        # winkeltekst, wat beter is dan een zin die over een maand niet
+        # meer klopt.
+        if controleer(uitkomst['tekst']):
+            gevlagd += 1
+        else:
+            product.ai_description = uitkomst['tekst']
+            gepubliceerd += 1
+        # Meteen vastleggen: valt de rest om, dan is dit binnen en is het
+        # betaalde werk niet weg.
+        db.session.commit()
+        geschreven += 1
+        euro += k['euro']
 
-        resterend = len(_zonder_tekst(_PER_RONDE + 1))
-        logger.info(
-            "teksten bijwerken: %d geschreven (%d live, %d aangestreept, "
-            "%d mislukt), EUR %.4f, nog %s zonder tekst",
-            geschreven, gepubliceerd, gevlagd, mislukt, euro,
-            f"minstens {resterend}" if resterend > _PER_RONDE else resterend)
+    resterend = len(_zonder_tekst(_PER_RONDE + 1))
+    logger.info(
+        "teksten bijwerken: %d geschreven (%d live, %d aangestreept, "
+        "%d mislukt), EUR %.4f, nog %s zonder tekst",
+        geschreven, gepubliceerd, gevlagd, mislukt, euro,
+        f"minstens {resterend}" if resterend > _PER_RONDE else resterend)

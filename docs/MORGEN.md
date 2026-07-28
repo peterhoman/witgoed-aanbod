@@ -1,136 +1,206 @@
-# Waar we staan — verder op 28 juli
+# Openstaande punten — bijgewerkt 28 juli, ochtend
 
-Kort overdrachtsbriefje, geschreven aan het eind van 27 juli. Dit is een
-takenlijst, geen toestandsbeschrijving: de echte stand staat in
-`STAND_VAN_ZAKEN.md`. Weggooien zodra het afgewerkt is.
-
----
-
-## 0. Eerst dit: één tak wacht nog
-
-`feat/teksten-routine` staat gepusht maar is nog niet doorgevoerd. Daar zit de
-catalogusopschoning in (Apparaatsets + de vijf niet-apparaten). Zonder die merge
-gebeurt er van punt 1 niets.
-
-Doorvoeren, wachten op Railway, en dan kijken bij:
-
-    https://www.witgoedaanbod.nl/api/catalogus-afwijkingen
+Volledige lijst van wat er nog moet gebeuren. Dit is een takenlijst, geen
+toestandsbeschrijving: de verantwoording staat in `STAND_VAN_ZAKEN.md`. Punten
+doorstrepen zodra ze af zijn; het bestand mag weg als alles leeg is.
 
 ---
 
-## 1. Controleren of de opschoning is aangeslagen
+## 0. Eerst doorvoeren — twee takken wachten
 
-De uitzonderingen worden elk uur toegepast, en drie minuten na een herstart.
-Meteen na de deploy is het dus nog niet gedaan; even wachten.
+Ze bijten elkaar niet en mogen allebei tegelijk.
 
-Wat er hoort te kloppen:
+- `fix/geen-prijsvervaldatum` — `priceValidUntil` helemaal weg
+- `fix/beschikbaarheid-aggregateoffer` — `availability` op het overkoepelende blok
 
-- `/category/apparaatsets` bestaat en bevat rond de 51 producten.
-- De vijf geblokkeerde EAN's zitten niet meer in de catalogus. Ze staan met naam
-  en toenaam in `catalogus_uitzonderingen.GEBLOKKEERDE_EANS`.
-- In de uitkomst van `pas_toe` is `ten_onrechte_in_setjes` leeg. Staat daar wél
-  iets in, dan is er een product in Apparaatsets beland dat volgens zijn titel
-  geen setje is. Dat is een signaal dat de titelregel bijgesteld moet worden —
-  niet dat het product met de hand verplaatst moet worden.
-
-Let op: de categoriemeting (`category_context._profiel`) heeft een cache van 15
-minuten. De prijszinnen op de wasmachinepagina's veranderen dus pas een kwartier
-nadat de setjes eruit zijn.
+De tweede is de belangrijkste van vandaag: die repareert vermoedelijk alle 1383
+afgekeurde producten in Merchant Center.
 
 ---
 
-## 2. De enige echte bouwklus die nog openstaat: setprijs vs. los
+## 1. Merchant Center in de gaten houden (vanaf maandag)
 
-Afgesproken, nog niet gebouwd.
+Google keurde alle 1383 automatisch gevonden producten af met één reden:
+**"Ontbrekende waarde voor [availability]"**. Die waarde stond wel in onze
+markup, maar in de geneste aanbiedingen — en Google leest van een
+`AggregateOffer` alleen het overkoepelende blok.
 
-Bij een setje staat nu niets bijzonders. Het idee: de twee apparaten uit de titel
-opzoeken in de eigen catalogus, hun laagste prijzen optellen, en het verschil
-tonen.
+Na de merge dus kijken of dat aantal daalt. Google zegt de bron elke 24 uur te
+verversen, maar bij "laatste update" stond 24 juli, dus reken op een paar dagen.
+
+- **Daalt het naar nul** → opgelost, en dan zien we voor het eerst of dit kanaal
+  iets oplevert (tot nu toe nul klikken bij alle producten, maar dat kwam omdat
+  alles was afgekeurd).
+- **Blijft het staan** → dan komt de andere vraag terug, zie punt 6.
+
+Waar te kijken: Merchant Center → Producten → tabblad **Vereist aandacht**.
+
+---
+
+## 2. De 918 niet-geïndexeerde pagina's — het echte werk, en er is niets te doen
+
+Search Console meldt 918 pagina's als "Gevonden — momenteel niet geïndexeerd".
+Dat is een derde van de site. Het betekent: Google kent die adressen wel, maar
+vindt ze de moeite van het ophalen niet waard.
+
+Drie onafhankelijke bronnen (GPT, Gemini, Claude, alle drie met verwijzing naar
+Google's documentatie) zeggen hetzelfde: dat is een kwaliteitsoordeel, en het
+staat **los** van de prijsvervaldatum en van Merchant Center.
+
+Precies daarvoor zijn op 27 juli 2787 eigen productteksten live gegaan. Dat is
+de ingreep. Er is nu niets meer te doen behalve wachten tot Google die pagina's
+opnieuw langsloopt, en dat duurt weken.
+
+**Goed nieuws in datzelfde overzicht:** "Gecrawld — niet geïndexeerd" staat op
+**4**, was **100**. Dat is het cijfer waar het hele project op gericht was.
+
+Niet elke week kijken. Over twee tot vier weken.
+
+---
+
+## 3. Bouwklussen die nog openstaan
+
+### 3a. Setprijs versus de twee apparaten los
+
+Afgesproken op 27 juli, nog niet gebouwd. Bij een setje (categorie
+Apparaatsets) de twee apparaten uit de titel opzoeken in de eigen catalogus,
+hun laagste prijzen optellen, en het verschil tonen:
 
     Deze set kost € 1.149. Dezelfde twee apparaten los kosten samen € 1.207 —
     een verschil van € 58.
 
-En net zo goed de andere kant op:
+En net zo goed de andere kant op ("los is hier € 51 goedkoper"). Dit is een
+uitspraak die geen andere site over die set doet en die volledig uit de eigen
+catalogus komt. Hetzelfde principe als het categoriecontext-blok.
 
-    Deze set kost € 1.149. Dezelfde twee apparaten los kosten samen € 1.098 —
-    los is hier € 51 goedkoper.
-
-Waarom dit de moeite waard is: het is een uitspraak die geen enkele andere site
-over die set doet, hij komt volledig uit de eigen catalogus, en hij is elke dag
-opnieuw waar omdat hij wordt meegerekend. Hetzelfde principe als het
-categoriecontext-blok.
-
-Waar het aan vastzit: de twee typenummers uit de titel halen (die staan er, dat
-is juist hoe een setje herkend wordt — zie `catalogus_uitzonderingen.is_setje`)
-en die matchen tegen `Product.title` of het Model-veld. Lukt één van de twee
-niet, dan vervalt de hele zin. Niets schatten, zoals overal.
+Waar het aan vastzit: de twee typenummers uit de titel halen (die staan er —
+zie `catalogus_uitzonderingen.is_setje`) en matchen tegen `Product.title` of het
+Model-veld. Lukt één van de twee niet, dan vervalt de hele zin.
 
 Dit is ook waarom "Voordeelsets" als categorienaam is afgewezen: dat is een
-prijsbelofte die wij niet kunnen waarmaken. Uitrekenen mag wel, beweren niet.
+prijsbelofte die wij niet kunnen waarmaken. Uitrekenen mag, beweren niet.
+
+### 3b. EPREL-certificering in de gestructureerde data
+
+Nieuw gevonden op 28 juli, en het is de moeite waard. Google documenteert een
+veld `hasCertification` **speciaal voor EPREL** — de Europese
+energielabeldatabase — en noemt het *"particularly relevant in European
+countries"*. Voor wasmachines, koelkasten en vaatwassers.
+
+Dat betekent dat de EPREL-sleutel waar we op wachten (punt 5) niet alleen het
+Model-veld vult, maar ook een veld in de markup mogelijk maakt dat Google
+uitdrukkelijk voor Europees witgoed heeft gemaakt en dat vrijwel geen
+concurrent invult.
+
+Bouwen zodra de sleutel er is.
+
+### 3c. Geneste aanbiedingen: houden of weghalen?
+
+Alle drie de modellen adviseren ze weg te halen. Redenering: Google leest ze
+niet (dat is nu gemeten, zie punt 1), en door per winkel een `Offer` met prijs
+en `seller` te publiceren kan Google ons als de verkoper zijn gaan modelleren —
+mogelijk de reden dat die 1383 producten überhaupt zijn aangemaakt.
+
+**Niet doen voordat punt 1 is beantwoord.** Als het toevoegen van
+`availability` de afkeuringen oplost, weten we dat Google het bovenste blok
+leest en de nesting negeert; dan is weghalen een schoonmaakklus zonder haast.
+Halen we ze nu weg, dan weten we straks niet welke van de twee wijzigingen
+werkte.
+
+### 3d. Teller op de nalees-pagina klopt niet
+
+`/api/teksten/nalezen` deelt het aantal producten mét tekst door het aantal
+leverbare producten en komt op 101,4%. Hij telt alle producten met tekst
+(inclusief niet-leverbare) tegen alleen de leverbare. Kleine rekenfout,
+verwarrende meter.
 
 ---
 
-## 2b. Waar we op wachten (niets aan te doen, wel in de gaten houden)
-
-Twee dingen liggen bij anderen. Ze staan hier zodat ze niet stilletjes
-verdwijnen; er is geen actie behalve af en toe kijken.
-
-- **EPREL-API (Brussel).** Aanvraag verstuurd op 26 juli 's avonds, nog geen
-  antwoord. Dit is de EU-database met energielabels; hij matcht op de
-  modelaanduiding. Waarom het ertoe doet: 74% van de producten heeft nu een leeg
-  `Model`-veld, en Coolblue levert er 616 aan (van de 1237 die wij van hen
-  volgen). Met de EPREL-sleutel kunnen die codes geverifieerd worden en kunnen
-  we labelgegevens ophalen voor producten waar de winkel ze niet levert.
-  Komt er niets, dan is dat op zichzelf een antwoord: dan blijft het bij wat de
-  feeds leveren.
-- **De laatste winkel (TradeTracker / Voordeligwitgoed.nl).** Feed nog niet
-  binnen. Daarmee zou de vergelijker op zeven winkels komen in plaats van zes.
-
----
-
-## 3. Losse einden, geen haast
+## 4. Losse einden
 
 - **Nieuwe producten zonder tekst.** De routine (`teksten_bijwerken`) draait elke
-  6 uur en pakt er hoogstens 25 per keer. Stond vanavond op 16 à 25 stuks. Even
-  kijken of dat getal daalt; blijft het staan, dan draait de job niet.
+  6 uur en pakt er hoogstens 25 per keer. Stond op 16 à 25 stuks. Kijken of dat
+  getal daalt; blijft het staan, dan draait de job niet.
 - **19 aangestreepte teksten** staan opgeslagen maar niet op de site. Vijftien
-  daarvan zijn setjes — die verhuizen nu naar Apparaatsets, en dan is de vraag of
-  hun tekst daar wél klopt. Te lezen via `/api/teksten/nalezen?vlaggen=1`.
-- **`AI_BEHEER_SLEUTEL` is verwijderd** uit Railway. De eindpunten `start`,
-  `ophalen` en `publiceren` staan daarmee op slot (503). Is er ooit weer een
-  grote batch nodig, dan een nieuwe waarde neerzetten en daarna weer weghalen.
-- **De proefteksten** (`proef-v1`, 17 rijen; `proef-v2`, 28 rijen) staan nog in
-  `ai_content` en worden nergens gebruikt. Mogen weg.
+  daarvan waren setjes, die zijn inmiddels naar Apparaatsets verhuisd — de vraag
+  is of hun tekst daar wél klopt. Te lezen via
+  `/api/teksten/nalezen?vlaggen=1`.
+- **Apparaatsets controleren.** De categorie bestaat en bevat producten, maar het
+  exacte aantal is nog niet nageteld tegen de verwachte 51. De vijf
+  niet-apparaten zijn wel bevestigd verdwenen (audit geeft 0).
+- **Proefteksten opruimen.** `proef-v1` (17 rijen) en `proef-v2` (28 rijen) staan
+  nog in `ai_content` en worden nergens gebruikt. Mogen weg.
+- **`AI_BEHEER_SLEUTEL` is verwijderd** uit Railway, dus `/api/teksten/start`,
+  `ophalen` en `publiceren` staan op slot (503). Nodig voor een nieuwe grote
+  batch? Nieuwe waarde neerzetten, gebruiken, daarna weer weghalen.
 
 ---
 
-## Wat er 27 juli is gebeurd, in het kort
+## 5. Waar we op wachten (niets aan te doen)
 
-Alle 2806 leverbare producten hebben een eigen beschrijving gekregen; 2787 staan
-live. De verkooptekst van de winkel — woordelijk gelijk aan die bij Bol en bij de
-fabrikant — is daarmee van de productpagina's verdwenen. Dat was het laatste stuk
-van de pagina dat nog uit de feed kwam.
+- **EPREL-API (Brussel).** Aanvraag verstuurd 26 juli 's avonds, nog geen
+  antwoord. Nodig voor punt 3b en voor het vullen van het Model-veld (74% is nu
+  leeg; Coolblue levert er 616 aan van de 1237 die wij van hen volgen).
+- **De zevende winkel** (TradeTracker / Voordeligwitgoed.nl). Feed nog niet
+  binnen.
 
-Totale kosten: **€ 14,34** voor 2806 teksten, een halve cent per stuk. Ruim onder
-de eerste raming van € 34, doordat de vaste instructie in een grote batch vrijwel
-altijd hergebruikt wordt in plaats van opnieuw berekend.
+---
 
-Verder die dag: drie zinsvarianten in het categoriecontext-blok (dat stond op
-2800 pagina's met dezelfde zinsbouw), merk-naar-merk-links onderaan de
-merkpagina's, een verantwoordingspagina op `/productteksten`, een noodrem van
-€ 5 per etmaal op de tekstgeneratie, en een automatische controle die elke tekst
-toetst op prijzen, winkelnamen en aansporingen.
+## 6. Geparkeerd: hoort een vergelijker wel in Merchant Center?
 
-Twee dingen die het waard zijn om te onthouden, omdat ze allebei fout gingen
-voordat ze goed gingen:
+Google's beleid: *"You're not allowed to use Shopping to promote affiliate or
+pay-per-click links to products, except when participating as a Comparison
+Shopping Service (CSS) in a CSS program country."* Nederland is zo'n land.
 
-- **Een zeef toetsen op je eigen vangst bewijst niets.** De controle werd
-  aangescherpt en getoetst op de 87 zinnen die de oude versie al had gevonden.
-  Die toets kon per definitie geen nieuwe valse treffers laten zien; de nieuwe
-  versie leverde er 46 op en was dus strikt slechter.
-- **Een verbinding die je nergens bewaart, wordt opgeruimd terwijl je er nog uit
-  leest.** `Anthropic(...).messages.batches.results(id)` op één regel liet de
-  batch halverwege afbreken met "Bad file descriptor". Lokaal onvindbaar, want
-  daar was geen echte verbinding.
+Zelf een CSS worden kan niet: dat vereist producten van **minstens 50
+verschillende winkeldomeinen** per land, en wij hebben er zes.
 
-De volledige verantwoording staat in `STAND_VAN_ZAKEN.md`.
+**Maar Google klaagt hier niet over.** De enige afkeuringsreden is het
+ontbrekende `availability`-veld. Deze vraag dus geparkeerd tot punt 1 een
+antwoord geeft. Blijven de afkeuringen na de reparatie staan, dan is dit het
+volgende spoor — en dan is de conclusie waarschijnlijk: die automatische bron
+uitzetten en Merchant Center loslaten.
+
+---
+
+## Wat er 27 en 28 juli is gebeurd
+
+**27 juli.** Alle 2806 leverbare producten kregen een eigen beschrijving; 2787
+staan live. De verkooptekst van de winkel — woordelijk gelijk aan die bij Bol en
+de fabrikant — is van de productpagina's verdwenen. Kosten: **€ 14,34** voor 2806
+teksten, een halve cent per stuk. Verder: drie zinsvarianten in het
+categoriecontext-blok, merk-naar-merk-links op de merkpagina's, een
+verantwoordingspagina op `/productteksten`, een noodrem van € 5 per etmaal, een
+automatische controle op elke tekst, en een routine die nieuwe producten vanzelf
+van tekst voorziet.
+
+Ook: 5 artikelen die geen apparaat zijn van de site gehaald (een stellingkast en
+een serviesset onder Magnetrons, waterfilters onder Koffiemachines, een
+geurfilter onder Afzuigkappen, een borstel onder Stofzuigers) en 51 setjes naar
+de nieuwe categorie Apparaatsets. Gevonden door de eigen productteksten te
+doorzoeken — het model had ze zelf al benoemd.
+
+**28 juli.** Twee Google-meldingen uitgezocht. Merchant Center bleek alle
+producten af te keuren op één ontbrekend veld; Search Console liet zien dat het
+grote tekstproject op één cijfer al aanslaat (100 → 4) en op het andere nog niet
+(340 → 918).
+
+---
+
+## Drie lessen die het waard zijn te onthouden
+
+Alle drie kwamen ze uit een fout die eerst gemaakt is.
+
+**Een zeef toetsen op je eigen vangst bewijst niets.** De tekstcontrole werd
+aangescherpt en getoetst op de 87 zinnen die de oude versie al had gevonden. Zo'n
+toets kan per definitie geen nieuwe valse treffers laten zien; de nieuwe versie
+leverde er 46 op en was strikt slechter.
+
+**Een verbinding die je nergens bewaart, wordt opgeruimd terwijl je er nog uit
+leest.** `Anthropic(...).messages.batches.results(id)` op één regel liet de batch
+halverwege afbreken. Lokaal onvindbaar, want daar was geen echte verbinding.
+
+**Meet voordat je sleutelt, ook als de diagnose voor de hand ligt.** Op 28 juli
+is er drie keer aan hetzelfde markup-blok gezeten voordat bekend was wat Google
+zelf als reden opgaf. Die reden bleek iets anders dan de eerste twee ingrepen
+aanpakten. Eén klik in Merchant Center had dat vooraf verteld.

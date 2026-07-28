@@ -160,9 +160,22 @@ _VERBODEN = [
     (r'\bprijs(?!geef|geeft|gegeven|geven|vergelijking|overzicht)\w*', 'noemt de prijs'),
     (r'€|\beuro\b', 'noemt een bedrag'),
     (r'\b(bol\.com|coolblue|mediamarkt|expert|alternate|wehkamp)\b', 'winkelnaam'),
-    # "actie" kaal is eruit (turbo-actie, ontdooiactie); alleen de
-    # aanbiedingsbetekenis blijft.
-    (r'\b(leverbaar|voorradig|op voorraad|levertijd|aanbieding|korting|actieprijs)\b',
+    # Twee woorden staan hier bewust niet kaal in, allebei omdat ze in deze
+    # teksten iets anders betekenen dan een tijdelijke actie:
+    #
+    # - "actie" zit in "turbo-actie" en "ontdooiactie": functies van een
+    #   apparaat.
+    # - "aanbieding" gebruikt het model voor "dit artikel" -- "Deze aanbieding
+    #   betreft een combinatie van twee losse apparaten". Dat beschrijft wat
+    #   het product IS en verandert niet. Gemeten over 2806 teksten: 15 van de
+    #   19 die de zeef aanstreepte waren precies dit geval, en die zinnen zijn
+    #   juist nuttig nu setjes een eigen categorie en een prijsvergelijking
+    #   hebben.
+    #
+    # De aanbiedingsbetekenis blijft wel staan, via "in de aanbieding",
+    # "aanbiedingsprijs" en "actieprijs".
+    (r'\b(leverbaar|voorradig|op voorraad|levertijd|korting)\b'
+     r'|\bin de aanbieding\b|\baanbiedings\w+|\bactieprijs\w*',
      'aanbod verandert'),
     # "koop" kaal is eruit: dat zit in aankoop, koopadvies en in een geciteerde
     # winkeltitel. Alleen de gebiedende wijs telt als aansporing.

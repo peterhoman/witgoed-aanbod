@@ -52,26 +52,22 @@ def _product_structured_data(product, merk_facet=None):
                 'availability': 'https://schema.org/InStock',
                 'url': o.link,
                 'seller': {'@type': 'Organization', 'name': o.retailer_name},
-                # Zeven dagen, niet 24 uur. De oude redenering was dat een
-                # korte geldigheid voorkomt dat Google een verouderde prijs als
-                # definitief behandelt. Het effect bleek omgekeerd: Google
-                # schrijft "your listing may not display if the priceValidUntil
-                # property indicates a past date", dus een verlopen datum haalt
-                # de vermelding wég in plaats van hem te verversen.
+                # priceValidUntil staat er bewust NIET in. Het veld is optioneel,
+                # en Google schrijft: "your listing may not display if the
+                # priceValidUntil property indicates a past date". Bij prijzen
+                # die doorlopend wijzigen is elke datum die wij verzinnen dus
+                # een tikkende bom: hij verloopt zodra Google een paar dagen
+                # niet langskomt, en dan verdwijnt de vermelding.
                 #
-                # Gemeten op 28-07 over 80 productpagina's (143 aanbiedingen):
-                # 68% verliep diezelfde dag, de rest de dag erna. Elke pagina
-                # die Google een dag oversloeg was daarmee ongeldig -- en
-                # Search Console meldde tegelijk 918 pagina's "gevonden, niet
-                # geindexeerd", dus overslaan is eerder regel dan uitzondering.
-                # Merchant Center zag 975 actieve artikelen naar 776 zakken.
+                # Eerst stond hier last_synced + 24 uur (gemeten 28-07: 68% van
+                # de aanbiedingen verliep diezelfde dag), daarna 7 dagen. Beide
+                # verplaatsen het probleem alleen. Een einddatum hoort er alleen
+                # te staan als een winkel er echt een geeft -- een actie tot en
+                # met een bepaalde dag. Die krijgen wij niet aangeleverd.
                 #
-                # Zeven dagen geeft Google ruimte om in zijn eigen tempo langs
-                # te komen. Onze eigen prijzen blijven elke 6 tot 12 uur
-                # ververst; de pagina toont dus altijd de actuele prijs, dit
-                # veld zegt alleen hoe lang Google hem mag blijven geloven.
-                'priceValidUntil': ((o.last_synced or product.last_synced)
-                                    + timedelta(days=7)).strftime('%Y-%m-%d'),
+                # Wat dit vervangt is nauwkeurigheid van een andere soort: onze
+                # prijzen worden elke 6 tot 12 uur ververst, en een aanbieding
+                # die weg is verdwijnt uit offerCount, lowPrice en highPrice.
             } for o in offers],
         }
 

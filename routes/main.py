@@ -1102,6 +1102,12 @@ def teksten_diagnose():
             except Exception as e:
                 voortgang = {'fout': f'{type(e).__name__}: {e}'}
 
+    # Wanneer de routine voor het laatst langs is geweest. Gelijk aan
+    # teksten_bijwerken._MARKERING; hier letterlijk overgenomen omdat dit
+    # eindpunt verder niets uit die module gebruikt.
+    laatst = AIContent.query.filter_by(
+        content_type='routine-laatst-gedraaid').first()
+
     return jsonify({
         'kolommen_ai_content': kolommen,
         'voortgang_batch': voortgang,
@@ -1113,6 +1119,18 @@ def teksten_diagnose():
         'producten_met_zichtbare_tekst': Product.query.filter(
             Product.ai_description.isnot(None)).count(),
         'leverbare_producten': Product.query.filter_by(is_available=True).count(),
+        # De drie hieronder beantwoorden samen de vraag "voorziet de site
+        # nieuwe producten nog vanzelf van een eigen tekst?". Zonder deze
+        # cijfers zien "de sleutel is weg" en "er valt niets te schrijven" er
+        # van buitenaf identiek uit: in beide gevallen komt er niets bij.
+        #
+        # Alleen of de sleutel er is, nooit welke. Een ja/nee is genoeg om te
+        # weten of de routine uberhaupt kan schrijven, en zegt niets wat een
+        # bezoeker kan misbruiken.
+        'ai_sleutel_aanwezig': bool(current_app.config.get('ANTHROPIC_API_KEY')),
+        'leverbaar_zonder_tekst': len(_zonder_tekst(3000)),
+        'routine_laatst_gedraaid': (str(laatst.generated_at)
+                                    if laatst else None),
     })
 
 

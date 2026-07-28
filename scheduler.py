@@ -131,13 +131,36 @@ def start_scheduler(app=None):
     # (offset 95 min, de laatste sync zit op 80), zodat de producten van die
     # ronde er al zijn.
     #
+    # Net als de syncs verankerd aan het laatste échte draaimoment in plaats
+    # van aan de processtart. Gemeten op 28 juli: deze job stond nog op de
+    # oude manier en heeft daardoor een halve dag niet gedraaid -- er werd die
+    # ochtend zes keer uitgerold, en elke uitrol zette hem terug op "over 95
+    # minuten". Het draaimoment komt uit teksten_bijwerken.laatste_run; de
+    # syncs halen hetzelfde uit offers.last_synced (zie eerste_run hierboven).
+    #
     # Bewust hier en niet achter een webadres: dan is er geen beheersleutel
     # nodig die in adresbalken en serverlogs blijft staan. De grenzen zitten in
     # teksten_bijwerken zelf -- alleen producten zonder tekst, hoogstens 25 per
     # ronde, en het dagplafond wordt voor elke tekst opnieuw getoetst.
     if app is not None:
-        from teksten_bijwerken import vul_ontbrekende_teksten
+        from teksten_bijwerken import laatste_run, vul_ontbrekende_teksten
         teksten_interval = int(os.getenv('TEKSTEN_INTERVAL', 6))
+        laatst_teksten = laatste_run(app)
+        nu = datetime.now(timezone.utc)
+        if laatst_teksten is not None:
+            laatst_teksten = laatst_teksten.replace(tzinfo=timezone.utc)
+        if (laatst_teksten is None
+                or laatst_teksten + timedelta(hours=teksten_interval) <= nu):
+            # Achterstallig: binnen tien minuten draaien, niet over 95. Die
+            # 95 minuten waren bedoeld om de syncs voor te laten gaan, maar op
+            # een dag met een uitrol per half uur wordt zo'n uitgestelde run
+            # nooit gehaald -- dat is precies hoe deze routine stil kwam te
+            # liggen. Voorgaan is hier het minste belang: de routine schrijft
+            # alleen voor producten zónder tekst en draait toch elke zes uur,
+            # dus wat deze sync nog aanlevert komt vanzelf de volgende ronde.
+            eerste_teksten = nu + timedelta(minutes=10)
+        else:
+            eerste_teksten = laatst_teksten + timedelta(hours=teksten_interval)
         scheduler.add_job(
             vul_ontbrekende_teksten,
             'interval',
@@ -146,7 +169,7 @@ def start_scheduler(app=None):
             name='Eigen productteksten bijwerken',
             replace_existing=True,
             args=[app],
-            next_run_time=datetime.now(timezone.utc) + timedelta(minutes=95),
+            next_run_time=eerste_teksten,
         )
 
     # Geblokkeerde artikelen opruimen en setjes in hun eigen categorie zetten.

@@ -57,30 +57,34 @@ def _product_structured_data(product, merk_facet=None):
             # er is minstens een winkel die het apparaat levert. InStock is
             # daarmee geen aanname maar een weergave van wat de pagina toont.
             'availability': 'https://schema.org/InStock',
-            'offers': [{
-                '@type': 'Offer',
-                'price': o.price,
-                'priceCurrency': 'EUR',
-                'availability': 'https://schema.org/InStock',
-                'url': o.link,
-                'seller': {'@type': 'Organization', 'name': o.retailer_name},
-                # priceValidUntil staat er bewust NIET in. Het veld is optioneel,
-                # en Google schrijft: "your listing may not display if the
-                # priceValidUntil property indicates a past date". Bij prijzen
-                # die doorlopend wijzigen is elke datum die wij verzinnen dus
-                # een tikkende bom: hij verloopt zodra Google een paar dagen
-                # niet langskomt, en dan verdwijnt de vermelding.
-                #
-                # Eerst stond hier last_synced + 24 uur (gemeten 28-07: 68% van
-                # de aanbiedingen verliep diezelfde dag), daarna 7 dagen. Beide
-                # verplaatsen het probleem alleen. Een einddatum hoort er alleen
-                # te staan als een winkel er echt een geeft -- een actie tot en
-                # met een bepaalde dag. Die krijgen wij niet aangeleverd.
-                #
-                # Wat dit vervangt is nauwkeurigheid van een andere soort: onze
-                # prijzen worden elke 6 tot 12 uur ververst, en een aanbieding
-                # die weg is verdwijnt uit offerCount, lowPrice en highPrice.
-            } for o in offers],
+            # Hieronder stond per winkel een geneste Offer met prijs, link en
+            # seller. Die zijn er op 29-07 uit gehaald, om twee redenen.
+            #
+            # 1. Google leest ze niet. Dat is geen aanname meer maar gemeten:
+            #    tot 28-07 stond availability alleen bij de geneste Offers, en
+            #    Merchant Center keurde alle 1383 producten af op precies dat
+            #    ontbrekende veld. Zodra het op het overkoepelende blok stond,
+            #    liep de goedkeuring op (134 -> 339 binnen een dag). Het bovenste
+            #    blok is dus wat telt; de nesting werd genegeerd.
+            #
+            # 2. Ze zeggen iets wat niet klopt over wie wij zijn. Door per winkel
+            #    een prijs met een seller-naam te publiceren presenteert deze
+            #    site zich als de partij die het apparaat aanbiedt, terwijl wij
+            #    prijzen vergelijken en de bezoeker doorsturen. Dat is
+            #    waarschijnlijk ook waarom Google uit zichzelf 1383 producten in
+            #    Merchant Center heeft aangemaakt.
+            #
+            # Er gaat geen informatie verloren die Google gebruikte: het aantal
+            # winkels staat in offerCount, de prijsspreiding in lowPrice en
+            # highPrice, en de winkels zelf staan zichtbaar op de pagina waar de
+            # bezoeker ze nodig heeft.
+            #
+            # priceValidUntil stond er al bewust niet in en komt ook niet terug.
+            # Het veld is optioneel, en Google schrijft: "your listing may not
+            # display if the priceValidUntil property indicates a past date".
+            # Bij prijzen die doorlopend wijzigen is elke datum die wij
+            # verzinnen een tikkende bom -- hij verloopt zodra Google een paar
+            # dagen niet langskomt, en dan verdwijnt de vermelding.
         }
 
     # Zelfde stappen als het zichtbare kruimelpad in product.html. Google toont

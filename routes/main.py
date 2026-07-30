@@ -1062,6 +1062,112 @@ def teksten_ophalen():
                     'nalezen': '/api/teksten/nalezen'})
 
 
+# Antwoorden van Bol kort onthouden: dit eindpunt is openbaar, en zonder rem
+# zou elke bezoeker een aanroep naar de Bol-API veroorzaken. Zelfde patroon
+# als _BATCHSTATUS_CACHE hierboven.
+_BOL_AANBOD_CACHE = {}
+_BOL_AANBOD_TTL = 10 * 60
+
+
+@main_bp.route('/api/bol-aanbiedingen')
+def bol_aanbiedingen():
+    """Wat Bol werkelijk teruggeeft voor één artikel. Leest alleen, koopt niets.
+
+    Aanleiding, gemeten op 30-07 via /api/prijssprongen: van de zeven
+    prijssprongen boven de 50% in een week waren er vijf vals (de prijs
+    sprong terug), alle vijf bij Bol, en vier van de vijf bij inbouwovens.
+    De SMEG SO4301M1N ging drie keer heen en weer tussen EUR 599 en
+    EUR 1399.
+
+    De sync leest de prijs als offers[0] -- de eerste aanbieding uit de
+    lijst, zonder te kijken welke dat is (sync_products.py, rond regel 476).
+    Twee verklaringen passen daarbij, en ze vragen om een andere reparatie:
+
+      a. Bol geeft meerdere aanbiedingen terug en de volgorde wisselt.
+         Dan pakken wij de verkeerde en moeten we bewust kiezen.
+      b. Bol geeft er één, en die wisselt zelf van verkoper.
+         Dan is EUR 599 op dat moment echt de prijs en is er niets kapot --
+         hooguit iets om te tonen ("prijs van een andere verkoper").
+
+    Zonder dit te weten is elke reparatie een gok, en gokken op de markup
+    heeft in dit project al twee keer dagen gekost. Vandaar deze pagina, en
+    pas daarna de keuze.
+
+    Alleen EANs die in onze eigen catalogus staan: anders is dit een gratis
+    doorgeefluik naar de Bol-API onder onze sleutel. Antwoorden worden tien
+    minuten onthouden.
+    """
+    import os
+
+    from flask import jsonify
+    from models import Offer, Product
+
+    ean = (request.args.get('ean') or '').strip()
+    if not ean:
+        return jsonify({
+            'fout': 'geef een ean mee',
+            'voorbeeld': '/api/bol-aanbiedingen?ean=8017709352523',
+            'uitleg': 'alleen EANs die in deze catalogus staan',
+        }), 400
+
+    product = Product.query.filter_by(ean=ean).first()
+    if product is None:
+        return jsonify({'fout': 'dit ean staat niet in onze catalogus'}), 404
+
+    nu = time.time()
+    gecached = _BOL_AANBOD_CACHE.get(ean)
+    if gecached and nu - gecached[0] < _BOL_AANBOD_TTL:
+        antwoord = gecached[1]
+    else:
+        client_id = current_app.config.get('BOL_CLIENT_ID') or os.getenv('BOL_CLIENT_ID')
+        geheim = current_app.config.get('BOL_CLIENT_SECRET') or os.getenv('BOL_CLIENT_SECRET')
+        if not client_id or not geheim:
+            return jsonify({'fout': 'BOL_CLIENT_ID/BOL_CLIENT_SECRET ontbreken'}), 503
+        try:
+            from sync_products import BolAPI
+            api = BolAPI(client_id, geheim)
+            if not api.authenticate():
+                return jsonify({'fout': 'authenticatie bij Bol mislukt'}), 502
+            ruw = api.fetch_product(ean)
+        except Exception as e:
+            return jsonify({'fout': f'{type(e).__name__}: {e}'}), 502
+
+        if not ruw:
+            antwoord = {'bol_kent_dit_ean': False}
+        else:
+            # Zowel de enkelvoudige als de lijstvorm, precies zoals de sync
+            # ze leest -- anders meet je iets anders dan er gebeurt.
+            lijst = ruw.get('offers') or ([ruw['offer']] if ruw.get('offer') else [])
+            antwoord = {
+                'bol_kent_dit_ean': True,
+                'vorm': 'offers (lijst)' if ruw.get('offers') else (
+                    'offer (enkelvoud)' if ruw.get('offer') else 'geen aanbieding'),
+                'aantal_aanbiedingen': len(lijst),
+                # Alle velden van de eerste aanbieding, zodat zichtbaar is
+                # waarop we zouden kunnen kiezen (conditie, verkoper,
+                # voorraad). Geen sleutels of tokens: dit komt uit de
+                # productgegevens, niet uit onze configuratie.
+                'velden_eerste_aanbieding': sorted(lijst[0].keys()) if lijst else [],
+                'aanbiedingen': [{
+                    k: v for k, v in aanbod.items()
+                    if not isinstance(v, (dict, list))
+                } for aanbod in lijst[:10]],
+            }
+        _BOL_AANBOD_CACHE[ean] = (nu, antwoord)
+
+    onze = Offer.query.filter_by(product_id=product.id, retailer='bol').first()
+    return jsonify({
+        'ean': ean,
+        'titel': (product.title or '')[:120],
+        'wat_wij_nu_tonen': {
+            'prijs': onze.price if onze else None,
+            'laatst_opgehaald': str(onze.last_synced) if onze else None,
+        },
+        'wat_bol_teruggeeft': antwoord,
+        'hoe_de_sync_leest': 'offers[0].price -- de eerste uit de lijst',
+    })
+
+
 @main_bp.route('/api/prijssprongen')
 def prijssprongen():
     """Verdachte prijsbewegingen van de afgelopen dagen. Leest alleen.

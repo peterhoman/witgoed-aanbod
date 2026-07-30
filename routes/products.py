@@ -111,6 +111,50 @@ def _product_structured_data(product, merk_facet=None):
     return [data, breadcrumbs]
 
 
+def prijzen_opgehaald(product):
+    """Hoe lang geleden de getoonde prijzen bij de winkels zijn opgehaald.
+
+    Geeft 'ruim 3 uur geleden' terug, of None als er geen leverbare
+    aanbieding met een tijdstempel is -- dan vervalt de mededeling, zoals
+    overal op deze site: liever niets dan een slag in de lucht.
+
+    Bewust een tijdsduur en geen kloktijd. De database bewaart naieve
+    UTC-tijden; die als Nederlandse kloktijd tonen zou er in de zomer twee
+    uur naast zitten, en een tijdstip dat er naast zit is erger dan geen
+    tijdstip. Een duur klopt in elke tijdzone.
+
+    Waarom dit er staat: bij een prijsvergelijker is de versheid van de
+    prijs de kern van wat je belooft. Op 29-07 stond er een dag lang EUR 599
+    bij een oven waar de winkel EUR 1399 voor rekende, door een fout in de
+    feed van die winkel. Dat valt niet volledig te voorkomen -- de winkel is
+    de bron -- maar wel eerlijk te begrenzen: zeggen wanneer je gekeken hebt,
+    en zeggen dat de winkel leidend is.
+    """
+    from flask import g
+
+    from models import utcnow
+    from translations import translate
+
+    tijden = [o.last_synced for o in product.available_offers if o.last_synced]
+    if not tijden:
+        return None
+    uren = (utcnow() - max(tijden)).total_seconds() / 3600
+    if uren < 0:
+        # Een tijdstempel in de toekomst betekent dat er iets niet klopt met
+        # de klok; dan liever niets zeggen dan iets onmogelijks.
+        return None
+
+    taal = g.get('lang', 'nl')
+    if uren < 1:
+        return translate('product.fetched_lasthour', taal)
+    if uren < 24:
+        return translate('product.fetched_hours', taal, n=int(uren))
+    dagen = int(uren // 24)
+    if dagen == 1:
+        return translate('product.fetched_yesterday', taal)
+    return translate('product.fetched_days', taal, n=dagen)
+
+
 def _is_set(product):
     """True als dit een combinatie van twee apparaten is, geen los apparaat.
 
@@ -252,6 +296,7 @@ def product_detail(slug):
                            merk_facet=merk_facet,
                            structured_data=_product_structured_data(product, merk_facet),
                            price_history=build_price_history(product),
+                           prijzen_opgehaald=prijzen_opgehaald(product),
                            energiekosten=bereken_energiekosten(product),
                            kernspecs=kernspecs(product),
                            spec_groepen=groepeer_specs(product),

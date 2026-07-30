@@ -155,6 +155,17 @@ TRANSLATIONS = {
         'search.back_home': 'Terug naar home',
         'product.affiliate_disclosure': 'WitgoedAanbod.nl is deelnemer aan de partnerprogramma\'s van de getoonde winkels. Als je via deze links iets koopt, ontvangen wij een kleine commissie, zonder extra kosten voor jou.',
 
+        # Versheid van de prijzen, plus het voorbehoud. Als tijdsduur en niet
+        # als kloktijd: de database bewaart naieve UTC-tijden, en die als
+        # Nederlandse kloktijd tonen zit er in de zomer twee uur naast.
+        'product.prices_fetched': 'Prijzen opgehaald {wanneer}.',
+        'product.fetched_lasthour': 'in het afgelopen uur',
+        'product.fetched_hours': 'ruim {n} uur geleden',
+        'product.fetched_yesterday': 'gisteren',
+        'product.fetched_days': '{n} dagen geleden',
+        'product.price_leading': 'De prijs bij de winkel op het moment van bestellen is leidend',
+        'product.terms_link': 'voorwaarden',
+
         # Guides
         'guides.title': 'Koopgidsen',
         'guides.intro': 'Praktisch advies om de juiste keuze te maken, geschreven door WitgoedAanbod.nl.',
@@ -332,6 +343,14 @@ TRANSLATIONS = {
         'search.no_results_text': 'Try a different search term or browse our categories.',
         'search.back_home': 'Back to home',
         'product.affiliate_disclosure': 'WitgoedAanbod.nl participates in the affiliate programs of the stores shown. If you buy something through these links, we may earn a small commission, at no extra cost to you.',
+
+        'product.prices_fetched': 'Prices checked {wanneer}.',
+        'product.fetched_lasthour': 'within the past hour',
+        'product.fetched_hours': 'over {n} hours ago',
+        'product.fetched_yesterday': 'yesterday',
+        'product.fetched_days': '{n} days ago',
+        'product.price_leading': 'The price shown by the store at the time of ordering is the one that applies',
+        'product.terms_link': 'terms',
 
         'guides.title': 'Buying Guides',
         'guides.intro': 'Practical advice to help you choose, written by WitgoedAanbod.nl.',

@@ -183,7 +183,14 @@ def start_scheduler(app=None):
     if app is not None:
         from eprel_bijwerken import vul_eprel_gegevens
         from models import EprelData
-        eprel_interval = int(os.getenv('EPREL_INTERVAL', 6))
+        # Drie uur zolang de catalogus nog gevuld wordt: dat halveert de
+        # doorlooptijd van ruim zeven dagen naar ruim drie. Bewust niet
+        # korter -- EPREL publiceert geen limieten, dus we weten niet waar de
+        # grens ligt, en de toegang kwijtraken kost meer dan een paar dagen
+        # winnen oplevert. Loopt het toch tegen een afwijzing aan, dan stopt
+        # de ronde bij het eerste geweigerde verzoek en staat de reden in
+        # /api/eprel onder laatste_ronde_afloop.
+        eprel_interval = int(os.getenv('EPREL_INTERVAL', 3))
         laatst_eprel = None
         try:
             with app.app_context():

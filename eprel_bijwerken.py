@@ -46,6 +46,26 @@ _VERVERS_NA_DAGEN = 30
 # gaan voor: die hebben nog helemaal niets.
 _VERVERS_DEEL = 0.25
 
+# De afloop van de laatste ronde, zodat /api/eprel hem kan tonen.
+#
+# Waarom in het geheugen en niet in de database: dit is toestand van het
+# draaiende proces, geen gegeven over een apparaat. Gunicorn draait hier met
+# 1 worker en 8 threads (zie railway.toml), dus de scheduler en de
+# webpagina's zitten in hetzelfde proces en zien dezelfde waarde. Bij een
+# herstart is hij leeg -- dat mag, want de eerstvolgende ronde vult hem
+# opnieuw, en een afwijzing die blijft bestaan komt dan meteen weer terug.
+#
+# Zonder dit zou een blokkade door Brussel eruitzien als "er komt niets
+# bij", en dan zoek je een week later naar de oorzaak. Dat is precies de
+# stilte die deze week al twee keer tijd heeft gekost.
+LAATSTE_RONDE = {
+    'wanneer': None,
+    'gevonden': 0,
+    'niet_gevonden': 0,
+    'ververst': 0,
+    'afgebroken_door': None,
+}
+
 
 def _te_doen(limiet):
     """Apparaten die nog nooit gezocht zijn, om en om uit elke categorie.
@@ -187,6 +207,15 @@ def vul_eprel_gegevens(app):
                 _schrijf(rij, product, uitkomst)
                 db.session.commit()
                 ververst += 1
+
+        from models import utcnow
+        LAATSTE_RONDE.update({
+            'wanneer': str(utcnow()),
+            'gevonden': raak,
+            'niet_gevonden': mis,
+            'ververst': ververst,
+            'afgebroken_door': gestopt,
+        })
 
         resterend = len(_te_doen(_PER_RONDE + 1))
         logger.info(

@@ -48,17 +48,52 @@ _VERVERS_DEEL = 0.25
 
 
 def _te_doen(limiet):
-    """Apparaten die nog nooit gezocht zijn, op id."""
+    """Apparaten die nog nooit gezocht zijn, om en om uit elke categorie.
+
+    Niet op id, en dat is geen detail. Producten komen per categorie binnen
+    bij een sync, dus hun id's liggen in blokken bij elkaar: de eerste ronde
+    leverde 75 apparaten op waarvan er 30 een was-droogcombinatie waren en
+    geen enkele een koelkast of oven. Dan weet je na een ronde nog steeds
+    niet of de koppeling voor de rest van de catalogus deugt, en dat is
+    precies wat je in deze fase wilt weten.
+
+    Om en om uit elke categorie halen betekent dat de eerste ronde alle
+    soorten raakt. Blijkt een categorie slecht te koppelen -- ovens en
+    koelkasten hebben andere titelconventies dan wasmachines -- dan zie je
+    dat meteen in plaats van over een week.
+
+    Vaste volgorde op id binnen elke categorie, zodat een volgende ronde
+    verdergaat waar deze ophield in plaats van dezelfde apparaten opnieuw te
+    pakken.
+    """
     from models import EprelData, Product
 
     gedaan = {r.product_id for r in EprelData.query.with_entities(
         EprelData.product_id).all()}
+
+    per_categorie = {}
+    for product in (Product.query.filter_by(is_available=True)
+                    .order_by(Product.id)):
+        if product.id in gedaan:
+            continue
+        per_categorie.setdefault(product.category_id, []).append(product)
+
+    # Om en om: eerst van elke categorie de eerste, dan de tweede, enzovoort.
+    # Een categorie die leegraakt valt vanzelf af, dus een kleine categorie
+    # houdt de grote niet op.
     uit = []
-    for product in Product.query.filter_by(is_available=True).order_by(Product.id):
-        if product.id not in gedaan:
-            uit.append(product)
-            if len(uit) >= limiet:
-                break
+    rijen = list(per_categorie.values())
+    stand = 0
+    while rijen and len(uit) < limiet:
+        volgende = []
+        for producten in rijen:
+            if stand < len(producten):
+                uit.append(producten[stand])
+                if len(uit) >= limiet:
+                    break
+                volgende.append(producten)
+        rijen = volgende if len(uit) < limiet else []
+        stand += 1
     return uit
 
 
@@ -109,9 +144,12 @@ def vul_eprel_gegevens(app):
     from models import EprelData, db
 
     with app.app_context():
-        aantal_ververs = int(_PER_RONDE * _VERVERS_DEEL)
-        nieuw = _te_doen(_PER_RONDE - aantal_ververs)
-        oud = _te_verversen(aantal_ververs)
+        # Eerst kijken of er iets te verversen valt. Zolang dat niet zo is --
+        # de eerste maand na de start -- gaat de hele ronde naar nieuwe
+        # apparaten in plaats van naar een gereserveerd kwart dat leegblijft.
+        # Dat scheelt bij het vullen van 2.700 apparaten ruim twee dagen.
+        oud = _te_verversen(int(_PER_RONDE * _VERVERS_DEEL))
+        nieuw = _te_doen(_PER_RONDE - len(oud))
 
         if not nieuw and not oud:
             logger.info("eprel: niets te doen, alles is opgehaald en actueel")

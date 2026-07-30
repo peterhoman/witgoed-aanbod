@@ -220,6 +220,19 @@
                 </div>
                 {% endif %}
 
+                {# Versheid en voorbehoud horen bij de prijs, niet alleen in de
+                   algemene voorwaarden. Twee dingen in één regel: wanneer wij
+                   gekeken hebben, en dat de winkel leidend is. Het eerste is
+                   wat een vergelijker belooft, het tweede wat hij niet kan
+                   waarmaken -- een feed kan een verkeerde prijs bevatten en
+                   dan staat die hier tot de volgende sync. Ontbreekt het
+                   tijdstempel, dan valt dat deel weg en blijft het voorbehoud
+                   staan. #}
+                <p class="offers-versheid">
+                    {%- if prijzen_opgehaald %}{{ t('product.prices_fetched', wanneer=prijzen_opgehaald) }} {% endif -%}
+                    {{ t('product.price_leading') }}
+                    (<a href="/voorwaarden">{{ t('product.terms_link') }}</a>).
+                </p>
                 <p class="offers-foot">{{ t('product.affiliate_disclosure') }}</p>
             </div>
             {% endif %}

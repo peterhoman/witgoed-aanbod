@@ -1069,6 +1069,91 @@ _BOL_AANBOD_CACHE = {}
 _BOL_AANBOD_TTL = 10 * 60
 
 
+@main_bp.route('/api/eprel')
+def eprel_stand():
+    """Hoe ver de EPREL-koppeling is, en wat er is binnengekomen. Leest alleen.
+
+    Stap 1 van drie: ophalen en opslaan, zonder dat er iets van op de site
+    komt. Deze pagina is de bedoeling van die stap -- eerst zien of de
+    gegevens deugen, dan pas beslissen of ze op duizend pagina's mogen.
+
+    Gemeten vooraf op een steekproef van 150 producten (30-07-2026): van de
+    apparaten met een EU-energielabel is 65% terug te vinden, wat over de
+    hele catalogus neerkomt op ongeveer 1.020 apparaten. Wijkt het cijfer
+    hieronder daar sterk vanaf, dan klopt er iets niet aan de koppeling en
+    niet aan de schatting.
+
+    Bron van de gegevens: European Product Registry for Energy Labelling
+    (EPREL), Europese Commissie.
+    """
+    from flask import jsonify
+    from sqlalchemy import func
+
+    from models import EprelData, Product, db
+
+    totaal = Product.query.filter_by(is_available=True).count()
+    opgehaald = EprelData.query.count()
+    gevonden = EprelData.query.filter_by(gevonden=True).count()
+
+    per_groep = dict(db.session.query(EprelData.productgroep,
+                                      func.count(EprelData.id))
+                     .filter(EprelData.gevonden.is_(True))
+                     .group_by(EprelData.productgroep).all())
+    per_klasse = dict(db.session.query(EprelData.energieklasse,
+                                       func.count(EprelData.id))
+                      .filter(EprelData.gevonden.is_(True))
+                      .group_by(EprelData.energieklasse).all())
+
+    # Een handvol treffers om met eigen ogen na te kijken: klopt het merk bij
+    # het merk, en het model bij de titel? Daar valt een verkeerde koppeling
+    # aan op, en dat is de enige fout die hier echt schaadt.
+    rijen = (EprelData.query.filter_by(gevonden=True)
+             .order_by(EprelData.id.desc()).limit(15).all())
+    producten = {p.id: p for p in Product.query.filter(
+        Product.id.in_([r.product_id for r in rijen])).all()} if rijen else {}
+    voorbeelden = [{
+        'titel': (producten[r.product_id].title or '')[:80]
+                 if r.product_id in producten else None,
+        'gezocht_op': r.gezocht_op,
+        'eprel_model': r.modelnummer,
+        'leverancier': r.leverancier,
+        'registratienummer': r.registratienummer,
+        'energieklasse': r.energieklasse,
+        'gegevens': r.gegevens,
+    } for r in rijen]
+
+    # Missers zijn net zo leerzaam: staan er veel Miele's tussen, dan is het
+    # de spatie in het typenummer en niet EPREL.
+    missers = (EprelData.query.filter_by(gevonden=False)
+               .order_by(EprelData.id.desc()).limit(15).all())
+    mis_producten = {p.id: p for p in Product.query.filter(
+        Product.id.in_([r.product_id for r in missers])).all()} if missers else {}
+    niet_gevonden = [{
+        'titel': (mis_producten[r.product_id].title or '')[:80]
+                 if r.product_id in mis_producten else None,
+        'gezocht_op': r.gezocht_op or '(geen typenummer of geen energielabel)',
+    } for r in missers]
+
+    laatste = (EprelData.query
+               .order_by(EprelData.opgehaald_at.desc()).first())
+    return jsonify({
+        'bron': ('European Product Registry for Energy Labelling (EPREL), '
+                 'Europese Commissie'),
+        'leverbare_producten': totaal,
+        'al_opgezocht': opgehaald,
+        'nog_te_doen': max(totaal - opgehaald, 0),
+        'gevonden': gevonden,
+        'niet_gevonden': opgehaald - gevonden,
+        'trefkans_pct': round(100 * gevonden / opgehaald) if opgehaald else None,
+        'verwacht_over_hele_catalogus': 1020,
+        'per_productgroep': per_groep,
+        'per_energieklasse': per_klasse,
+        'laatste_ronde': str(laatste.opgehaald_at) if laatste else None,
+        'voorbeelden': voorbeelden,
+        'voorbeelden_niet_gevonden': niet_gevonden,
+    })
+
+
 @main_bp.route('/api/bol-aanbiedingen')
 def bol_aanbiedingen():
     """Wat Bol werkelijk teruggeeft voor één artikel. Leest alleen, koopt niets.

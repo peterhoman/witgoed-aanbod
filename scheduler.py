@@ -172,6 +172,45 @@ def start_scheduler(app=None):
             next_run_time=eerste_teksten,
         )
 
+    # EPREL-gegevens ophalen bij de EU-energielabeldatabase. Kost niets en
+    # heeft geen sleutel nodig; de grenzen zitten in eprel_bijwerken zelf
+    # (honderd apparaten per ronde, een halve seconde tussen de verzoeken,
+    # en een misser wordt vastgelegd zodat hij niet elke ronde terugkomt).
+    #
+    # Verankerd aan het laatste draaimoment, om dezelfde reden als de andere
+    # jobs hierboven: een interval-job die aan de processtart hangt schuift
+    # bij elke uitrol vooruit en draait op een drukke dag niet meer.
+    if app is not None:
+        from eprel_bijwerken import vul_eprel_gegevens
+        from models import EprelData
+        eprel_interval = int(os.getenv('EPREL_INTERVAL', 6))
+        laatst_eprel = None
+        try:
+            with app.app_context():
+                rij = (EprelData.query
+                       .order_by(EprelData.opgehaald_at.desc()).first())
+                laatst_eprel = rij.opgehaald_at if rij else None
+        except Exception as e:
+            print(f"[!] Kon laatste EPREL-ronde niet bepalen: {e}")
+        nu_eprel = datetime.now(timezone.utc)
+        if laatst_eprel is not None:
+            laatst_eprel = laatst_eprel.replace(tzinfo=timezone.utc)
+        if (laatst_eprel is None
+                or laatst_eprel + timedelta(hours=eprel_interval) <= nu_eprel):
+            eerste_eprel = nu_eprel + timedelta(minutes=12)
+        else:
+            eerste_eprel = laatst_eprel + timedelta(hours=eprel_interval)
+        scheduler.add_job(
+            vul_eprel_gegevens,
+            'interval',
+            hours=eprel_interval,
+            id='eprel_job',
+            name='EPREL-gegevens bijwerken',
+            replace_existing=True,
+            args=[app],
+            next_run_time=eerste_eprel,
+        )
+
     # Geblokkeerde artikelen opruimen en setjes in hun eigen categorie zetten.
     # Elk uur, want de syncs lezen de feeds opnieuw en zetten een geblokkeerd
     # artikel er zo weer in. Kost een paar query's.

@@ -1062,6 +1062,115 @@ def teksten_ophalen():
                     'nalezen': '/api/teksten/nalezen'})
 
 
+@main_bp.route('/api/prijssprongen')
+def prijssprongen():
+    """Verdachte prijsbewegingen van de afgelopen dagen. Leest alleen.
+
+    De syncs melden een sprong boven de 50% wel in SyncLog.errors, maar
+    nemen de prijs daarna gewoon over -- met opzet, want een echte
+    stuntprijs bestaat ook en de feed is de bron van de waarheid (zie
+    models.prijssprong_melding). Het gevolg is dat zo'n melding verdwijnt
+    zodra er vijf nieuwe syncs overheen zijn gegaan, en dat niemand ziet
+    of het om een incident of om een patroon gaat.
+
+    Aanleiding: EAN 8017709352523 (SMEG combi-oven) ging op 29-07 van
+    EUR 1399 naar EUR 599 en op 30-07 weer terug. Een dag lang stond er
+    dus EUR 599 op de site terwijl de winkel EUR 1399 rekende. Dat raakt
+    precies waar deze site op drijft.
+
+    Het onderscheid dat deze pagina maakt en het logboek niet:
+
+    - Een echte prijsdaling blijft staan.
+    - Een feed-fout springt terug naar (ongeveer) de oude prijs.
+
+    'teruggesprongen' is daarmee het getal om op te letten. Blijft dat op
+    nul, dan waren het echte prijzen en is er niets aan de hand.
+
+    Gerekend uit price_history, niet uit de logboekregels: daar staat elke
+    echte prijswijziging per winkel in, dus het werkt met terugwerkende
+    kracht en over elke periode.
+    """
+    from datetime import timedelta
+
+    from flask import jsonify
+    from models import PriceHistory, Product, utcnow
+
+    dagen = min(max(request.args.get('dagen', 7, type=int), 1), 90)
+    drempel = min(max(request.args.get('drempel', 50, type=int), 10), 500) / 100
+    grens = utcnow() - timedelta(days=dagen)
+
+    rijen = (PriceHistory.query
+             .filter(PriceHistory.recorded_at >= grens)
+             .order_by(PriceHistory.product_id, PriceHistory.retailer,
+                       PriceHistory.recorded_at).all())
+
+    # Per apparaat per winkel de opeenvolgende prijzen naast elkaar leggen.
+    per_reeks = {}
+    for rij in rijen:
+        per_reeks.setdefault((rij.product_id, rij.retailer), []).append(rij)
+
+    sprongen = []
+    for (product_id, winkel), reeks in per_reeks.items():
+        for vorige, huidige in zip(reeks, reeks[1:]):
+            if not vorige.price or not huidige.price:
+                continue
+            verhouding = abs(huidige.price - vorige.price) / vorige.price
+            if verhouding < drempel:
+                continue
+            # Hoort deze sprong bij een heen-en-weer? Dat kan op twee
+            # manieren, en ze moeten allebei mee -- anders telt van een
+            # uitstapje alleen de heenweg en lijkt de terugweg een echte
+            # prijswijziging.
+            #
+            #   de heenweg : later komt de prijs weer op de oude uit
+            #   de terugweg: deze prijs stond eerder in deze reeks al
+            #
+            # Marge van 2%, want winkels ronden af.
+            def dichtbij(a, b):
+                return bool(b) and abs(a - b) / b <= 0.02
+
+            later = [r for r in reeks if r.recorded_at > huidige.recorded_at]
+            eerder = [r for r in reeks if r.recorded_at < vorige.recorded_at]
+            terug = (any(dichtbij(r.price, vorige.price) for r in later)
+                     or any(dichtbij(r.price, huidige.price) for r in eerder))
+            sprongen.append({
+                'product_id': product_id,
+                'winkel': winkel,
+                'van': round(vorige.price, 2),
+                'naar': round(huidige.price, 2),
+                'verschil_pct': round(100 * verhouding),
+                'omhoog': huidige.price > vorige.price,
+                'wanneer': str(huidige.recorded_at),
+                'teruggesprongen': terug,
+            })
+
+    sprongen.sort(key=lambda s: (not s['teruggesprongen'], s['verschil_pct']),
+                  reverse=True)
+
+    # Pas hier de producten erbij halen, en in één query: per sprong een
+    # losse lookup was de fout die de setprijs-meetpagina liet vastlopen.
+    namen = {}
+    if sprongen:
+        ids = {s['product_id'] for s in sprongen}
+        namen = {p.id: p for p in Product.query.filter(Product.id.in_(ids)).all()}
+    for s in sprongen:
+        product = namen.get(s['product_id'])
+        s['titel'] = (product.title or '')[:90] if product else None
+        s['ean'] = product.ean if product else None
+        s['slug'] = product.slug if product else None
+
+    teruggesprongen = [s for s in sprongen if s['teruggesprongen']]
+    return jsonify({
+        'periode_dagen': dagen,
+        'drempel_pct': round(drempel * 100),
+        'prijswijzigingen_bekeken': len(rijen),
+        'sprongen': len(sprongen),
+        'teruggesprongen': len(teruggesprongen),
+        'apparaten_met_een_sprong': len({s['product_id'] for s in sprongen}),
+        'lijst': sprongen[:60],
+    })
+
+
 @main_bp.route('/api/teksten/diagnose')
 def teksten_diagnose():
     """Wat er werkelijk in de database staat. Leest alleen, geeft niets uit.

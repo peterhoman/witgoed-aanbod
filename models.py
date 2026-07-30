@@ -328,6 +328,66 @@ class AIContent(db.Model):
         return f'<AIContent {self.content_type}>'
 
 
+class EprelData(db.Model):
+    """Wat de EU-energielabeldatabase over dit apparaat zegt.
+
+    EPREL is het register waar fabrikanten wettelijk verplicht hun
+    energielabelgegevens aanmelden. Dat maakt het een bron van een andere
+    orde dan een winkelfeed: geen verkooptekst en geen overgeschreven
+    specificatie, maar de opgave van de fabrikant zelf bij de Europese
+    Commissie.
+
+    Twee dingen komen hier vandaan die we nergens anders krijgen:
+
+      - het registratienummer, nodig voor hasCertification in de
+        gestructureerde data. Google documenteert dat veld uitdrukkelijk
+        voor EPREL en noemt het "particularly relevant in European
+        countries";
+      - geverifieerde specificaties (geluid, water, stroom, afmetingen)
+        voor een catalogus waarvan 65% helemaal geen specificaties heeft.
+
+    Ook een misser wordt vastgelegd (gevonden = False). Zonder dat zou elke
+    ronde opnieuw langs dezelfde onvindbare apparaten gaan -- ongeveer een
+    derde van de catalogus -- en dat is onnodig verkeer richting Brussel.
+
+    De licentie verplicht tot actueel houden: "when the Data is stored
+    locally, fail to ensure that the Data is kept up to date and
+    corrections, restrictions or deletion of the Data are reflected". Daar
+    is opgehaald_at voor; de routine haalt oude records opnieuw op.
+    """
+    __tablename__ = 'eprel_data'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer,
+                           db.ForeignKey('products.id', ondelete='CASCADE'),
+                           nullable=False, unique=True, index=True)
+
+    # False = gezocht maar niets gevonden. De rij blijft staan als
+    # geheugensteun, zodat we niet elke ronde opnieuw zoeken.
+    gevonden = db.Column(db.Boolean, default=False, nullable=False)
+
+    # Waarop we gezocht hebben, zodat een misser na te lopen is zonder de
+    # zoekopdracht opnieuw te moeten raden.
+    gezocht_op = db.Column(db.String(255))
+
+    registratienummer = db.Column(db.String(40))   # eprelRegistrationNumber
+    productgroep = db.Column(db.String(60))        # washingmachines2019
+    modelnummer = db.Column(db.String(120))        # modelIdentifier
+    leverancier = db.Column(db.String(160))        # supplierOrTrademark
+    energieklasse = db.Column(db.String(10))
+
+    # De overige bruikbare velden, ongewijzigd zoals EPREL ze geeft. Niet
+    # uitgesplitst in kolommen: welke velden er zijn verschilt per
+    # productgroep (een wasmachine heeft toerental, een oven niet).
+    gegevens = db.Column(db.JSON)
+
+    opgehaald_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+
+    def __repr__(self):
+        staat = self.registratienummer if self.gevonden else 'niet gevonden'
+        return f'<EprelData {self.product_id} {staat}>'
+
+
 class PriceAlert(db.Model):
     """Prijsalert: mail de aanvrager zodra dit apparaat merkbaar goedkoper wordt.
 

@@ -8,6 +8,39 @@ from sqlalchemy import or_
 products_bp = Blueprint('products', __name__)
 
 
+def _eprel_certificering(product):
+    """Het EPREL-registratienummer als Certification-blok, of None.
+
+    Google documenteert dit veld uitdrukkelijk voor EPREL en schrijft dat het
+    de code gebruikt om het juiste energielabel op te zoeken en te tonen bij
+    vermeldingen. Voor Europees witgoed is dat een van de weinige velden waar
+    een vergelijker zich mee kan onderscheiden -- vrijwel geen concurrent
+    vult het in.
+
+    De schrijfwijze volgt letterlijk Google's eigen voorbeeld, inclusief de
+    liggende streep in "European_Commission". Dat ziet er verkeerd uit maar
+    staat zo in de documentatie; een spatie is iets anders dan wat zij
+    verwachten.
+
+    Geen nummer, geen blok. Zoals overal hier: een onderdeel weglaten is
+    beter dan iets beweren wat de data niet draagt -- en bij een
+    certificeringsnummer geldt dat dubbel, want een verkeerd nummer wijst
+    naar het energielabel van een ander apparaat.
+    """
+    from models import EprelData
+
+    rij = EprelData.query.filter_by(product_id=product.id,
+                                    gevonden=True).first()
+    if rij is None or not (rij.registratienummer or '').strip():
+        return None
+    return {
+        '@type': 'Certification',
+        'issuedBy': {'@type': 'Organization', 'name': 'European_Commission'},
+        'name': 'EPREL',
+        'certificationIdentification': rij.registratienummer.strip(),
+    }
+
+
 def _product_structured_data(product, merk_facet=None):
     """Schema.org Product + AggregateOffer voor rich results in Google.
 
@@ -36,6 +69,10 @@ def _product_structured_data(product, merk_facet=None):
         data['description'] = description[:500]
     if product.category:
         data['category'] = product.category.name
+
+    certificering = _eprel_certificering(product)
+    if certificering:
+        data['hasCertification'] = certificering
 
     if offers:
         prices = [o.price for o in offers]

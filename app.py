@@ -235,8 +235,34 @@ def create_app(config_name=None):
 
     @app.before_request
     def redirect_to_www():
+        """Alles zonder www doorsturen naar www, mét de vraagtekens erachter.
+
+        Hier stond alleen request.path, en dat is het adres ZONDER alles wat
+        na het vraagteken komt. Elke bezoeker die zonder www binnenkwam
+        raakte dus stilzwijgend kwijt:
+
+          - de zoekterm      /search?q=wasmachine
+          - alle filters     /category/wasmachines?merk=bosch&label=A
+          - de pagina        ?page=2
+          - advertentie- en herkomstlabels (utm_source, gclid)
+
+        Dat laatste is het duurst: zonder gclid kan Google Ads een aankoop
+        niet aan een klik koppelen, en dan lijkt een campagne niets op te
+        leveren terwijl hij dat wel doet.
+
+        Gemeten op 31-07: /api/prijssprongen?dagen=1 gaf exact hetzelfde
+        antwoord als ?dagen=30, omdat de instelling nooit aankwam. Dat was
+        het spoor -- de meetpagina zelf deugde.
+
+        query_string is bytes en kan alles bevatten wat een bezoeker
+        meestuurt; latin-1 laat elke byte ongewijzigd door, zodat er niets
+        stukgaat op een teken dat geen UTF-8 is.
+        """
         if request.host == 'witgoedaanbod.nl':
-            return redirect(f'https://www.{request.host}{request.path}', code=301)
+            doel = f'https://www.{request.host}{request.path}'
+            if request.query_string:
+                doel += '?' + request.query_string.decode('latin-1')
+            return redirect(doel, code=301)
 
     @app.before_request
     def set_language():

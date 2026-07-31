@@ -100,15 +100,29 @@ _GROEPEN = (
     ('koel-vries', ('refrigeratingappliances2019', 'refrigeratingappliances')),
     ('oven', ('ovens',)),
     ('fornuis', ('ovens',)),
-    ('kookplaat', ('ovens',)),
     ('afzuigkap', ('rangehoods',)),
     ('airco', ('airconditioners',)),
 )
 
-# Soorten die geen EU-energielabel hebben. Staan ze in de categorienaam, dan
-# wordt er niet gezocht -- dat scheelt een derde van de catalogus aan
-# vergeefse verzoeken.
-_ZONDER_LABEL = ('stofzuiger', 'koffie', 'magnetron', 'apparaatset')
+# Soorten zonder EU-energielabel worden niet gezocht -- dat scheelt een derde
+# van de catalogus aan vergeefse verzoeken aan Brussel. Twee lijsten, en dat
+# onderscheid is niet vrijblijvend.
+#
+# Op de CATEGORIE: hele categorieen waarvan niets een energielabel heeft.
+_CATEGORIE_ZONDER_LABEL = ('stofzuiger', 'koffie', 'magnetron',
+                           'apparaatset', 'kookplaat')
+
+# Op de TITEL: apparaten die in een categorie zitten waar de rest wél een
+# label heeft. De categorie heet "Ovens & Airfryers", en daar zitten echte
+# inbouwovens in (die een label hebben) naast vrijstaande airfryers (die er
+# geen hebben). Op de categorie uitsluiten zou dus alle ovens meenemen -- dat
+# gebeurde in de eerste versie hiervan, en dat kostte de zes oven-treffers
+# die er al lagen.
+#
+# Een titel met allebei ("Inventum GF1200HLD Airfryer Oven XXL") valt af.
+# Dat is de veilige kant: liever een oven missen dan een airfryer koppelen
+# aan het energielabel van iets anders.
+_TITEL_ZONDER_LABEL = ('airfryer', 'friteuse', 'espresso', 'kookplaat')
 
 # Velden die we bewaren als ze er zijn. Per productgroep verschilt welke
 # bestaan; wat ontbreekt wordt overgeslagen in plaats van op nul gezet.
@@ -129,11 +143,17 @@ class EprelFout(Exception):
 
 def groepen_voor(categorie, titel=''):
     """De EPREL-productgroepen waarin dit apparaat kan staan, of een lege lijst."""
-    tekst = f"{categorie or ''} {titel or ''}".lower()
-    if any(soort in tekst for soort in _ZONDER_LABEL):
-        # Een apparaatset kan wel een wasmachine bevatten, maar staat als set
-        # niet in EPREL; de losse apparaten staan er apart in.
+    cat = (categorie or '').lower()
+    tit = (titel or '').lower()
+
+    # Een apparaatset kan wel een wasmachine bevatten, maar staat als set niet
+    # in EPREL; de losse apparaten staan er apart in.
+    if any(soort in cat for soort in _CATEGORIE_ZONDER_LABEL):
         return []
+    if any(soort in tit for soort in _TITEL_ZONDER_LABEL):
+        return []
+
+    tekst = f"{cat} {tit}"
     uit = []
     for sleutel, groepen in _GROEPEN:
         if sleutel in tekst:
@@ -213,22 +233,32 @@ def _uitpakken(hit, groep, code):
 
 
 def zoek(categorie, titel, pauze=_PAUZE):
-    """Zoek dit apparaat in EPREL.
+    """Zoek dit apparaat in EPREL. Geeft altijd een dict terug.
 
-    Geeft een dict met de gegevens bij een treffer, of een dict met
-    gevonden=False als er niets te vinden was. Geeft None als er niet eens
-    gezocht is (soort zonder energielabel, of geen typenummer in de titel) --
-    dat is een ander geval dan "gezocht en niets gevonden" en hoort ook
-    anders opgeslagen te worden.
+    Drie uitkomsten, en het verschil ertussen is het hele punt:
+
+      gezocht=False   er is niet eens gezocht. Dit soort apparaat staat niet
+                      in EPREL (stofzuiger, magnetron, airfryer), of er valt
+                      geen typenummer uit de titel te halen (Miele schrijft
+                      "WEE 388 WCS" met spaties). Zo'n apparaat kan nooit een
+                      treffer worden en hoort niet mee te tellen als misser.
+      gevonden=False  gezocht en niets gevonden. Dit model staat niet in het
+                      register, of onder een andere schrijfwijze.
+      gevonden=True   raak, met de gegevens erbij.
+
+    Dat onderscheid stond er eerst niet in -- beide eerste gevallen gaven
+    None -- en daardoor las de meetpagina een trefkans van 48% terwijl die
+    over de apparaten die er echt in kunnen staan rond de 70% ligt. Een
+    cijfer dat je verkeerd leest is erger dan geen cijfer.
 
     Stopt bij de eerste treffer: een apparaat staat maar in één groep.
     """
     groepen = groepen_voor(categorie, titel)
     if not groepen:
-        return None
+        return {'gezocht': False, 'reden': 'dit soort staat niet in EPREL'}
     codes = codes_uit_titel(titel)
     if not codes:
-        return None
+        return {'gezocht': False, 'reden': 'geen typenummer in de titel'}
 
     for code in codes:
         for groep in groepen:
@@ -236,5 +266,7 @@ def zoek(categorie, titel, pauze=_PAUZE):
             if pauze:
                 time.sleep(pauze)
             if hit:
-                return _uitpakken(hit, groep, code)
-    return {'gevonden': False, 'gezocht_op': ', '.join(codes)}
+                uitkomst = _uitpakken(hit, groep, code)
+                uitkomst['gezocht'] = True
+                return uitkomst
+    return {'gezocht': True, 'gevonden': False, 'gezocht_op': ', '.join(codes)}

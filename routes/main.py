@@ -1095,6 +1095,15 @@ def eprel_stand():
     opgehaald = EprelData.query.count()
     gevonden = EprelData.query.filter_by(gevonden=True).count()
 
+    # De trefkans hangt volledig af van waarover je hem rekent. Een stofzuiger
+    # staat niet in EPREL en kan dus nooit een treffer worden; die meetellen
+    # als misser drukt het cijfer met tientallen procenten. Gemeten op 31-07:
+    # 48% over alles, terwijl het over de apparaten die er echt in kunnen
+    # staan rond de 70% ligt. Daarom hier allebei, met de noemer erbij.
+    niet_gezocht = EprelData.query.filter_by(gezocht=False).count()
+    gezocht = opgehaald - niet_gezocht
+    gemist = gezocht - gevonden
+
     per_groep = dict(db.session.query(EprelData.productgroep,
                                       func.count(EprelData.id))
                      .filter(EprelData.gevonden.is_(True))
@@ -1156,7 +1165,17 @@ def eprel_stand():
         'nog_te_doen': max(totaal - opgehaald, 0),
         'gevonden': gevonden,
         'niet_gevonden': opgehaald - gevonden,
-        'trefkans_pct': round(100 * gevonden / opgehaald) if opgehaald else None,
+        # Kan nooit een treffer worden: soort zonder EU-energielabel, of geen
+        # typenummer uit de titel te halen. Hoort niet als misser te tellen.
+        'kon_niet_gezocht_worden': niet_gezocht,
+        'echt_gezocht': gezocht,
+        'gezocht_maar_niet_gevonden': gemist,
+        # Het cijfer waar het om gaat: van de apparaten die er echt in kunnen
+        # staan, hoeveel vinden we terug. Dat andere percentage staat er
+        # alleen bij om te laten zien hoeveel het scheelt.
+        'trefkans_pct': round(100 * gevonden / gezocht) if gezocht else None,
+        'trefkans_over_alles_pct': (round(100 * gevonden / opgehaald)
+                                    if opgehaald else None),
         'verwacht_over_hele_catalogus': 1020,
         'per_productgroep': per_groep,
         'per_energieklasse': per_klasse,

@@ -366,6 +366,17 @@ class EprelData(db.Model):
     # geheugensteun, zodat we niet elke ronde opnieuw zoeken.
     gevonden = db.Column(db.Boolean, default=False, nullable=False)
 
+    # Is er uberhaupt bij EPREL aangeklopt? False betekent dat dit apparaat
+    # daar nooit in kan staan: een soort zonder EU-energielabel (stofzuiger,
+    # magnetron, airfryer) of een titel waar geen typenummer uit te halen is
+    # (Miele schrijft "WEE 388 WCS" met spaties).
+    #
+    # Zonder dit onderscheid tellen die apparaten mee als misser en leest de
+    # trefkans 48% terwijl hij over de apparaten die er echt in kunnen staan
+    # rond de 70% ligt. Dat is geen cosmetisch verschil: op dat cijfer wordt
+    # besloten of dit de moeite waard is.
+    gezocht = db.Column(db.Boolean, default=True, nullable=False)
+
     # Waarop we gezocht hebben, zodat een misser na te lopen is zonder de
     # zoekopdracht opnieuw te moeten raden.
     gezocht_op = db.Column(db.String(255))

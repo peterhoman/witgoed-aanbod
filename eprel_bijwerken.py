@@ -140,12 +140,19 @@ def _schrijf(rij, product, uitkomst):
 
     rij.product_id = product.id
     rij.opgehaald_at = utcnow()
-    if uitkomst is None:
-        # Niet gezocht: geen energielabel voor dit soort, of geen typenummer
-        # in de titel. Vastleggen als misser, anders komt hij elke ronde terug.
+    uitkomst = uitkomst or {}
+
+    if not uitkomst.get('gezocht'):
+        # Er is niet eens bij EPREL aangeklopt: dit soort staat er niet in,
+        # of er valt geen typenummer uit de titel te halen. Wel vastleggen,
+        # anders komt dit apparaat elke ronde terug -- maar niet als misser,
+        # want het kan nooit een treffer worden.
+        rij.gezocht = False
         rij.gevonden = False
-        rij.gezocht_op = None
+        rij.gezocht_op = (uitkomst.get('reden') or '')[:255] or None
         return
+
+    rij.gezocht = True
     rij.gevonden = bool(uitkomst.get('gevonden'))
     rij.gezocht_op = (uitkomst.get('gezocht_op') or '')[:255] or None
     if not rij.gevonden:

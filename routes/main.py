@@ -1136,7 +1136,19 @@ def eprel_stand():
 
     laatste = (EprelData.query
                .order_by(EprelData.opgehaald_at.desc()).first())
+
+    # Hoe de laatste ronde afliep. Staat 'afgebroken_door' gevuld, dan heeft
+    # Brussel ons afgewezen (429 = te veel verzoeken, 403 = geweigerd) of was
+    # de dienst onbereikbaar. Zonder dit zou zo'n blokkade eruitzien als "er
+    # komt niets bij", en dan zoek je een week later naar de oorzaak.
+    try:
+        from eprel_bijwerken import LAATSTE_RONDE
+        ronde = dict(LAATSTE_RONDE)
+    except Exception:
+        ronde = None
+
     return jsonify({
+        'laatste_ronde_afloop': ronde,
         'bron': ('European Product Registry for Energy Labelling (EPREL), '
                  'Europese Commissie'),
         'leverbare_producten': totaal,

@@ -174,6 +174,16 @@ def _bevraag(groep, code):
         raise EprelFout(f"EPREL onbereikbaar: {e}") from e
     if antwoord.status_code == 404:
         return None
+    # 429 en 403 apart benoemen: dat zijn de twee manieren waarop Brussel
+    # zegt "je vraagt te veel". De voorwaarden noemen geen limieten, dus dit
+    # is de enige manier om te weten dat we er tegenaan lopen -- en dat moet
+    # zichtbaar zijn, niet alleen in een logregel die niemand leest.
+    if antwoord.status_code == 429:
+        raise EprelFout('EPREL wijst ons af: te veel verzoeken (429). '
+                        'Verlaag de frequentie (EPREL_INTERVAL omhoog).')
+    if antwoord.status_code == 403:
+        raise EprelFout('EPREL weigert de toegang (403). Dat kan een blokkade '
+                        'zijn, of een wijziging aan hun kant.')
     if antwoord.status_code != 200:
         raise EprelFout(f"EPREL gaf {antwoord.status_code} voor {groep}")
     try:

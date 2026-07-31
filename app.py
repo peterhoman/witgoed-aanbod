@@ -67,6 +67,31 @@ def _ensure_offers_delivery_columns(db):
         conn.commit()
 
 
+def _ensure_eprel_gezocht_column(db):
+    """Boot-migratie: onderscheid tussen 'niet gezocht' en 'niets gevonden'.
+
+    De eprel_data-tabel is gisteren aangemaakt zonder deze kolom, en
+    db.create_all() wijzigt geen bestaande tabellen. Zonder deze stap zou de
+    kolom alleen op een verse database bestaan.
+
+    Bestaande rijen krijgen True: die zijn geschreven toen elke misser als
+    'gezocht' gold. Dat is voor de al opgehaalde apparaten niet helemaal
+    waar, maar het is de veilige kant -- ze worden bij de maandelijkse
+    verversing vanzelf rechtgezet, en tot die tijd is de trefkans hooguit te
+    laag en niet te hoog.
+    """
+    inspector = inspect(db.engine)
+    if 'eprel_data' not in inspector.get_table_names():
+        return
+    columns = [c['name'] for c in inspector.get_columns('eprel_data')]
+    if 'gezocht' not in columns:
+        with db.engine.connect() as conn:
+            conn.execute(text(
+                'ALTER TABLE eprel_data ADD COLUMN gezocht BOOLEAN '
+                'DEFAULT TRUE NOT NULL'))
+            conn.commit()
+
+
 def _ensure_ai_content_bron_column(db):
     """Boot-migratie: onthoud waarop een gegenereerde tekst gebaseerd was.
 
@@ -180,6 +205,7 @@ def create_app(config_name=None):
         _ensure_products_strikethrough_column(db)
         _ensure_offers_delivery_columns(db)
         _ensure_ai_content_bron_column(db)
+        _ensure_eprel_gezocht_column(db)
         _ensure_categories(db)
         # De categorie Apparaatsets moet bestaan voordat er producten in gezet
         # kunnen worden; het opruimen zelf gebeurt in de uurlijkse job.

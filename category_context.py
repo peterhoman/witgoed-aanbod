@@ -469,9 +469,11 @@ def meta_beschrijving(product):
 
     # 1. Identificatie. Het modelnummer alleen uit het Model-veld; staat het er
     #    niet, dan de titel zelf (die begint bij deze feeds met merk en type).
-    from product_specs import modelnummer
+    from product_specs import merknaam, modelnummer
     model = modelnummer(product)
-    merk = (product.brand or '').strip()
+    # Zoals het merk zichzelf schrijft ("LG", niet "Lg"): het fragment in de
+    # zoekresultaten is vaak het eerste wat iemand van deze site ziet.
+    merk = merknaam(product)
     if merk and model:
         delen.append(f"{merk} {model}.")
     else:

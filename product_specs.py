@@ -320,6 +320,24 @@ _TITEL_MAX = 45
 _NIET_BEPAALD = object()
 
 
+def merknaam(product):
+    """De merknaam zoals het merk hem zelf schrijft, of leeg.
+
+    De feeds spellen merken wisselend: "Lg" naast "LG", "Aeg" naast "AEG".
+    Op de categoriepagina werd dat al rechtgetrokken (filter_helpers.
+    canonical_brand, met een vaste lijst voor merken die per se hoofdletters
+    zijn), maar de productpagina las het kale veld.
+
+    Dat viel niet op zolang de paginatitel de lange feedtitel was. Nu die
+    kort is, staat er "Lg GBBSJ10DPY" in het zoekresultaat terwijl iemand op
+    "lg gbbsj10dpy" zocht -- en een merknaam die anders geschreven is dan het
+    merk zelf doet, oogt als een pagina die het niet zo nauw neemt.
+    """
+    from filter_helpers import canonical_brand
+
+    return canonical_brand((product.brand or '').strip())
+
+
 def zoektitel(product):
     """De titel voor het browsertabblad en het zoekresultaat.
 
@@ -337,7 +355,7 @@ def zoektitel(product):
     een woordgrens -- korter en heel, in plaats van lang en halverwege
     afgesneden.
     """
-    merk = (product.brand or '').strip()
+    merk = merknaam(product)
     model = modelnummer(product)
     if merk and model:
         # Merk niet twee keer: "LG LG GBBSJ10DPY" bij feeds die het merk in

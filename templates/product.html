@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 {% from '_macros.html' import product_card with context %}
 
-{% block title %}{{ product.title }} | WitgoedAanbod.nl{% endblock %}
+{# Niet product.title: dat is de feedtitel van soms 116 tekens, en Google
+   toont er ongeveer 60. Zie product_specs.zoektitel -- die zet het
+   typenummer vooraan, want daar wordt op gezocht. #}
+{% block title %}{{ zoektitel }} | WitgoedAanbod.nl{% endblock %}
 {# Eigen meta-description vóór de leveranciersbeschrijving: die laatste werd
    hard op 160 tekens afgekapt en brak op 84% van de pagina's midden in een
    woord, én stond woordelijk ook bij Bol en de fabrikant. Zie

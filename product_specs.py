@@ -301,16 +301,129 @@ def groepeer_specs(product):
     return [(naam, per_groep[naam]) for naam in volgorde if per_groep[naam]]
 
 
-def modelnummer(product):
-    """Het modelnummer uit het Model-spec-veld, of None.
+# Een typenummer in een titel: een paar letters, een cijfer, en lang genoeg om
+# geen gewoon woord te zijn. Zelfde patroon als setprijs.py en eprel.py --
+# bewust strenger dan nodig, want een verkeerd modelnummer in de paginatitel
+# is erger dan geen modelnummer.
+_TITEL_TYPENUMMER = re.compile(r'^[a-z]{1,5}[0-9][a-z0-9./-]{2,}$', re.IGNORECASE)
+_TITEL_MIN_LENGTE = 5
 
-    Alleen dit veld: MPN levert bij sommige merken interne codes op
-    ("914 913 271") die geen koper herkent, en het uit de titel vissen breekt
-    op was/droog-sets met twee modelnummers in de naam. Is het veld leeg, dan
-    toont de pagina alleen het merk.
+_LEEG = ('niet van toepassing', 'nvt', 'n.v.t.', '-')
+
+# Ruimte voor het productdeel van de paginatitel. Google toont ongeveer 60
+# tekens; " | WitgoedAanbod.nl" kost er 19.
+_TITEL_MAX = 45
+
+# Eigen "nog niet uitgezocht"-waarde, want None is hier een geldige uitkomst
+# (dit apparaat heeft geen herkenbaar modelnummer) en zou anders elke keer
+# opnieuw worden opgezocht.
+_NIET_BEPAALD = object()
+
+
+def zoektitel(product):
+    """De titel voor het browsertabblad en het zoekresultaat.
+
+    Hier stond `product.title`, de kale feedtitel. Die is bij deze winkels
+    lang -- "LG Gbbsj10dpy - Koel-vriescombinatie Breedte 59.7 Cm Hoogte 186
+    Inhoud 375 L Nofrost Prime Silver", 96 tekens -- en Google toont er
+    ongeveer 60. De rest wordt afgekapt, vaak midden in een maat.
+
+    Wat mensen intikken is het typenummer: van de zoekopdrachten die deze
+    site in drie maanden bereikten was vrijwel alles een modelcode
+    ("gsn36vicg", "lg gbbsj10dpy", "smv4emx01n"). Die hoort dus vooraan te
+    staan, in de schrijfwijze waarin hij gezocht wordt.
+
+    Zonder herkenbaar typenummer valt hij terug op de feedtitel, afgekapt op
+    een woordgrens -- korter en heel, in plaats van lang en halverwege
+    afgesneden.
     """
+    merk = (product.brand or '').strip()
+    model = modelnummer(product)
+    if merk and model:
+        # Merk niet twee keer: "LG LG GBBSJ10DPY" bij feeds die het merk in
+        # het Model-veld herhalen.
+        if model.upper().startswith(merk.upper()):
+            return model
+        return f"{merk} {model}"
+
+    titel = (product.title or '').strip()
+    if len(titel) <= _TITEL_MAX:
+        return titel
+    return titel[:_TITEL_MAX].rsplit(' ', 1)[0].rstrip(' -–—,;:/|') + '…'
+
+
+def _model_uit_titel(product):
+    """Het typenummer uit de producttitel, of None.
+
+    Feedtitels van deze winkels beginnen met merk en type: "LG Gbbsj10dpy -
+    Koel-vriescombinatie Breedte 59.7 Cm ...". Het eerste woord dat aan het
+    patroon voldoet is dat typenummer.
+
+    Niet bij setjes: "AEG LR86CB86 + AEG TR86CBC86" bevat er twee, en dan is
+    er geen goede keuze. Die houden hun volledige titel.
+    """
+    from catalogus_uitzonderingen import is_setje
+
+    titel = (product.title or '').strip()
+    if not titel or is_setje(titel):
+        return None
+    for woord in re.split(r'[\s,]+', titel):
+        kaal = woord.strip('.,;:()[]/')
+        if len(kaal) >= _TITEL_MIN_LENGTE and _TITEL_TYPENUMMER.match(kaal):
+            # Feeds schrijven typenummers in wisselende schrijfwijze
+            # ("Gbbsj10dpy"). Fabrikanten en zoekers gebruiken hoofdletters;
+            # zo ziet iemand die op "lg gbbsj10dpy" zoekt zijn eigen
+            # zoekterm terug in het resultaat.
+            return kaal.upper()
+    return None
+
+
+def modelnummer(product):
+    """Het modelnummer van dit apparaat, of None.
+
+    Drie bronnen, in volgorde van betrouwbaarheid:
+
+    1. het Model-veld uit de feed;
+    2. wat EPREL teruggaf -- de opgave van de fabrikant zelf bij de Europese
+       Commissie, dus betrouwbaarder dan wat een winkel ervan maakt;
+    3. het typenummer uit de titel.
+
+    MPN blijft er bewust buiten: dat levert bij sommige merken interne codes
+    op ("914 913 271") die geen koper herkent.
+
+    Waarom bron 2 en 3 erbij zijn gekomen: het Model-veld is bij 74% van de
+    catalogus leeg, en zonder modelnummer valt de meta-description terug op de
+    volledige feedtitel. Gemeten op 31-07: de LG GBBSJ10DPY kreeg 44
+    vertoningen in Google en nul klikken, met een titel van 116 tekens die
+    halverwege werd afgekapt en een omschrijving die alleen die titel
+    herhaalde. Dezelfde pagina van een Siemens mét Model-veld toonde
+    "Goedkoper dan 53 van de 227 andere vaatwassers die wij volgen" -- een
+    reden om te klikken.
+    """
+    # Onthouden op het object zelf: de productpagina vraagt dit drie keer
+    # (paginatitel, meta-description, en het zichtbare veld), en bron 2 is
+    # een databasevraag. Eén keer per verzoek volstaat.
+    onthouden = getattr(product, '_modelnummer_cache', _NIET_BEPAALD)
+    if onthouden is not _NIET_BEPAALD:
+        return onthouden
+
     specs = product.specs or {}
     waarde = (specs.get('Model') or '').strip()
-    if not waarde or waarde.lower() in ('niet van toepassing', 'nvt', 'n.v.t.', '-'):
-        return None
-    return waarde
+    if waarde and waarde.lower() not in _LEEG:
+        uitkomst = waarde
+    else:
+        uitkomst = None
+        try:
+            from models import EprelData
+            rij = EprelData.query.filter_by(product_id=product.id,
+                                            gevonden=True).first()
+            if rij and (rij.modelnummer or '').strip():
+                uitkomst = rij.modelnummer.strip()
+        except Exception:
+            # Geen app-context of geen tabel: dan gewoon door naar de titel.
+            pass
+        if uitkomst is None:
+            uitkomst = _model_uit_titel(product)
+
+    product._modelnummer_cache = uitkomst
+    return uitkomst

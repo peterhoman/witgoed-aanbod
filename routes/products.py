@@ -315,7 +315,8 @@ def product_detail(slug):
 
     from price_chart import build_price_history
     from energy_costs import bereken_energiekosten
-    from product_specs import kernspecs, groepeer_specs, modelnummer
+    from product_specs import (kernspecs, groepeer_specs, modelnummer,
+                               zoektitel)
     from category_context import bepaal_categoriecontext, meta_beschrijving
     from setprijs import setzin
     from facet_links import merk_facetpagina, verfijningslinks
@@ -338,6 +339,7 @@ def product_detail(slug):
                            kernspecs=kernspecs(product),
                            spec_groepen=groepeer_specs(product),
                            modelnummer=modelnummer(product),
+                           zoektitel=zoektitel(product),
                            # Eigen meting over de hele categorie: de enige
                            # inhoud op een dunne productpagina die nergens
                            # anders staat. Gecachet per categorie, dus dit

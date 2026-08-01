@@ -47,6 +47,35 @@ def _soort(pad):
     return None
 
 
+def tel(soort):
+    """Eén telling erbij voor deze soort, buiten een paginaweergave om.
+
+    Gebruikt door de doorklik naar een winkel: dat is een omleiding en geen
+    HTML-pagina, dus de teller hieronder ziet hem niet. En juist die telling
+    is het cijfer waar het om draait -- hoeveel mensen gaan er daadwerkelijk
+    naar een winkel. Vertoningen in Google zijn leuk, doorklikken betaalt.
+    """
+    try:
+        sleutel = (date.today(), soort[:30])
+        tellingen = None
+        with _slot:
+            _buffer[sleutel] = _buffer.get(sleutel, 0) + 1
+            if sum(_buffer.values()) >= _DREMPEL:
+                tellingen = dict(_buffer)
+                _buffer.clear()
+        if tellingen:
+            _wegschrijven(tellingen)
+    except Exception:
+        # Een teller mag nooit een doorklik tegenhouden.
+        pass
+
+
+def is_bot(user_agent):
+    """Ziet dit verzoek eruit als een robot?"""
+    ua = (user_agent or '').lower()
+    return any(b in ua for b in _BOTS)
+
+
 def registreer(app):
     """Hangt de teller achter elke succesvolle paginaweergave."""
 

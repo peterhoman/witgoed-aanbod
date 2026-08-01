@@ -89,6 +89,12 @@
         {% for opt in subtype_options or [] %}
         <a href="/category/{{ category.slug }}/type/{{ opt.value|slugify }}">{{ opt.value }} ({{ opt.count }})</a>
         {% endfor %}
+        {# Winkelpagina's: alleen winkels met genoeg aanbod krijgen een link,
+           dezelfde ondergrens als de route zelf — een link naar een 404 kan
+           dus niet ontstaan. #}
+        {% for w in winkel_options or [] %}
+        <a href="/category/{{ category.slug }}/winkel/{{ w.code }}">Bij {{ w.label }} ({{ w.aantal }})</a>
+        {% endfor %}
         {% if brand_facet %}
         <a href="/merken" class="category-facet-links-all">{{ t('nav.brands') }} →</a>
         {% endif %}

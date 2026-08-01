@@ -1857,6 +1857,111 @@ def setprijzen_meting():
     })
 
 
+@main_bp.route('/api/bezorgkosten')
+def bezorgkosten_meting():
+    """Hoe vaak kennen we bezorgkosten, en zou de volgorde ervan veranderen?
+
+    Aanleiding (1 augustus): Slimster zet de winkels op volgorde van prijs
+    inclusief bezorgkosten; wij op kale prijs, met bezorgkosten pas als
+    laatste beslisser na de levertijd. Bij een gelijke prijs van E 849 zet
+    Slimster de gratis bezorgende winkel boven de winkel met E 10
+    bezorgkosten, en wij mogelijk andersom. Of dat bij ons echt voorkomt --
+    en hoe vaak -- is de vraag die deze pagina beantwoordt, voordat er aan
+    de volgorde gesleuteld wordt.
+
+    Twee winkels leveren geen bezorgkosten in hun feed (MediaMarkt en Bol,
+    audit-punt 14); die tellen hier als 'onbekend'. Een wissel waarbij zo'n
+    winkel bovenaan staat of komt is dus onzeker, en wordt apart geteld.
+
+    Leest alleen, geeft niets uit, geen sleutel nodig.
+    """
+    from flask import jsonify
+
+    from levertijd import dagen_tot_levering
+    from models import Offer, db
+
+    aanbiedingen = Offer.query.filter_by(is_available=True).all()
+
+    # Per winkel: hoe vaak is het veld gevuld, en wat staat erin?
+    per_winkel = {}
+    for a in aanbiedingen:
+        w = per_winkel.setdefault(a.retailer, {
+            'winkel': a.retailer, 'aanbiedingen': 0, 'bekend': 0,
+            'gratis': 0, 'betaald': 0, 'hoogste_betaald': None})
+        w['aanbiedingen'] += 1
+        if a.delivery_cost is not None:
+            w['bekend'] += 1
+            if a.delivery_cost == 0:
+                w['gratis'] += 1
+            else:
+                w['betaald'] += 1
+                if w['hoogste_betaald'] is None or \
+                        a.delivery_cost > w['hoogste_betaald']:
+                    w['hoogste_betaald'] = a.delivery_cost
+
+    # Per product: wisselt de bovenste winkel als bezorgkosten in de prijs
+    # meetellen? Onbekende kosten tellen als nul -- dezelfde aanname die de
+    # huidige volgorde al maakt, zodat alleen het verschil tussen de twee
+    # volgordes gemeten wordt en niet de aanname zelf.
+    per_product = {}
+    for a in aanbiedingen:
+        per_product.setdefault(a.product_id, []).append(a)
+
+    def kosten(a):
+        return a.delivery_cost if a.delivery_cost is not None else 0
+
+    meerdere, wissels, prijsgelijk_bovenaan = 0, [], 0
+    for product_id, lijst in per_product.items():
+        if len(lijst) < 2:
+            continue
+        meerdere += 1
+        huidig = min(lijst, key=lambda a: (
+            a.price, dagen_tot_levering(a.delivery_time), kosten(a),
+            a.retailer or ''))
+        totaal = min(lijst, key=lambda a: (
+            a.price + kosten(a), dagen_tot_levering(a.delivery_time),
+            a.retailer or ''))
+        laagste = min(a.price for a in lijst)
+        if sum(1 for a in lijst if a.price == laagste) > 1:
+            prijsgelijk_bovenaan += 1
+        if totaal.retailer != huidig.retailer:
+            wissels.append({
+                'product_id': product_id,
+                'nu_bovenaan': huidig.retailer,
+                'nu_prijs': huidig.price,
+                'nu_bezorgkosten': huidig.delivery_cost,
+                'wordt': totaal.retailer,
+                'wordt_prijs': totaal.price,
+                'wordt_bezorgkosten': totaal.delivery_cost,
+                'scheelt_totaal': round(
+                    huidig.price + kosten(huidig)
+                    - totaal.price - kosten(totaal), 2),
+                'onzeker': huidig.delivery_cost is None
+                           or totaal.delivery_cost is None,
+            })
+
+    # Slugs erbij voor de voorbeelden, in een keer opgehaald.
+    voorbeelden = sorted(wissels, key=lambda w: -w['scheelt_totaal'])[:25]
+    slugs = dict(db.session.query(Product.id, Product.slug).filter(
+        Product.id.in_([w['product_id'] for w in voorbeelden])).all()) \
+        if voorbeelden else {}
+    for w in voorbeelden:
+        w['slug'] = slugs.get(w.pop('product_id'))
+
+    return jsonify({
+        'per_winkel': sorted(per_winkel.values(),
+                             key=lambda w: -w['aanbiedingen']),
+        'producten_met_meerdere_winkels': meerdere,
+        'prijs_gelijk_bovenaan': prijsgelijk_bovenaan,
+        'bovenste_winkel_wisselt': len(wissels),
+        'waarvan_onzeker_door_onbekende_kosten':
+            sum(1 for w in wissels if w['onzeker']),
+        'scheelt_totaal_opgeteld': round(
+            sum(w['scheelt_totaal'] for w in wissels), 2),
+        'voorbeelden': voorbeelden,
+    })
+
+
 @main_bp.route('/api/teksten/publiceren')
 def teksten_publiceren():
     """Zet de opgeslagen teksten op de productpagina's. Dit is de zichtbare stap.

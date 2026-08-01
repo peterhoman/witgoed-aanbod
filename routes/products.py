@@ -1,11 +1,89 @@
 from datetime import timedelta
 
-from flask import Blueprint, render_template, request, jsonify, current_app
+from flask import (Blueprint, abort, render_template, request, jsonify,
+                   current_app)
 from models import Product, Category, Guide, RETAILER_LABELS
 from product_specs import FORMAAT_VELD
 from sqlalchemy import or_
 
 products_bp = Blueprint('products', __name__)
+
+
+@products_bp.route('/uit/aanbieding/<int:offer_id>')
+def naar_winkel(offer_id):
+    """Stuur de bezoeker door naar de winkel, via ons eigen adres.
+
+    Waarom deze omweg
+    -----------------
+    De knoppen wezen rechtstreeks naar het affiliate-netwerk. Elke crawler
+    die de pagina las volgde die link, en het netwerk telde dat als een klik.
+    Gemeten op 01-08 in TradeTracker: 894 kliks in juli, nul verkopen, nul
+    leads -- terwijl Search Console over drie maanden ongeveer twintig
+    bezoekers naar de site stuurde. Die kliks waren dus vrijwel zeker geen
+    mensen.
+
+    Dat is niet onschuldig. Netwerken beoordelen klikkwaliteit, en
+    honderden kliks zonder één conversie is precies het patroon waarop een
+    account gemarkeerd wordt (TradeTracker heeft er een menu-item voor:
+    "Ongeldige links"). Dat risico loopt de eigenaar zonder er iets aan te
+    hebben.
+
+    Nu wijst de knop hierheen, en /uit/ staat in robots.txt op slot. Een
+    crawler die zich aan de regels houdt komt niet verder; het netwerk ziet
+    alleen echte bezoekers.
+
+    En het levert het cijfer op dat tot nu toe ontbrak: hoeveel mensen gaan
+    er daadwerkelijk naar een winkel, en naar welke. Dat is de vraag waar
+    deze site voor bestaat -- vertoningen in Google zijn leuk, doorklikken
+    betaalt.
+
+    Wat hier bewust NIET gebeurt: geen cookie, geen IP, geen sessie. Alleen
+    een teller per winkel per dag, dezelfde afspraak als bij de
+    paginaweergaven.
+    """
+    from flask import redirect
+    from models import Offer
+
+    from pageviews import is_bot, tel
+
+    offer = Offer.query.get(offer_id)
+    if offer is None or not offer.link:
+        abort(404)
+
+    # Een bot die zich niet aan robots.txt houdt telt niet mee; anders meten
+    # we straks weer wat we juist wilden uitfilteren.
+    if not is_bot(request.headers.get('User-Agent')):
+        tel(f"uit-{offer.retailer}")
+
+    # 302 en niet 301: dit is geen verhuizing van een pagina maar een
+    # doorverwijzing per klik, en de bestemming verandert zodra de winkel
+    # zijn link aanpast.
+    return redirect(offer.link, code=302)
+
+
+@products_bp.route('/uit/product/<int:product_id>')
+def naar_winkel_product(product_id):
+    """Zelfde als hierboven, voor de terugvalknop zonder aanbieding.
+
+    Die knop staat op productpagina's waar geen enkele winkel meer levert;
+    hij wijst naar de oorspronkelijke Bol-link. Zeldzaam, maar er zijn 2.800
+    productpagina's en zonder deze route zou een crawler daar alsnog het
+    netwerk aantikken.
+    """
+    from flask import redirect
+
+    from pageviews import is_bot, tel
+
+    product = Product.query.get(product_id)
+    if product is None:
+        abort(404)
+    doel = product.affiliate_url or product.bol_url
+    if not doel:
+        abort(404)
+
+    if not is_bot(request.headers.get('User-Agent')):
+        tel('uit-terugval')
+    return redirect(doel, code=302)
 
 
 def _eprel_certificering(product):

@@ -294,75 +294,59 @@ def sitemap_deel(soort):
     return _urlset(_bouw_entries().get(soort) or [])
 
 
+# Wat geen enkele crawler mag ophalen. Deze lijst wordt bij ELKE groep
+# hieronder herhaald; zie de uitleg in robots().
+_UITGESLOTEN = (
+    '/api/',    # meetpagina's; kosten rekenwerk en horen niet in de index
+    '/admin/',
+    # De doorklik naar een winkel. Stond die knop rechtstreeks op het
+    # affiliate-netwerk, dan volgde elke crawler hem en telde het netwerk dat
+    # als een klik: 894 in juli, nul verkopen. Zie routes.products.naar_winkel.
+    '/uit/',
+)
+
+# Elke crawler die we apart benoemen. AI-crawlers (GPTBot, ClaudeBot,
+# PerplexityBot, ...) staan er BEWUST bij als toegelaten (SEO-audit 24-07):
+# AI-zoekmachines citeren juist vergelijkingscontent, en elke vermelding met
+# bronlink is een gratis verkeerskanaal.
+_CRAWLERS = (
+    '*', 'Googlebot', 'Bingbot',
+    'GPTBot', 'OAI-SearchBot', 'ChatGPT-User',
+    'ClaudeBot', 'Claude-User', 'PerplexityBot', 'Google-Extended',
+)
+
+
 @seo_bp.route('/robots.txt')
 def robots():
     """Generate robots.txt.
 
-    AI-crawlers (GPTBot, ClaudeBot, PerplexityBot, ...) worden BEWUST
-    toegelaten (SEO-audit 24-07): AI-zoekmachines citeren juist
-    vergelijkingscontent, en elke vermelding met bronlink is een gratis
-    verkeerskanaal. De expliciete Allow-regels documenteren die keuze —
-    zonder deze regels was het een stilzwijgende default geweest.
+    De groepen worden opgebouwd uit _CRAWLERS en _UITGESLOTEN in plaats van
+    tien keer uitgeschreven. Dat is geen netheid maar een reparatie: eerder
+    stonden Disallow: /api/ en /admin/ alleen onder * terwijl Googlebot een
+    eigen groep had met uitsluitend "Allow: /". Een crawler volgt maar één
+    groep, dus die uitsluitingen golden voor Google helemaal niet. Met tien
+    handgeschreven groepen is er altijd één te vergeten; zo kan dat niet meer.
     """
-    robots_txt = f"""# Een crawler volgt ALLEEN de groep die het beste bij hem past en
-# negeert alle andere. Daarom staan de uitsluitingen bij elke groep
-# apart, en niet alleen bij *. Eerder stonden Disallow: /api/ en
-# /admin/ alleen onder * terwijl Googlebot een eigen groep had met
-# uitsluitend "Allow: /" -- die groep won, en daarmee waren /api/ en
-# /admin/ voor Google in het geheel niet afgeschermd.
+    uitsluitingen = '\n'.join(f"Disallow: {pad}" for pad in _UITGESLOTEN)
 
-User-agent: *
-Allow: /
-Disallow: /api/
-Disallow: /admin/
+    kop = ("# Een crawler volgt ALLEEN de groep die het beste bij hem past en\n"
+           "# negeert alle andere. Daarom staan de uitsluitingen bij elke groep\n"
+           "# apart, en niet alleen bij *. Deze groepen worden opgebouwd uit een\n"
+           "# lijst (routes/seo.py), zodat er geen groep meer vergeten kan\n"
+           "# worden -- dat is eerder gebeurd met /api/ en /admin/, die daardoor\n"
+           "# voor Googlebot in het geheel niet golden.")
 
-Sitemap: {current_app.config['SITE_URL']}/sitemap.xml
+    delen = [kop]
+    for crawler in _CRAWLERS:
+        if crawler == 'GPTBot':
+            delen.append(
+                "# AI-zoekmachines en -assistenten: bewust welkom (antwoorden\n"
+                "# met bronvermelding naar onze vergelijkingen zijn een\n"
+                "# verkeerskanaal).")
+        delen.append(f"User-agent: {crawler}\nAllow: /\n{uitsluitingen}")
+        if crawler == '*':
+            # De sitemap hoort maar één keer in het bestand; direct na de
+            # algemene groep is de gebruikelijke plek.
+            delen.append(f"Sitemap: {current_app.config['SITE_URL']}/sitemap.xml")
 
-User-agent: Googlebot
-Allow: /
-Disallow: /api/
-Disallow: /admin/
-
-User-agent: Bingbot
-Allow: /
-Disallow: /api/
-Disallow: /admin/
-
-# AI-zoekmachines en -assistenten: bewust welkom (antwoorden met
-# bronvermelding naar onze vergelijkingen zijn een verkeerskanaal).
-User-agent: GPTBot
-Allow: /
-Disallow: /api/
-Disallow: /admin/
-
-User-agent: OAI-SearchBot
-Allow: /
-Disallow: /api/
-Disallow: /admin/
-
-User-agent: ChatGPT-User
-Allow: /
-Disallow: /api/
-Disallow: /admin/
-
-User-agent: ClaudeBot
-Allow: /
-Disallow: /api/
-Disallow: /admin/
-
-User-agent: Claude-User
-Allow: /
-Disallow: /api/
-Disallow: /admin/
-
-User-agent: PerplexityBot
-Allow: /
-Disallow: /api/
-Disallow: /admin/
-
-User-agent: Google-Extended
-Allow: /
-Disallow: /api/
-Disallow: /admin/
-"""
-    return robots_txt, 200, {'Content-Type': 'text/plain'}
+    return '\n\n'.join(delen) + '\n', 200, {'Content-Type': 'text/plain'}

@@ -1,14 +1,13 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **31 juli 2026, ochtend**. Vorige versie was van 28 juli; alles wat
-daarna gebeurd is staat hieronder verwerkt. Lees dit eerst, daarna
+Bijgewerkt **1 augustus 2026, eind van de middag**. Lees dit eerst, daarna
 `STAND_VAN_ZAKEN.md` (de volledige verantwoording) en `MORGEN.md` (de
 takenlijst).
 
 De site is **witgoedaanbod.nl**, een Nederlandse prijsvergelijker voor witgoed.
 Flask + SQLAlchemy + Jinja2, draait op Railway, main wordt automatisch
-uitgerold. Ongeveer 2.800 leverbare producten, prijzen uit zes winkelfeeds.
-Eigenaar is Peter Homan (Avantius, Sassenheim).
+uitgerold. Ongeveer 2.825 leverbare producten, prijzen uit **zeven**
+winkelfeeds. Eigenaar is Peter Homan (Avantius, Sassenheim).
 
 ---
 
@@ -20,278 +19,321 @@ Eigenaar is Peter Homan (Avantius, Sassenheim).
    Hij voert hem zelf door. De `gh`-opdrachtregel is hier niet beschikbaar.
 2. **Verifieer op productie, niet lokaal.** De lokale database bevat een
    handvol voorbeeldproducten; metingen daarop zeggen niets.
-3. **Meet voordat je sleutelt.** De duurste les van dit project — zie
-   "Valkuilen" onderaan.
+3. **Meet voordat je sleutelt.** De duurste les van dit project.
 4. **Beweer niets wat de data niet draagt.** Ontbreekt een gegeven, laat het
-   onderdeel weg in plaats van te schatten. Dat is de kernregel van het hele
-   project.
-5. **Leg uit in gewone taal.** Geen git-jargon ("takken erdoor halen" zei niets
-   tegen hem). Geen webadressen in ```bash-blokken: die krijgen een Run-knop en
-   belanden dan in PowerShell in plaats van in de browser.
+   onderdeel weg in plaats van te schatten. Kernregel van het hele project.
+5. **Leg uit in gewone taal.** Geen git-jargon. Geen webadressen in
+   ```bash-blokken: die krijgen een Run-knop en belanden in PowerShell.
 6. **Documenten voor Peter als `.txt` op zijn bureaublad.** `.md` opent niet op
-   zijn Windows. Bureaublad staat op `%USERPROFILE%\OneDrive\Bureaublad`.
+   zijn Windows. Bureaublad: `%USERPROFILE%\OneDrive\Bureaublad`.
 7. **Niet te veel tegelijk.** Eén ding, laten zien, dan verder.
-8. **`noindex` op de circa 1600 producten met één winkel is afgewezen** op
-   26 juli. Niet opnieuw voorstellen.
-9. **Er kan een tweede Claude-sessie in dezelfde map draaien.** Op 30 juli
-   wisselde die van tak terwijl er werk klaarstond met alleen `git add`; dat
-   werk liftte mee in háár commit en ging als andermans PR naar main. Commit
-   dus meteen op je eigen tak, en controleer vóór en ná elke commit
+8. **`noindex` op producten met één winkel is afgewezen** op 26 juli. Niet
+   opnieuw voorstellen.
+9. **Er kan een tweede Claude-sessie in dezelfde map draaien.** Commit meteen
+   op je eigen tak; controleer vóór en ná elke commit
    `git branch --show-current` en `git show --stat HEAD`.
 10. **Geef Peter geen webadres alsof hij er iets mee moet.** Meetpagina's roep
-    je zelf aan en je vertelt hem de uitkomst. Hij vroeg terecht "wat moet ik
-    hiermee?".
+    je zelf aan en je vertelt hem de uitkomst.
+11. **Wat Peter niet kan, kan hij wel laten zien.** Search Console, Railway,
+    TradeTracker en Anthropic zijn voor de browser hier geblokkeerd; Merchant
+    Center wel toegankelijk. Vraag om een schermafdruk en zeg er precies bij
+    waar hij moet klikken — hij leert er graag van.
+12. **Een meting die "alles goed" zegt, is pas te vertrouwen als je hem één
+    keer tegen een andere bron hebt gelegd.** Zie de valkuilen.
 
 ---
 
 ## Waar we nu staan
 
-### Eigen productteksten — draait vanzelf
+### Eigen productteksten — draait vanzelf, wachtrij leeg
 
-Alle leverbare producten hebben een eigen beschrijving; die van de winkel is
-van de productpagina's verdwenen. Dat was het laatste stuk dat woordelijk ook
-bij Bol en bij de fabrikant stond.
-
-- Geschreven met Claude (`claude-opus-5`) via de Batch API. **Kosten: € 14,34
-  voor 2806 teksten**, een halve cent per stuk.
-- `ai_content.py` bouwt de prompt uit eigen gegevens. De **verkooptekst van de
-  winkel gaat bewust niet mee** — een model dat die als bron krijgt, schrijft
-  hem in eigen woorden na, en dan is het nog steeds dubbele inhoud.
-- `ai_content.controleer` is een zeef over elke tekst. Wat wordt aangestreept
-  gaat niet live. Er blijven **4 teksten** aangestreept op het woord
+- Geschreven met Claude (`claude-opus-5`) via de Batch API. De eenmalige batch
+  van 27 juli kostte **€ 14,34 voor 2806 teksten**; het totaal staat nu op
+  € 16,84. Verbruik daarna: enkele centen per dag.
+- De **verkooptekst van de winkel gaat bewust niet mee** de prompt in — een
+  model dat die als bron krijgt schrijft hem in eigen woorden na, en dan is het
+  nog steeds dubbele inhoud.
+- `ai_content.controleer` is een zeef. Er blijven **4 teksten** aangestreept op
   "prijsgeven" los geschreven; marginaal, laten staan.
-- `teksten_bijwerken.py` draait elke 6 uur en geeft nieuwe producten vanzelf
-  een tekst. **Herschrijft nooit.** Begrensd door `AI_DAGLIMIET_EURO` (€ 5 per
-  etmaal) en 25 teksten per ronde.
-- Stand 31 juli: **2.975 teksten opgeslagen, nog 6 producten wachtend.**
+- `teksten_bijwerken.py` draait elke 6 uur, **herschrijft nooit**, en is
+  begrensd door `AI_DAGLIMIET_EURO` (€ 5 per etmaal) en 25 per ronde.
+- **Stand 1 augustus: 3.036 teksten, wachtrij 0.**
 
-**`ANTHROPIC_API_KEY` staat in Railway en moet daar blijven** — zonder die
-sleutel krijgt geen enkel nieuw product ooit een tekst.
-**`AI_BEHEER_SLEUTEL` is verwijderd** en dat is goed; daarmee staan
-`/api/teksten/start`, `ophalen` en `publiceren` op slot (503). Die twee namen
-lijken op elkaar en doen het tegenovergestelde.
+**`ANTHROPIC_API_KEY` moet in Railway blijven.** Saldo op het Anthropic-account
+was op 1 augustus **US$ 23,74**, automatisch herladen staat uit. Bij het huidige
+verbruik is dat maanden tot jaren. Raakt het toch op, dan stopt het schrijven
+zonder waarschuwing; je merkt het doordat `leverbaar_zonder_tekst` gaat
+klimmen. **`AI_BEHEER_SLEUTEL` is verwijderd en dat hoort zo** — die twee
+namen lijken op elkaar en doen het tegenovergestelde.
 
-### Catalogus opgeschoond — af
+### Zeven winkels
 
-- **5 artikelen die geen apparaat zijn** van de site gehaald, op EAN, in
-  `catalogus_uitzonderingen.GEBLOKKEERDE_EANS`.
-- **59 setjes** naar de categorie **Apparaatsets**, herkend aan de titel
-  (`catalogus_uitzonderingen.is_setje`).
-- `catalogus_uitzonderingen.pas_toe` draait elk uur en trekt dit telkens recht.
+| Winkel | Aanbiedingen | Via |
+|---|---|---|
+| Coolblue | 1.422 | Awin |
+| MediaMarkt | 1.089 | Tradedoubler |
+| Expert | 939 | TradeTracker |
+| EP | 905 | TradeTracker |
+| Bol | 696 | eigen API |
+| **Voordeligwitgoed** | **61** | TradeTracker #2932, feed 251845 |
+| Alternate | 14 | TradeTracker |
 
-### Setprijs versus los — af
+**Dekking: 46%** — bij 1.286 van de 2.825 apparaten valt er echt te
+vergelijken.
 
-Op 45 van de 59 setpagina's staat wat dezelfde twee apparaten los kosten. Bij
-10 van de 28 met een verschil boven € 25 is los kopen goedkoper. Werkt niet bij
-Miele (typenummers met spaties). Zie `setprijs.py` en `/api/setprijzen`.
+**Alternate levert maar 14 aanbiedingen en dat is geen storing.** Hun feed
+bevat 26.662 producten, maar dat is vrijwel allemaal computers en telefoons.
 
-### Gestructureerde data — opgeschoond
+**Voordeligwitgoed stond wekenlang ten onrechte als "wachten op antwoord" in
+de takenlijst.** De campagne was allang geaccepteerd. Controleer bij zulke
+punten eerst of er echt iets te wachten valt.
 
-- `priceValidUntil` helemaal weg.
-- `availability` op het overkoepelende `AggregateOffer`-blok. **Dit was de
-  reparatie die Merchant Center vlottrok** (zie hieronder).
-- **Geneste aanbiedingen weg** (30 juli). Per winkel stond er een `Offer` met
-  prijs en `seller`; Google leest die niet, en ze presenteerden ons als de
-  verkoper in plaats van als vergelijker. Aantal winkels, laagste en hoogste
-  prijs blijven in het overkoepelende blok.
-- **`hasCertification` met het EPREL-registratienummer** (30 juli, zie EPREL).
+**Alle trackinglinks zijn geverifieerd (1 augustus)** en dragen de tracking tot
+bij de winkel: Bol (`Referrer=...1528790`), Coolblue (Awin `clickref`),
+MediaMarkt (Tradedoubler), Expert en EP (TradeTracker, code 512985).
 
-### Prijsbewaking — nieuw op 30 juli
+### Doorklik naar de winkel — nieuw op 1 augustus
 
-`/api/prijssprongen` toont verdachte prijsbewegingen uit `price_history`.
-Standaard 7 dagen en 50%; met `?dagen=` en `?drempel=` in te stellen.
+De winkelknoppen wijzen nu naar **`/uit/aanbieding/<id>`** op onze eigen site,
+die 302 doorstuurt. `/uit/` staat in `robots.txt` op slot.
 
-Het onderscheid dat ertoe doet: **een echte prijsdaling blijft staan, een
-feed-fout springt terug.** Het veld `teruggesprongen` is het getal om op te
-letten. Staat dat op nul, dan waren alle sprongen echte prijzen.
+**Waarom:** TradeTracker telde in juli **894 kliks en nul verkopen**, terwijl
+Google in dezelfde periode zo'n twintig bezoekers stuurde. Dat waren crawlers
+die de knoppen volgden. Netwerken beoordelen klikkwaliteit; honderden kliks
+zonder conversie is het patroon waarop een account gemarkeerd wordt.
 
-Gemeten over 30 dagen: 12.927 prijswijzigingen, 29 sprongen boven 50%, waarvan
-**10 teruggesprongen** — dus vals. Vrijwel allemaal bij Bol, vooral bij
-inbouwovens. De SMEG SO4301M1N sprong drie keer heen en weer tussen € 599 en
-€ 1.399.
+Het levert meteen het cijfer op dat ontbrak: **hoeveel mensen klikken door, en
+naar welke winkel** (`pageviews.tel`, soort `uit-<winkel>`). Geen cookie, geen
+IP, geen sessie. Bots tellen niet mee.
 
-**Onze code doet daar niets fout.** `/api/bol-aanbiedingen?ean=...` liet zien
-dat Bol precies één aanbieding teruggeeft, met alleen een prijs en een
-levertijd — geen verkoper, geen conditie. Er valt niets te kiezen, dus ook
-niets verkeerd te kiezen. Die € 599 wás op dat moment de prijs die Bol opgaf.
+`robots.txt` wordt nu opgebouwd uit twee lijsten (`_CRAWLERS`,
+`_UITGESLOTEN`) in plaats van tien handgeschreven groepen — een groep vergeten
+kan niet meer.
 
-### Prijsversheid bij de prijs — nieuw op 30 juli
+### Titels en fragmenten in Google — nieuw op 31 juli
 
-Onder de winkellijst staat nu: *"Prijzen opgehaald ruim 3 uur geleden. De prijs
-bij de winkel op het moment van bestellen is leidend (voorwaarden)."*
+Search Console liet zien dat **vrijwel alle zoekopdrachten modelcodes zijn**
+("lg gbbsj10dpy", "gsn36vicg"). Op `lg gbbsj10dpy` stonden 44 vertoningen en
+nul klikken.
 
-Een **tijdsduur en geen kloktijd**: de database bewaart naïeve UTC-tijden, en
-die als Nederlandse tijd tonen zit er in de zomer twee uur naast. Ontbreekt het
-tijdstempel, dan valt dat halve zinnetje weg.
+Oorzaak: `modelnummer()` las alleen `specs['Model']`, leeg bij 74%. Zonder
+modelnummer viel de meta-description terug op de volle feedtitel, die het hele
+budget opat waardoor de vergelijkende zin wegviel.
 
-De juridische dekking stond al in de Algemene Voorwaarden, artikel 6 ("de prijs
-op de website van de aanbieder op het moment van bestellen is leidend"), plus
-artikel 3 en 7. Alleen niet zichtbaar bij de prijs zelf.
+Nu drie bronnen: het Model-veld, dan **EprelData.modelnummer**, dan het
+typenummer uit de titel (streng patroon, niet bij setjes, in hoofdletters).
+`product_specs.zoektitel` maakt de paginatitel; `merknaam()` gebruikt
+`canonical_brand` zodat er "LG" staat en niet "Lg".
+
+Resultaat op productie: `LG GBBSJ10DPY | WitgoedAanbod.nl` met *"€ 549,00 bij
+MediaMarkt. Goedkoper dan 358 van de 555 andere koelkasten die wij volgen."*
+
+### Prijsbewaking
+
+`/api/prijssprongen` — standaard 7 dagen en 50%, in te stellen met `?dagen=`
+en `?drempel=`.
+
+**Het onderscheid dat ertoe doet:** een echte prijsdaling blijft staan, een
+feed-fout springt terug. `teruggesprongen` is het getal om op te letten.
+
+Op 1 augustus: **33 sprongen in 24 uur, allemaal omhoog, geen enkele
+teruggesprongen** — robotstofzuigers en Dyson, bij meerdere winkels tegelijk.
+Dat is een actieperiode die afliep, geen fout.
+
+**Onze code kiest niets verkeerd bij Bol.** `/api/bol-aanbiedingen?ean=` liet
+zien dat Bol precies één aanbieding teruggeeft, met alleen prijs en levertijd.
+
+### Prijsversheid bij de prijs
+
+Onder de winkellijst: *"Prijzen opgehaald ruim 3 uur geleden. De prijs bij de
+winkel op het moment van bestellen is leidend (voorwaarden)."* Een **tijdsduur
+en geen kloktijd**, want de database bewaart naïeve UTC-tijden.
 
 ### EPREL — stap 1 en 2 draaien
 
-**Het stond vier dagen ten onrechte op "wachten op Brussel".** De openbare
-EPREL-API werkt zonder sleutel; hij weigert alleen verzoeken die er niet als
-een browser uitzien (403 zonder `User-Agent` en `Referer`). Dat zijn dezelfde
-adressen die de EPREL-website zelf gebruikt.
+**De openbare API werkt zonder sleutel**; hij weigert alleen verzoeken zonder
+browser-achtige `User-Agent` en `Referer`.
 
-- `eprel.py` — categorie naar productgroep, typenummer uit de titel, en het
-  bevragen van de API.
-- `models.EprelData` — een rij per apparaat, ook bij een misser.
-- `eprel_bijwerken.py` — 100 apparaten per ronde, halve seconde ertussen, om
-  en om uit elke categorie. Een kwart van elke ronde gaat naar het opnieuw
-  ophalen van rijen ouder dan 30 dagen; dat is **licentievoorwaarde 4.2f**.
-- `routes/products._eprel_certificering` — zet `hasCertification` in de
-  gestructureerde data, precies zoals Google het documenteert, inclusief de
-  liggende streep in `European_Commission`.
+- `eprel.py` — categorie naar productgroep, typenummer uit de titel, bevragen.
+- `models.EprelData` — rij per apparaat, ook bij een misser, met `gezocht` om
+  "kon niet gezocht worden" van "niet gevonden" te scheiden.
+- `eprel_bijwerken.py` — 100 per ronde, elke 3 uur, halve seconde ertussen, om
+  en om uit elke categorie. Een kwart per ronde gaat naar verversen van rijen
+  ouder dan 30 dagen (**licentievoorwaarde 4.2f**).
+- `routes/products._eprel_certificering` — `hasCertification` in de
+  gestructureerde data, inclusief de liggende streep in `European_Commission`.
 
-**Licentie:** artikel 4 lid 1 staat dit gebruik uitdrukkelijk toe — *"to
-implement the Data in mobile applications and other comparison tools"*. Twee
-verplichtingen: bronvermelding (lid 3) en actueel houden (lid 2f).
+**Stand 1 augustus: 1.275 opgezocht, 472 gevonden, trefkans 70%** over de
+apparaten die er echt in kunnen staan. Verwacht eindtotaal ± 1.000. Brussel
+heeft ons geen enkele keer afgewezen.
 
-Stand 31 juli: 175 apparaten opgezocht, 84 gevonden. Verwacht over de hele
-catalogus: **ongeveer 1.020 apparaten**.
+### Merchant Center
 
-### Merchant Center — bijna opgelost
-
-Google keurde alle 1383 automatisch gevonden producten af op één reden:
-"Ontbrekende waarde voor [availability]". Sinds die reparatie:
-
-| Datum | Goedgekeurd | Afgekeurd |
-|---|---|---|
-| 29 juli | 134 | 1.250 |
-| 30 juli | 942 | 437 |
-| 31 juli | 1.240 | **143** |
-
-Loopt vanzelf leeg. **Punt "hoort een vergelijker wel in Merchant Center" is
-daarmee van tafel** — Google klaagde nooit over de affiliate-links.
+Van **1.383 afgekeurd naar 143** in drie dagen, na het toevoegen van
+`availability` op het overkoepelende blok. De vraag "hoort een vergelijker wel
+in Merchant Center" is daarmee van tafel.
 
 ---
 
-## Dit moet als eerste gebeuren
+## Elke dag: de storingscontrole
 
-### 1. Eén tak wacht op doorvoeren
-
-`fix/eprel-eerlijk-tellen` — zie "Openstaand" hieronder waarom.
-
-### 2. Elke dag: de storingscontrole
+Peter wil dit dagelijks, en terecht — in vijf dagen leverde het vier fouten op
+die niemand had gemeld.
 
 - `/api/eprel` → beweegt `al_opgezocht`? Staat er iets bij
-  `laatste_ronde_afloop.afgebroken_door`? Dat laatste betekent dat Brussel ons
-  afwijst (429 = te veel verzoeken, 403 = geweigerd). Dan `EPREL_INTERVAL`
-  omhoog.
+  `laatste_ronde_afloop.afgebroken_door`? (429 = te veel verzoeken, 403 =
+  geweigerd → `EPREL_INTERVAL` omhoog.)
 - `/api/prijssprongen?dagen=1` → staat `teruggesprongen` op nul?
 - `/api/teksten/diagnose` → daalt `leverbaar_zonder_tekst`? Staat
   `ai_sleutel_aanwezig` op true?
-- `/api/sync-status` → draaien alle negen routines nog?
+- `/api/sync-status` → draaien alle tien routines? Staan er prijssprongen in
+  `laatste_synclogs`? **Leg die naast /api/prijssprongen** — als het logboek
+  sprongen meldt en de meetpagina niet, klopt er iets niet.
 - Merchant Center → daalt het aantal afgekeurde producten?
 - Search Console → nieuwe 404's, serverfouten, noindex?
 
-### 3. Elke twee tot vier weken: de vooruitgang lezen
+**Meld ook als alles goed is.** "Niets gevonden" is een uitkomst.
 
-"Gevonden — niet geïndexeerd" (918) en "Gecrawld — niet geïndexeerd" (4, was
-100). Die bewegen langzaam omdat Google 2800 pagina's opnieuw moet
-beoordelen. Dagelijkse schommelingen zijn ruis.
+Elke twee tot vier weken, niet vaker: "Gevonden — niet geïndexeerd" (918) en
+"Gecrawld — niet geïndexeerd" (4, was 100). Die bewegen in weken.
 
 ---
 
 ## Openstaand
 
-### EPREL stap 3 — de specificaties op de pagina
+### 1. Filterpagina's — het grootste dat er ligt
 
-Geluid, waterverbruik, stroomverbruik, vulgewicht, toerental, afmetingen en
-garantieduur, **met bronvermelding naar EPREL** (licentievoorwaarde). Dit is
-het stuk dat de 918 niet-geïndexeerde pagina's inhoudelijk moet verzwaren:
-65% van de catalogus heeft nu géén enkele specificatie.
+Gemeten bij de concurrentie op 1 augustus: **Slimster heeft 57 filterpagina's
+voor alleen wasmachines** (per merk, per kenmerk, per klasse, en **per
+winkel**: `/wasmachines/coolblue/`). Wij hebben er **28 over de hele site**.
+Elke zo'n pagina mikt op een echte zoekopdracht.
 
-### De laagste-prijs-claim kan vergiftigd raken
+Knibble rendert zijn productlijsten met JavaScript — die staan niet in de HTML.
+Wat zij wél slim doen: **een uitlegpagina per filter**
+(`/uitleg/vulgewicht/...`).
 
-Een valse prijs uit een feed komt in `price_history` en wordt daarna voor
-altijd "de laagste prijs sinds we dit apparaat volgen" — met een koopadvies
-eraan vast. Bij de SMEG wordt dat straks € 599 terwijl het apparaat € 1.399
-kost. Nu nog tegengehouden doordat de meetperiode te kort is
-(`price_history.te_kort`).
+Geen van beiden zet winkelknoppen op de categoriepagina; dezelfde trechter als
+bij ons.
 
-**Eerst meten:** bij hoeveel apparaten rust die claim op een prijs die is
-teruggesprongen? Daarna pas repareren. De gegevens om een uitschieter te
-herkennen liggen er sinds 30 juli.
+`/api/filterkansen` (tak `diag/filterkansen`, nog door te voeren) rekent uit
+welke pagina's genoeg apparaten hebben. Ondergrens 8 — daaronder krijg je een
+dunne pagina, en die heeft deze site er al 918 van.
 
-### Wachten op anderen
+**Per winkel kan vandaag al** (geen EPREL nodig). Per kenmerk zodra EPREL rond
+is.
 
-- **De zevende winkel** (TradeTracker / Voordeligwitgoed.nl) — feed nog niet
-  binnen.
-- **EPREL-sleutel** — aangevraagd 26 juli. Niet meer nodig om te bouwen, maar
-  wel netjes om te hebben.
+### 2. EPREL stap 3 — specificaties op de pagina
+
+Geluid, water, stroom, vulgewicht, toerental, afmetingen, garantie — **met
+bronvermelding naar EPREL** (licentievoorwaarde). 65% van de catalogus heeft nu
+geen enkele specificatie; dit is wat de 918 pagina's inhoudelijk moet
+verzwaren.
+
+### 3. De laagste-prijs-claim kan vergiftigd raken
+
+Een valse feed-prijs komt in `price_history` en wordt daarna voor altijd "de
+laagste prijs sinds we volgen", met een koopadvies eraan vast. Nu nog
+tegengehouden door `price_history.te_kort`. **Eerst meten** bij hoeveel
+apparaten die claim op een teruggesprongen prijs rust.
+
+### 4. Prijsbewegingen-pagina — over een maand of twee
+
+De prijshistorie begon 15 juli en bevat nu 13.993 wijzigingen, ± 1.000 per dag
+erbij. Te dun voor uitspraken over maanden, maar over een paar maanden kun je
+zeggen wat geen concurrent kan: hoe de hele markt beweegt. Meet eerst of er
+genoeg geschiedenis is.
+
+### 5. Nog te doen bij de concurrentie
+
+Hoe sturen Knibble en Slimster mensen naar de winkel op hun **product**pagina?
+De categoriepagina's zijn bekeken, de productpagina's niet — beide sites
+blokkeren geautomatiseerd bezoek daar.
+
+### 6. Klein
+
+- **Dinsdag/woensdag 5-6 augustus:** in Search Console op "Oplossing
+  valideren" klikken bij de 918, als EPREL rond is en Google de nieuwe titels
+  heeft opgehaald. Niet eerder — dan vraag je een herkansing met werk dat nog
+  niet af is.
+- **Vier categorieën hebben geen enkele gids:** koffiemachines, afzuigkappen,
+  fornuizen, kookplaten. Van de gewone zoekwoorden krijgt alleen
+  "afzuigkappen" (17) en "vaatwasmachine" (16) vertoningen. **Maar de
+  negentien bestaande gidsen zijn geïndexeerd en leveren níets op** — meer van
+  hetzelfde schrijven lost dat niet op.
+- **De EPREL-sleutel** (aangevraagd 26 juli) is niet meer nodig om te bouwen.
 
 ---
 
 ## Valkuilen — allemaal fouten die eerst gemaakt zijn
 
 **Een zeef toetsen op je eigen vangst bewijst niets.** De tekstcontrole werd
-getoetst op de 87 zinnen die de oude versie al had gevonden. Zo'n toets kan per
-definitie geen nieuwe valse treffers laten zien.
+getoetst op de 87 zinnen die de oude versie al had gevonden.
 
 **Een verbinding die je nergens bewaart, wordt opgeruimd terwijl je er nog uit
 leest.** `Anthropic(...).messages.batches.results(id)` op één regel liet de
-batch halverwege afbreken. Lokaal onvindbaar.
+batch halverwege afbreken.
 
-**Meet voordat je sleutelt, ook als de diagnose voor de hand ligt.** Er is
-driemaal aan de markup gezeten voordat bekend was wat Google zelf als reden
-opgaf — en die reden bleek iets heel anders.
+**Meet voordat je sleutelt.** Er is driemaal aan de markup gezeten voordat
+bekend was wat Google zelf als reden opgaf.
 
-**Vergelijk dezelfde maat.** De setprijs werd eerst gerekend met `lowest_price`
-en de losse apparaten met het kale `price`-veld.
+**Vergelijk dezelfde maat.** De setprijs werd gerekend met `lowest_price` en de
+losse apparaten met het kale `price`-veld.
 
 **Een query die per stuk redelijk lijkt, honderd keer uitgevoerd, is traag.**
-`Product.title.ilike('%code%')` per typenummer liet een meetpagina na tien
-minuten nog niet afronden.
 
-**Controleer of je commit echt op de goede tak staat.** Twee keer misgegaan:
-een keer naar een derde tak gepusht, een keer meegelift in de commit van een
-tweede sessie in dezelfde map.
+**Controleer of je commit op de goede tak staat.** Twee keer misgegaan.
 
 **Een interval-job die aan de processtart hangt, valt stil op een drukke dag.**
-`teksten_job` stond op "95 minuten na opstarten". Op 28 juli werd er zes keer
-uitgerold en heeft hij de hele ochtend niet gedraaid. Alle routines zijn nu
-verankerd aan hun laatste échte draaimoment. **Bouw je een nieuwe routine, doe
-dat ook.**
+`teksten_job` stond op "95 minuten na opstarten" en draaide op 28 juli een
+halve ochtend niet. Alle routines zijn nu verankerd aan hun laatste échte
+draaimoment. **Bouw je een nieuwe routine, doe dat ook.**
 
-**Een achtergebleven tak draait werk terug.** Een tak die al is doorgevoerd
-maar niet is bijgewerkt, laat bij een tweede merge het nieuwere werk
-verdwijnen. Na het doorvoeren: `git merge origin/main` in die tak en pushen,
-of hem laten liggen — maar nooit opnieuw mergen.
+**Een achtergebleven tak draait werk terug.** Na het doorvoeren:
+`git merge origin/main` in die tak en pushen, of hem laten liggen — maar nooit
+opnieuw mergen. Let op: `git diff origin/main origin/<tak>` toont dan een
+verschil dat níets betekent; gebruik `git merge-base --is-ancestor`.
 
 **De noodrem kijkt 24 uur terug, niet naar een kalenderdag.** Na de batch van
-€ 14,32 op 27 juli schreef de tekstroutine een etmaal lang niets. Dat was geen
-storing. Kijk dus eerst naar `ai_sleutel_aanwezig` en naar wat er in de
-afgelopen 24 uur is uitgegeven voordat je iets repareert.
+€ 14,32 schreef de tekstroutine een etmaal niets. Dat was geen storing.
 
 **Een uitsluiting op categorie én titel tegelijk sluit te veel uit.** De
-categorie heet "Ovens & Airfryers"; uitsluiten op het woord "airfryer" gooide
-alle inbouwovens eruit. Sluit hele categorieën uit op de categorienaam en
-losse apparaten op de titel.
+categorie heet "Ovens & Airfryers"; uitsluiten op "airfryer" gooide alle
+inbouwovens eruit. Categorieën uitsluiten op de categorienaam, losse apparaten
+op de titel.
 
 **De www-doorstuur gooide alles achter het vraagteken weg** (gerepareerd 31
-juli). `request.path` bevat de querystring niet, dus wie zonder `www` binnenkwam
-verloor zoektermen, filters, paginanummers én `utm_source` en `gclid`. Dat
-laatste breekt de koppeling tussen een Google Ads-klik en een aankoop.
-Gevonden doordat `/api/prijssprongen?dagen=1` hetzelfde antwoordde als
-`?dagen=30` — de meetpagina deugde, de doorstuur niet.
+juli). Zoektermen, filters, paginanummers, `utm_source` en `gclid` gingen
+verloren — dat laatste breekt de koppeling tussen een Google Ads-klik en een
+aankoop. Gevonden doordat `?dagen=1` hetzelfde antwoordde als `?dagen=30`.
+
+**Een venster over de regels is niet hetzelfde als een venster over de
+gebeurtenissen** (gerepareerd 1 augustus). `/api/prijssprongen?dagen=1` gaf nul
+sprongen terwijl het synclogboek er zes meldde: `price_history` bewaart alleen
+wijzigingen, dus een prijs die weken stilstond heeft binnen een dag geen
+voorganger om mee te vergelijken. Nu worden de regels ruim opgehaald
+(`_SPRONG_TERUGKIJK_DAGEN`) en de sprongen op het venster gefilterd.
+
+**Dit was de derde keer in een week dat iets niet kapot was maar stil.** De
+tekstroutine die niet draaide, de doorstuur die querystrings weggooide, en een
+controle die wegkeek. **Leg een nieuwe meting één keer naast een andere bron
+voordat je hem vertrouwt** — het synclogboek, een handmatige telling, wat dan
+ook. "Alles goed" ziet er hetzelfde uit als "ik kijk niet".
 
 ---
 
 ## Nuttige adressen (alle read-only, geen sleutel nodig)
 
-Roep ze aan **met `www`**; zonder www werkte de querystring vóór 31 juli niet.
+Roep ze aan **met `www`**.
 
 | Adres | Wat het toont |
 |---|---|
-| `/api/eprel` | Voortgang EPREL, trefkans, voorbeelden, afloop laatste ronde |
+| `/api/eprel` | Voortgang, trefkans, voorbeelden, afloop laatste ronde |
+| `/api/filterkansen` | Welke filterpagina's genoeg apparaten hebben |
 | `/api/prijssprongen` | Verdachte prijsbewegingen; `?dagen=` en `?drempel=` |
 | `/api/bol-aanbiedingen?ean=` | Wat Bol werkelijk teruggeeft voor één artikel |
 | `/api/teksten/diagnose` | Aantallen, sleutel aanwezig, wachtrij, laatste ronde |
 | `/api/teksten/nalezen` | De opgeslagen teksten; `?vlaggen=1` de aangestreepte |
-| `/api/sync-status` | Alle routines met hun eerstvolgende run, laatste syncs |
+| `/api/sync-status` | Alle routines, laatste syncs, winkelbijdrage, dekking |
 | `/api/catalogus-afwijkingen` | Setjes en niet-apparaten in de catalogus |
 | `/api/setprijzen` | Bij hoeveel setjes de prijsvergelijking lukt |
 | `/api/tekstproef` | De proefpagina (kost geld bij nieuwe teksten) |

@@ -25,6 +25,7 @@ RETAILER_LABELS = {
     'expert': 'Expert',
     'alternate': 'Alternate',
     'ep': 'EP',
+    'voordeligwitgoed': 'Voordeligwitgoed',
 }
 
 

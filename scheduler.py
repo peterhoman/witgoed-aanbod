@@ -12,6 +12,7 @@ from sync_coolblue import sync_coolblue
 from sync_expert import sync_expert
 from sync_alternate import sync_alternate
 from sync_ep import sync_ep
+from sync_voordeligwitgoed import sync_voordeligwitgoed
 import os
 
 scheduler = BackgroundScheduler()
@@ -125,6 +126,24 @@ def start_scheduler(app=None):
         name='EP Product Sync',
         replace_existing=True,
         next_run_time=eerste_run('ep', ep_interval, 80),
+    )
+
+    # Voordeligwitgoed via de TradeTracker-feed, zelfde ritme als de andere
+    # feed-winkels. De zevende winkel: bij 70% van de wasmachines toont de
+    # site nu maar één winkel, en dan valt er niets te vergelijken.
+    #
+    # Zonder ingevuld feed-ID slaat de sync zichzelf over met een leesbare
+    # melding in /api/sync-status; de job mag dus gewoon draaien.
+    voordeligwitgoed_interval = int(os.getenv('VOORDELIGWITGOED_SYNC_INTERVAL', 12))
+    scheduler.add_job(
+        sync_voordeligwitgoed,
+        'interval',
+        hours=voordeligwitgoed_interval,
+        id='voordeligwitgoed_sync_job',
+        name='Voordeligwitgoed Product Sync',
+        replace_existing=True,
+        next_run_time=eerste_run('voordeligwitgoed',
+                                 voordeligwitgoed_interval, 95),
     )
 
     # Nieuwe producten van een eigen beschrijving voorzien. Draait na de syncs

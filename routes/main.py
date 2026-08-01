@@ -1068,6 +1068,12 @@ def teksten_ophalen():
 _BOL_AANBOD_CACHE = {}
 _BOL_AANBOD_TTL = 10 * 60
 
+# Hoeveel dagen vóór het gevraagde venster er nog prijsregels worden
+# opgehaald, zodat elke reeks zijn vorige prijs heeft. price_history bewaart
+# alleen wijzigingen: een prijs die maanden stilstaat heeft binnen een kort
+# venster geen voorganger, en dan valt een sprong stilzwijgend weg.
+_SPRONG_TERUGKIJK_DAGEN = 180
+
 
 @main_bp.route('/api/eprel')
 def eprel_stand():
@@ -1321,8 +1327,23 @@ def prijssprongen():
     drempel = min(max(request.args.get('drempel', 50, type=int), 10), 500) / 100
     grens = utcnow() - timedelta(days=dagen)
 
+    # Ophalen doen we over een veel ruimere periode dan het venster, en dat
+    # is geen slordigheid maar de reparatie van een echte fout.
+    #
+    # De eerste versie haalde alleen rijen uit het venster op. Maar
+    # price_history bewaart alleen wijzigingen: staat een prijs al drie weken
+    # op EUR 140, dan is er binnen een venster van een dag maar één regel en
+    # dus geen paar om te vergelijken. Gemeten op 01-08: het synclogboek
+    # meldde drie sprongen van de nacht ervoor (EUR 140 -> 240, 340 -> 540,
+    # 220 -> 340) terwijl ?dagen=1 er nul rapporteerde. Een dagelijkse
+    # controle die "geen fouten" zegt terwijl er drie zijn, is erger dan
+    # geen controle.
+    #
+    # Dus: de REGELS ruim ophalen zodat elke reeks zijn voorganger heeft, en
+    # daarna de SPRONGEN op het venster filteren.
+    context_grens = grens - timedelta(days=_SPRONG_TERUGKIJK_DAGEN)
     rijen = (PriceHistory.query
-             .filter(PriceHistory.recorded_at >= grens)
+             .filter(PriceHistory.recorded_at >= context_grens)
              .order_by(PriceHistory.product_id, PriceHistory.retailer,
                        PriceHistory.recorded_at).all())
 
@@ -1331,10 +1352,16 @@ def prijssprongen():
     for rij in rijen:
         per_reeks.setdefault((rij.product_id, rij.retailer), []).append(rij)
 
+    in_venster = sum(1 for r in rijen if r.recorded_at >= grens)
+
     sprongen = []
     for (product_id, winkel), reeks in per_reeks.items():
         for vorige, huidige in zip(reeks, reeks[1:]):
             if not vorige.price or not huidige.price:
+                continue
+            # De sprong telt mee als hij IN het venster plaatsvond; de vorige
+            # prijs mag van veel eerder zijn.
+            if huidige.recorded_at < grens:
                 continue
             verhouding = abs(huidige.price - vorige.price) / vorige.price
             if verhouding < drempel:
@@ -1385,6 +1412,9 @@ def prijssprongen():
     return jsonify({
         'periode_dagen': dagen,
         'drempel_pct': round(drempel * 100),
+        'prijswijzigingen_in_periode': in_venster,
+        # Meer regels dan er in de periode zitten: de vorige prijs van een
+        # sprong is vaak ouder dan het venster (zie _SPRONG_TERUGKIJK_DAGEN).
         'prijswijzigingen_bekeken': len(rijen),
         'sprongen': len(sprongen),
         'teruggesprongen': len(teruggesprongen),

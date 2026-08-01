@@ -1158,8 +1158,9 @@ def filterkansen():
     voor een bezoeker nutteloos en voor Google nog een dunne pagina.
     """
     from flask import jsonify
+    from sqlalchemy import func
 
-    from models import Category, EprelData, Product
+    from models import Category, EprelData, Product, db
 
     rijen = EprelData.query.filter_by(gevonden=True).all()
     if not rijen:
@@ -1215,6 +1216,35 @@ def filterkansen():
                     _FILTERVELDEN[veld]['naam'], 0)
                 dekking[cat][_FILTERVELDEN[veld]['naam']] += 1
 
+    # Filterpagina's per winkel per categorie. Die hebben GEEN EPREL nodig --
+    # we weten al welke winkel welk apparaat voert. Gemeten op 01-08:
+    # Slimster heeft voor wasmachines alleen al 57 filterpagina's, waaronder
+    # per winkel (/wasmachines/coolblue/, /wasmachines/mediamarkt/). Wij
+    # hebben er 28 over de hele site.
+    #
+    # En wij kunnen er iets bij zeggen wat zij niet kunnen: hoe die winkel
+    # zich bij dat apparaat verhoudt tot de zes andere.
+    from models import Offer
+
+    per_winkel = {}
+    rijen_offers = (db.session.query(Product.category_id, Offer.retailer,
+                                     func.count(func.distinct(Product.id)))
+                    .join(Offer, Offer.product_id == Product.id)
+                    .filter(Product.is_available.is_(True),
+                            Offer.is_available.is_(True))
+                    .group_by(Product.category_id, Offer.retailer).all())
+    for categorie_id, winkel, aantal in rijen_offers:
+        cat = categorienaam.get(categorie_id, 'onbekend')
+        per_winkel.setdefault(cat, {})[winkel] = aantal
+
+    winkelkansen = [
+        {'categorie': cat, 'winkel': winkel, 'apparaten': aantal}
+        for cat, winkels in per_winkel.items()
+        for winkel, aantal in winkels.items()
+        if aantal >= _MIN_PER_FILTERPAGINA
+    ]
+    winkelkansen.sort(key=lambda k: -k['apparaten'])
+
     return jsonify({
         'uitleg': ('Voorwerk voor filterpagina\'s. Alles vanaf '
                    f'{_MIN_PER_FILTERPAGINA} apparaten is de moeite waard; '
@@ -1225,6 +1255,9 @@ def filterkansen():
         'kansrijk': kansen,
         'te_dun': te_dun[:40],
         'aantal_kansrijk': len(kansen),
+        # Kan vandaag al, zonder EPREL.
+        'aantal_kansrijk_per_winkel': len(winkelkansen),
+        'kansrijk_per_winkel': winkelkansen,
     })
 
 

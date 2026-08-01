@@ -6,7 +6,7 @@ from flask import Blueprint, abort, render_template_string, current_app
 from models import Product, Category, Guide, utcnow
 from filter_helpers import (compute_brand_facet, compute_spec_facets,
                             compute_global_brand_index, energielabel_letter, slugify)
-from routes.main import SUBCATEGORY_SPECS
+from routes.main import SUBCATEGORY_SPECS, _MIN_PER_FILTERPAGINA
 
 seo_bp = Blueprint('seo', __name__)
 
@@ -65,6 +65,7 @@ SOORTEN = {
     'merken': 'merkpagina (alle categorieen)',
     'merk-per-categorie': 'merk binnen een categorie',
     'facetten': 'energielabel- en subtypepagina',
+    'winkel-per-categorie': 'winkel binnen een categorie',
     'gidsen': 'koopgids en blog',
     'overig': 'homepage en juridische paginas',
 }
@@ -91,6 +92,14 @@ def _bouw_entries():
         if sleutel:
             per_merk_globaal[sleutel] = _nieuwste(
                 [per_merk_globaal.get(sleutel), product_moment(p)])
+
+    # Welke winkels een product leveren, in één query voor de hele sitemap —
+    # per product p.offers aanspreken zou hier duizenden losse queries worden.
+    from models import Offer, db
+    winkels_per_product = {}
+    for product_id, retailer in (db.session.query(Offer.product_id, Offer.retailer)
+                                 .filter(Offer.is_available.is_(True)).all()):
+        winkels_per_product.setdefault(product_id, set()).add(retailer)
 
     sitemap_entries = []
 
@@ -163,6 +172,22 @@ def _bouw_entries():
                         'priority': '0.5',
                         'soort': 'facetten'
                     })
+        # Winkelpagina's ("wasmachines bij Coolblue"): zelfde ondergrens als
+        # de route (routes.main.category_winkel), zodat de sitemap nooit een
+        # URL belooft die de route met 404 beantwoordt.
+        per_winkel = {}
+        for p in cat_products:
+            for winkel in winkels_per_product.get(p.id, ()):
+                per_winkel.setdefault(winkel, []).append(p)
+        for winkel, winkel_producten in sorted(per_winkel.items()):
+            if len(winkel_producten) < _MIN_PER_FILTERPAGINA:
+                continue
+            sitemap_entries.append({
+                'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}/winkel/{winkel}",
+                'lastmod': _lastmod(moment_van(winkel_producten)),
+                'priority': '0.5',
+                'soort': 'winkel-per-categorie'
+            })
         # Subcategorie-pagina's (voorlader/bovenlader, warmtepomp/condens):
         # ongelimiteerd berekenen, want dit zijn geen priority-specs en
         # kunnen buiten de standaard top-6 vallen.

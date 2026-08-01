@@ -2255,6 +2255,7 @@ def category(slug):
         structured_data=_category_structured_data(category, products.items),
         has_wizard=has_wizard,
         subtype_options=subtype_options,
+        winkel_options=_winkel_facet(category),
         pros_cons_by_ean=_pros_cons_by_ean(),
         faq=faq,
         faq_jsonld=faq_jsonld,
@@ -2411,6 +2412,70 @@ def category_subtype(slug, waarde_slug):
     return _render_facet_page(
         category, Product.specs[spec_key].as_string() == waarde, waarde,
         f"{waarde} {category.name}", meta_description, intro,
+    )
+
+
+# Winkelpagina's ("Wasmachines bij Coolblue"): gemeten op 1 augustus heeft
+# Slimster zo'n pagina per winkel en wij niet, terwijl /api/filterkansen er
+# hier 64 telde met genoeg producten. Zelfde ondergrens als de andere
+# filterpagina's, zodat route, links en sitemap nooit van mening verschillen
+# over welke pagina's bestaan.
+_WINKEL_FACET_CACHE = {}
+_WINKEL_FACET_TTL = 15 * 60
+
+
+def _winkel_facet(category):
+    """[{code, label, aantal}] per winkel met genoeg leverbare producten in
+    deze categorie. Eén GROUP BY, gecachet zoals _category_facets; alles
+    onder _MIN_PER_FILTERPAGINA valt weg, want die pagina bestaat niet."""
+    nu = time.time()
+    hit = _WINKEL_FACET_CACHE.get(category.id)
+    if hit and nu - hit[0] < _WINKEL_FACET_TTL:
+        return hit[1]
+
+    from sqlalchemy import func
+    from models import Offer, db, retailer_label
+    rijen = (db.session.query(Offer.retailer, func.count(Offer.product_id))
+             .join(Product, Offer.product_id == Product.id)
+             .filter(Product.category_id == category.id,
+                     Product.is_available.is_(True),
+                     Offer.is_available.is_(True))
+             .group_by(Offer.retailer).all())
+    uit = [{'code': code, 'label': retailer_label(code), 'aantal': aantal}
+           for code, aantal in sorted(rijen, key=lambda r: -r[1])
+           if aantal >= _MIN_PER_FILTERPAGINA]
+    _WINKEL_FACET_CACHE[category.id] = (nu, uit)
+    return uit
+
+
+@main_bp.route('/category/<slug>/winkel/<winkel>')
+def category_winkel(slug, winkel):
+    category = Category.query.filter_by(slug=slug).first_or_404()
+    match = next((w for w in _winkel_facet(category)
+                  if w['code'] == winkel.lower()), None)
+    if not match:
+        abort(404)
+    label, aantal = match['label'], match['aantal']
+
+    from models import Offer, db
+    naam_lower = category.name.lower()
+    # De belofte die een winkel-pagina waarmaakt en een winkel-site niet:
+    # je ziet er meteen of een ándere winkel goedkoper is.
+    intro = (f"We volgen {aantal} {naam_lower} die nu leverbaar zijn bij "
+             f"{label}. Bij elk model staat de laagste actuele prijs van al "
+             f"onze aangesloten winkels — zo zie je direct of {label} de "
+             f"goedkoopste is, of dat een andere winkel minder vraagt.")
+    meta_description = (f"{category.name} bij {label}: vergelijk {aantal} "
+                        f"modellen op prijs en zie direct of {label} of een "
+                        f"andere winkel de goedkoopste is.")[:160]
+
+    return _render_facet_page(
+        category,
+        Product.id.in_(db.session.query(Offer.product_id).filter(
+            Offer.retailer == winkel.lower(),
+            Offer.is_available.is_(True))),
+        f"Bij {label}", f"{category.name} bij {label}",
+        meta_description, intro,
     )
 
 

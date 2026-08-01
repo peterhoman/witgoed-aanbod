@@ -42,9 +42,12 @@ logger = logging.getLogger(__name__)
 
 RETAILER = 'voordeligwitgoed'
 
-# FEEDID_INVULLEN vervangen door het feed-ID van campagne #2932.
+# Feed "Algemeen" van campagne #2932: 434 producten, 1x per dag ververst door
+# TradeTracker. Zelfde vorm als de andere TradeTracker-winkels; alleen fid
+# verschilt. Bevat geen geheimen (site 512985 en feed 251845 zijn publieke
+# nummers) en is overschrijfbaar via VOORDELIGWITGOED_FEED_URL.
 FEED_URL_DEFAULT = ('https://pf.tradetracker.net/?aid=512985&encoding=utf-8'
-                    '&type=json&fid=FEEDID_INVULLEN&categoryType=2'
+                    '&type=json&fid=251845&categoryType=2'
                     '&additionalType=2')
 
 # Veiligheidsklep tegen halflege feeds: levert een sync minder dan de helft

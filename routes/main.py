@@ -1076,6 +1076,191 @@ _BOL_AANBOD_TTL = 10 * 60
 _SPRONG_TERUGKIJK_DAGEN = 180
 
 
+# Welke EPREL-velden een filterpagina waard zijn, met de indeling in
+# stappen waarop een koper zoekt. Niet elk veld leent zich ervoor: een
+# energie-efficiëntie-index van 46,8 zegt een koper niets, "stil (onder 70
+# dB)" wel.
+#
+# De grenzen komen uit hoe mensen zoeken, niet uit de spreiding van de data:
+# "wasmachine 9 kg", "1400 toeren", "stille vaatwasser". Vandaar ronde
+# getallen en niet de kwartielen van onze eigen catalogus.
+_FILTERVELDEN = {
+    'noise': {
+        'naam': 'geluid',
+        'eenheid': 'dB',
+        'stappen': [(None, 45, 'zeer stil (tot 45 dB)'),
+                    (45, 60, 'stil (45-60 dB)'),
+                    (60, 72, 'gemiddeld (60-72 dB)'),
+                    (72, None, 'luid (vanaf 72 dB)')],
+    },
+    'ratedCapacity': {
+        'naam': 'vulgewicht',
+        'eenheid': 'kg',
+        'stappen': [(None, 7, 'tot 7 kg'), (7, 8, '7-8 kg'),
+                    (8, 9, '8-9 kg'), (9, 11, '9-11 kg'),
+                    (11, None, '11 kg en meer')],
+    },
+    'spinSpeedRated': {
+        'naam': 'toerental',
+        'eenheid': 'tpm',
+        'stappen': [(None, 1200, 'tot 1200 toeren'),
+                    (1200, 1400, '1200-1400 toeren'),
+                    (1400, 1600, '1400-1600 toeren'),
+                    (1600, None, '1600 toeren en meer')],
+    },
+    'waterCons': {
+        'naam': 'waterverbruik',
+        'eenheid': 'liter',
+        'stappen': [(None, 10, 'tot 10 liter'), (10, 45, '10-45 liter'),
+                    (45, 55, '45-55 liter'), (55, None, 'vanaf 55 liter')],
+    },
+    'totalVolume': {
+        'naam': 'inhoud',
+        'eenheid': 'liter',
+        'stappen': [(None, 100, 'tot 100 liter'), (100, 250, '100-250 liter'),
+                    (250, 350, '250-350 liter'), (350, 450, '350-450 liter'),
+                    (450, None, 'vanaf 450 liter')],
+    },
+    'dimensionWidth': {
+        'naam': 'breedte',
+        'eenheid': 'cm',
+        'stappen': [(None, 50, 'smal (tot 50 cm)'),
+                    (50, 60, '50-60 cm'), (60, 70, '60-70 cm'),
+                    (70, None, 'breed (vanaf 70 cm)')],
+    },
+}
+
+# Onder dit aantal apparaten is een filterpagina niet de moeite waard: een
+# pagina met een handvol producten helpt een bezoeker niet en geeft Google
+# nog een dunne pagina om te negeren -- precies waar deze site er al 918 van
+# heeft.
+_MIN_PER_FILTERPAGINA = 8
+
+
+@main_bp.route('/api/filterkansen')
+def filterkansen():
+    """Welke filterpagina's zijn er te maken met de EPREL-gegevens? Leest alleen.
+
+    Voorwerk, geen bouwwerk. De concurrent (Knibble) laat filteren op
+    geluidsniveau, waterverbruik, kleur en kinderslot; wij hebben 28
+    filterpagina's over de hele site. Elk van die pagina's mikt op een echte
+    zoekopdracht ("stille wasmachine", "wasmachine 9 kg 1400 toeren"), en dat
+    is waar zij hun zoekverkeer halen.
+
+    Dat konden we niet bouwen omdat 65% van de catalogus geen enkele
+    specificatie had. Sinds EPREL verandert dat, maar niet overal even snel:
+    een oven levert alleen een energieklasse, een wasmachine levert geluid,
+    water, vulgewicht en toerental.
+
+    Deze pagina rekent per categorie uit hoeveel apparaten er per filterstap
+    zijn, zodat de keuze op aantallen rust en niet op gevoel. Alles onder de
+    _MIN_PER_FILTERPAGINA valt af -- een filterpagina met vier producten is
+    voor een bezoeker nutteloos en voor Google nog een dunne pagina.
+    """
+    from flask import jsonify
+    from sqlalchemy import func
+
+    from models import Category, EprelData, Product, db
+
+    rijen = EprelData.query.filter_by(gevonden=True).all()
+    if not rijen:
+        return jsonify({'melding': 'nog geen EPREL-gegevens opgehaald'})
+
+    producten = {p.id: p for p in Product.query.filter(
+        Product.id.in_([r.product_id for r in rijen]),
+        Product.is_available.is_(True)).all()}
+    categorienaam = {c.id: c.name for c in Category.query.all()}
+
+    # Per categorie per veld per stap tellen.
+    tellingen = {}
+    per_categorie_totaal = {}
+    for rij in rijen:
+        product = producten.get(rij.product_id)
+        if product is None:
+            continue
+        cat = categorienaam.get(product.category_id, 'onbekend')
+        per_categorie_totaal[cat] = per_categorie_totaal.get(cat, 0) + 1
+        gegevens = rij.gegevens or {}
+        for veld, opzet in _FILTERVELDEN.items():
+            waarde = gegevens.get(veld)
+            try:
+                waarde = float(waarde)
+            except (TypeError, ValueError):
+                continue
+            for onder, boven, label in opzet['stappen']:
+                if (onder is None or waarde >= onder) and \
+                   (boven is None or waarde < boven):
+                    sleutel = (cat, opzet['naam'], label)
+                    tellingen[sleutel] = tellingen.get(sleutel, 0) + 1
+                    break
+
+    # Omzetten naar iets leesbaars, en meteen het oordeel erbij.
+    kansen, te_dun = [], []
+    for (cat, veld, label), aantal in sorted(tellingen.items(),
+                                             key=lambda x: -x[1]):
+        regel = {'categorie': cat, 'filter': veld, 'stap': label,
+                 'apparaten': aantal}
+        (kansen if aantal >= _MIN_PER_FILTERPAGINA else te_dun).append(regel)
+
+    # Welke velden vult EPREL eigenlijk per categorie? Dat bepaalt wat er
+    # überhaupt te filteren valt, los van de aantallen.
+    dekking = {}
+    for rij in rijen:
+        product = producten.get(rij.product_id)
+        if product is None:
+            continue
+        cat = categorienaam.get(product.category_id, 'onbekend')
+        for veld in _FILTERVELDEN:
+            if (rij.gegevens or {}).get(veld) not in (None, ''):
+                dekking.setdefault(cat, {}).setdefault(
+                    _FILTERVELDEN[veld]['naam'], 0)
+                dekking[cat][_FILTERVELDEN[veld]['naam']] += 1
+
+    # Filterpagina's per winkel per categorie. Die hebben GEEN EPREL nodig --
+    # we weten al welke winkel welk apparaat voert. Gemeten op 01-08:
+    # Slimster heeft voor wasmachines alleen al 57 filterpagina's, waaronder
+    # per winkel (/wasmachines/coolblue/, /wasmachines/mediamarkt/). Wij
+    # hebben er 28 over de hele site.
+    #
+    # En wij kunnen er iets bij zeggen wat zij niet kunnen: hoe die winkel
+    # zich bij dat apparaat verhoudt tot de zes andere.
+    from models import Offer
+
+    per_winkel = {}
+    rijen_offers = (db.session.query(Product.category_id, Offer.retailer,
+                                     func.count(func.distinct(Product.id)))
+                    .join(Offer, Offer.product_id == Product.id)
+                    .filter(Product.is_available.is_(True),
+                            Offer.is_available.is_(True))
+                    .group_by(Product.category_id, Offer.retailer).all())
+    for categorie_id, winkel, aantal in rijen_offers:
+        cat = categorienaam.get(categorie_id, 'onbekend')
+        per_winkel.setdefault(cat, {})[winkel] = aantal
+
+    winkelkansen = [
+        {'categorie': cat, 'winkel': winkel, 'apparaten': aantal}
+        for cat, winkels in per_winkel.items()
+        for winkel, aantal in winkels.items()
+        if aantal >= _MIN_PER_FILTERPAGINA
+    ]
+    winkelkansen.sort(key=lambda k: -k['apparaten'])
+
+    return jsonify({
+        'uitleg': ('Voorwerk voor filterpagina\'s. Alles vanaf '
+                   f'{_MIN_PER_FILTERPAGINA} apparaten is de moeite waard; '
+                   'daaronder krijg je een dunne pagina.'),
+        'eprel_gekoppeld_en_leverbaar': len(producten),
+        'per_categorie': per_categorie_totaal,
+        'velden_gevuld_per_categorie': dekking,
+        'kansrijk': kansen,
+        'te_dun': te_dun[:40],
+        'aantal_kansrijk': len(kansen),
+        # Kan vandaag al, zonder EPREL.
+        'aantal_kansrijk_per_winkel': len(winkelkansen),
+        'kansrijk_per_winkel': winkelkansen,
+    })
+
+
 @main_bp.route('/api/eprel')
 def eprel_stand():
     """Hoe ver de EPREL-koppeling is, en wat er is binnengekomen. Leest alleen.

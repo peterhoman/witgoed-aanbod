@@ -51,10 +51,16 @@
         <div class="stores-bar-logos">
             {% for code, naam in [('bol', 'Bol.com'), ('coolblue', 'Coolblue'),
                                   ('mediamarkt', 'MediaMarkt'), ('expert', 'Expert'),
-                                  ('alternate', 'Alternate'), ('ep', 'EP')] %}
+                                  ('alternate', 'Alternate'), ('ep', 'EP'),
+                                  ('voordeligwitgoed', 'Voordeligwitgoed')] %}
+            {# Ontbreekt het logobestand (Voordeligwitgoed heeft er nog geen),
+               dan verdwijnt alleen het plaatje en blijft de naam staan --
+               zelfde terugval-gedachte als bij de winkelknoppen op de
+               productpagina. #}
             <span class="stores-bar-item"><img
                 src="{{ url_for('static', filename='img/winkels/' + code + '.png') }}"
-                alt="{{ naam }}" width="20" height="20" loading="lazy">{{ naam }}</span>
+                alt="" width="20" height="20" loading="lazy"
+                onerror="this.remove()">{{ naam }}</span>
             {% endfor %}
         </div>
     </div>

@@ -65,19 +65,25 @@
         stijl.textContent = css;
         document.head.appendChild(stijl);
 
-        var knop = maakElement('<button id="babbelbot-knop" type="button">&#128172; Vraag de Babbelbot</button>');
+        /* AI-transparantie (EU AI-verordening, geldt vanaf 2 augustus 2026):
+           wie met een AI-systeem praat moet dat verteld worden. Vandaar
+           "AI" in de naam, de ondertitel in de kop en de zin in het
+           welkomstbericht — drie plekken, zodat het ook duidelijk is voor
+           wie de kop overslaat of het venster al open had staan. */
+        var knop = maakElement('<button id="babbelbot-knop" type="button">&#128172; Vraag de AI-Babbelbot</button>');
         var venster = maakElement(
-            '<div id="babbelbot-venster" role="dialog" aria-label="Babbelbot productadvies">' +
-            '<div id="babbelbot-kop"><div><strong>Babbelbot</strong>' +
-            '<small>Productadvies van WitgoedAanbod.nl</small></div>' +
+            '<div id="babbelbot-venster" role="dialog" aria-label="AI-Babbelbot productadvies">' +
+            '<div id="babbelbot-kop"><div><strong>AI-Babbelbot</strong>' +
+            '<small>Automatisch productadvies (AI) &mdash; je chat niet met een medewerker</small></div>' +
             '<button id="babbelbot-sluit" type="button" aria-label="Sluiten">&times;</button></div>' +
             '<div id="babbelbot-berichten"></div>' +
             '<button id="babbelbot-voorbeeld" type="button">Bijvoorbeeld: &ldquo;' + VOORBEELDVRAAG + '&rdquo;</button>' +
             '<form id="babbelbot-invoer"><textarea rows="1" maxlength="500" ' +
-            'placeholder="Stel je vraag aan de Babbelbot" aria-label="Je vraag"></textarea>' +
+            'placeholder="Stel je vraag aan de AI-Babbelbot" aria-label="Je vraag"></textarea>' +
             '<button type="submit">Vraag</button></form>' +
-            '<div id="babbelbot-disclaimer">De Babbelbot vergelijkt alleen producten op WitgoedAanbod.nl &mdash; ' +
-            'wij zijn een onafhankelijke prijsvergelijker, geen winkel. Controleer prijs en voorraad altijd bij de winkel zelf.</div>' +
+            '<div id="babbelbot-disclaimer">De AI-Babbelbot is een computerprogramma en vergelijkt alleen producten ' +
+            'op WitgoedAanbod.nl &mdash; wij zijn een onafhankelijke prijsvergelijker, geen winkel. AI-antwoorden ' +
+            'kunnen fouten bevatten; controleer prijs en voorraad altijd bij de winkel zelf.</div>' +
             '</div>');
         document.body.appendChild(knop);
         document.body.appendChild(venster);
@@ -169,8 +175,9 @@
             venster.classList.add('open');
             knop.style.display = 'none';
             if (!berichten.children.length) {
-                botTekst('Hoi! Vertel wat je zoekt — bijvoorbeeld het soort apparaat, ' +
-                         'je budget of je gezinssituatie — dan zoek ik met je mee.');
+                botTekst('Hoi! Ik ben de AI-Babbelbot, een computerhulpje — je chat hier ' +
+                         'dus niet met een mens. Vertel wat je zoekt — bijvoorbeeld het ' +
+                         'soort apparaat, je budget of je gezinssituatie — dan zoek ik met je mee.');
             }
             invoer.focus();
         });

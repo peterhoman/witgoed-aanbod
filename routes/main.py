@@ -1084,51 +1084,123 @@ _SPRONG_TERUGKIJK_DAGEN = 180
 # De grenzen komen uit hoe mensen zoeken, niet uit de spreiding van de data:
 # "wasmachine 9 kg", "1400 toeren", "stille vaatwasser". Vandaar ronde
 # getallen en niet de kwartielen van onze eigen catalogus.
+# Elke stap heeft naast de meetgrenzen ook een 'slug' (het vaste stuk van het
+# webadres -- nooit meer wijzigen, anders breken geïndexeerde URL's) en een
+# 'kop' met {cat} erin, die de paginatitel wordt ("Zeer stille wasmachines").
 _FILTERVELDEN = {
     'noise': {
         'naam': 'geluid',
         'eenheid': 'dB',
-        'stappen': [(None, 45, 'zeer stil (tot 45 dB)'),
-                    (45, 60, 'stil (45-60 dB)'),
-                    (60, 72, 'gemiddeld (60-72 dB)'),
-                    (72, None, 'luid (vanaf 72 dB)')],
+        'stappen': [
+            {'van': None, 'tot': 45, 'slug': 'zeer-stil',
+             'label': 'zeer stil (tot 45 dB)', 'kop': 'Zeer stille {cat} (tot 45 dB)'},
+            {'van': 45, 'tot': 60, 'slug': 'stil',
+             'label': 'stil (45-60 dB)', 'kop': 'Stille {cat} (45-60 dB)'},
+            {'van': 60, 'tot': 72, 'slug': 'gemiddeld-geluid',
+             'label': 'gemiddeld (60-72 dB)', 'kop': '{cat} met gemiddeld geluidsniveau (60-72 dB)'},
+            {'van': 72, 'tot': None, 'slug': 'vanaf-72-db',
+             'label': 'luid (vanaf 72 dB)', 'kop': '{cat} vanaf 72 dB'},
+        ],
     },
     'ratedCapacity': {
         'naam': 'vulgewicht',
         'eenheid': 'kg',
-        'stappen': [(None, 7, 'tot 7 kg'), (7, 8, '7-8 kg'),
-                    (8, 9, '8-9 kg'), (9, 11, '9-11 kg'),
-                    (11, None, '11 kg en meer')],
+        'stappen': [
+            {'van': None, 'tot': 7, 'slug': 'tot-7-kg',
+             'label': 'tot 7 kg', 'kop': '{cat} tot 7 kg'},
+            {'van': 7, 'tot': 8, 'slug': '7-8-kg',
+             'label': '7-8 kg', 'kop': '{cat} 7-8 kg'},
+            {'van': 8, 'tot': 9, 'slug': '8-9-kg',
+             'label': '8-9 kg', 'kop': '{cat} 8-9 kg'},
+            {'van': 9, 'tot': 11, 'slug': '9-11-kg',
+             'label': '9-11 kg', 'kop': '{cat} 9-11 kg'},
+            {'van': 11, 'tot': None, 'slug': 'vanaf-11-kg',
+             'label': '11 kg en meer', 'kop': '{cat} van 11 kg en meer'},
+        ],
     },
     'spinSpeedRated': {
         'naam': 'toerental',
         'eenheid': 'tpm',
-        'stappen': [(None, 1200, 'tot 1200 toeren'),
-                    (1200, 1400, '1200-1400 toeren'),
-                    (1400, 1600, '1400-1600 toeren'),
-                    (1600, None, '1600 toeren en meer')],
+        'stappen': [
+            {'van': None, 'tot': 1200, 'slug': 'tot-1200-toeren',
+             'label': 'tot 1200 toeren', 'kop': '{cat} tot 1200 toeren'},
+            {'van': 1200, 'tot': 1400, 'slug': '1200-1400-toeren',
+             'label': '1200-1400 toeren', 'kop': '{cat} met 1200-1400 toeren'},
+            {'van': 1400, 'tot': 1600, 'slug': '1400-1600-toeren',
+             'label': '1400-1600 toeren', 'kop': '{cat} met 1400-1600 toeren'},
+            {'van': 1600, 'tot': None, 'slug': 'vanaf-1600-toeren',
+             'label': '1600 toeren en meer', 'kop': '{cat} vanaf 1600 toeren'},
+        ],
     },
     'waterCons': {
         'naam': 'waterverbruik',
         'eenheid': 'liter',
-        'stappen': [(None, 10, 'tot 10 liter'), (10, 45, '10-45 liter'),
-                    (45, 55, '45-55 liter'), (55, None, 'vanaf 55 liter')],
+        'stappen': [
+            {'van': None, 'tot': 10, 'slug': 'tot-10-liter',
+             'label': 'tot 10 liter', 'kop': 'Zuinige {cat} (tot 10 liter water)'},
+            {'van': 10, 'tot': 45, 'slug': '10-45-liter',
+             'label': '10-45 liter', 'kop': '{cat} met waterverbruik 10-45 liter'},
+            {'van': 45, 'tot': 55, 'slug': '45-55-liter',
+             'label': '45-55 liter', 'kop': '{cat} met waterverbruik 45-55 liter'},
+            {'van': 55, 'tot': None, 'slug': 'vanaf-55-liter',
+             'label': 'vanaf 55 liter', 'kop': '{cat} met waterverbruik vanaf 55 liter'},
+        ],
     },
     'totalVolume': {
         'naam': 'inhoud',
         'eenheid': 'liter',
-        'stappen': [(None, 100, 'tot 100 liter'), (100, 250, '100-250 liter'),
-                    (250, 350, '250-350 liter'), (350, 450, '350-450 liter'),
-                    (450, None, 'vanaf 450 liter')],
+        'stappen': [
+            {'van': None, 'tot': 100, 'slug': 'tot-100-liter',
+             'label': 'tot 100 liter', 'kop': 'Kleine {cat} (tot 100 liter)'},
+            {'van': 100, 'tot': 250, 'slug': '100-250-liter',
+             'label': '100-250 liter', 'kop': '{cat} van 100-250 liter'},
+            {'van': 250, 'tot': 350, 'slug': '250-350-liter',
+             'label': '250-350 liter', 'kop': '{cat} van 250-350 liter'},
+            {'van': 350, 'tot': 450, 'slug': '350-450-liter',
+             'label': '350-450 liter', 'kop': '{cat} van 350-450 liter'},
+            {'van': 450, 'tot': None, 'slug': 'vanaf-450-liter',
+             'label': 'vanaf 450 liter', 'kop': 'Grote {cat} (vanaf 450 liter)'},
+        ],
     },
     'dimensionWidth': {
         'naam': 'breedte',
         'eenheid': 'cm',
-        'stappen': [(None, 50, 'smal (tot 50 cm)'),
-                    (50, 60, '50-60 cm'), (60, 70, '60-70 cm'),
-                    (70, None, 'breed (vanaf 70 cm)')],
+        'stappen': [
+            {'van': None, 'tot': 50, 'slug': 'smal',
+             'label': 'smal (tot 50 cm)', 'kop': 'Smalle {cat} (tot 50 cm)'},
+            {'van': 50, 'tot': 60, 'slug': '50-60-cm',
+             'label': '50-60 cm', 'kop': '{cat} van 50-60 cm breed'},
+            {'van': 60, 'tot': 70, 'slug': '60-70-cm',
+             'label': '60-70 cm', 'kop': '{cat} van 60-70 cm breed'},
+            {'van': 70, 'tot': None, 'slug': 'breed',
+             'label': 'breed (vanaf 70 cm)', 'kop': 'Brede {cat} (vanaf 70 cm)'},
+        ],
     },
 }
+
+
+def _eprel_waarde(gegevens, veld):
+    """Waarde van een EPREL-veld als getal, met maatcorrectie voor de
+    afmetingen: koelkasten staan in EPREL in millimeters (breedte 558),
+    wasmachines in centimeters (breedte 60). Boven de 250 kunnen het geen
+    centimeters zijn -- geen huishoudelijk apparaat is 2,5 meter breed --
+    dus dan delen we door tien."""
+    try:
+        waarde = float((gegevens or {}).get(veld))
+    except (TypeError, ValueError):
+        return None
+    if veld.startswith('dimension') and waarde > 250:
+        waarde = waarde / 10.0
+    return waarde
+
+
+def _stap_voor(waarde, opzet):
+    """De stap waar deze waarde in valt, of None."""
+    for stap in opzet['stappen']:
+        if (stap['van'] is None or waarde >= stap['van']) and \
+           (stap['tot'] is None or waarde < stap['tot']):
+            return stap
+    return None
 
 # Onder dit aantal apparaten is een filterpagina niet de moeite waard: een
 # pagina met een handvol producten helpt een bezoeker niet en geeft Google
@@ -1182,17 +1254,13 @@ def filterkansen():
         per_categorie_totaal[cat] = per_categorie_totaal.get(cat, 0) + 1
         gegevens = rij.gegevens or {}
         for veld, opzet in _FILTERVELDEN.items():
-            waarde = gegevens.get(veld)
-            try:
-                waarde = float(waarde)
-            except (TypeError, ValueError):
+            waarde = _eprel_waarde(gegevens, veld)
+            if waarde is None:
                 continue
-            for onder, boven, label in opzet['stappen']:
-                if (onder is None or waarde >= onder) and \
-                   (boven is None or waarde < boven):
-                    sleutel = (cat, opzet['naam'], label)
-                    tellingen[sleutel] = tellingen.get(sleutel, 0) + 1
-                    break
+            stap = _stap_voor(waarde, opzet)
+            if stap is not None:
+                sleutel = (cat, opzet['naam'], stap['label'])
+                tellingen[sleutel] = tellingen.get(sleutel, 0) + 1
 
     # Omzetten naar iets leesbaars, en meteen het oordeel erbij.
     kansen, te_dun = [], []
@@ -2256,6 +2324,7 @@ def category(slug):
         has_wizard=has_wizard,
         subtype_options=subtype_options,
         winkel_options=_winkel_facet(category),
+        kenmerk_options=_kenmerk_links(category),
         pros_cons_by_ean=_pros_cons_by_ean(),
         faq=faq,
         faq_jsonld=faq_jsonld,
@@ -2476,6 +2545,99 @@ def category_winkel(slug, winkel):
             Offer.is_available.is_(True))),
         f"Bij {label}", f"{category.name} bij {label}",
         meta_description, intro,
+    )
+
+
+# Kenmerkpagina's ("Zeer stille wasmachines"): hetzelfde recept als de
+# winkelpagina's, maar dan op de EPREL-specificaties. Elke pagina mikt op een
+# echte zoekopdracht ("stille wasmachine", "wasmachine 9 kg"). De indeling in
+# stappen staat in _FILTERVELDEN; alles onder _MIN_PER_FILTERPAGINA bestaat
+# niet, in route, links en sitemap tegelijk.
+_KENMERK_FACET_CACHE = {}
+_KENMERK_FACET_TTL = 15 * 60
+
+
+def _kenmerk_facet(category):
+    """{(veldnaam, stapslug): {'stap':..., 'opzet':..., 'ids': [...]}} voor
+    één categorie, alleen stappen met genoeg apparaten. Eén query over de
+    EPREL-rijen, gecachet zoals _category_facets."""
+    nu = time.time()
+    hit = _KENMERK_FACET_CACHE.get(category.id)
+    if hit and nu - hit[0] < _KENMERK_FACET_TTL:
+        return hit[1]
+
+    from models import EprelData, db
+    rijen = (db.session.query(EprelData.gegevens, Product.id)
+             .join(Product, EprelData.product_id == Product.id)
+             .filter(EprelData.gevonden.is_(True),
+                     Product.category_id == category.id,
+                     Product.is_available.is_(True)).all())
+    per_stap = {}
+    for gegevens, product_id in rijen:
+        for veld, opzet in _FILTERVELDEN.items():
+            waarde = _eprel_waarde(gegevens, veld)
+            if waarde is None:
+                continue
+            stap = _stap_voor(waarde, opzet)
+            if stap is not None:
+                per_stap.setdefault(
+                    (opzet['naam'], stap['slug']),
+                    {'stap': stap, 'opzet': opzet, 'ids': []},
+                )['ids'].append(product_id)
+    uit = {sleutel: info for sleutel, info in per_stap.items()
+           if len(info['ids']) >= _MIN_PER_FILTERPAGINA}
+    _KENMERK_FACET_CACHE[category.id] = (nu, uit)
+    return uit
+
+
+def _kenmerk_kop(stap, category):
+    """'Zeer stille {cat}' + 'Wasmachines' -> 'Zeer stille wasmachines'."""
+    kop = stap['kop'].format(cat=category.name.lower())
+    return kop[0].upper() + kop[1:]
+
+
+def _kenmerk_links(category):
+    """Linklijst voor de categoriepagina, in de vaste volgorde van
+    _FILTERVELDEN zodat de stappen van een veld bij elkaar staan."""
+    facet = _kenmerk_facet(category)
+    links = []
+    for opzet in _FILTERVELDEN.values():
+        for stap in opzet['stappen']:
+            info = facet.get((opzet['naam'], stap['slug']))
+            if info:
+                links.append({'veld': opzet['naam'], 'slug': stap['slug'],
+                              'kop': _kenmerk_kop(stap, category),
+                              'aantal': len(info['ids'])})
+    return links
+
+
+@main_bp.route('/category/<slug>'
+               '/<any(breedte,geluid,inhoud,toerental,vulgewicht,waterverbruik):veld>'
+               '/<stap_slug>')
+def category_kenmerk(slug, veld, stap_slug):
+    category = Category.query.filter_by(slug=slug).first_or_404()
+    info = _kenmerk_facet(category).get((veld, stap_slug))
+    if not info:
+        abort(404)
+    stap, opzet, aantal = info['stap'], info['opzet'], len(info['ids'])
+    kop = _kenmerk_kop(stap, category)
+
+    naam_lower = category.name.lower()
+    # De bronvermelding is geen beleefdheid maar een licentievoorwaarde van
+    # EPREL -- laten staan.
+    intro = (f"We volgen {aantal} {naam_lower} met {opzet['naam']} "
+             f"{stap['label']}, hieronder gesorteerd op prijs. Deze "
+             f"specificaties komen uit het officiële Europese "
+             f"energielabelregister (EPREL) van de Europese Commissie; bij "
+             f"elk model staat de laagste actuele prijs van onze "
+             f"aangesloten winkels.")
+    meta_description = (f"{kop} vergelijken: {aantal} modellen op prijs, met "
+                        f"specificaties uit het officiële EU-energieregister "
+                        f"(EPREL).")[:160]
+
+    return _render_facet_page(
+        category, Product.id.in_(info['ids']), stap['label'],
+        kop, meta_description, intro,
     )
 
 

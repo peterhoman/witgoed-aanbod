@@ -6,7 +6,8 @@ from flask import Blueprint, abort, render_template_string, current_app
 from models import Product, Category, Guide, utcnow
 from filter_helpers import (compute_brand_facet, compute_spec_facets,
                             compute_global_brand_index, energielabel_letter, slugify)
-from routes.main import SUBCATEGORY_SPECS, _MIN_PER_FILTERPAGINA
+from routes.main import (SUBCATEGORY_SPECS, _MIN_PER_FILTERPAGINA,
+                         _FILTERVELDEN, _eprel_waarde, _stap_voor)
 
 seo_bp = Blueprint('seo', __name__)
 
@@ -66,6 +67,7 @@ SOORTEN = {
     'merk-per-categorie': 'merk binnen een categorie',
     'facetten': 'energielabel- en subtypepagina',
     'winkel-per-categorie': 'winkel binnen een categorie',
+    'kenmerken': 'kenmerkpagina op EPREL-specificaties',
     'gidsen': 'koopgids en blog',
     'overig': 'homepage en juridische paginas',
 }
@@ -95,11 +97,16 @@ def _bouw_entries():
 
     # Welke winkels een product leveren, in één query voor de hele sitemap —
     # per product p.offers aanspreken zou hier duizenden losse queries worden.
-    from models import Offer, db
+    from models import EprelData, Offer, db
     winkels_per_product = {}
     for product_id, retailer in (db.session.query(Offer.product_id, Offer.retailer)
                                  .filter(Offer.is_available.is_(True)).all()):
         winkels_per_product.setdefault(product_id, set()).add(retailer)
+
+    # EPREL-gegevens per product, ook in één query, voor de kenmerkpagina's.
+    eprel_per_product = dict(
+        db.session.query(EprelData.product_id, EprelData.gegevens)
+        .filter(EprelData.gevonden.is_(True)).all())
 
     sitemap_entries = []
 
@@ -187,6 +194,32 @@ def _bouw_entries():
                 'lastmod': _lastmod(moment_van(winkel_producten)),
                 'priority': '0.5',
                 'soort': 'winkel-per-categorie'
+            })
+        # Kenmerkpagina's op de EPREL-specificaties ("zeer stille
+        # wasmachines"): zelfde indeling en ondergrens als de route
+        # (routes.main.category_kenmerk), zodat sitemap en route het
+        # altijd eens zijn.
+        per_kenmerk = {}
+        for p in cat_products:
+            gegevens = eprel_per_product.get(p.id)
+            if not gegevens:
+                continue
+            for veld, opzet in _FILTERVELDEN.items():
+                waarde = _eprel_waarde(gegevens, veld)
+                if waarde is None:
+                    continue
+                stap = _stap_voor(waarde, opzet)
+                if stap is not None:
+                    per_kenmerk.setdefault(
+                        (opzet['naam'], stap['slug']), []).append(p)
+        for (veldnaam, stap_slug), stap_producten in sorted(per_kenmerk.items()):
+            if len(stap_producten) < _MIN_PER_FILTERPAGINA:
+                continue
+            sitemap_entries.append({
+                'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}/{veldnaam}/{stap_slug}",
+                'lastmod': _lastmod(moment_van(stap_producten)),
+                'priority': '0.5',
+                'soort': 'kenmerken'
             })
         # Subcategorie-pagina's (voorlader/bovenlader, warmtepomp/condens):
         # ongelimiteerd berekenen, want dit zijn geen priority-specs en

@@ -95,6 +95,10 @@
         {% for w in winkel_options or [] %}
         <a href="/category/{{ category.slug }}/winkel/{{ w.code }}">Bij {{ w.label }} ({{ w.aantal }})</a>
         {% endfor %}
+        {# Kenmerkpagina's op de EPREL-specificaties, zelfde ondergrens. #}
+        {% for k in kenmerk_options or [] %}
+        <a href="/category/{{ category.slug }}/{{ k.veld }}/{{ k.slug }}">{{ k.kop }} ({{ k.aantal }})</a>
+        {% endfor %}
         {% if brand_facet %}
         <a href="/merken" class="category-facet-links-all">{{ t('nav.brands') }} →</a>
         {% endif %}

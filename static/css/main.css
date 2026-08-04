@@ -848,6 +848,39 @@ body {
     color: var(--primary);
 }
 
+/* --- EPREL-blok op de productpagina (stap 3) --- */
+/* Zelfde chip-vorm als de facetlinks op de categoriepagina: de badges
+   linken naar diezelfde soort pagina's, dus ze mogen er ook zo uitzien. */
+.eprel-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 14px;
+}
+.eprel-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 14px;
+    background: var(--light);
+    color: var(--dark);
+    font-size: 13px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+}
+.eprel-badge:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+.eprel-bron {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--gray);
+}
+.eprel-bron a {
+    color: inherit;
+    text-decoration: underline;
+}
+
 /* --- Keuzehulp-teaser op de categoriepagina --- */
 .wizard-teaser {
     display: flex;

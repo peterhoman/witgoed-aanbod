@@ -150,7 +150,20 @@ def pas_toe(app):
         terug = [p for p in Product.query.filter_by(category_id=categorie.id)
                  if not is_setje(p.title)]
 
-        if verwijderd or verplaatst:
+        # Webadressen met een procentteken gaven een serverfout (8 stuks,
+        # gevonden via Search Console op 4 augustus: "A -20%", "100%
+        # PFAS-vrij" in de titel). De syncs bouwen zulke adressen sindsdien
+        # niet meer (filter_helpers.product_slug); dit herstelt wat er al
+        # stond, en vangt op wat er ooit nog eens doorheen glipt.
+        from filter_helpers import URL_BREKERS, product_slug
+        hersteld = 0
+        for product in Product.query.all():
+            if any(teken in (product.slug or '') for teken in URL_BREKERS):
+                product.slug = product_slug(product.title, product.ean)
+                hersteld += 1
+
+        if verwijderd or verplaatst or hersteld:
             db.session.commit()
         return {'verwijderd': verwijderd, 'verplaatst': verplaatst,
+                'webadres_hersteld': hersteld,
                 'ten_onrechte_in_setjes': [p.slug for p in terug]}

@@ -493,7 +493,8 @@ def sync_products():
                         logger.debug(f"[-] Skipped (price {price} < {min_price}): {title}")
                         continue
 
-                    slug = f"{title[:50].lower().replace(' ', '-').replace('/', '-')}-{ean}"
+                    from filter_helpers import product_slug
+                    slug = product_slug(title, ean)
                     # De echte productpagina-URL zit in de API-respons ('url');
                     # zelf bol.com/nl/p/{ean} opbouwen gaf een 404 op de knop.
                     # Uiterste fallback: een bol-zoekpagina op de titel.

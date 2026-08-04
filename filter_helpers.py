@@ -380,6 +380,23 @@ def slugify(value):
     return slug
 
 
+# Tekens die een webadres structureel breken: % begint een ontsnappingscode
+# ("%--" is ongeldig en gaf een serverfout op 8 productpagina's, gevonden via
+# Search Console op 4 augustus), en # ? & knippen het pad af. Meer niet:
+# bestaande adressen met haakjes of apostrofs werken en zijn geïndexeerd,
+# agressiever schoonmaken zou duizenden werkende adressen wijzigen.
+URL_BREKERS = '%#?&'
+
+
+def product_slug(title, ean):
+    """Webadres voor een productpagina, zoals de syncs hem altijd bouwden
+    (eerste 50 tekens van de titel, kleine letters, spatie en / worden een
+    streepje) — maar zonder de tekens die een URL breken."""
+    kaal = (title or '')[:50].lower().replace(' ', '-').replace('/', '-')
+    kaal = re.sub(f'[{re.escape(URL_BREKERS)}]', '-', kaal)
+    return f"{kaal}-{ean}"
+
+
 def parse_spec_filters(raw_values):
     """Parse ['Merk::Bosch', 'Vulgewicht::9 kg'] into {'Merk': ['Bosch'], 'Vulgewicht': ['9 kg']}."""
     parsed = defaultdict(list)

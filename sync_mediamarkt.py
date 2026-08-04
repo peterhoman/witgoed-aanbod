@@ -20,6 +20,7 @@ import re
 import requests
 from affiliate_ref import voeg_clickref_toe
 from app import create_app
+from filter_helpers import product_slug
 from models import db, Product, Category, Offer, SyncLog, utcnow, log_price, prijssprong_melding
 from ean_match import zoek_product
 from sync_products import EXCLUDE_KEYWORDS, MIN_PRICES, guess_brand
@@ -305,7 +306,7 @@ def sync_mediamarkt():
                     bol_url='',
                     category_id=category.id,
                     subcategory=record['category_path'],
-                    slug=f"{title[:50].lower().replace(' ', '-').replace('/', '-')}-{ean}",
+                    slug=product_slug(title, ean),
                     retailer=RETAILER,
                     specs={},
                     is_available=record['is_available'],

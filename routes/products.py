@@ -393,6 +393,7 @@ def product_detail(slug):
 
     from price_chart import build_price_history
     from energy_costs import bereken_energiekosten
+    from eprel_specs import eprel_blok
     from product_specs import (kernspecs, groepeer_specs, modelnummer,
                                zoektitel)
     from category_context import bepaal_categoriecontext, meta_beschrijving
@@ -416,6 +417,9 @@ def product_detail(slug):
                            energiekosten=bereken_energiekosten(product),
                            kernspecs=kernspecs(product),
                            spec_groepen=groepeer_specs(product),
+                           # EPREL-stap 3: geverifieerde specificaties met
+                           # verplichte bronvermelding; None = geen blok.
+                           eprel=eprel_blok(product),
                            modelnummer=modelnummer(product),
                            zoektitel=zoektitel(product),
                            # Eigen meting over de hele categorie: de enige

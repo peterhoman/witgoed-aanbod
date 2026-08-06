@@ -252,6 +252,15 @@ def create_app(config_name=None):
         return {'chat_enabled': chat_enabled()}
 
     @app.context_processor
+    def inject_winkels():
+        # Eén bron voor het winkelaantal en de namenopsomming in álle
+        # sjablonen (designrapport 6 aug, punt 7): sluit er een winkel aan
+        # of af, dan kloppen alle teksten meteen weer.
+        from models import RETAILER_LABELS, winkel_opsomming
+        return {'aantal_winkels': len(RETAILER_LABELS),
+                'winkel_opsomming': winkel_opsomming()}
+
+    @app.context_processor
     def inject_alerts_enabled():
         # Bepaalt of productpagina's het prijsalert-formulier tonen; op
         # productie blijft de feature onzichtbaar zolang Brevo niet

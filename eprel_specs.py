@@ -126,6 +126,47 @@ def _badges(product, gegevens):
     return uit
 
 
+# Waar het EPREL-blok een gegeven toont, verdwijnt het gelijknamige feedveld
+# uit de specificatielijst: twee keer "afmetingen" met verschillende getallen
+# op één pagina ondergraaft precies het vertrouwen dat het EPREL-blok moet
+# geven (designrapport 6 aug, punt 5). EPREL wint, want dat is de opgave van
+# de fabrikant zelf, mét eenheid. Sleutel = EPREL-regelnaam, waarde =
+# zoektermen in de feed-labelnaam (kleine letters, bewust smal gekozen:
+# "Inhoud" staat er niet in, want "Inhoud trommel" is iets anders dan de
+# koelkastinhoud).
+_FEEDVELD_DUBBEL = {
+    'Afmetingen (b × h × d)': ('afmeting',),
+    'Geluidsniveau': ('geluidsniveau',),
+    'Energieklasse': ('energielabel', 'energieklasse'),
+    'Waterverbruik per beurt': ('waterverbruik',),
+    'Centrifugetoerental': ('toerental',),
+    'Vulgewicht': ('vulgewicht',),
+}
+
+
+def ontdubbel_specs(eprel, kern, groepen):
+    """(kernspecs, spec_groepen) zonder de velden die EPREL al toont."""
+    if not eprel:
+        return kern, groepen
+    eprel_labels = {label for label, _ in eprel['regels']}
+    termen = [term for label, zoek in _FEEDVELD_DUBBEL.items()
+              if label in eprel_labels for term in zoek]
+    if not termen:
+        return kern, groepen
+
+    def blijft(label):
+        laag = (label or '').lower()
+        return not any(term in laag for term in termen)
+
+    kern = [(label, waarde) for label, waarde in kern if blijft(label)]
+    uit = []
+    for groep, rijen in groepen:
+        rijen = [(label, waarde) for label, waarde in rijen if blijft(label)]
+        if rijen:
+            uit.append((groep, rijen))
+    return kern, uit
+
+
 def eprel_blok(product):
     """Alles wat de sjabloon nodig heeft, of None (dan valt het blok weg)."""
     from models import EprelData

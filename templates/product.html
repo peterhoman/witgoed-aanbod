@@ -122,8 +122,12 @@
                     <div class="offers-card-head-left">
                         {# Bij één winkel geen eyebrow: "Prijs bij 1 winkel
                            € 1.649,00 bij Coolblue" zegt twee keer hetzelfde.
-                           Dat er één winkel is staat al in het uitlegblok. #}
-                        {% if product.retailer_count > 1 and not allemaal_gelijk %}
+                           Dat er één winkel is staat al in het uitlegblok.
+                           En zegt de prijsregel al "bij 2 van de 3 winkels",
+                           dan is "Laagste van 3 winkels" erboven dubbelop —
+                           alleen tonen als de laagste prijs uniek is
+                           (designrapport 6 aug, punt 8). #}
+                        {% if product.retailer_count > 1 and not allemaal_gelijk and gelijk == 1 %}
                         <span class="offers-eyebrow">Laagste van {{ product.retailer_count }} winkels</span>
                         {% endif %}
                         <span class="offers-price-row">
@@ -137,10 +141,12 @@
                             {% endif %}
                         </span>
                     </div>
+                    {# Eén compacte regel in plaats van twee losse mededelingen
+                       waar de bezoeker zelf de som van moest maken — op 375 px
+                       scheelt dat regels boven de eerste winkelknop. #}
                     {% if hoogste and hoogste.price > laagste.price %}
                     <div class="offers-card-head-right">
-                        <span class="offers-spread">&euro; {{ (hoogste.price - laagste.price)|euro }} verschil tussen winkels</span>
-                        <span class="offers-highest">hoogste &euro; {{ hoogste.price|euro }}</span>
+                        <span class="offers-spread">hoogste &euro; {{ hoogste.price|euro }} &middot; &euro; {{ (hoogste.price - laagste.price)|euro }} verschil</span>
                     </div>
                     {% endif %}
                 </div>
@@ -268,10 +274,13 @@
                 </form>
                 <p class="price-alert-privacy">{{ t('alert.privacy_note') }}
                     <a href="/privacy">{{ t('footer.privacy') }}</a></p>
+                {# Zelfde bron als de kop erboven (aantal_winkels), zodat de
+                   balk nooit een ander aantal vertelt dan de tekst
+                   (designrapport 6 aug, punt 7). #}
                 <div class="dekkingsbalk" aria-hidden="true">
-                    {% for i in range(6) %}<span class="dekkingsbalk-deel{% if i < 1 %} dekkingsbalk-deel-vol{% endif %}"></span>{% endfor %}
+                    {% for i in range(aantal_winkels) %}<span class="dekkingsbalk-deel{% if i < 1 %} dekkingsbalk-deel-vol{% endif %}"></span>{% endfor %}
                 </div>
-                <span class="dekkingsbalk-label">1 van 6 winkels</span>
+                <span class="dekkingsbalk-label">1 van {{ aantal_winkels }} winkels</span>
             </div>
             {% endif %}
 
@@ -427,10 +436,13 @@
     <section class="specs-card" id="specs-section">
         <div class="specs-head">
             <h2>{{ t('product.specs_title') }}</h2>
-            {% if product.specs|length > kernspecs|length %}
+            {# spec_totaal in plaats van product.specs|length: na het
+               ontdubbelen tegen het EPREL-blok worden er minder getoond,
+               en de knop moet niet meer beloven dan er is. #}
+            {% if spec_totaal > kernspecs|length %}
             <button type="button" class="specs-toggle" id="specs-toggle"
-                    data-more="Alle {{ product.specs|length }} specificaties &rarr;"
-                    data-less="Toon minder">Alle {{ product.specs|length }} specificaties &rarr;</button>
+                    data-more="Alle {{ spec_totaal }} specificaties &rarr;"
+                    data-less="Toon minder">Alle {{ spec_totaal }} specificaties &rarr;</button>
             {% endif %}
         </div>
         <dl class="specs-grid">

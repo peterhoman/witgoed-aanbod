@@ -33,6 +33,16 @@ def retailer_label(code):
     """Nette weergavenaam voor een winkel-code; valt terug op de code zelf."""
     return RETAILER_LABELS.get((code or '').lower(), code)
 
+
+def winkel_opsomming():
+    """'Bol.com, Coolblue, ... en Voordeligwitgoed' — voor elke tekst die de
+    aangesloten winkels opsomt. Eén bron (RETAILER_LABELS), zodat een nieuwe
+    winkel nooit meer in de ene zin wel en de andere niet meetelt
+    (designrapport 6 aug, punt 7: de teksten noemden er zes, er zijn er
+    zeven)."""
+    namen = list(RETAILER_LABELS.values())
+    return ', '.join(namen[:-1]) + ' en ' + namen[-1]
+
 class Category(db.Model):
     __tablename__ = 'categories'
 

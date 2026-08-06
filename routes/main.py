@@ -2,7 +2,7 @@ import time
 from collections import Counter, defaultdict
 
 from flask import Blueprint, render_template, request, redirect, current_app, abort
-from models import Category, Product, Guide
+from models import Category, Product, Guide, winkel_opsomming
 from sqlalchemy import or_
 from filter_helpers import (compute_brand_facet, compute_spec_facets, expand_spec_values,
                             energielabel_letter, parse_spec_filters, slugify)
@@ -76,7 +76,7 @@ def _category_meta_description(category, products):
         parts.append(f"van o.a. {', '.join(brands)}")
     if prices:
         parts.append(f"al vanaf € {min(prices):.0f}".replace('.', ','))
-    tekst = ' '.join(parts) + ". Vind de laagste prijs bij o.a. Bol, Coolblue, MediaMarkt, Expert en EP."
+    tekst = ' '.join(parts) + f". Vind de laagste prijs bij o.a. {winkel_opsomming()}."
     return tekst[:160]
 
 
@@ -174,10 +174,10 @@ def _category_faq(category, brand_facet, spec_facets):
         })
     faq.append({
         'vraag': "Hoe actueel zijn deze prijzen?",
-        'antwoord': ("We verversen de prijzen van Bol, Coolblue, MediaMarkt, Expert, "
-                     "Alternate en EP meerdere keren per dag, volledig automatisch via "
-                     "hun officiële productfeeds. De goedkoopste leverbare aanbieding "
-                     "staat altijd bovenaan; winkels kunnen hun positie niet kopen."),
+        'antwoord': (f"We verversen de prijzen van {winkel_opsomming()} meerdere "
+                     "keren per dag, volledig automatisch via hun officiële "
+                     "productfeeds. De goedkoopste leverbare aanbieding staat altijd "
+                     "bovenaan; winkels kunnen hun positie niet kopen."),
     })
     return faq
 
@@ -2395,8 +2395,8 @@ def category_brand(slug, merk_slug):
             f"{naam_lower}. Bekijk per model de actuele prijs bij onze aangesloten "
             f"winkels, plus het prijsverloop over tijd.")
     meta_description = (f"Vergelijk {match['count']} {merk} {naam_lower} op prijs. "
-                        f"Bekijk actuele prijzen en prijsverloop bij Bol, Coolblue, "
-                        f"MediaMarkt, Expert, Alternate en EP.")[:160]
+                        f"Bekijk actuele prijzen en prijsverloop bij "
+                        f"{winkel_opsomming()}.")[:160]
 
     return _render_facet_page(
         category, Product.brand.ilike(merk), merk,
@@ -2433,8 +2433,8 @@ def category_energielabel(slug, letter):
         intro = (f"Dit zijn de {aantal} modellen met energielabel {letter} in onze "
                  f"{naam_lower}-vergelijker, met de actuele prijs per winkel.")
     meta_description = (f"Energielabel {letter} {naam_lower} vergelijken: {aantal} "
-                        f"{'model' if aantal == 1 else 'modellen'} op prijs, bij Bol, "
-                        f"Coolblue, MediaMarkt, Expert, Alternate en EP.")[:160]
+                        f"{'model' if aantal == 1 else 'modellen'} op prijs, bij "
+                        f"{winkel_opsomming()}.")[:160]
 
     return _render_facet_page(
         category, Product.specs[energie_facet['key']].as_string().ilike(f"{letter}%"),
@@ -2476,7 +2476,7 @@ def category_subtype(slug, waarde_slug):
     intro = (f"We volgen momenteel {match['count']} {waarde.lower()}s in de categorie "
             f"{naam_lower}. Bekijk per model de actuele prijs bij onze aangesloten winkels.")
     meta_description = (f"{waarde} {naam_lower} vergelijken: {match['count']} modellen op prijs "
-                        f"bij Bol, Coolblue, MediaMarkt, Expert, Alternate en EP.")[:160]
+                        f"bij {winkel_opsomming()}.")[:160]
 
     return _render_facet_page(
         category, Product.specs[spec_key].as_string() == waarde, waarde,
@@ -2768,7 +2768,7 @@ def brand_detail(merk_slug):
             + (f", verdeeld over {len(categorieen)} categorieën: {', '.join(categorieen[:6])}."
                if categorieen else "."))
     meta_description = (f"Vergelijk {match['aantal']} {merk}-producten op prijs bij "
-                        f"Bol, Coolblue, MediaMarkt, Expert, Alternate en EP.")[:160]
+                        f"{winkel_opsomming()}.")[:160]
 
     site_url = current_app.config['SITE_URL']
     structured_data = [{

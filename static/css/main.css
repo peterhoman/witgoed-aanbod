@@ -542,6 +542,10 @@ body {
 .sort-label select {
     padding: 8px 12px;
     border: 1px solid var(--border);
+    /* Duimhoogte + 16px zodat telefoons niet inzoomen op het veld
+       (designrapport 6 aug, punt 16). */
+    min-height: 44px;
+    font-size: 16px;
     border-radius: var(--radius);
     font-size: 14px;
     color: var(--dark);
@@ -568,18 +572,21 @@ body {
 }
 
 /* --- Verlanglijst-hartje (client-side, geen account) --- */
+/* 44 x 44 tikveld (designrapport 6 aug, punt 16): het hartje ligt boven
+   op de foto die de bezoeker wil aantikken; halfdoorzichtig zodat er
+   niets wegvalt. */
 .wishlist-toggle {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 32px;
-    height: 32px;
+    top: 4px;
+    right: 4px;
+    width: 44px;
+    height: 44px;
     border: none;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.75);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     color: var(--gray);
-    font-size: 18px;
+    font-size: 20px;
     line-height: 1;
     cursor: pointer;
     display: flex;
@@ -2002,6 +2009,16 @@ section h2 {
     margin-bottom: 8px;
 }
 
+/* Vaste hoogte op rasterschermen (designrapport 6 aug, punt 19): twee van
+   de 24 kaarten hebben een plus/min-regel en lieten het raster verspringen.
+   Het blok wordt nu op elke kaart gerenderd (ook leeg) zodra de pagina
+   redactionele notities heeft; op mobiel (één kolom) mag hij krimpen. */
+@media (min-width: 768px) {
+    .product-card-notes {
+        min-height: 38px;
+    }
+}
+
 .guide-author {
     font-size: 13px;
     color: var(--gray);
@@ -2825,11 +2842,15 @@ section h2 {
    bij de prijzen, niet bij de kleine lettertjes onderaan de pagina. Zelfde
    ingetogen opmaak als die disclosure, zonder eigen achtergrond -- het is
    een voorbehoud, geen waarschuwing. */
+/* 13,5px met contrast >= 4,5:1 (designrapport 6 aug, punt 17): de
+   prijsversheidsregel en de affiliatemelding zijn juist argumenten om te
+   klikken -- te klein en te grijs gezet lezen ze als kleine lettertjes
+   die iets verbergen. */
 .offers-versheid {
     padding: 10px 18px 0;
-    font-size: 11.5px;
+    font-size: 13.5px;
     line-height: 1.5;
-    color: var(--tekst-secundair);
+    color: #565c63;
 }
 
 .offers-versheid a {
@@ -2841,8 +2862,9 @@ section h2 {
 .offers-foot {
     padding: 10px 18px;
     background: var(--vlak);
-    font-size: 11.5px;
-    color: var(--tekst-secundair);
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #565c63;
     border-top: 1px solid var(--lijn-licht);
 }
 
@@ -3327,6 +3349,10 @@ section h2 {
     cursor: pointer;
     font-weight: 400;
     font-size: 14px;
+    /* Duimhoogte in de filterlade (designrapport 6 aug, punt 16): de
+       rijen stonden te dicht op elkaar om er rijdend in een trein zeker
+       één te raken. Het hele label is het tikvlak. */
+    min-height: 44px;
 }
 
 .checkbox-label input[type="checkbox"] {

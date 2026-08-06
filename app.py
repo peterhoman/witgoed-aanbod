@@ -243,6 +243,11 @@ def create_app(config_name=None):
     from pageviews import registreer as registreer_paginateller
     registreer_paginateller(app)
 
+    # Verkleinde css/js met cache-headers (designrapport punt 15); de
+    # sjablonen vragen ze op via asset('css/main.css') -- zie assets.py.
+    from assets import registreer as registreer_assets
+    registreer_assets(app)
+
     @app.context_processor
     def inject_chat_enabled():
         # Babbelbot-widget alleen tonen als er echt geadviseerd kan worden
@@ -352,13 +357,20 @@ def create_app(config_name=None):
         en cachet wereldwijd. Mislukt het ophalen bij wsrv, dan stuurt de
         &default= door naar de originele foto (geen kapotte afbeelding).
         Niet-http-waarden (None, static paden) gaan ongemoeid terug.
+
+        fit=contain op een vierkant canvas met witte rand: de feeds leveren
+        elke verhouding door elkaar (bol staand, MediaMarkt liggend), dus
+        zonder vast canvas kan het sjabloon geen kloppende width/height
+        meegeven en verspringt de pagina tijdens het laden (designrapport
+        6 aug, punt 13). Wit en niet transparant: de oude jpg-originelen
+        achter &default= hebben ook een witte achtergrond.
         """
         from urllib.parse import quote
         if not url or not str(url).startswith(('http://', 'https://')):
             return url
         origineel = quote(str(url), safe='')
-        return (f"https://wsrv.nl/?url={origineel}&w={breedte}"
-                f"&output=webp&q=80&default={origineel}")
+        return (f"https://wsrv.nl/?url={origineel}&w={breedte}&h={breedte}"
+                f"&fit=contain&cbg=white&output=webp&q=80&default={origineel}")
 
     @app.template_filter('euro')
     def euro_filter(value):

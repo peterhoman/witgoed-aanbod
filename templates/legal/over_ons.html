@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from '_macros.html' import video_facade with context %}
 
 {% block title %}Over ons | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}WitgoedAanbod.nl is een initiatief van Avantius uit Sassenheim, al ruim 20 jaar actief in huishoudelijke artikelen. Lees wie we zijn, hoe de vergelijker werkt en hoe we geld verdienen.{% endblock %}
@@ -61,16 +62,8 @@
 
         <h2>Zie het in één minuut</h2>
         <p>Liever kijken dan lezen? In deze korte video laten we zien hoe de vergelijker werkt:</p>
-        <div style="position:relative;width:100%;max-width:800px;margin:0 auto 24px;aspect-ratio:16/9;">
-            <iframe
-                src="https://www.youtube-nocookie.com/embed/DWF_XeTJ310"
-                title="Witgoed prijzen vergelijken? Zo vind je de laagste prijs | WitgoedAanbod.nl"
-                style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px;"
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen>
-            </iframe>
+        <div style="margin-bottom:24px;">
+            {{ video_facade('DWF_XeTJ310', 'Witgoed prijzen vergelijken? Zo vind je de laagste prijs | WitgoedAanbod.nl') }}
         </div>
 
         <h2>Contact</h2>

@@ -5,13 +5,22 @@
    Toont de laagste prijs over alle winkels ("vanaf € …" bij meerdere winkels),
    het aantal winkels, en een knop die bij meerdere winkels naar de
    productpagina leidt (vergelijken) en bij één winkel direct naar die winkel. #}
-{% macro product_card(product, show_excerpt=false, pros_cons_by_ean=none) %}
+{% macro product_card(product, show_excerpt=false, pros_cons_by_ean=none, eager=false) %}
 {% set best = product.best_offer %}
 {% set pc = pros_cons_by_ean.get(product.ean) if pros_cons_by_ean else none %}
 <article class="product-card">
     <a href="/product/{{ product.slug|urlencode }}" class="product-image">
         {% if product.image_url %}
-        <img src="{{ product.image_url|foto }}" alt="{{ product.title }}" loading="lazy">
+        {# srcset + vaste maten (designrapport punt 13): de foto's laadden
+           allemaal op 400px voor vakken van ±165px. De |foto-filter levert
+           een exact vierkant canvas, dus width/height kloppen altijd.
+           eager=true voor de bovenste kaarten: die staan in beeld bij het
+           laden en horen niet op de lazy-stapel te wachten. #}
+        <img src="{{ product.image_url|foto }}"
+             srcset="{{ product.image_url|foto(200) }} 200w, {{ product.image_url|foto(300) }} 300w, {{ product.image_url|foto(400) }} 400w"
+             sizes="(max-width: 480px) 45vw, (max-width: 768px) 30vw, 250px"
+             width="400" height="400"
+             alt="{{ product.title }}"{% if not eager %} loading="lazy"{% endif %}>
         {% else %}
         {# Geen foto in de feed: nette placeholder i.p.v. kapot img-icoon #}
         <span class="image-placeholder" aria-hidden="true">&#128247;</span>
@@ -162,4 +171,28 @@
 {%- else -%}
 {{ t('filters.options_count' if totaal != 1 else 'filters.option_one', count=totaal) }}
 {%- endif -%}
+{% endmacro %}
+
+
+{# Stilstaand videovoorbeeld met afspeelknop (designrapport punt 14).
+
+   Een YouTube-iframe haalt zijn eigen scripts en stijlen op zodra de
+   pagina laadt, ook als niemand ooit op afspelen drukt — op mobiel een
+   halve megabyte. Hier staat alleen het voorbeeldplaatje van YouTube
+   (±25 KB); het echte iframe wordt pas ingevoegd na de eerste tik, in
+   main.js (VIDEO PAS NA EEN TIK). De video zelf blijft, de tekst
+   eromheen blijft. #}
+{% macro video_facade(video_id, titel) %}
+<div class="video-facade-wrap">
+    <button type="button" class="video-facade"
+            data-embed="https://www.youtube-nocookie.com/embed/{{ video_id }}?autoplay=1"
+            data-titel="{{ titel }}"
+            aria-label="{{ t('video.play') }}: {{ titel }}">
+        {# hqdefault bestaat voor elke video (maxresdefault niet); de
+           zwarte 4:3-randen worden door object-fit: cover afgesneden. #}
+        <img src="https://i.ytimg.com/vi/{{ video_id }}/hqdefault.jpg"
+             width="480" height="360" alt="" loading="lazy">
+        <span class="guide-video-play" aria-hidden="true">&#9654;</span>
+    </button>
+</div>
 {% endmacro %}

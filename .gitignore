@@ -32,3 +32,6 @@ Thumbs.db
 logs/
 *.log
 sync_errors.txt
+
+# Verkleinde css/js, opgebouwd bij het opstarten (assets.py)
+static/gen/

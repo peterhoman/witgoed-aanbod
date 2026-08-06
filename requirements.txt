@@ -6,3 +6,5 @@ APScheduler==3.10.4
 anthropic==0.120.0
 gunicorn==21.2.0
 psycopg2-binary==2.9.9
+rcssmin==1.1.2
+rjsmin==1.2.2

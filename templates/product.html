@@ -48,7 +48,16 @@
         <!-- Product Image -->
         <div class="product-image-section">
             {% if product.image_url %}
-            <img src="{{ product.image_url|foto(800) }}" alt="{{ product.title }}" class="product-image-large" loading="lazy">
+            {# Dit is het grootste zichtbare element van de pagina (LCP):
+               niet lazy maar juist met voorrang, anders wacht de foto op
+               alle andere verzoeken (designrapport punt 13 en 15). De vaste
+               width/height voorkomt dat de tekst ernaast verspringt zodra
+               de foto binnenkomt — height stond op auto in de CSS. #}
+            <img src="{{ product.image_url|foto(800) }}"
+                 srcset="{{ product.image_url|foto(400) }} 400w, {{ product.image_url|foto(800) }} 800w"
+                 sizes="(max-width: 768px) 100vw, 380px"
+                 width="800" height="800"
+                 alt="{{ product.title }}" class="product-image-large" fetchpriority="high">
             {% else %}
             <span class="image-placeholder image-placeholder-large" aria-hidden="true">&#128247;</span>
             {% endif %}
@@ -346,7 +355,7 @@
             {% for alt in alternatieven %}
             <li>
                 <a href="/product/{{ alt.slug|urlencode }}">
-                    {% if alt.image_url %}<img src="{{ alt.image_url|foto(120) }}" alt="" loading="lazy">{% endif %}
+                    {% if alt.image_url %}<img src="{{ alt.image_url|foto(120) }}" width="120" height="120" alt="" loading="lazy">{% endif %}
                     <span class="alternatief-mid">
                         <span class="alternatief-naam">{{ alt.title }}</span>
                         <span class="alternatief-winkels">{{ t('offer.at_shops', count=alt.retailer_count) }}</span>

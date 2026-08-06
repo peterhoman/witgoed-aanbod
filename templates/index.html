@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from '_macros.html' import product_card with context %}
+{% from '_macros.html' import product_card, video_facade with context %}
 
 {% block title %}Witgoed prijzen vergelijken - vind de laagste prijs | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}Vergelijk witgoed-prijzen van {{ winkel_opsomming }} in één overzicht. Wasmachines, drogers, koelkasten en meer: actuele prijzen, prijshistorie en de laagste prijs per apparaat.{% endblock %}
@@ -75,7 +75,8 @@
                 <a href="/category/{{ card.category.slug }}" class="carousel-card">
                     <div class="carousel-card-image">
                         {% if card.image_url %}
-                        <img src="{{ card.image_url|foto }}" alt="{{ card.category.name }}" loading="lazy">
+                        {# 160px-rondje: 200 is genoeg, de oude 400 was dubbel zo zwaar. #}
+                        <img src="{{ card.image_url|foto(200) }}" width="200" height="200" alt="{{ card.category.name }}" loading="lazy">
                         {% endif %}
                     </div>
                     <span class="carousel-card-label">{{ card.category.name }}</span>
@@ -117,20 +118,10 @@
             </div>
         </div>
 
-        <!-- Uitlegvideo (YouTube, nocookie: pas tracking na klik op play) -->
+        <!-- Uitlegvideo (YouTube, nocookie; iframe pas na een tik) -->
         <div class="video-section">
             <h2>{{ t('home.video_title') }}</h2>
-            <div style="position:relative;width:100%;max-width:800px;margin:0 auto;aspect-ratio:16/9;">
-                <iframe
-                    src="https://www.youtube-nocookie.com/embed/DWF_XeTJ310"
-                    title="Witgoed prijzen vergelijken? Zo vind je de laagste prijs | WitgoedAanbod.nl"
-                    style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px;"
-                    loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    allowfullscreen>
-                </iframe>
-            </div>
+            {{ video_facade('DWF_XeTJ310', 'Witgoed prijzen vergelijken? Zo vind je de laagste prijs | WitgoedAanbod.nl') }}
         </div>
     </section>
 

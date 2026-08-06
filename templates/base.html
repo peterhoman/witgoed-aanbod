@@ -22,7 +22,9 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16x16.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {# asset() wijst naar de verkleinde kopie met hash in de naam en een
+       jaar cache; valt terug op het origineel als verkleinen mislukte. #}
+    <link rel="stylesheet" href="{{ asset('css/main.css') }}">
     {% block extra_css %}{% endblock %}
     {% if config.GOOGLE_SITE_VERIFICATION %}
     <meta name="google-site-verification" content="{{ config.GOOGLE_SITE_VERIFICATION }}">
@@ -192,9 +194,9 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ asset('js/main.js') }}"></script>
     {% if chat_enabled %}
-    <script src="{{ url_for('static', filename='js/babbelbot.js') }}" defer></script>
+    <script src="{{ asset('js/babbelbot.js') }}" defer></script>
     {% endif %}
     {% block extra_js %}{% endblock %}
 </body>

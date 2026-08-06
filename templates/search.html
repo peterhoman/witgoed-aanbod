@@ -72,7 +72,7 @@
             {% if results %}
             <div class="product-grid">
                 {% for product in results %}
-                {{ product_card(product, show_excerpt=true, pros_cons_by_ean=pros_cons_by_ean) }}
+                {{ product_card(product, show_excerpt=true, pros_cons_by_ean=pros_cons_by_ean, eager=loop.index <= 2) }}
                 {% endfor %}
             </div>
 

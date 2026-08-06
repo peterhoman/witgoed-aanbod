@@ -17,7 +17,7 @@
                     <th>
                         <button type="button" class="compare-remove-btn" data-remove-id="{{ product.id }}" title="Verwijder uit vergelijking">&times;</button>
                         <a href="/product/{{ product.slug|urlencode }}">
-                            <img src="{{ product.image_url|foto }}" alt="{{ product.title }}" class="compare-product-image" loading="lazy">
+                            <img src="{{ product.image_url|foto }}" width="400" height="400" alt="{{ product.title }}" class="compare-product-image" loading="lazy">
                         </a>
                         <a href="/product/{{ product.slug|urlencode }}" class="compare-product-title">{{ product.title }}</a>
                     </th>

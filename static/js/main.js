@@ -401,6 +401,27 @@ document.querySelectorAll('.filter-meer').forEach(function (knop) {
 });
 
 // ============================================
+// VIDEO PAS NA EEN TIK
+// ============================================
+// Het YouTube-iframe haalt een halve megabyte aan eigen scripts op, ook
+// als niemand op afspelen drukt. De pagina toont daarom alleen het
+// voorbeeldplaatje (video_facade in _macros.html); het iframe wordt hier
+// pas gebouwd na de eerste tik, met autoplay zodat die ene tik ook
+// meteen afspeelt. Geen 'web-share' in allow: dat kende de browser niet
+// en was de enige melding in de console.
+document.querySelectorAll('.video-facade').forEach(function (knop) {
+    knop.addEventListener('click', function () {
+        const iframe = document.createElement('iframe');
+        iframe.src = knop.dataset.embed;
+        iframe.title = knop.dataset.titel || '';
+        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        iframe.setAttribute('allowfullscreen', '');
+        iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+        knop.replaceWith(iframe);
+    });
+});
+
+// ============================================
 // FILTER: ZOEKEN BINNEN EEN GROTE OPTIELIJST
 // ============================================
 // Groepen met meer dan 25 opties tonen de twintig grootste; de rest bereik

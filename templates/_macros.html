@@ -81,10 +81,17 @@
         {# Geen tweede winkelteller onder de knop: hetzelfde "bij 4 winkels"
            stond al als blauw blokje bij de prijs. Twee keer hetzelfde zeggen
            maakt het niet overtuigender, alleen drukker. #}
+        {# aria-label met de titel erbij (designrapport punt 20): de knop
+           heet op elke kaart hetzelfde, en een schermlezer die alleen de
+           linklijst voorleest kreeg 24 keer "Vergelijk prijzen" zonder te
+           kunnen horen wélk apparaat erachter zit. Zichtbaar verandert er
+           niets. #}
         {% if product.retailer_count > 1 %}
-        <a href="/product/{{ product.slug|urlencode }}" class="btn-buy">{{ t('offer.compare_cta') }}</a>
+        <a href="/product/{{ product.slug|urlencode }}" class="btn-buy"
+           aria-label="{{ t('offer.compare_cta') }} — {{ product.title }}">{{ t('offer.compare_cta') }}</a>
         {% else %}
-        <a href="/product/{{ product.slug|urlencode }}" class="btn-buy">{{ t('product.view_specs') }}</a>
+        <a href="/product/{{ product.slug|urlencode }}" class="btn-buy"
+           aria-label="{{ t('product.view_specs') }} — {{ product.title }}">{{ t('product.view_specs') }}</a>
         {% endif %}
     </div>
 </article>

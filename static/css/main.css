@@ -1309,7 +1309,11 @@ section h2 {
     border-color: var(--primary);
 }
 
-@media (max-width: 600px) {
+/* Vegen is op een telefoon sneller dan mikken op een pijltje; de track
+   heeft scroll-snap, dus de pijlen zijn daar alleen maar ruis. 768px en
+   niet 600: dezelfde grens als de rest van de mobiele weergave
+   (designrapport punt 18). */
+@media (max-width: 768px) {
     .carousel-arrow {
         display: none;
     }
@@ -3253,8 +3257,11 @@ section h2 {
 
 /* Was 20px. Dichtgeklapt kwam de zijbalk op 732px uit, twaalf pixels boven
    een viewport van 720px -- net te lang om op een kleine laptop in beeld te
-   passen. Deze marge plus de padding hierboven scheelt precies genoeg. */
-.filters-sidebar h3 {
+   passen. Deze marge plus de padding hierboven scheelt precies genoeg.
+   h2 met de maat van een h3: de kop "Filters" is in de HTML een h2
+   geworden (designrapport punt 20: h1 -> h3 sloeg een niveau over), maar
+   hoort er niet groter uit te zien dan eerst. */
+.filters-sidebar h2 {
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 12px;

@@ -29,7 +29,9 @@
         </button>
         <!-- Filters Sidebar -->
         <aside class="filters-sidebar" id="filters-sidebar">
-            <h3>{{ t('filters.title') }}</h3>
+            {# h2, geen h3: zelfde kopniveau-reparatie als op de
+               categoriepagina (designrapport punt 20). #}
+            <h2>{{ t('filters.title') }}</h2>
             <form method="get" action="/search" class="filters-form">
                 <input type="hidden" name="q" value="{{ query }}">
 

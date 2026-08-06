@@ -303,6 +303,26 @@ def compute_spec_facets(products, max_filters=6, max_options=None):
             value_counts[key][value] += 1
 
     ordered = [key for key, _ in key_frequency.most_common()]
+    # Ruisgroepen weren (designrapport 6 aug, punt 3): een veld als
+    # "Product gewicht" levert 29 opties waarvan 24 met telling 1 --
+    # niemand kiest een wasmachine op 71,50 kg, en elke optie is
+    # scrollafstand tussen de bezoeker en het filter dat hij wél zoekt.
+    # De regel: heeft een veld vijf of meer opties en staat meer dan de
+    # helft daarvan op telling 1, dan is het geen filter maar een
+    # eigenschappenlijst. Prioriteitsvelden (vulgewicht, energielabel...)
+    # blijven altijd staan; die stappen zijn met de hand ingedeeld.
+    def is_ruis(key):
+        # Kleur is de uitzondering: de rúwe waarden zijn bijna allemaal
+        # uniek ("Wit/Zwart 9kg Autodose"), maar na normaliseer_kleur
+        # blijven er een paar echte knoppen over (Wit, Zwart, RVS).
+        if _is_priority_spec(key) or _is_kleur_spec(key):
+            return False
+        tellingen = list(value_counts[key].values())
+        if len(tellingen) < 5:
+            return False
+        return sum(1 for n in tellingen if n == 1) > len(tellingen) / 2
+
+    ordered = [key for key in ordered if not is_ruis(key)]
     priority = sorted([key for key in ordered if _is_priority_spec(key)], key=_priority_rank)
     rest = [key for key in ordered if key not in priority]
     top_keys = (priority + rest)[:max_filters]

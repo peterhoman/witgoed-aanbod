@@ -2356,7 +2356,17 @@ def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_de
     if products.total == 0:
         abort(404)
 
-    brand_facet, spec_facets, _ = _category_facets(category)
+    # De facetten over de GEFILTERDE verzameling rekenen, niet over de hele
+    # categorie (designrapport 6 augustus, punt 1): op "Wasmachines bij
+    # Coolblue" met 82 resultaten hoort bij "AEG (n)" het aantal binnen die
+    # 82 te staan, niet de 32 van de categorie. Zelfde soort fout als de
+    # facetreparatie van juli. Opties met telling nul vallen hierdoor
+    # vanzelf weg. Bewust niet gecachet: dit zijn licht bezochte pagina's
+    # en de berekening loopt over hooguit een paar honderd producten --
+    # dezelfde last die de categoriepagina vóór zijn cache ook al droeg.
+    gefilterd = q.all()
+    brand_facet = compute_brand_facet(gefilterd)
+    spec_facets = compute_spec_facets(gefilterd)
 
     return render_template(
         'category.html',

@@ -393,7 +393,7 @@ def product_detail(slug):
 
     from price_chart import build_price_history
     from energy_costs import bereken_energiekosten
-    from eprel_specs import eprel_blok
+    from eprel_specs import eprel_blok, ontdubbel_specs
     from product_specs import (kernspecs, groepeer_specs, modelnummer,
                                zoektitel)
     from category_context import bepaal_categoriecontext, meta_beschrijving
@@ -404,6 +404,12 @@ def product_detail(slug):
     # producten; alleen dáár halen we alternatieven op, zodat de gewone
     # pagina geen extra query kost.
     een_winkel = product.is_available and product.retailer_count <= 1
+    # EPREL wint bij dubbele specs: het gelijknamige feedveld verdwijnt uit
+    # de speclijst (designrapport 6 aug, punt 5 — twee verschillende
+    # afmetingen op één pagina). Zie eprel_specs._FEEDVELD_DUBBEL.
+    eprel_data = eprel_blok(product)
+    kern, spec_groepen = ontdubbel_specs(eprel_data, kernspecs(product),
+                                         groepeer_specs(product))
     # Eén keer opgehaald: het kruimelpad en de structured data moeten dezelfde
     # stappen tonen. Komt uit dezelfde gecachete index als de verfijningslinks.
     merk_facet = merk_facetpagina(product)
@@ -415,11 +421,15 @@ def product_detail(slug):
                            price_history=build_price_history(product),
                            prijzen_opgehaald=prijzen_opgehaald(product),
                            energiekosten=bereken_energiekosten(product),
-                           kernspecs=kernspecs(product),
-                           spec_groepen=groepeer_specs(product),
+                           kernspecs=kern,
+                           spec_groepen=spec_groepen,
+                           # Voor de "Alle N specificaties"-knop: het aantal
+                           # dat na het ontdubbelen echt getoond wordt.
+                           spec_totaal=len(kern) + sum(
+                               len(rijen) for _, rijen in spec_groepen),
                            # EPREL-stap 3: geverifieerde specificaties met
                            # verplichte bronvermelding; None = geen blok.
-                           eprel=eprel_blok(product),
+                           eprel=eprel_data,
                            modelnummer=modelnummer(product),
                            zoektitel=zoektitel(product),
                            # Eigen meting over de hele categorie: de enige

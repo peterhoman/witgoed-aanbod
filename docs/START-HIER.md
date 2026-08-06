@@ -1,8 +1,101 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **1 augustus 2026, eind van de middag**. Lees dit eerst, daarna
-`STAND_VAN_ZAKEN.md` (de volledige verantwoording) en `MORGEN.md` (de
-takenlijst).
+Bijgewerkt **6 augustus 2026** (het blok "Update 6 augustus" hieronder is
+het nieuwste; de hoofdstukken daaronder beschrijven de stand van 1 augustus
+en blijven gelden waar de update niets anders zegt). Lees dit eerst, daarna
+`STAND_VAN_ZAKEN.md` en `MORGEN.md`. Het projectgeheugen van de chat
+(MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact.
+
+---
+
+## Update 6 augustus — wat er sinds 1 augustus is gebeurd
+
+### Afgerond en live
+
+- **EPREL is rond:** alle apparaten verwerkt, **1.067 gevonden** (trefkans
+  70%). De routine draait door in onderhoudsstand (verversen >30 dagen).
+- **99 nieuwe filterpagina's:** 64 winkelpagina's ("Wasmachines bij
+  Coolblue", `/category/<cat>/winkel/<code>`) en 35 kenmerkpagina's op
+  EPREL-data ("Zeer stille wasmachines", `/category/<cat>/<veld>/<stap>`),
+  elk met eigen sitemap-soort en dezelfde ondergrens
+  (`_MIN_PER_FILTERPAGINA` = 8) in route, links én sitemap.
+  Let op: EPREL levert afmetingen bij koelkasten in **millimeters** en bij
+  wasmachines in centimeters — `routes.main._eprel_waarde` corrigeert dat.
+- **EPREL-blok op 1.000+ productpagina's** ("Gegevens van het
+  energielabel", `eprel_specs.py`): specificaties in gewoon Nederlands,
+  badges die naar de kenmerkpagina's linken, en de verplichte
+  bronvermelding met registratienummer en ophaaldatum (licentie-eis).
+- **Chatbot heet AI-Babbelbot** en zegt op vier plekken dat hij een AI is
+  (EU AI-verordening, geldt sinds 2 aug 2026). Niet terugdraaien.
+- **8 serverfouten opgelost:** procenttekens uit producttitels kwamen
+  letterlijk in webadressen (502). `filter_helpers.product_slug` bouwt nu
+  schone adressen; de uurlijkse catalogusroutine herstelt oude gevallen.
+- **Search Console-validatie van de 918** "Gevonden – niet geïndexeerd"
+  is **gestart op 4 augustus**. Duurt 2-4 weken; niet opnieuw aanvragen.
+- **Bezorgkosten gemeten en besloten:** volgorde blijft zoals hij is
+  (wisselt maar bij 5 van 1.286 producten; zie /api/bezorgkosten).
+  Prijsalert bestond al. Retourvenster blijft 14 dagen (Expert, EP,
+  Alternate en Voordeligwitgoed geven niet meer). Niet opnieuw voorstellen.
+
+### Loopt — alleen volgen, niets doen
+
+- **Merchant Center "Verkeerde voorstelling"** (accountbreed, alle
+  producten onzichtbaar): beoordeling aangevraagd **4 aug** (poging 1 van
+  3) na het vullen van de lege klantenservicegegevens. Op 5 aug verzwaard
+  na een handmatige controle. Uitslag ± 11 aug. Als er een
+  identiteitsverificatie wordt aangeboden: dat is onze sterkste kaart.
+  Extern bezwaar kan later (Routing ID RDAX, Reference ID 5829468803).
+  Relativering: Shopping leverde 5 klikken per 28 dagen; Google Zoeken 70+.
+- **Winkelkwaliteit in MC staat op "Heel goed"** — nuttig tegenargument.
+
+### Designrapport 6 augustus (pdf: Downloads/witgoed-rapport.pdf, 20 punten)
+
+Doorgevoerd: punt 1 (facettellingen filterpagina's over de gefilterde
+set), 5+7+8 (kloppende getallen productpagina; `winkel_opsomming()` in
+models.py is dé bron voor winkelaantal en -namen), 16+17+19 (44px-
+tikdoelen, 13,5px leesteksten, vaste kaartnotitiehoogte).
+
+**Klaarstaand, nog door te voeren:** tak `fix/filterlade-ruis` (punt 3 —
+ruisgroepen zoals "Product gewicht" uit de filterlade;
+vergelijk-link: github.com/peterhoman/witgoed-aanbod/compare/main...fix/filterlade-ruis).
+Punt 2 was een **vals alarm**: het rapport telde in kale HTML waar
+verborgen opties ook in staan — in de browser klopt de "Meer (n)"-knop
+precies. Eerst zelf meten dus.
+
+**Nog te doen (klein, veilig):** punt 11 (specgroepen inklappen op
+mobiel + energielabelblok vóór de speclijst), 13 (srcset/width/height op
+kaartfoto's — grootste snelheidswinst), 14 (YouTube pas na tik),
+15 (minify + consolefouten), 18 (carrousel alt="" + scroll-snap),
+20 (kopniveaus + aria-labels).
+
+**Wachten tot de validatie klaar is (± eind aug):** punt 12 (cookiebalk
+i.p.v. venster — als eerste, hij blokkeert homepage-metingen), 4
+(linkwolk ná de resultaten), 6 (vertrokken winkels uit de
+prijsgrafiek-legenda), 9 (alertformulier direct na de winkellijst),
+10 (h1 typografisch gelaagd).
+
+### Nieuwe valkuilen sinds 1 augustus
+
+- **Een rapport dat kale HTML leest, telt verborgen opties als zichtbaar.**
+  Leg elke externe bevinding eerst naast een browser-meting.
+- **Chrome vertaalt ook taknamen** ("main" wordt "voornaamst") — niet
+  schrikken, niets aan doen.
+- **EPREL-geluid bij wasmachines is centrifugegeluid** (72+ dB is normaal);
+  "zeer stille wasmachines" bestaat terecht niet als pagina.
+- **Er kan een tweede Claude-sessie in dezelfde map draaien** (regel 9
+  geldt onverkort): controleer vóór en na elke commit de tak.
+
+### Nieuwe meetadressen
+
+| Adres | Wat het toont |
+|---|---|
+| `/api/bezorgkosten` | Bezorgkosten per winkel; wisselt de bovenste winkel? |
+
+Doel blijft: **doorkliks en verkopen**, boven Slimster en Knibble komen —
+niet vertoningen. De doorklikteller (`pageviews.tel`, soort `uit-<winkel>`)
+staat op een handvol per dag; dat is de nulmeting van 6 augustus.
+
+---
 
 De site is **witgoedaanbod.nl**, een Nederlandse prijsvergelijker voor witgoed.
 Flask + SQLAlchemy + Jinja2, draait op Railway, main wordt automatisch

@@ -440,6 +440,34 @@
         {% endif %}
     </div>
 
+    {# EPREL-blok (stap 3): geverifieerde gegevens uit het Europese
+       energielabelregister. Juist ook bij producten zónder feedspecs —
+       voor 65% van de catalogus is dit het enige specificatieblok.
+       De bronvermelding onderaan is een licentievoorwaarde: laten staan.
+       Vóór de feedspeclijst (designrapport punt 11): het is korter, het
+       is de geverifieerde bron, en de badges linken naar de
+       kenmerkpagina's. #}
+    {% if eprel %}
+    <section class="specs-card eprel-card" id="eprel-section">
+        <div class="specs-head">
+            <h2>Gegevens van het energielabel</h2>
+        </div>
+        {% if eprel.badges %}
+        <p class="eprel-badges">
+            {% for b in eprel.badges %}
+            <a class="eprel-badge" href="{{ b.url }}">{{ b.naam|capitalize }}: {{ b.label }}</a>
+            {% endfor %}
+        </p>
+        {% endif %}
+        <dl class="specs-grid">
+            {% for label, waarde in eprel.regels %}
+            <div class="spec-rij"><dt>{{ label }}</dt><dd>{{ waarde }}</dd></div>
+            {% endfor %}
+        </dl>
+        <p class="eprel-bron">Bron: {% if eprel.url %}<a href="{{ eprel.url }}" target="_blank" rel="noopener">EPREL, het energielabelregister van de Europese Commissie</a>{% else %}EPREL, het energielabelregister van de Europese Commissie{% endif %}{% if eprel.registratienummer %} (registratie {{ eprel.registratienummer }}){% endif %}{% if eprel.opgehaald %}, opgehaald op {{ eprel.opgehaald }}{% endif %}. Dit zijn de gegevens zoals de fabrikant ze zelf heeft aangemeld.</p>
+    </section>
+    {% endif %}
+
     <!-- Specificaties: gekozen kernvelden bovenaan, de rest gegroepeerd -->
     {% if kernspecs %}
     <section class="specs-card" id="specs-section">
@@ -472,31 +500,6 @@
             </dl>
             {% endfor %}
         </div>
-    </section>
-    {% endif %}
-
-    {# EPREL-blok (stap 3): geverifieerde gegevens uit het Europese
-       energielabelregister. Juist ook bij producten zónder feedspecs —
-       voor 65% van de catalogus is dit het enige specificatieblok.
-       De bronvermelding onderaan is een licentievoorwaarde: laten staan. #}
-    {% if eprel %}
-    <section class="specs-card eprel-card" id="eprel-section">
-        <div class="specs-head">
-            <h2>Gegevens van het energielabel</h2>
-        </div>
-        {% if eprel.badges %}
-        <p class="eprel-badges">
-            {% for b in eprel.badges %}
-            <a class="eprel-badge" href="{{ b.url }}">{{ b.naam|capitalize }}: {{ b.label }}</a>
-            {% endfor %}
-        </p>
-        {% endif %}
-        <dl class="specs-grid">
-            {% for label, waarde in eprel.regels %}
-            <div class="spec-rij"><dt>{{ label }}</dt><dd>{{ waarde }}</dd></div>
-            {% endfor %}
-        </dl>
-        <p class="eprel-bron">Bron: {% if eprel.url %}<a href="{{ eprel.url }}" target="_blank" rel="noopener">EPREL, het energielabelregister van de Europese Commissie</a>{% else %}EPREL, het energielabelregister van de Europese Commissie{% endif %}{% if eprel.registratienummer %} (registratie {{ eprel.registratienummer }}){% endif %}{% if eprel.opgehaald %}, opgehaald op {{ eprel.opgehaald }}{% endif %}. Dit zijn de gegevens zoals de fabrikant ze zelf heeft aangemeld.</p>
     </section>
     {% endif %}
 

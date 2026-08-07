@@ -117,7 +117,10 @@
             <span class="filters-toggle-arrow" aria-hidden="true">▾</span>
         </button>
         <aside class="filters-sidebar" id="filters-sidebar">
-            <h3>{{ t('filters.title') }}</h3>
+            {# h2, geen h3 (designrapport punt 20): na de h1 van de pagina
+               sloeg dit een kopniveau over. De maat blijft die van een h3
+               via .filters-sidebar h2 in de css. #}
+            <h2>{{ t('filters.title') }}</h2>
 
             <form method="get" action="" class="filters-form">
                 {# Alleen Prijs staat open bij het laden, de rest dicht -- ook

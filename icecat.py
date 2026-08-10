@@ -52,6 +52,24 @@ MANUAL_IMAGE_OVERRIDES = {
     # Liebherr Cue 2331 — MediaMarkt's asset-URL is verlopen (404); Expert's
     # eigen feed heeft 'm niet overschreven omdat image_url niet leeg was.
     '4016803145530': 'https://www.expert.nl/media/frontend/catalog/products/172/372635172/1260x1260/372635172-12055142.jpg',
+    # De zes onderstaande (10 aug): de laatste producten zonder enige foto —
+    # allemaal Coolblue-exclusief (Veripart en Wisberg zijn Coolblue-
+    # huismerken die Icecat niet kent). Asset-nummers komen van de hoofdfoto
+    # op de Coolblue-productpagina zelf; alle zes gecontroleerd op een
+    # 200-antwoord met image/jpeg.
+    # Veripart VPVR185NFDW koelkast
+    '8720627636551': 'https://image.coolblue.nl/max/700xauto/products/2145187592',
+    # AEG GT6200C2SGM 6000 droger
+    '7333394154114': 'https://image.coolblue.nl/max/700xauto/products/1377138402',
+    # Veripart VPDW42CS vaatwasser
+    '8720627633956': 'https://image.coolblue.nl/max/700xauto/products/2240019',
+    # Wisberg WBVR143NFCB koelkast
+    '8720627636292': 'https://image.coolblue.nl/max/700xauto/products/836205324',
+    # Philips Airfryer 5000 Series NA543/00
+    '8720389067044': 'https://image.coolblue.nl/max/700xauto/products/1208674934',
+    # Siemens WQ46H2DEFG selfCleaning Condenser droger (nu niet leverbaar,
+    # maar zo staat de foto klaar zodra hij terugkomt)
+    '4242003973028': 'https://image.coolblue.nl/max/700xauto/products/2201445',
 }
 
 # HTTP-statuscodes die een asset ondubbelzinnig als kapot bestempelen.

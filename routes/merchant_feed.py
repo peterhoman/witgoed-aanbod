@@ -108,7 +108,12 @@ def google_merchant_feed():
     for product in producten:
         ean = _geldig_ean(product.ean)
         prijs = product.lowest_price
-        if not ean or not prijs or prijs <= 0 or product.is_example:
+        # 'not product.image_url' naast het isnot(None)-filter in de query:
+        # bij een handvol producten levert de feed een LEGE tekst als
+        # fotoveld, en dat is niet NULL. Zonder foto geen vermelding --
+        # Google eist image_link, en een item zonder wordt afgekeurd.
+        if (not ean or not prijs or prijs <= 0 or product.is_example
+                or not product.image_url):
             continue
 
         item = ET.SubElement(channel, 'item')

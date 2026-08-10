@@ -229,6 +229,7 @@ def create_app(config_name=None):
     from routes.seo import seo_bp
     from routes.alerts import alerts_bp
     from routes.chat import chat_bp
+    from routes.merchant_feed import merchant_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(products_bp)
@@ -236,6 +237,7 @@ def create_app(config_name=None):
     app.register_blueprint(seo_bp)
     app.register_blueprint(alerts_bp)
     app.register_blueprint(chat_bp)
+    app.register_blueprint(merchant_bp)
 
     # Telt paginaweergaven per soort per dag. Geen cookies, geen IP, geen
     # sessie -- alleen aantallen, zodat zichtbaar is of bezoekers dieper de

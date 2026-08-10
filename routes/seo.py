@@ -361,6 +361,9 @@ _UITGESLOTEN = (
     # affiliate-netwerk, dan volgde elke crawler hem en telde het netwerk dat
     # als een klik: 894 in juli, nul verkopen. Zie routes.products.naar_winkel.
     '/uit/',
+    # De Merchant Center-feed: bestemd voor Googles feed-ophaler (die
+    # robots.txt niet raadpleegt), niet voor de zoekindex of andere crawlers.
+    '/feeds/',
 )
 
 # Elke crawler die we apart benoemen. AI-crawlers (GPTBot, ClaudeBot,

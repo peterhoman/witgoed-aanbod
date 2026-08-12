@@ -400,6 +400,30 @@ def slugify(value):
     return slug
 
 
+def foto_url(url, breedte=400):
+    """Winkelfoto via de verkleinservice wsrv.nl, als exact vierkant canvas.
+
+    Eén bron voor de |foto-sjabloonfilter (app.py) én de Merchant
+    Center-feed. Hier en niet in app.py, zodat de feed hem zonder
+    Flask-import kan gebruiken en beide plekken gegarandeerd hetzelfde
+    adres bouwen.
+
+    Waarom de feed óók via wsrv moet (gemeten 12 aug): de fotoserver van
+    Coolblue (coolblue.bynder.com) verbiedt in robots.txt álle crawlers.
+    Googlebot-Image mocht daardoor 1.049 feedfoto's niet ophalen en
+    Merchant Center keurde die producten af met "kan geen kwaliteits- en
+    beleidscontroles uitvoeren". wsrv.nl staat Googlebot wél toe (alleen
+    AI-trainingsbots geweerd) en is precies wat onze eigen pagina's al
+    aan bezoekers serveren.
+    """
+    from urllib.parse import quote
+    if not url or not str(url).startswith(('http://', 'https://')):
+        return url
+    origineel = quote(str(url), safe='')
+    return (f"https://wsrv.nl/?url={origineel}&w={breedte}&h={breedte}"
+            f"&fit=contain&cbg=white&output=webp&q=80&default={origineel}")
+
+
 # Tekens die een webadres structureel breken: % begint een ontsnappingscode
 # ("%--" is ongeldig en gaf een serverfout op 8 productpagina's, gevonden via
 # Search Console op 4 augustus), en # ? & knippen het pad af. Meer niet:

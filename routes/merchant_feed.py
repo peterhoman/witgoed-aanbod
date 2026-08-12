@@ -21,9 +21,12 @@ draagt":
 - Alleen leverbare producten met een geldig 13-cijferig EAN, een foto en
   een prijs. Voorbeeldproducten (is_example) blijven eruit.
 - g:price is de laagste leverbare prijs -- exact wat de pagina toont.
-- g:image_link is de originele winkelfoto, niet de wsrv-verkleining:
-  dezelfde URL die in de gestructureerde data staat, zodat Google een
-  foto ziet die hij al kent.
+- g:image_link gaat via de wsrv-verkleiner (filter_helpers.foto_url, op
+  800px) — dezelfde adressen die de site aan bezoekers toont. Eerst stond
+  hier de originele winkelfoto, maar de fotoserver van Coolblue
+  (coolblue.bynder.com) verbiedt alle crawlers in robots.txt, waardoor
+  Googlebot-Image 1.049 foto's niet mocht ophalen en Merchant Center die
+  producten afkeurde (gemeten 12 aug). wsrv laat Googlebot wél toe.
 - Geen g:shipping: de winkelfeeds leveren geen betrouwbare bezorgkosten,
   dus die verzinnen we niet. Keurt Google producten af op ontbrekende
   verzendkosten, dan is dat zichtbaar in Merchant Center en beslissen we
@@ -42,6 +45,7 @@ from xml.etree import ElementTree as ET
 
 from flask import Blueprint, Response, current_app
 
+from filter_helpers import foto_url
 from models import Product, EprelData
 from product_specs import merknaam
 
@@ -124,7 +128,9 @@ def google_merchant_feed():
             _sub(item, 'description', beschrijving)
         _sub(item, 'link',
              f"{site}/product/{quote(product.slug, safe='-._~')}")
-        _sub(item, 'image_link', product.image_url, ns=True)
+        # 800px: ruim boven Googles minimum en waar de bron het toelaat
+        # meteen het "hoge resolutie"-formaat (wsrv vergroot niet).
+        _sub(item, 'image_link', foto_url(product.image_url, 800), ns=True)
         _sub(item, 'price', f'{prijs:.2f} EUR', ns=True)
         _sub(item, 'availability', 'in_stock', ns=True)
         _sub(item, 'condition', 'new', ns=True)

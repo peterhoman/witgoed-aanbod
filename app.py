@@ -366,13 +366,12 @@ def create_app(config_name=None):
         meegeven en verspringt de pagina tijdens het laden (designrapport
         6 aug, punt 13). Wit en niet transparant: de oude jpg-originelen
         achter &default= hebben ook een witte achtergrond.
+
+        De opbouw zelf staat in filter_helpers.foto_url: de Merchant
+        Center-feed gebruikt exact dezelfde adressen (zie aldaar waarom).
         """
-        from urllib.parse import quote
-        if not url or not str(url).startswith(('http://', 'https://')):
-            return url
-        origineel = quote(str(url), safe='')
-        return (f"https://wsrv.nl/?url={origineel}&w={breedte}&h={breedte}"
-                f"&fit=contain&cbg=white&output=webp&q=80&default={origineel}")
+        from filter_helpers import foto_url
+        return foto_url(url, breedte)
 
     @app.template_filter('euro')
     def euro_filter(value):

@@ -69,16 +69,30 @@ def _beschrijving(product):
     return tekst[:_MAX_BESCHRIJVING] if tekst else None
 
 
-def _energieklassen():
-    """{product_id: 'A'} voor apparaten waarvan EPREL de klasse kent."""
+def _eprel_per_product():
+    """{product_id: (energieklasse of None, registratienummer of None)}.
+
+    Als EPREL het apparaat kent leveren we allebei: de klasse als
+    g:energy_efficiency_class, en het registratienummer als
+    g:certification. Met dat nummer zoekt Google zelf het officiële
+    energielabel op en toont het bij de vermelding — en het beantwoordt
+    de infomelding "Ontbrekend certificeringskenmerk" die Merchant
+    Center op 13 aug bij de producten zette.
+    """
     rijen = (EprelData.query.filter_by(gevonden=True)
-             .with_entities(EprelData.product_id, EprelData.energieklasse).all())
-    klassen = {}
-    for pid, klasse in rijen:
+             .with_entities(EprelData.product_id, EprelData.energieklasse,
+                            EprelData.registratienummer).all())
+    info = {}
+    for pid, klasse, regnr in rijen:
         letter = (klasse or '').strip().upper()[:1]
-        if letter in _GELDIGE_KLASSEN:
-            klassen[pid] = letter
-    return klassen
+        letter = letter if letter in _GELDIGE_KLASSEN else None
+        # EPREL-nummers zijn kale cijferreeksen; alles anders is ruis
+        # en gaat niet mee (beweer niets wat de data niet draagt).
+        nummer = (regnr or '').strip()
+        nummer = nummer if nummer.isdigit() else None
+        if letter or nummer:
+            info[pid] = (letter, nummer)
+    return info
 
 
 def _sub(item, naam, tekst, ns=False):
@@ -99,7 +113,7 @@ def google_merchant_feed():
     _sub(channel, 'description',
          'Witgoed vergelijken: actuele prijzen van Nederlandse winkels.')
 
-    klassen = _energieklassen()
+    eprel = _eprel_per_product()
     # selectinload: alle aanbiedingen in één extra query, in plaats van één
     # query per product zodra lowest_price ze aanraakt. Bij 2.800 producten
     # is dat het verschil tussen 2 queries en 2.800 (bekende valkuil).
@@ -140,8 +154,16 @@ def google_merchant_feed():
         merk = merknaam(product) or product.brand
         if merk:
             _sub(item, 'brand', merk, ns=True)
-        if product.id in klassen:
-            _sub(item, 'energy_efficiency_class', klassen[product.id], ns=True)
+        klasse, regnr = eprel.get(product.id, (None, None))
+        if klasse:
+            _sub(item, 'energy_efficiency_class', klasse, ns=True)
+        if regnr:
+            # Formaat volgens Googles specificatie (answer/13528839):
+            # drie subvelden onder één g:certification-element.
+            cert = ET.SubElement(item, f'{{{_G}}}certification')
+            _sub(cert, 'certification_authority', 'European_Commission', ns=True)
+            _sub(cert, 'certification_name', 'EPREL', ns=True)
+            _sub(cert, 'certification_code', regnr, ns=True)
         aantal += 1
 
     xml = ET.tostring(rss, encoding='unicode', xml_declaration=True)

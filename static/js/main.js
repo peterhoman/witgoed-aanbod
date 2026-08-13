@@ -55,6 +55,10 @@ function applyConsent(consent) {
 applyConsent(getConsent());
 
 document.addEventListener('DOMContentLoaded', function() {
+    const cookieBalk = document.getElementById('cookie-balk');
+    const balkInstellingen = document.getElementById('cookie-balk-instellingen');
+    const balkReject = document.getElementById('cookie-balk-reject');
+    const balkAccept = document.getElementById('cookie-balk-accept');
     const cookieModal = document.getElementById('cookie-banner');
     const cookieAccept = document.getElementById('cookie-accept');
     const cookieReject = document.getElementById('cookie-reject');
@@ -83,12 +87,33 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
         cookieModal.classList.add('hidden');
+        if (cookieBalk) cookieBalk.classList.add('hidden');
         applyConsent(consent);
     }
 
-    // Alleen tonen zolang er geen (geldige) keuze is gemaakt.
-    if (!getConsent()) {
-        openModal();
+    // Geen keuze gemaakt: toon de BALK onderaan, niet het venster
+    // (designrapport punt 12). De pagina blijft leesbaar en bedienbaar;
+    // het venster komt alleen nog op verzoek (instellingenknop).
+    if (!getConsent() && cookieBalk) {
+        cookieBalk.classList.remove('hidden');
+    }
+
+    if (balkReject) {
+        balkReject.addEventListener('click', function() {
+            saveCookieConsent(false, false);
+        });
+    }
+
+    if (balkAccept) {
+        balkAccept.addEventListener('click', function() {
+            saveCookieConsent(true, true);
+        });
+    }
+
+    if (balkInstellingen) {
+        balkInstellingen.addEventListener('click', function() {
+            openModal();
+        });
     }
 
     if (cookieAccept) {
@@ -104,23 +129,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Weigeren, het kruisje en een klik naast het venster doen hetzelfde:
-    // alleen essentiële cookies. Wegklikken mag nooit als "ja" gelden.
     if (cookieReject) {
         cookieReject.addEventListener('click', function() {
             saveCookieConsent(false, false);
         });
     }
 
+    // Het venster wordt alleen nog vrijwillig geopend; het wegklikken
+    // (kruisje of klik ernaast) is dus geen keuze maar "laat maar even".
+    // Zonder keuze blijft de balk gewoon staan. Wegklikken mag nooit als
+    // "ja" gelden, en telt nu ook niet meer stilzwijgend als "nee".
     if (cookieClose) {
         cookieClose.addEventListener('click', function() {
-            saveCookieConsent(false, false);
+            cookieModal.classList.add('hidden');
         });
     }
 
     cookieModal.addEventListener('click', function(e) {
         if (e.target === cookieModal) {
-            saveCookieConsent(false, false);
+            cookieModal.classList.add('hidden');
         }
     });
 

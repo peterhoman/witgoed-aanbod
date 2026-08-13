@@ -153,7 +153,24 @@
         </div>
     </footer>
 
-    <!-- Cookie Consent Modal -->
+    {# Cookiebalk (designrapport punt 12, versneld na de Merchant Center-
+       opschorting van 13 aug wegens "frustrerend navigeren"): een balk
+       onderaan die de pagina zichtbaar laat, in plaats van een venster
+       dat alles afdekt. De tekst is woordelijk die van het venster
+       (juridisch), en "Alleen noodzakelijk" en "Alles accepteren" zijn
+       exact gelijkwaardig vormgegeven. Het venster hieronder blijft
+       bestaan voor wie op "Cookie-instellingen" klikt (fijnmazige keuze)
+       en voor de link in de voettekst. #}
+    <div id="cookie-balk" class="cookie-balk hidden">
+        <p class="cookie-balk-tekst">{{ t('cookie.intro') }} <a href="/cookies" target="_blank">{{ t('cookie.policy_link') }}</a>.</p>
+        <div class="cookie-balk-knoppen">
+            <button type="button" id="cookie-balk-instellingen" class="cookie-balk-link">{{ t('cookie.title') }}</button>
+            <button type="button" id="cookie-balk-reject" class="cookie-balk-keuze">{{ t('cookie.reject') }}</button>
+            <button type="button" id="cookie-balk-accept" class="cookie-balk-keuze">{{ t('cookie.accept') }}</button>
+        </div>
+    </div>
+
+    <!-- Cookie Consent Modal (alleen nog op verzoek: instellingenknop of voettekst) -->
     <div id="cookie-banner" class="cookie-modal-overlay hidden">
         <div class="cookie-modal">
             <button class="cookie-modal-close" id="cookie-close">&times;</button>

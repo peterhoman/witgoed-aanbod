@@ -3055,6 +3055,74 @@ section h2 {
    COOKIE MODAL
    ============================================ */
 
+/* Cookiebalk (designrapport punt 12): balk onderaan, pagina blijft
+   leesbaar en bedienbaar. De twee keuzeknoppen zijn bewust exact
+   gelijkwaardig vormgegeven (zelfde klasse, zelfde maat, 44px hoog):
+   weigeren mag er niet onaantrekkelijker uitzien dan accepteren. */
+.cookie-balk {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    padding: 12px 16px;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.10);
+}
+
+.cookie-balk.hidden {
+    display: none;
+}
+
+.cookie-balk-tekst {
+    margin: 0;
+    max-width: 680px;
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+.cookie-balk-knoppen {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.cookie-balk-keuze {
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid var(--primary);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--primary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cookie-balk-keuze:hover {
+    background: var(--secondary-light);
+}
+
+.cookie-balk-link {
+    min-height: 44px;
+    padding: 0 6px;
+    border: none;
+    background: none;
+    color: var(--gray);
+    font-family: inherit;
+    font-size: 13.5px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .cookie-modal-overlay {
     position: fixed;
     top: 0;

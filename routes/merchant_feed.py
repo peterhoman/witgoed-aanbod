@@ -43,7 +43,8 @@ kans op een kapot bestand door een & of < in een titel.
 from urllib.parse import quote
 from xml.etree import ElementTree as ET
 
-from flask import Blueprint, Response, current_app
+import requests
+from flask import Blueprint, Response, abort, current_app
 
 from filter_helpers import foto_url
 from models import Product, EprelData
@@ -142,9 +143,11 @@ def google_merchant_feed():
             _sub(item, 'description', beschrijving)
         _sub(item, 'link',
              f"{site}/product/{quote(product.slug, safe='-._~')}")
-        # 800px: ruim boven Googles minimum en waar de bron het toelaat
-        # meteen het "hoge resolutie"-formaat (wsrv vergroot niet).
-        _sub(item, 'image_link', foto_url(product.image_url, 800), ns=True)
+        # Via ons EIGEN domein (plan B, 13 aug): de route /fotos/feed/…
+        # hieronder geeft de foto door. Zo draait Googles crawl-controle
+        # uitsluitend op ónze robots.txt — niet op die van wsrv of van de
+        # fotoserver van een winkel, waar wij niets over te zeggen hebben.
+        _sub(item, 'image_link', f'{site}/fotos/feed/{product.id}.webp', ns=True)
         _sub(item, 'price', f'{prijs:.2f} EUR', ns=True)
         _sub(item, 'availability', 'in_stock', ns=True)
         _sub(item, 'condition', 'new', ns=True)
@@ -170,4 +173,39 @@ def google_merchant_feed():
     resp = Response(xml, mimetype='application/xml')
     # Voor de dagelijkse controle: aantal zonder de feed te hoeven parsen.
     resp.headers['X-Aantal-Producten'] = str(aantal)
+    return resp
+
+
+@merchant_bp.route('/fotos/feed/<int:product_id>.webp')
+def feed_foto(product_id):
+    """De feedfoto, geserveerd vanaf ons eigen domein.
+
+    Waarom (plan B na 12-13 aug): Merchant Center keurde eerst 725
+    producten af omdat de fotoserver van Coolblue alle crawlers weert, en
+    de wsrv-route bleef ter beoordeling. Met deze route staat het
+    foto-adres op ons eigen domein, waar onze eigen robots.txt Googlebot
+    en Googlebot-Image uitdrukkelijk toelaat. De route haalt de foto
+    server-side bij wsrv (die haalt hem bij de winkel) en geeft de bytes
+    door; een dag cachen zodat herhaalde crawls ons niet belasten.
+
+    /fotos/ staat bewust NIET in robots._UITGESLOTEN.
+    """
+    product = Product.query.get_or_404(product_id)
+    if not product.image_url:
+        abort(404)
+    try:
+        # Met een herkenbare afzender: wsrv weigert de kale standaard-
+        # useragent van requests (403, gemeten 13 aug), maar laat een
+        # nette zelfbenoemde proxy gewoon door.
+        antwoord = requests.get(
+            foto_url(product.image_url, 800), timeout=25,
+            headers={'User-Agent':
+                     'WitgoedAanbod-fotoproxy/1.0 (+https://www.witgoedaanbod.nl)'})
+    except requests.RequestException:
+        abort(404)
+    if antwoord.status_code != 200:
+        abort(404)
+    resp = Response(antwoord.content,
+                    mimetype=antwoord.headers.get('Content-Type', 'image/webp'))
+    resp.headers['Cache-Control'] = 'public, max-age=86400'
     return resp

@@ -59,8 +59,9 @@ MANUAL_IMAGE_OVERRIDES = {
     # 200-antwoord met image/jpeg.
     # Veripart VPVR185NFDW koelkast
     '8720627636551': 'https://image.coolblue.nl/max/700xauto/products/2145187592',
-    # AEG GT6200C2SGM 6000 droger
-    '7333394154114': 'https://image.coolblue.nl/max/700xauto/products/1377138402',
+    # AEG GI6200B1SN 6000 vaatwasser — gecontroleerd: Coolblue-pagina
+    # 984107 noemt dit modelnummer vijfmaal in de tekst.
+    '7333394145280': 'https://image.coolblue.nl/max/700xauto/products/1377138402',
     # Veripart VPDW42CS vaatwasser
     '8720627633956': 'https://image.coolblue.nl/max/700xauto/products/2240019',
     # Wisberg WBVR143NFCB koelkast
@@ -177,6 +178,20 @@ def vul_ontbrekende_fotos(db, Product):
     return gevuld
 
 
+# Foto's die met de hand zijn WEGGEHAALD: {ean: het foute adres}. Nodig als
+# een eerdere override het verkeerde apparaat bleek te tonen (de AEG
+# GT6200C2SGM kreeg op 10 aug de foto van de GI6200B1SN — Coolblue's
+# zoekfunctie stuurde naar het lookalike-model en alleen het láden van de
+# foto was gecontroleerd, niet het model erop). Alleen het genoemde foute
+# adres wordt gewist: levert een winkel-feed later een échte foto, dan
+# blijft die gewoon staan. Liever de nette plaatshouder dan de verkeerde
+# machine.
+FOUTE_FOTOS_WISSEN = {
+    # AEG GT6200C2SGM 6000 vaatwasser: toonde de GI6200B1SN.
+    '7333394154114': 'https://image.coolblue.nl/max/700xauto/products/1377138402',
+}
+
+
 def apply_manual_image_overrides(db, Product):
     """Handmatige foto's meteen toepassen, los van de sync-cyclus.
 
@@ -185,16 +200,25 @@ def apply_manual_image_overrides(db, Product):
     winkel-sync (tot 12u later). Overschrijft bewust ook een niet-lege
     image_url: een regel in deze dict betekent dat de bestaande foto (leeg
     óf kapot, zoals een verlopen CDN-asset) al vastgesteld is als slecht.
+
+    Wist daarnaast de adressen uit FOUTE_FOTOS_WISSEN: een override
+    verwijderen haalt hem niet uit de database, dus een fout adres moet
+    expliciet worden weggepoetst.
     """
-    if not MANUAL_IMAGE_OVERRIDES:
-        return 0
-    producten = Product.query.filter(Product.ean.in_(MANUAL_IMAGE_OVERRIDES.keys())).all()
     aangepast = 0
-    for product in producten:
-        nieuw = MANUAL_IMAGE_OVERRIDES[product.ean.strip()]
-        if product.image_url != nieuw:
-            product.image_url = nieuw
+    if MANUAL_IMAGE_OVERRIDES:
+        producten = Product.query.filter(Product.ean.in_(MANUAL_IMAGE_OVERRIDES.keys())).all()
+        for product in producten:
+            nieuw = MANUAL_IMAGE_OVERRIDES[product.ean.strip()]
+            if product.image_url != nieuw:
+                product.image_url = nieuw
+                aangepast += 1
+    for ean, fout in FOUTE_FOTOS_WISSEN.items():
+        product = Product.query.filter_by(ean=ean).first()
+        if product and product.image_url == fout:
+            product.image_url = None
             aangepast += 1
+            logger.info(f"[+] Foute foto gewist: {product.title} ({ean})")
     if aangepast:
         db.session.commit()
         logger.info(f"[+] Handmatige foto-overrides toegepast: {aangepast}")

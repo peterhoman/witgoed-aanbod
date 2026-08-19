@@ -1,10 +1,101 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **6 augustus 2026** (het blok "Update 6 augustus" hieronder is
-het nieuwste; de hoofdstukken daaronder beschrijven de stand van 1 augustus
-en blijven gelden waar de update niets anders zegt). Lees dit eerst, daarna
-`STAND_VAN_ZAKEN.md` en `MORGEN.md`. Het projectgeheugen van de chat
-(MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact.
+Bijgewerkt **19 augustus 2026** (het blok "Update 19 augustus" hieronder is
+het nieuwste; oudere blokken en hoofdstukken blijven gelden waar de update
+niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
+(MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
+leidend voor werkafspraken.
+
+---
+
+## Update 19 augustus — de Merchant Center-week (13-19 aug)
+
+### Waar het NU op wacht (niets aan doen, wel dagelijks volgen)
+
+1. **Twee accountbeoordelingen in Merchant Center lopen**: "Landingspagina
+   werkt niet" (aangevraagd 13 aug) en "Verkeerde voorstelling"
+   (aangevraagd 16 aug — dit is **poging 2 van 3**; na een afwijzing rest
+   1 poging en daarna extern bezwaar, Routing ID RDAX, Reference
+   5829468803). De tweede wordt pas verwerkt ná de identiteitsverificatie.
+2. **Identiteitsverificatie ingediend 16 aug** via het betalingsprofiel
+   (geen betaalgegevens): Avantius VOF met gewaarmerkt KvK-uittreksel
+   (dec 2025) + paspoort van Peter via de KopieID-app. LET OP: Googles
+   fotocontrole wees de A4-KopieID-pdf af (document te klein in beeld);
+   opgelost met een beeldvullende uitsnede (Downloads\Kopie paspoort
+   16 aug 2026 - uitsnede.png). Naam exact als paspoort: Petrus Frederik
+   Martinus Homan. Uitslagen komen per e-mail: Peter stuurt schermafdrukken.
+3. **Search Console-validaties**: de grote (1.147 "Gevonden – niet
+   geïndexeerd", loopt sinds 4 aug) en een mini (5 "Gecrawld – niet
+   geïndexeerd", herstart 17 aug — daarin zitten 2 kóópgidsen die Google
+   na lezing de index niet waard vond: eerste harde aanwijzing waarom de
+   19 gidsen niets opleveren).
+
+### OPENSTAAND — direct oppakken door de nieuwe sessie
+
+- **Serverfout (5xx) in Search Console: validatie MISLUKT, 9 pagina's**
+  (was 8). Iets geeft nog steeds serverfouten en er kwam er één bij.
+  Vraag Peter om een detailschermafdruk van die rij (de URL-lijst) en
+  zoek het dezelfde dag uit. Ook 404 groeide licht (33→39): meenemen.
+- **Twee takken wachten op merge door Peter** (vergelijk-links geven):
+  `fix/foto-aeg-tr73cb86` (foto voor nieuw fotoloos product, modelnummer
+  op bronpagina geverifieerd) en `docs/overdracht-19-augustus` (dit
+  document).
+- **Na de MC-uitslag**: bij goedkeuring → controleren of vermeldingen
+  echt live komen + winkelkwaliteit terugkeert + de crawl-feed ("Feed
+  maken op basis van websitecrawl", bij CSS-instellingen) evalueren op
+  dubbelingen. Bij afwijzing → "Aanvullende opties" (extern bezwaar) en
+  de laatste poging pas na overleg.
+
+### Wat er gebeurd is (13-19 aug), kort
+
+- **13 aug 22:12: poging 1 afgewezen + account opgeschort** met twee
+  concrete redenen: kapotte bestemmings-URL's en "frustrerend navigeren".
+  Nachtonderzoek: alle 2.830 feedlinks gaven 200 (ook niet-leverbare
+  producten blijven 200); de "kapotte pagina's" waren vrijwel zeker een
+  deploy-moment of het schermvullende cookievenster.
+- **Reparaties (alle live)**: cookiemelding is een balk onderaan geworden
+  (designrapport punt 12, versneld; tekst woordelijk gelijk, knoppen
+  gelijkwaardig 44px, wegklikken is geen keuze; homepage nu meetbaar),
+  feedfoto's via ons EIGEN domein (/fotos/feed/<id>.webp — Coolblue's
+  fotoserver coolblue.bynder.com weert álle crawlers, wsrv.nl was de
+  tussenstap; de route stuurt met herkenbare User-Agent omdat wsrv kale
+  python-requests weigert), en g:certification met EPREL-registratie-
+  nummers in de feed (871 producten).
+- **Resultaat productniveau**: van 1.005 afgekeurd (12 aug) naar **2**
+  (19 aug). 2.840 goedgekeurd.
+- **De feed** (/feeds/google-merchant.xml) is 11 aug aangemeld als
+  PRODUCTS SOURCE 2, ophalen dagelijks 07:00, eerste run 2.766 producten
+  foutloos. Productbescherming staat aan (40%).
+- **Foto-vangnet uitgebreid**: FOUTE_FOTOS_WISSEN in icecat.py wist
+  bekende foute adressen bij elke sync-ronde (de opstartwis miste er
+  onverklaarbaar één). Les vastgelegd: bij handmatige foto's het
+  MODELNUMMER op de bronpagina controleren, niet alleen of de foto laadt
+  (de GT6200C2SGM kreeg per abuis de foto van de GI6200B1SN; GT staat nu
+  bewust fotoloos tot hij weer leverbaar is).
+
+### Cijfers om te onthouden (nulmetingen)
+
+- Doorkliks naar winkels: record **16 op 18 aug** (was 1-6/dag).
+  Eén order tot nu toe (Coolblue). Verhouding is normaal; het volume is
+  de knop — zie memory doel-doorkliks-niet-vertoningen.
+- Search Console 3 maanden: 83 klikken, waarvan **57 via
+  productfragmenten** (de gestructureerde data werkt). 2,86K geïndexeerd.
+- EP-feed van TradeTracker ververst 1x per etmaal — vaker ophalen dan
+  onze 2x/dag is zinloos (gemeten 8-11 aug).
+
+### Werkafspraken erbij sinds 6 augustus (staan ook in memory)
+
+- **Jagen, niet afwachten**: elke afwijking dezelfde dag uitzoeken;
+  MC en SC horen bij de dágelijkse controle; concurrentie wekelijks.
+- **Duidelijke opdrachten aan Peter**: genummerd, exacte klikroute, en
+  wat hij moet terugsturen. Geen "bij gelegenheid".
+- **Peters Chrome mag gebruikt worden** (claude-in-chrome):
+  merchants.google.com werkt met authuser=5 in de URL (zonder kom je op
+  een inlogscherm — daar nooit iets aanraken); search.google.com is nog
+  geblokkeerd in de extensie, dus SC gaat via Peters schermafdrukken.
+- **Volg nooit /uit/- of Awin-links met een gewone fetch** (telt als
+  affiliate-klik); de /uit/-redirect mag wél met een bot-User-Agent
+  (pageviews filtert bots).
 
 ---
 

@@ -71,6 +71,9 @@ MANUAL_IMAGE_OVERRIDES = {
     # Siemens WQ46H2DEFG selfCleaning Condenser droger (nu niet leverbaar,
     # maar zo staat de foto klaar zodra hij terugkomt)
     '4242003973028': 'https://image.coolblue.nl/max/700xauto/products/2201445',
+    # AEG TR73CB86 SensiDry droger — modelnummer staat vijfmaal op
+    # Coolblue-pagina 983659 (gecontroleerd, de les van de GT/GI-fout).
+    '7333394151595': 'https://image.coolblue.nl/max/700xauto/products/434956210',
 }
 
 # HTTP-statuscodes die een asset ondubbelzinnig als kapot bestempelen.

@@ -71,6 +71,9 @@ MANUAL_IMAGE_OVERRIDES = {
     # Siemens WQ46H2DEFG selfCleaning Condenser droger (nu niet leverbaar,
     # maar zo staat de foto klaar zodra hij terugkomt)
     '4242003973028': 'https://image.coolblue.nl/max/700xauto/products/2201445',
+    # AEG TR73CB86 SensiDry droger — modelnummer staat vijfmaal op
+    # Coolblue-pagina 983659 (gecontroleerd, de les van de GT/GI-fout).
+    '7333394151595': 'https://image.coolblue.nl/max/700xauto/products/434956210',
 }
 
 # HTTP-statuscodes die een asset ondubbelzinnig als kapot bestempelen.
@@ -156,7 +159,15 @@ def vul_ontbrekende_fotos(db, Product):
 
     Geeft het aantal gevulde foto's terug. Faalt stil (met logregel):
     een Icecat-storing mag nooit een winkel-sync laten mislukken.
+
+    Wist eerst de bekende foute foto's (FOUTE_FOTOS_WISSEN): dat gebeurde
+    alleen bij het opstarten, maar op 17 aug bleek de productiedatabase de
+    foute AEG-foto ook ná de uitrol nog te tonen — waarom de opstartwis
+    hem miste is op afstand niet vast te stellen, dus voortaan poetst élke
+    sync-ronde hem weg. Dubbel wissen kan geen kwaad: de vergelijking is
+    op het exacte foute adres.
     """
+    wis_foute_fotos(db, Product)
     zonder_foto = (Product.query
                    .filter(db.or_(Product.image_url.is_(None),
                                   Product.image_url == ''))
@@ -192,6 +203,20 @@ FOUTE_FOTOS_WISSEN = {
 }
 
 
+def wis_foute_fotos(db, Product):
+    """Wis de adressen uit FOUTE_FOTOS_WISSEN; geeft het aantal terug."""
+    gewist = 0
+    for ean, fout in FOUTE_FOTOS_WISSEN.items():
+        product = Product.query.filter_by(ean=ean).first()
+        if product and product.image_url == fout:
+            product.image_url = None
+            gewist += 1
+            logger.info(f"[+] Foute foto gewist: {product.title} ({ean})")
+    if gewist:
+        db.session.commit()
+    return gewist
+
+
 def apply_manual_image_overrides(db, Product):
     """Handmatige foto's meteen toepassen, los van de sync-cyclus.
 
@@ -213,12 +238,7 @@ def apply_manual_image_overrides(db, Product):
             if product.image_url != nieuw:
                 product.image_url = nieuw
                 aangepast += 1
-    for ean, fout in FOUTE_FOTOS_WISSEN.items():
-        product = Product.query.filter_by(ean=ean).first()
-        if product and product.image_url == fout:
-            product.image_url = None
-            aangepast += 1
-            logger.info(f"[+] Foute foto gewist: {product.title} ({ean})")
+    aangepast += wis_foute_fotos(db, Product)
     if aangepast:
         db.session.commit()
         logger.info(f"[+] Handmatige foto-overrides toegepast: {aangepast}")

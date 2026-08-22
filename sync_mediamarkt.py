@@ -16,6 +16,7 @@ import gc
 import io
 import json
 import os
+from datetime import datetime, timezone
 import re
 import requests
 from affiliate_ref import voeg_clickref_toe
@@ -105,6 +106,41 @@ def _get_field(product, name):
     return None
 
 
+def _huidige_prijs(history):
+    """De actuele prijs uit Tradedoublers priceHistory, plus de ruwe lijst.
+
+    Tradedoubler documenteert priceHistory als "a list of all price changes
+    during the life of the product" met per regel een prijs en een datum —
+    en zegt niets over de volgorde. De sync pakte altijd regel [0]. Meting
+    14-21 aug: acht van de tien MediaMarkt-prijssprongen >50% veerden
+    binnen één sync terug, allemaal van actieprijs naar adviesprijs (Bosch
+    TIE20109 twee keer: 373 -> 569 -> 373). Dat is het patroon van een
+    lijst waarin de volgorde wisselt. De regel met de nieuwste datum is
+    per definitie de huidige prijs; zonder datums valt hij terug op [0].
+
+    Geeft (prijs, ruwe_lijst) terug; ruwe_lijst is een korte leesbare
+    weergave voor het logboek, zodat een volgende sprong meteen laat zien
+    wat de feed werkelijk stuurde.
+    """
+    regels = []
+    for entry in history or []:
+        prijs = _parse_price((entry.get('price') or {}).get('value'))
+        try:
+            datum = int(entry.get('date') or 0)
+        except (TypeError, ValueError):
+            datum = 0
+        if prijs and prijs > 0:
+            regels.append((datum, prijs))
+    if not regels:
+        return None, ''
+    nieuwste = max(regels, key=lambda r: r[0])
+    ruw = ', '.join(
+        f"{prijs:g}@{datetime.fromtimestamp(datum / 1000, tz=timezone.utc):%Y-%m-%d %H:%M}"
+        if datum else f"{prijs:g}@?"
+        for datum, prijs in regels[:6])
+    return nieuwste[1], ruw
+
+
 def _parse_price(value):
     """'179.00 EUR' of '143.99' -> 179.0 / 143.99; onbruikbaar -> None."""
     if not value:
@@ -167,7 +203,7 @@ def normalize(product, from_main_feed):
     history = offer.get('priceHistory') or []
     if not history:
         return None
-    price = _parse_price((history[0].get('price') or {}).get('value'))
+    price, prijshistorie_ruw = _huidige_prijs(history)
     if not price or price <= 0:
         return None
 
@@ -196,6 +232,8 @@ def normalize(product, from_main_feed):
         # Verzendinfo (audit-punt 14): Tradedoubler levert alleen een
         # levertijd, geen verzendkosten — dan tonen we alleen dat.
         'delivery_time': (offer.get('deliveryTime') or '').strip()[:120] or None,
+        # Alleen voor het logboek bij een prijssprong (zie hieronder).
+        'prijshistorie_ruw': prijshistorie_ruw,
     }
 
 
@@ -331,7 +369,13 @@ def sync_mediamarkt():
             elif record['is_available']:
                 sprong = prijssprong_melding(offer.price, record['price'])
                 if sprong:
-                    prijssprongen.append(f"{product.ean}: {sprong}")
+                    # Mét de ruwe prijslijst uit de feed: zo is bij een
+                    # volgende sprong zonder gissen te zien wat MediaMarkt
+                    # stuurde (meet voordat je sleutelt).
+                    sprong_tekst = f"{product.ean}: {sprong}"
+                    if record.get('prijshistorie_ruw'):
+                        sprong_tekst += f" [feed: {record['prijshistorie_ruw']}]"
+                    prijssprongen.append(sprong_tekst)
 
             offer.price = record['price']
             offer.strikethrough_price = record['strikethrough_price']

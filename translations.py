@@ -49,6 +49,7 @@ TRANSLATIONS = {
         # Cookie modal
         'cookie.title': 'Cookie-instellingen',
         'cookie.intro': 'Op onze eigen pagina\'s plaatsen wij alleen noodzakelijke cookies. Klik je op een aanbieding, dan ga je naar een aangesloten winkel zoals Bol.com, MediaMarkt, Coolblue, Expert, Alternate of EP; die partijen kunnen je bezoek volgen om onze commissie te bepalen. Lees meer in ons',
+        'cookie.intro_kort': 'Wij plaatsen zelf alleen noodzakelijke cookies. Klik je door naar een winkel, dan kan die je bezoek volgen om onze commissie te bepalen. Lees meer in ons',
         'cookie.policy_link': 'cookiebeleid',
         'cookie.essential_title': 'Noodzakelijke cookies',
         'cookie.essential_desc': 'Nodig om de site te laten werken: onthoudt je taalkeuze en deze cookiekeuze. Deze kun je niet uitzetten.',
@@ -243,6 +244,7 @@ TRANSLATIONS = {
 
         'cookie.title': 'Cookie settings',
         'cookie.intro': 'On our own pages we only place necessary cookies. When you click an offer you go to a partner store such as Bol.com, MediaMarkt, Coolblue, Expert, Alternate or EP; those parties may track your visit to determine our commission. Read more in our',
+        'cookie.intro_kort': 'We only place necessary cookies ourselves. If you click through to a store, that store may track your visit to determine our commission. Read more in our',
         'cookie.policy_link': 'cookie policy',
         'cookie.essential_title': 'Necessary cookies',
         'cookie.essential_desc': 'Needed for the site to work: they remember your language and this cookie choice. These cannot be switched off.',

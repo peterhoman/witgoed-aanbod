@@ -162,7 +162,17 @@
        bestaan voor wie op "Cookie-instellingen" klikt (fijnmazige keuze)
        en voor de link in de voettekst. #}
     <div id="cookie-balk" class="cookie-balk hidden">
-        <p class="cookie-balk-tekst">{{ t('cookie.intro') }} <a href="/cookies" target="_blank">{{ t('cookie.policy_link') }}</a>.</p>
+        {# Twee lezingen van dezelfde melding: de volledige tekst op desktop,
+           een kortere op een telefoonscherm. Op mobiel besloeg de volledige
+           tekst zes regels; samen met de knoppen was de balk 250 van de 812
+           pixels (31% van het scherm). De korte tekst laat niets juridisch
+           weg -- welke cookies wij zelf plaatsen en dat de winkel je kan
+           volgen staat er allebei in; alleen de opsomming van winkelnamen
+           verhuist naar het cookiebeleid, waar hij toch al staat. Beide
+           staan in de HTML en CSS kiest er een: geen JavaScript, dus geen
+           verkeerde tekst bij een trage verbinding. #}
+        <p class="cookie-balk-tekst cookie-balk-lang">{{ t('cookie.intro') }} <a href="/cookies" target="_blank">{{ t('cookie.policy_link') }}</a>.</p>
+        <p class="cookie-balk-tekst cookie-balk-kort">{{ t('cookie.intro_kort') }} <a href="/cookies" target="_blank">{{ t('cookie.policy_link') }}</a>.</p>
         <div class="cookie-balk-knoppen">
             <button type="button" id="cookie-balk-instellingen" class="cookie-balk-link">{{ t('cookie.title') }}</button>
             <button type="button" id="cookie-balk-reject" class="cookie-balk-keuze">{{ t('cookie.reject') }}</button>

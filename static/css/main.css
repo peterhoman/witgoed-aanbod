@@ -3123,6 +3123,54 @@ section h2 {
     cursor: pointer;
 }
 
+/* Op een telefoonscherm was de balk 250 van de 812 pixels: 31% van het
+   scherm, en het enige punt uit Googles afwijzing van 22 aug dat wij
+   technisch konden aanpakken. De hoogte zat in drie dingen: zes regels
+   tekst (121px), drie knoppen die over twee rijen vielen (96px) en de
+   randen (32px). Alle drie zijn hieronder aangepakt; de balk komt
+   daarmee op ongeveer 17% uit. De fijnregeling blijft bereikbaar via
+   'Cookie-instellingen' in de voettekst -- dezelfde knop, dus er
+   verdwijnt geen keuze. */
+.cookie-balk-kort {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .cookie-balk {
+        padding: 10px 14px;
+        gap: 8px;
+    }
+
+    /* Korte tekst in de plaats van de lange. */
+    .cookie-balk-lang {
+        display: none;
+    }
+
+    .cookie-balk-kort {
+        display: block;
+    }
+
+    /* De twee keuzes naast elkaar in plaats van onder elkaar: scheelt een
+       hele rij van 44px. Ze blijven even groot en even opvallend -- de
+       keuze moet gelijkwaardig zijn, dat is de hele eis. */
+    .cookie-balk-knoppen {
+        width: 100%;
+        flex-wrap: nowrap;
+    }
+
+    .cookie-balk-keuze {
+        flex: 1 1 0;
+        padding: 0 8px;
+        white-space: nowrap;
+    }
+
+    /* De instellingenknop zit ook in de voettekst; in de balk kost hij op
+       mobiel een eigen rij. */
+    #cookie-balk-instellingen {
+        display: none;
+    }
+}
+
 .cookie-modal-overlay {
     position: fixed;
     top: 0;

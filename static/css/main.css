@@ -3123,6 +3123,57 @@ section h2 {
     cursor: pointer;
 }
 
+/* Vertrouwenscijfers op de homepage: vier controleerbare getallen over de
+   vergelijker. Bewust rustig vormgegeven -- het moet feitelijk overkomen,
+   niet als reclame. Op mobiel twee kolommen in plaats van vier. */
+.cijfers-bar {
+    max-width: 1200px;
+    margin: 0 auto 24px;
+    padding: 18px 16px;
+    background: var(--secondary-light, #f5f8fa);
+    border-radius: var(--radius, 8px);
+}
+
+.cijfers-bar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    text-align: center;
+}
+
+.cijfer strong {
+    display: block;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--primary);
+}
+
+.cijfer span {
+    display: block;
+    margin-top: 2px;
+    font-size: 13.5px;
+    color: var(--gray);
+}
+
+.cijfers-bar-uitleg {
+    margin: 14px 0 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    text-align: center;
+    color: var(--gray);
+}
+
+@media (max-width: 640px) {
+    .cijfers-bar-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cijfer strong {
+        font-size: 19px;
+    }
+}
+
 /* Op een telefoonscherm was de balk 250 van de 812 pixels: 31% van het
    scherm, en het enige punt uit Googles afwijzing van 22 aug dat wij
    technisch konden aanpakken. De hoogte zat in drie dingen: zes regels

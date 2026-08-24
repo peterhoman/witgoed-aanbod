@@ -42,6 +42,45 @@
         <span class="usp-item">&#10003; {{ t('home.usp3') }}</span>
     </div>
 
+    {# Vier controleerbare cijfers over de vergelijker. Ze staan er omdat
+       Google bij de accountbeoordeling van 22 aug expliciet vraagt om
+       zichtbare betrouwbaarheid, en omdat de concurrentie hetzelfde doet
+       met minder onderbouwing (Knibble: "wij vergelijken 263 webshops").
+       De cijfers komen live uit de database, nooit met de hand ingetypt --
+       een getal dat na een maand niet meer klopt is erger dan geen getal.
+       Ontbreekt een cijfer, dan valt die tegel weg. #}
+    {% if cijfers %}
+    <div class="cijfers-bar">
+        <div class="cijfers-bar-grid">
+            {% if cijfers.apparaten %}
+            <div class="cijfer">
+                <strong>{{ '{:,}'.format(cijfers.apparaten).replace(',', '.') }}</strong>
+                <span>{{ t('home.cijfers_apparaten') }}</span>
+            </div>
+            {% endif %}
+            {% if cijfers.winkels %}
+            <div class="cijfer">
+                <strong>{{ cijfers.winkels }}</strong>
+                <span>{{ t('home.cijfers_winkels') }}</span>
+            </div>
+            {% endif %}
+            {% if cijfers.prijswijzigingen %}
+            <div class="cijfer">
+                <strong>{{ '{:,}'.format(cijfers.prijswijzigingen).replace(',', '.') }}</strong>
+                <span>{{ t('home.cijfers_wijzigingen') }}</span>
+            </div>
+            {% endif %}
+            {% if cijfers.volgen_sinds %}
+            <div class="cijfer">
+                <strong>{{ cijfers.volgen_sinds }}</strong>
+                <span>{{ t('home.cijfers_sinds') }}</span>
+            </div>
+            {% endif %}
+        </div>
+        <p class="cijfers-bar-uitleg">{{ t('home.cijfers_uitleg') }}</p>
+    </div>
+    {% endif %}
+
     {# Winkelbalk (trust bar): welke winkels we vergelijken. Bewust niet
        klikbaar naar de winkels (kale homepage-klik = geen commissiecontext
        en weggelekte bezoeker); grijstinten via CSS zodat de balk niet

@@ -143,6 +143,15 @@
                     <h3>{{ t('footer.legal_title') }}</h3>
                     <ul>
                         <li><a href="/over-ons">{{ t('footer.over_ons') }}</a></li>
+                        {# Bewust een kale tekstlink en geen scorebadge: het
+                           profiel staat op nul beoordelingen, en een cijfer
+                           tonen dat er niet is zou precies de claim zijn die
+                           deze site nergens doet. Wordt een badge zodra er
+                           genoeg beoordelingen staan. rel=noopener omdat het
+                           een externe site is; nofollow omdat het geen
+                           redactionele aanbeveling is. #}
+                        <li><a href="https://nl.trustpilot.com/review/witgoedaanbod.nl"
+                               target="_blank" rel="noopener nofollow">{{ t('footer.trustpilot') }}</a></li>
                         <li><a href="/productteksten">Onze productteksten</a></li>
                         <li><a href="/gidsen">{{ t('nav.guides') }}</a></li>
                         <li><a href="/merken">{{ t('nav.brands') }}</a></li>

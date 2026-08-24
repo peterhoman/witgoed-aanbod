@@ -20,6 +20,19 @@ _FACET_TTL = 15 * 60  # seconden
 _PROS_CONS_CACHE = {}
 _PROS_CONS_TTL = 15 * 60
 
+# Vertrouwenscijfers op de homepage. Ze staan er omdat Google bij de
+# beoordeling van 22 aug expliciet vraagt om zichtbare betrouwbaarheid, en
+# omdat de concurrentie hetzelfde doet zonder onze onderbouwing: Knibble
+# zet "wij vergelijken 263 webshops" op zijn homepage. Wij hebben harder
+# materiaal, maar toonden het nergens.
+#
+# Ze komen LIVE uit de database en worden nooit met de hand bijgewerkt --
+# een geteld getal dat na een maand niet meer klopt is erger dan geen
+# getal (kernregel: beweer niets wat de data niet draagt). Een uur cache,
+# want dit staat op de drukste pagina van de site.
+_CIJFERS_CACHE = {}
+_CIJFERS_TTL = 60 * 60
+
 
 def _pros_cons_by_ean():
     """Redactionele pros/cons uit alle videogidsen, {ean: {...}} — zie
@@ -2192,6 +2205,43 @@ def blog_detail(slug):
     return render_template('guide_detail.html', guide=post)
 
 
+def _vertrouwenscijfers():
+    """Vier controleerbare cijfers over de vergelijker, of None bij twijfel.
+
+    Elk cijfer moet uit de database komen en moet kloppen; ontbreekt er een,
+    dan valt dat cijfer weg in plaats van dat er iets geschats verschijnt.
+    """
+    nu = time.time()
+    hit = _CIJFERS_CACHE.get('data')
+    if hit and nu - hit[0] < _CIJFERS_TTL:
+        return hit[1]
+
+    from models import db, Offer, PriceHistory
+    from sqlalchemy import func
+    data = {}
+    try:
+        data['apparaten'] = Product.query.filter_by(is_available=True).count()
+        data['winkels'] = db.session.query(Offer.retailer).distinct().count()
+        data['prijswijzigingen'] = PriceHistory.query.count()
+        eerste = db.session.query(func.min(PriceHistory.recorded_at)).scalar()
+        if eerste:
+            # Hier opgemaakt en niet in het sjabloon: strftime('%-d') bestaat
+            # niet op Windows, en dan valt de homepage lokaal om.
+            maanden = ('januari', 'februari', 'maart', 'april', 'mei', 'juni',
+                       'juli', 'augustus', 'september', 'oktober', 'november',
+                       'december')
+            data['volgen_sinds'] = '%d %s %d' % (eerste.day,
+                                                 maanden[eerste.month - 1],
+                                                 eerste.year)
+    except Exception as fout:
+        # Een homepage die het doet is belangrijker dan deze cijfers.
+        current_app.logger.warning('[!] Vertrouwenscijfers mislukt: %s', fout)
+        data = {}
+
+    _CIJFERS_CACHE['data'] = (nu, data)
+    return data
+
+
 @main_bp.route('/')
 def index():
     categories = Category.query.filter_by(parent_id=None).all()
@@ -2226,6 +2276,7 @@ def index():
         featured_products=featured_products,
         category_cards=category_cards,
         latest_blog_posts=latest_blog_posts,
+        cijfers=_vertrouwenscijfers(),
     )
 
 

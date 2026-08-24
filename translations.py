@@ -49,6 +49,12 @@ TRANSLATIONS = {
         # Cookie modal
         'cookie.title': 'Cookie-instellingen',
         'cookie.intro': 'Op onze eigen pagina\'s plaatsen wij alleen noodzakelijke cookies. Klik je op een aanbieding, dan ga je naar een aangesloten winkel zoals Bol.com, MediaMarkt, Coolblue, Expert, Alternate of EP; die partijen kunnen je bezoek volgen om onze commissie te bepalen. Lees meer in ons',
+        # Vertrouwenscijfers op de homepage (routes.main._vertrouwenscijfers).
+        'home.cijfers_apparaten': 'apparaten gevolgd',
+        'home.cijfers_winkels': 'winkels vergeleken',
+        'home.cijfers_wijzigingen': 'prijswijzigingen vastgelegd',
+        'home.cijfers_sinds': 'prijzen bijgehouden sinds',
+        'home.cijfers_uitleg': 'Prijzen komen automatisch uit de officiële feeds van de winkels en worden meerdere keren per dag ververst. Wij verkopen zelf niets: je bestelt bij de winkel.',
         'cookie.intro_kort': 'Wij plaatsen zelf alleen noodzakelijke cookies. Klik je door naar een winkel, dan kan die je bezoek volgen om onze commissie te bepalen. Lees meer in ons',
         'cookie.policy_link': 'cookiebeleid',
         'cookie.essential_title': 'Noodzakelijke cookies',
@@ -244,6 +250,11 @@ TRANSLATIONS = {
 
         'cookie.title': 'Cookie settings',
         'cookie.intro': 'On our own pages we only place necessary cookies. When you click an offer you go to a partner store such as Bol.com, MediaMarkt, Coolblue, Expert, Alternate or EP; those parties may track your visit to determine our commission. Read more in our',
+        'home.cijfers_apparaten': 'appliances tracked',
+        'home.cijfers_winkels': 'stores compared',
+        'home.cijfers_wijzigingen': 'price changes recorded',
+        'home.cijfers_sinds': 'tracking prices since',
+        'home.cijfers_uitleg': "Prices come automatically from the stores' official feeds and are refreshed several times a day. We do not sell anything ourselves: you order from the store.",
         'cookie.intro_kort': 'We only place necessary cookies ourselves. If you click through to a store, that store may track your visit to determine our commission. Read more in our',
         'cookie.policy_link': 'cookie policy',
         'cookie.essential_title': 'Necessary cookies',

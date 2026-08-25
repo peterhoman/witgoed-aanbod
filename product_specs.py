@@ -338,6 +338,28 @@ def merknaam(product):
     return canonical_brand((product.brand or '').strip())
 
 
+# Enkelvoud per categorie voor in de paginatitel. Handmatig, want
+# Nederlandse meervouden zijn niet met een regel te vangen ("drogers" ->
+# "droger", maar "apparaatsets" -> "apparaatset" en "kookplaten" ->
+# "kookplaat"). Ontbreekt een slug, dan valt de titel terug op alleen merk
+# en model -- precies zoals hij daarvoor was.
+_CATEGORIE_ENKELVOUD = {
+    'wasmachines': 'wasmachine',
+    'drogers': 'droger',
+    'wasdroogcombinaties': 'was-droogcombinatie',
+    'koelkasten': 'koelkast',
+    'vaatwassers': 'vaatwasser',
+    'magnetrons': 'magnetron',
+    'stofzuigers': 'stofzuiger',
+    'ovens': 'oven',
+    'koffiemachines': 'koffiemachine',
+    'fornuizen': 'fornuis',
+    'kookplaten': 'kookplaat',
+    'afzuigkappen': 'afzuigkap',
+    'apparaatsets': 'apparaatset',
+}
+
+
 def zoektitel(product):
     """De titel voor het browsertabblad en het zoekresultaat.
 
@@ -361,8 +383,26 @@ def zoektitel(product):
         # Merk niet twee keer: "LG LG GBBSJ10DPY" bij feeds die het merk in
         # het Model-veld herhalen.
         if model.upper().startswith(merk.upper()):
-            return model
-        return f"{merk} {model}"
+            kop = model
+        else:
+            kop = f"{merk} {model}"
+
+        # Wat voor apparaat het is, erachter. Gemeten 25 aug in Search
+        # Console: 950 productpagina's kregen 4.143 vertoningen en 81
+        # klikken -- 1,96%, terwijl de mediane positie 8 is en daar 3 tot
+        # 8% normaal is. De titel was een kale modelcode ("Bosch
+        # SMV4EMX01N"), dus wie niet toevallig dat exacte type zocht, zag
+        # niet eens waar de pagina over ging. De code blijft vooraan staan,
+        # want dát is wat mensen intikken.
+        #
+        # Bewust GEEN prijs in de titel: Google bewaart titels dagen tot
+        # weken, en een prijs die daar veroudert is precies de belofte die
+        # deze site nergens doet.
+        soort = _CATEGORIE_ENKELVOUD.get(
+            product.category.slug if product.category else '')
+        if soort and soort.lower() not in kop.lower():
+            return f"{kop} {soort}"
+        return kop
 
     titel = (product.title or '').strip()
     if len(titel) <= _TITEL_MAX:

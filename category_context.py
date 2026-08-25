@@ -506,9 +506,27 @@ def meta_beschrijving(product):
                 # rekenfout; dit zegt hetzelfde in één keer.
                 delen.append(f"De goedkoopste van de {len(prijzen)} {naam} "
                              f"die wij volgen.")
-            elif duurder and andere:
+            elif duurder and andere and duurder * 2 >= andere:
+                # Alleen zeggen als het gunstig uitvalt. "Goedkoper dan 88
+                # van de 232 andere vaatwassers" is waar, maar een zoeker
+                # rekent het andersom: duurder dan 144. Gemeten 25 aug: die
+                # Bosch stond op positie 6 met 75 vertoningen en 1 klik
+                # (1,3%), terwijl een model dat wél goedkoop uitviel op
+                # 2,1% zat. Een fragment moet een reden geven om te
+                # klikken, geen reden om door te scrollen.
                 delen.append(f"Goedkoper dan {duurder} van de {andere} andere "
                              f"{naam} die wij volgen.")
+            elif genoeg and product.retailer_count > 1:
+                # Duurdere helft, maar wel te vergelijken: dát is hier de
+                # reden om te klikken.
+                delen.append(f"Prijzen van {product.retailer_count} winkels "
+                             f"vergeleken, plus het prijsverloop.")
+            elif duurder and andere:
+                # Duurdere helft en maar één winkel: dan zegt de spreiding
+                # van de categorie nog het meest.
+                delen.append(f"Van de {len(prijzen)} {naam} die wij volgen loopt "
+                             f"de prijs van € {_euro(prijzen[0], math.floor)} tot "
+                             f"€ {_euro(prijzen[-1], math.ceil)}.")
             else:
                 delen.append(f"Van de {len(prijzen)} {naam} die wij volgen loopt "
                              f"de prijs van € {_euro(prijzen[0], math.floor)} tot "

@@ -126,14 +126,22 @@ def _product_structured_data(product, merk_facet=None):
     zijn productkennisgraaf en prijzen/winkels in de zoekresultaten tonen —
     voor een prijsvergelijker de belangrijkste SEO-bouwsteen.
     """
+    from urllib.parse import quote
+
     site_url = current_app.config['SITE_URL']
     offers = product.available_offers
 
+    # Zelfde codering als de canonical in app.py. Zonder quote() gaat het mis
+    # bij slugs met een +, haakjes of een letter met puntjes: gemeten 25 aug
+    # week bij 6 van de 40 productpagina's de url hier af van het echte adres
+    # ("...cm724g1b1-+-siemens..." in plaats van "...-%2B-..."), en een kale
+    # plus betekent in een webadres een spatie. Google las hier dus een
+    # pagina die niet bestaat.
     data = {
         '@context': 'https://schema.org',
         '@type': 'Product',
         'name': product.title,
-        'url': f"{site_url}/product/{product.slug}",
+        'url': f"{site_url}/product/{quote(product.slug, safe='-._~')}",
     }
     if product.image_url:
         data['image'] = product.image_url
@@ -142,6 +150,17 @@ def _product_structured_data(product, merk_facet=None):
     ean = (product.ean or '').strip()
     if len(ean) == 13 and ean.isdigit():
         data['gtin13'] = ean
+
+    # Het modelnummer als mpn. Google gebruikt gtin/mpn om een apparaat aan
+    # zijn productkennisgraaf te koppelen, en gemeten op 25 aug is de
+    # modelcode het enige zoekwoord dat deze site klikken oplevert: 787 van
+    # de 1.000 zoektermen waren een modelcode en die leverden 22 van de 23
+    # klikken op. Dan hoort die code ook in de gestructureerde gegevens te
+    # staan; hij ontbrak op alle 40 onderzochte pagina's.
+    from product_specs import modelnummer
+    model = modelnummer(product)
+    if model:
+        data['mpn'] = model
     description = product.ai_description or product.description
     if description:
         data['description'] = description[:500]

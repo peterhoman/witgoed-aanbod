@@ -1,3 +1,4 @@
+import re
 from datetime import timedelta
 
 from flask import (Blueprint, abort, render_template, request, jsonify,
@@ -371,12 +372,46 @@ def _alternatieven_kenmerk(product):
     return ', '.join(delen)
 
 
+def _product_via_ean(slug):
+    """Het product waarvan de EAN achter in deze slug staat, of None.
+
+    Waarom dit bestaat: de slug wordt gebouwd uit de producttitel, en die
+    komt uit de winkelfeed. Past een winkel zijn titel aan -- "Mova V50
+    Ultra - Robotstofzuiger met dweilfunctie" wordt "Mova V50 Ultra
+    Complete White" -- dan verandert onze slug mee en is het oude adres
+    ineens een 404. Google heeft dat oude adres nog in zijn index, blijft
+    het proberen, en de waarde die het had opgebouwd gaat verloren.
+
+    Gemeten 25 aug in de crawlstatistieken: 6% van alle crawlverzoeken
+    eindigde op een 404, bijna 1.400 in 90 dagen. Van acht willekeurige
+    dode adressen bestonden er zes gewoon nog onder een andere slug.
+
+    De EAN staat altijd achteraan de slug (filter_helpers.product_slug),
+    dus daarmee is het apparaat terug te vinden. Alleen als het EAN-deel
+    exact overeenkomt; de rest van de slug doet niet mee.
+    """
+    m = re.search(r'(\d{8,14})$', slug or '')
+    if not m:
+        return None
+    return Product.query.filter_by(ean=m.group(1)).first()
+
+
 @products_bp.route('/product/<slug>')
 def product_detail(slug):
     # Ook niet-leverbare producten tonen (met "tijdelijk niet leverbaar"):
     # gidsen en YouTube-video's linken hierheen, en een 404 breekt die links
     # terwijl het apparaat vaak gewoon terugkomt in de winkel-feeds.
-    product = Product.query.filter_by(slug=slug).first_or_404()
+    product = Product.query.filter_by(slug=slug).first()
+    if product is None:
+        # Oud adres van een apparaat dat nog bestaat? Dan permanent
+        # doorsturen naar het huidige adres, zodat Google de oude URL
+        # vervangt in plaats van hem te blijven proberen.
+        via_ean = _product_via_ean(slug)
+        if via_ean is not None and via_ean.slug and via_ean.slug != slug:
+            from flask import redirect, url_for
+            return redirect(url_for('products.product_detail',
+                                    slug=via_ean.slug), code=301)
+        abort(404)
 
     related_products = Product.query.filter(
         Product.category_id == product.category_id,

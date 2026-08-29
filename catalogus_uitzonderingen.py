@@ -63,6 +63,29 @@ GEBLOKKEERDE_EANS = {
     '6976233674919',   # Stofzuigers: Dreame Tricut vervangborstel
 }
 
+# Apparaten die door de fabrikant of een autoriteit zijn TERUGGEROEPEN wegens
+# een veiligheidsrisico. Apart van de lijst hierboven, want dat gaat om
+# artikelen die geen apparaat zijn; dit gaat om apparaten die je niet moet
+# willen kopen.
+#
+# Wij verkopen niets, maar we sturen mensen wél naar een winkel. Iemand die
+# via ons een apparaat koopt dat in brand kan vliegen, is niet geholpen met
+# "de winkel bood het aan". Dus: uit de catalogus. Google hanteert dezelfde
+# regel ("Producten met een veiligheidsrisico worden wereldwijd niet getoond
+# op Google") en markeerde op 29 aug 2026 de RH9958.
+TERUGGEROEPEN_EANS = {
+    # Rowenta X-Force Flex 14.60 -- de lithium-ionaccu kan oververhitten en
+    # brand veroorzaken. Rowenta roept de accu's van het hele type 14.60
+    # (en 15.60) terug; de Amerikaanse CPSC spreekt van "risk of serious
+    # injury from fire and burn hazards" en adviseert het apparaat niet meer
+    # te gebruiken. Alle drie de 14.60-varianten in onze catalogus geblokkeerd,
+    # want het gaat om de accu die zij delen -- bij twijfel over veiligheid de
+    # veilige kant kiezen.
+    '3221616004573',   # Rowenta X-Force Flex 14.60 RH9958
+    '3221616060449',   # Rowenta X-Force Flex 14.60 RH99A9
+    '3221616104952',   # Rowenta X-Force Flex 14.60 RH99C3
+}
+
 # Merken uit de feeds. Staat een van deze namen direct na de plus, dan gaat het
 # om een tweede apparaat.
 _MERKEN = (
@@ -98,9 +121,15 @@ def is_setje(titel):
 
 
 def hoort_niet_op_de_site(ean):
-    """Staat dit artikel op de blokkeerlijst?"""
-    return (str(ean or '').strip().lstrip('0')
-            in {e.lstrip('0') for e in GEBLOKKEERDE_EANS})
+    """Staat dit artikel op een van de blokkeerlijsten?
+
+    Twee redenen om iets te weren: het is geen apparaat, of het is
+    teruggeroepen wegens een veiligheidsrisico. De uitkomst is dezelfde --
+    het hoort niet in de catalogus.
+    """
+    kaal = str(ean or '').strip().lstrip('0')
+    geblokkeerd = {e.lstrip('0') for e in GEBLOKKEERDE_EANS | TERUGGEROEPEN_EANS}
+    return kaal in geblokkeerd
 
 
 def zorg_voor_setjescategorie(db):

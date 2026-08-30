@@ -48,7 +48,7 @@ from flask import Blueprint, Response, abort, current_app
 
 from filter_helpers import foto_url
 from models import Product, EprelData
-from product_specs import merknaam
+from product_specs import merknaam, modelnummer
 
 merchant_bp = Blueprint('merchant', __name__)
 
@@ -57,6 +57,34 @@ _GELDIGE_KLASSEN = {'A', 'B', 'C', 'D', 'E', 'F', 'G'}
 # Merchant Center kapt titels op 150 tekens en beschrijvingen op 5000.
 _MAX_TITEL = 150
 _MAX_BESCHRIJVING = 5000
+
+
+# Googles eigen productindeling per categorie, met de nummers uit hun
+# officiele taxonomie (taxonomy-with-ids.nl-NL). Zonder dit veld deelt
+# Google onze producten helemaal niet in: in Merchant Center stond bij
+# Prestaties > Categorieen letterlijk "Onbekend" met 48 vertoningen
+# (gemeten 29 aug 2026). Een product dat Google niet kan plaatsen, komt
+# ook niet in de juiste vergelijkingen terecht.
+#
+# Alleen de bladcategorie meesturen is genoeg; Google leidt de rest van
+# het pad zelf af. Ontbreekt een slug in deze tabel, dan gaat het veld
+# gewoon niet mee -- liever geen indeling dan een verkeerde.
+_GOOGLE_CATEGORIE = {
+    'wasmachines': '2706',           # Huishoudelijke apparaten > Wasmachines
+    'drogers': '2612',               # ... > Wasmachines > Wasdrogers
+    'wasdroogcombinaties': '2849',   # ... > Wasmachines > Was-droogcombinaties
+    'koelkasten': '686',             # Keukenmachines > Koelkasten
+    'vaatwassers': '680',            # Keukenmachines > Vaatwasmachines
+    'magnetrons': '753',             # Keukenmachines > Magnetrons
+    'stofzuigers': '619',            # Huishoudelijke apparaten > Stofzuigers
+    'ovens': '683',                  # Keukenmachines > Ovens
+    'koffiemachines': '736',         # Keukenmachines > Koffiezetapparaten en espressomachines
+    'fornuizen': '685',              # Keukenmachines > Fornuizen
+    'kookplaten': '679',             # Keukenmachines > Kookplaten
+    'afzuigkappen': '684',           # Keukenmachines > Afzuigkappen
+    # apparaatsets bewust niet: een wasmachine met droger past in geen
+    # enkele bladcategorie, en gokken is erger dan weglaten.
+}
 
 
 def _geldig_ean(ean):
@@ -157,6 +185,22 @@ def google_merchant_feed():
         merk = merknaam(product) or product.brand
         if merk:
             _sub(item, 'brand', merk, ns=True)
+        # Het modelnummer. Gemeten 25 aug in Search Console: 787 van de
+        # 1.000 zoektermen zijn modelcodes en die leveren 22 van de 23
+        # klikken op. Google koppelt een apparaat aan zijn productdatabase
+        # op gtin en mpn samen; sinds 29 aug staat mpn ook in de
+        # gestructureerde gegevens op de pagina zelf, dus dit trekt de feed
+        # daarmee gelijk.
+        model = modelnummer(product)
+        if model:
+            _sub(item, 'mpn', model, ns=True)
+        if product.category:
+            categorie = _GOOGLE_CATEGORIE.get(product.category.slug)
+            if categorie:
+                _sub(item, 'google_product_category', categorie, ns=True)
+            # Onze eigen indeling ernaast: Google gebruikt die voor
+            # rapportage en als tweede signaal bij het plaatsen.
+            _sub(item, 'product_type', product.category.name, ns=True)
         klasse, regnr = eprel.get(product.id, (None, None))
         if klasse:
             _sub(item, 'energy_efficiency_class', klasse, ns=True)

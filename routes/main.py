@@ -1088,6 +1088,13 @@ _BOL_AANBOD_TTL = 10 * 60
 # venster geen voorganger, en dan valt een sprong stilzwijgend weg.
 _SPRONG_TERUGKIJK_DAGEN = 180
 
+# Hoe kort een prijs moet terugkeren om als terugsprong te tellen. Een
+# feedfout is binnen een dag hersteld (de SMEG combi-oven waarvoor deze
+# meting is gebouwd ging op 29-07 heen en op 30-07 terug); een aanbieding
+# duurt weken. Zonder dit venster kreeg elke aflopende actie het stempel
+# 'teruggesprongen' -- 9 van de 9 op 31 aug -- en dan zegt het niets meer.
+_TERUGSPRONG_VENSTER_DAGEN = 2
+
 
 # Welke EPREL-velden een filterpagina waard zijn, met de indeling in
 # stappen waarop een koper zoekt. Niet elk veld leent zich ervoor: een
@@ -1645,8 +1652,25 @@ def prijssprongen():
             def dichtbij(a, b):
                 return bool(b) and abs(a - b) / b <= 0.02
 
-            later = [r for r in reeks if r.recorded_at > huidige.recorded_at]
-            eerder = [r for r in reeks if r.recorded_at < vorige.recorded_at]
+            # ...maar alleen als het heen-en-weer KORT op elkaar zit.
+            # Zonder tijdvenster telt ook een actiecyclus mee: de eufy X10
+            # Pro stond in juli op EUR 699, ging 11 aug in de actie naar
+            # EUR 429 en op 31 aug terug naar EUR 699,99. Dat is geen
+            # feedfout maar een aanbieding die afloopt -- en toch werd hij
+            # gemarkeerd, omdat die EUR 699 zes weken eerder ook al gold.
+            # Gemeten 31 aug: 9 van de 9 sprongen kregen zo het stempel
+            # 'teruggesprongen', en een alarm dat altijd afgaat wordt niet
+            # meer gelezen.
+            #
+            # De SMEG combi-oven waar deze meting voor is gebouwd ging
+            # binnen EEN DAG heen en terug. Twee etmalen is dus ruim
+            # genoeg om een feedfout te vangen en smal genoeg om een
+            # actieperiode met rust te laten.
+            venster = timedelta(days=_TERUGSPRONG_VENSTER_DAGEN)
+            later = [r for r in reeks
+                     if huidige.recorded_at < r.recorded_at <= huidige.recorded_at + venster]
+            eerder = [r for r in reeks
+                     if vorige.recorded_at - venster <= r.recorded_at < vorige.recorded_at]
             terug = (any(dichtbij(r.price, vorige.price) for r in later)
                      or any(dichtbij(r.price, huidige.price) for r in eerder))
             sprongen.append({

@@ -54,6 +54,48 @@ def retourneren():
     return render_template('legal/retourneren.html')
 
 
+# Woorden die in een Nederlands bericht vrijwel altijd voorkomen. Eén
+# treffer is genoeg om een bericht als Nederlands te beschouwen.
+_NEDERLANDS = (
+    ' de ', ' het ', ' een ', ' ik ', ' is ', ' en ', ' van ', ' voor ',
+    ' met ', ' op ', ' niet ', ' mijn ', ' graag ', ' kan ', ' zou ',
+    ' heb ', ' hebben ', ' wil ', ' jullie ', ' wij ', ' u ', ' je ',
+)
+
+# Waar de bots om vragen. Stuk voor stuk dingen die deze site niet heeft:
+# wij hebben geen nieuwsbrief, geen mailinglijst en geen eigen acties.
+_SPAM_VRAAG = (
+    'newsletter', 'email updates', 'e-mail updates', 'mailing list',
+    'special offers', 'subscribe', 'seo services', 'link building',
+    'guest post', 'backlink', 'crypto', 'casino',
+)
+
+
+def _is_spam(onderwerp, bericht):
+    """Ziet dit bericht eruit als bot-spam?
+
+    Twee voorwaarden tegelijk, want elk apart is te grof:
+
+    1. er staat geen enkel Nederlands woord in, EN
+    2. er wordt gevraagd om iets wat wij niet hebben.
+
+    Alleen op taal filteren zou een echte Engelstalige vraag over een
+    wasmachine weggooien -- de site heeft een Engelse versie, dus die
+    komen voor. Alleen op trefwoorden filteren zou een Nederlander die
+    "newsletter" schrijft treffen. Samen is het veilig: een echte vraag
+    over een apparaat gaat niet over backlinks of een nieuwsbrief.
+
+    Aanleiding: twee inzendingen binnen een week, allebei Engels, allebei
+    met een naam die niet bij het e-mailadres paste ("Joseph Miller" op
+    22 aug met "I want to subscribe to your newsletter", "Christopher
+    Martinez" op 31 aug met "Please include me in your email updates").
+    """
+    tekst = f' {onderwerp} {bericht} '.lower()
+    nederlands = any(w in tekst for w in _NEDERLANDS)
+    vraagt_om = any(w in tekst for w in _SPAM_VRAAG)
+    return vraagt_om and not nederlands
+
+
 @legal_bp.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':
@@ -68,6 +110,14 @@ def contact():
             # (geen mail), zodat de bot niets leert van de afwijzing.
             if request.form.get('website', '').strip():
                 logger.info("Contact form: honeypot gevuld, genegeerd")
+                return jsonify({'success': True,
+                                'message': 'Bedankt! We hebben je bericht ontvangen en nemen spoedig contact op.'}), 200
+
+            # Zelfde afhandeling als de honeypot: doen alsof het gelukt
+            # is, zodat de bot niet leert wat hem tegenhoudt.
+            if _is_spam(subject, message):
+                logger.info("Contact form: als spam herkend, genegeerd (%s)",
+                            subject[:40])
                 return jsonify({'success': True,
                                 'message': 'Bedankt! We hebben je bericht ontvangen en nemen spoedig contact op.'}), 200
 

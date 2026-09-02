@@ -313,6 +313,12 @@ def create_app(config_name=None):
         g.lang = lang if lang in ('nl', 'en') else 'nl'
 
     @app.context_processor
+    def _kaart_tags():
+        """kaart_tags() in de sjablonen, zodat de kaartmacro erbij kan."""
+        from product_specs import kaart_tags
+        return {'kaart_tags': kaart_tags}
+
+    @app.context_processor
     def inject_translations():
         def t(key, **kwargs):
             return translate(key, g.get('lang', 'nl'), **kwargs)

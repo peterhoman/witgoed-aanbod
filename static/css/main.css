@@ -3088,6 +3088,32 @@ section h2 {
    bericht achterhaalt, dan komt dat als zichtbare aantekening onder de
    eerste alinea in plaats van dat de oude tekst stilletjes wordt herschreven
    -- de lezer hoort te zien dat er iets is bijgekomen. */
+/* Korte kenmerken op een productkaart: capaciteit, toerental, energieklasse.
+   Ze staan op één regel en worden nooit afgebroken -- past de derde niet,
+   dan valt hij buiten beeld in plaats van de kaart hoger te maken, want
+   ongelijke kaarthoogtes maken het raster rommelig (designrapport punt 19). */
+.kaart-tags {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    gap: 4px;
+    margin: 0 0 6px;
+    padding: 0;
+    list-style: none;
+}
+
+.kaart-tags li {
+    flex: 0 0 auto;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-light, #5a6472);
+    background: var(--light, #f4f6f8);
+    border: 1px solid var(--border, #e2e6ea);
+    border-radius: 999px;
+    padding: 2px 8px;
+    white-space: nowrap;
+}
+
 .nieuws-update {
     border-left: 3px solid var(--primary, #0090DA);
     background: #f6fbfe;

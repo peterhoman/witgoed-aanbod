@@ -36,6 +36,16 @@
         {% if show_excerpt and product.description %}
         <p class="excerpt">{{ product.description[:100] }}...</p>
         {% endif %}
+        {# Drie korte kenmerken in plaats van alleen een lange feedtitel: op een
+           telefoon is "8 kg · 1400 tpm · A" in een oogopslag te vergelijken.
+           Levert product_specs.kaart_tags er minder dan twee, dan valt het
+           blok weg -- een los blokje ziet eruit als een fout. #}
+        {% set tags = kaart_tags(product) %}
+        {% if tags %}
+        <ul class="kaart-tags">
+            {% for tag in tags %}<li>{{ tag }}</li>{% endfor %}
+        </ul>
+        {% endif %}
         <div class="product-meta">
             <span class="price">
                 {% if product.retailer_count > 1 %}<small class="price-from">{{ t('offer.from') }}</small> {% endif %}€ {{ product.lowest_price|euro }}
@@ -55,7 +65,9 @@
                dan valt het terug op "Op voorraad" in plaats van iets te
                verzinnen. Gemeten: bij ongeveer de helft van de apparaten is
                er een levertijd. #}
-            <span class="availability available">{{ (best.delivery_time if best else '')|levertijd_kort or t('product.in_stock') }}</span>
+            {# Met de winkelnaam erbij: "Morgen in huis bij Coolblue" zegt
+               waar je heen gaat en wanneer het er is, allebei vóór de klik. #}
+            <span class="availability available">{% set lev = (best.delivery_time if best else '')|levertijd_kort %}{% if lev %}{{ lev }} bij {{ best.retailer_name }}{% else %}{{ t('product.in_stock') }}{% endif %}</span>
             {% else %}
             <span class="availability unavailable">{{ t('product.out_of_stock') }}</span>
             {% endif %}

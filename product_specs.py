@@ -269,6 +269,73 @@ def kernspecs(product, aantal=8):
     return _kies_kernspecs(product, aantal)[0]
 
 
+# Kenmerken die kort genoeg zijn voor een productkaart, met de eenheid die
+# erbij hoort. Alleen deze velden komen op een kaart: de rest van de
+# specificaties is te lang of te technisch voor een vak van ruim 160 pixels.
+# De sleutels zijn dezelfde letterlijke feedvelden als in KERNVELDEN.
+KAART_VELDEN = {
+    'Laadvermogen wasmachine': 'kg',
+    'Laadvermogen wasdroger': 'kg',
+    'Toerental centrifuge': 'tpm',
+    'Volume in liters': 'liter',
+    'Volume koelruimte': 'liter',
+    'Aantal couverts': 'couverts',
+    'Waarde energielabel': '',
+    'Ovenvermogen': 'W',
+}
+
+# Een waarde die langer is dan dit past niet op een kaart naast twee andere.
+_KAART_MAX_TEKENS = 12
+
+
+def kaart_tags(product, aantal=3):
+    """Twee of drie korte kenmerken voor op een productkaart, of niets.
+
+    Waarom dit bestaat: op een kaart stond alleen de titel uit de feed, en
+    die is vaak tachtig tekens lang ("OK. Owm 8136 A-10 Wasmachine
+    Voorlader (8 Kg 1400 Rpm A)"). Wie op een telefoon door een categorie
+    scrolt leest dat niet. Drie blokjes -- 8 kg, 1400 tpm, A -- zijn in een
+    oogopslag te vergelijken, en de gegevens hebben we al staan.
+
+    Twee grenzen die bewust streng zijn:
+
+    - Alleen velden uit KAART_VELDEN. De feed levert ook "Vermogen per
+      kookzone: zone linksvoor en rechtsachter"; zulke waarden horen niet
+      als blokje op een kaart.
+    - Minder dan twee bruikbare kenmerken levert niets op. Eén los blokje
+      ziet eruit als een fout, en de helft van de catalogus heeft helemaal
+      geen specificaties (gemeten 2 september 2026: 48% van de
+      productpagina's heeft een specificatieblok).
+
+    Leest alleen product.specs en product.category, allebei al geladen --
+    geen extra databasevraag per kaart. Dat is hier eerder misgegaan.
+    """
+    specs = product.specs or {}
+    if not specs:
+        return []
+
+    slug = product.category.slug if product.category else ''
+    tags = []
+    for veld in KERNVELDEN.get(slug, []):
+        if len(tags) >= aantal:
+            break
+        if veld not in KAART_VELDEN:
+            continue
+        waarde = specs.get(veld)
+        if not waarde or _is_lege_waarde(waarde):
+            continue
+        tekst = str(waarde).strip()
+        if len(tekst) > _KAART_MAX_TEKENS:
+            continue
+        eenheid = KAART_VELDEN[veld]
+        # Staat de eenheid al in de waarde ("9 liter"), dan niet nog eens.
+        if eenheid and not any(c.isalpha() for c in tekst):
+            tekst = '%s %s' % (tekst, eenheid)
+        tags.append(tekst)
+
+    return tags if len(tags) >= 2 else []
+
+
 def groepeer_specs(product):
     """De overige specs, verdeeld over benoemde blokken.
 

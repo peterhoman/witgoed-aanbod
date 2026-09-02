@@ -30,8 +30,19 @@ def naar_winkel(offer_id):
     hebben.
 
     Nu wijst de knop hierheen, en /uit/ staat in robots.txt op slot. Een
-    crawler die zich aan de regels houdt komt niet verder; het netwerk ziet
-    alleen echte bezoekers.
+    crawler die zich aan de regels houdt komt niet verder.
+
+    Wat daar op 2 september aan ontbrak
+    -----------------------------------
+    "Een crawler die zich aan de regels houdt" was de zwakke plek: wie zich
+    er niets van aantrekt kwam er nog steeds langs, en werd bovendien
+    gewoon doorgestuurd naar het netwerk -- de bot-controle hieronder gold
+    alleen de teller, niet de omleiding. Gemeten: Search Console telde 18
+    klikken uit Google in 28 dagen, terwijl deze teller in zes dagen ruim
+    1.500 doorkliks meldde, op sommige dagen meer doorkliks dan
+    productpaginaweergaven. Sindsdien krijgt een herkende robot 403 en gaat
+    hij dus niet naar de winkel, en wordt per doorklik geteld wat voor
+    soort bezoeker het was (pageviews.bron).
 
     En het levert het cijfer op dat tot nu toe ontbrak: hoeveel mensen gaan
     er daadwerkelijk naar een winkel, en naar welke. Dat is de vraag waar
@@ -45,16 +56,25 @@ def naar_winkel(offer_id):
     from flask import redirect
     from models import Offer
 
-    from pageviews import is_bot, tel
+    from pageviews import BRON_ANDERS, BRON_ROBOT, bron, tel
 
     offer = Offer.query.get(offer_id)
     if offer is None or not offer.link:
         abort(404)
 
-    # Een bot die zich niet aan robots.txt houdt telt niet mee; anders meten
-    # we straks weer wat we juist wilden uitfilteren.
-    if not is_bot(request.headers.get('User-Agent')):
-        tel(f"uit-{offer.retailer}")
+    # Wat voor bezoeker is dit? Zie pageviews.bron -- de teller stond op meer
+    # doorkliks dan productpaginaweergaven, en dat kan bij mensen niet.
+    soort = bron(request.headers)
+    tel(soort)
+
+    # Een robot gaat niet naar de winkel. Dit is de kern van de reparatie:
+    # tot nu toe werd een herkende robot alleen niet geteld, maar wel
+    # doorgestuurd -- en dus telde het affiliate-netwerk hem gewoon als klik.
+    # Precies het patroon waarop een account gemarkeerd wordt.
+    if soort in (BRON_ROBOT, BRON_ANDERS):
+        abort(403)
+
+    tel(f"uit-{offer.retailer}")
 
     # 302 en niet 301: dit is geen verhuizing van een pagina maar een
     # doorverwijzing per klik, en de bestemming verandert zodra de winkel
@@ -73,7 +93,7 @@ def naar_winkel_product(product_id):
     """
     from flask import redirect
 
-    from pageviews import is_bot, tel
+    from pageviews import BRON_ANDERS, BRON_ROBOT, bron, tel
 
     product = Product.query.get(product_id)
     if product is None:
@@ -82,8 +102,12 @@ def naar_winkel_product(product_id):
     if not doel:
         abort(404)
 
-    if not is_bot(request.headers.get('User-Agent')):
-        tel('uit-terugval')
+    soort = bron(request.headers)
+    tel(soort)
+    if soort in (BRON_ROBOT, BRON_ANDERS):
+        abort(403)
+
+    tel('uit-terugval')
     return redirect(doel, code=302)
 
 

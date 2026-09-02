@@ -3080,6 +3080,21 @@ section h2 {
     display: none;
 }
 
+/* De babbelbotknop staat vast rechtsonder (laag 9000, gezet in
+   static/js/babbelbot.js) en de cookiebalk onderaan (laag 2000). De bel lag
+   daardoor over de knop "Alles accepteren": op een telefoon over 96% ervan,
+   op een computer over de hele knop. Wie wilde accepteren opende de chatbot,
+   en de balk bleef op elk scherm de onderste strook bedekken -- op mobiel een
+   vijfde, precies waar vaak de winkelknop staat.
+
+   Zolang er nog geen keuze is gemaakt gaat de bel dus weg. Eén beslissing
+   tegelijk; zodra de bezoeker kiest verdwijnt de balk en staat de bel er
+   weer. De regel is specifieker dan die in babbelbot.js, dus de volgorde
+   van de stijlbladen maakt niet uit. */
+body.cookiebalk-open #babbelbot-knop {
+    display: none;
+}
+
 .cookie-balk-tekst {
     margin: 0;
     max-width: 680px;

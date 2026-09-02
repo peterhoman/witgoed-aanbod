@@ -238,6 +238,14 @@
         </div>
     </div>
 
+    {# Het meet-ID van Analytics, alleen als het is ingesteld. Staat het er
+       niet, dan slaat de site niets op wat niet strikt noodzakelijk is en
+       toont hij geen cookiemelding; staat het er wel, dan verschijnt de
+       melding vanzelf en laadt Analytics pas na toestemming. Dit moet vóór
+       main.js staan, want die kijkt ernaar. #}
+    {% if config.GA_MEASUREMENT_ID %}
+    <script>window.GA_MEASUREMENT_ID = {{ config.GA_MEASUREMENT_ID|tojson }};</script>
+    {% endif %}
     <script src="{{ asset('js/main.js') }}"></script>
     {% if chat_enabled %}
     <script src="{{ asset('js/babbelbot.js') }}" defer></script>

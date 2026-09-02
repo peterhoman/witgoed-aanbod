@@ -24,6 +24,12 @@ class Config:
     # Coolblue productfeed via Awin (publisher 2969655, advertiser 85161)
     AWIN_FEED_APIKEY = os.getenv('AWIN_FEED_APIKEY')
 
+    # Google Analytics -- bewust leeg. Zolang deze leeg is slaat de site niets
+    # op wat niet strikt noodzakelijk is, en toont hij dus ook geen
+    # cookiemelding (zie static/js/main.js). Vul je hem, dan verschijnt de
+    # melding vanzelf weer en laadt Analytics pas na toestemming.
+    GA_MEASUREMENT_ID = os.getenv('GA_MEASUREMENT_ID')
+
     # Claude API
     ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
 

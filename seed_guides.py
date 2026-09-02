@@ -40,11 +40,13 @@ BLOG_POSTS = [
     },
     {
         'slug': 'witgoedaanbod-vergelijkt-nu-6-winkels',
-        'title': 'WitgoedAanbod vergelijkt nu 6 winkels: EP en Alternate zijn live',
-        'excerpt': 'Onze vergelijker is deze maand uitgebreid met twee winkels: EP (met een groot witgoedassortiment) en elektronica-specialist Alternate. Meer prijzen per apparaat, dus een completer beeld.',
+        'title': 'EP en Alternate zijn live: twee winkels erbij',
+        'excerpt': 'Onze vergelijker is uitgebreid met twee winkels: EP (met een groot witgoedassortiment) en elektronica-specialist Alternate. Meer prijzen per apparaat, dus een completer beeld.',
         'category_slug': None,
         'content': """
-<p>Goed nieuws voor iedereen die via WitgoedAanbod.nl prijzen vergelijkt: er doen sinds deze maand twee winkels extra mee. Daarmee vergelijken we de prijzen van <strong>zes grote Nederlandse webshops</strong>: Bol, Coolblue, MediaMarkt, Expert, Alternate en EP.</p>
+<p>Goed nieuws voor iedereen die via WitgoedAanbod.nl prijzen vergelijkt: er doen twee winkels extra mee. <strong>EP</strong> en <strong>Alternate</strong> komen naast Bol, Coolblue, MediaMarkt en Expert te staan.</p>
+
+<p class="nieuws-update"><strong>Bijgewerkt:</strong> sinds dit bericht is Voordeligwitgoed er ook bij gekomen. Hoeveel winkels we op dit moment vergelijken staat altijd boven aan de <a href="/">homepage</a> — dat getal komt rechtstreeks uit onze database en klopt dus altijd.</p>
 
 <h2>Wat merk je daarvan?</h2>
 <p><strong>EP</strong> is een echte witgoedwinkel — van wasmachines en koelkasten tot afzuigkappen — en voegt in vrijwel elke categorie honderden actuele prijzen toe. <strong>Alternate</strong> is vooral sterk in elektronica en vult de vergelijking aan bij onder meer stofzuigers en koffiemachines. Per apparaat zie je dus vaker meerdere winkels naast elkaar, en dat vergroot de kans dat je de laagste prijs te pakken hebt.</p>

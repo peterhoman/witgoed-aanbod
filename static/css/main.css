@@ -3080,6 +3080,17 @@ section h2 {
     display: none;
 }
 
+/* Een nieuwsbericht is een momentopname. Staat er later iets bij dat het
+   bericht achterhaalt, dan komt dat als zichtbare aantekening onder de
+   eerste alinea in plaats van dat de oude tekst stilletjes wordt herschreven
+   -- de lezer hoort te zien dat er iets is bijgekomen. */
+.nieuws-update {
+    border-left: 3px solid var(--primary, #0090DA);
+    background: #f6fbfe;
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+}
+
 /* De babbelbotknop staat vast rechtsonder (laag 9000, gezet in
    static/js/babbelbot.js) en de cookiebalk onderaan (laag 2000). De bel lag
    daardoor over de knop "Alles accepteren": op een telefoon over 96% ervan,

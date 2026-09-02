@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
         cookieModal.classList.add('hidden');
         if (cookieBalk) cookieBalk.classList.add('hidden');
+        document.body.classList.remove('cookiebalk-open');
         applyConsent(consent);
     }
 
@@ -96,6 +97,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // het venster komt alleen nog op verzoek (instellingenknop).
     if (!getConsent() && cookieBalk) {
         cookieBalk.classList.remove('hidden');
+        // Zolang de balk er staat, gaat de babbelbotknop weg. Die knop staat
+        // vast rechtsonder op laag 9000 en de balk op laag 2000, dus hij lag
+        // precies over "Alles accepteren" heen -- op een telefoon over 96%
+        // van die knop, op een computer over de hele knop. Wie accepteren
+        // wilde, opende de chatbot, en de balk bleef staan. Eerst kiezen,
+        // dan pas de bot.
+        document.body.classList.add('cookiebalk-open');
     }
 
     if (balkReject) {

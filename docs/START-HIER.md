@@ -1,10 +1,221 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **19 augustus 2026** (het blok "Update 19 augustus" hieronder is
+Bijgewerkt **1 september 2026** (het blok "Update 1 september" hieronder is
 het nieuwste; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Update 1 september — Merchant Center vrij, en waar de klikken vandaan komen
+
+### Twee dingen die de werkwijze veranderen
+
+**1. Search Console IS toegankelijk.** In alle eerdere overdrachten stond
+dat het geblokkeerd was en dat Peter schermafdrukken moest sturen. Dat
+klopte niet: het was hetzelfde accountnummer-probleem als bij Merchant
+Center. Werkende URL:
+
+    https://search.google.com/u/5/search-console?resource_id=sc-domain:witgoedaanbod.nl
+
+Met `/u/0/` verschijnt "Je hebt geen toegang tot deze property" — dat is
+misleidend, de property bestaat wel. **Vraag Peter dus geen schermafdrukken
+meer van Search Console of Merchant Center; meet zelf.** Prestaties per
+pagina uitlezen: dezelfde basis-URL met
+`/performance/search-analytics?...&breakdown=page&num_of_months=3`, dan in
+de pagina op het tabblad PAGINA'S klikken (via javascript_tool het element
+met innerText "PAGINA'S" zoeken en aanklikken) en de tabel uitlezen met
+`document.querySelectorAll('tr')`. Levert tot 1.000 rijen.
+
+**2. Een supportvraag stellen kost geen beoordelingspoging.** Dat is wat de
+Merchant Center-blokkade heeft opgelost. Onthoud die volgorde: eerst
+vragen, dan pas een formele beoordeling aanvragen.
+
+### Merchant Center: OPGELOST na 25 dagen
+
+Op 28 augustus zijn **beide accountblokkades opgeheven**. Geen banner meer,
+en onder Producten → Vereist aandacht staat "Al uw oplossingen met
+prioriteit zijn afgerond". Stand: 2,92K producten, vrijwel alles
+goedgekeurd.
+
+Wat de doorslag gaf: op 23 augustus is een **supportvraag** ingediend (via
+het vraagteken in MC → Contact opnemen, categorie Overig, schending
+"Niet-werkende landingspagina", antwoord per e-mail) in plaats van een
+derde beoordeling. Google hief binnen twee dagen de landingspagina-blokkade
+op en bedankte expliciet voor "de gedetailleerde context over de inrichting
+van uw website als prijsvergelijkingsplatform" — onderbouwd met eigen
+metingen (alle 2.903 feedlinks plus 996 interne links, allemaal 200,
+mediaan 0,25 s, gemeten als AdsBot-Google).
+
+**De laatste beoordelingspoging is nooit gebruikt en blijft beschikbaar.**
+
+**Belangrijke correctie voor het archief:** op 23 augustus concludeerden
+drie AI-modellen unaniem dat een affiliate-vergelijker zonder eigen
+checkout hier per definitie niet mag zijn zonder CSS-status (50
+winkeldomeinen vereist, wij hebben er zeven). Dat bleek NIET te kloppen —
+Google heeft het model geaccepteerd zoals het is. Wees voorzichtig met dat
+argument; unanieme modellen kunnen samen ongelijk hebben.
+
+### Het eerste harde resultaat: 31 augustus
+
+| Dag | Shopping-vertoningen | Klikken |
+|---|---|---|
+| 4 t/m 30 aug | minder dan 20 per dag | 0 |
+| **31 aug** | **1.050** | **11** |
+
+Doorkliks naar de winkel via dit kanaal: 13 (+160%). Twee mogelijke
+oorzaken die niet te scheiden zijn: het account werd 28 aug vrijgegeven, en
+op 31 aug om 07:00 haalde Google voor het eerst de feed op mét
+`google_product_category`, `mpn` en `product_type` (PR #129).
+**Volg dagelijks of dit doorzet** — MC → Analytics → Producten → Verkeer,
+tabblad Datum.
+
+### Waar de klikken vandaan komen (gemeten 25 aug, 3 maanden SC-data)
+
+Dit is de belangrijkste meting van deze periode.
+
+| Soort pagina | Pagina's met vertoningen | Klikken | Vertoningen |
+|---|---|---|---|
+| Productpagina's | 950 | **81** | 4.143 |
+| Categoriepagina's | 12 | 1 | 232 |
+| Koopgidsen/blog | 12 | **0** | 167 |
+| Homepage | 1 | 7 | 80 |
+| Alle 552 filterpagina's samen | 19 | **0** | 99 |
+
+En per zoekterm:
+
+| Zoektype | Termen | Klikken | Gem. positie |
+|---|---|---|---|
+| Modelcodes ("smv4emx01n") | 787 | **22** | 29 |
+| Gewone woorden ("vaatwasser") | 213 | **1** | 38 |
+
+**Drie conclusies, alle drie met cijfers onderbouwd:**
+
+1. **Meer filterpagina's bouwen heeft geen zin.** Van de 552 die er staan
+   krijgen er 19 überhaupt een vertoning, samen nul klikken. Het plan
+   "Slimster heeft er 57 voor wasmachines, wij moeten er meer" is van tafel.
+2. **Op generieke woorden zijn we kansloos**, en dat hoeft geen onderzoek
+   meer: "witgoed kopen" staat op positie 105,8, "vaatwasser" op 76. Dat
+   verklaart de koopgidsen definitief.
+3. **De modelcode is het enige zoekwoord dat telt** — en daar staan we op
+   pagina 1 (mediane positie 8) met een doorklikratio van slechts **1,96%**,
+   waar 3 tot 8% normaal is. Dat is de hefboom, niet meer pagina's.
+
+Er is GEEN meetbaar verschil tussen productpagina's die wel en niet vertoond
+worden (steekproef 200: winkelaantal, specificaties, EPREL, prijsgrafiek,
+metalengte, paginagrootte — alles gelijk). Crawldiepte leek te verklaren
+(38% tegen 18%) maar viel bij 200 pagina's weg naar 39% tegen 29%,
+chi-kwadraat 1,45: niet significant. Het is Googles crawlbudget op een jong
+domein, geen kwaliteitsprobleem.
+
+### Wat er gebouwd is (PR #119 t/m #131)
+
+Gericht op die doorklikratio en op wat Google leest:
+
+- **#124 klikwaardige titels** — het soort apparaat achter de modelcode
+  ("Bosch SMV4EMX01N vaatwasser"), en het fragment zegt niet langer
+  "goedkoper dan 88 van de 232" bij apparaten in de duurdere helft: een
+  zoeker rekent dat andersom.
+- **#125 modelcodes met een spatie** — Miele "DGC 7151", Liebherr
+  "IRd 4100-62", Whirlpool "WPM 966W" werden nooit herkend. 28 extra
+  herkenningen op 300 titels, nul valse treffers.
+- **#127 structured data** — het webadres klopte bij 15% niet (kale plus in
+  plaats van %2B), en `mpn` ontbrak volledig.
+- **#126 oude productadressen** — 6% van alle crawls liep op een 404 omdat
+  slugs meeveranderen met feedtitels. Nu 301 naar het huidige adres via de
+  EAN achterin de slug.
+- **#129 feed** — `google_product_category` (Googles taxonomie), `mpn` en
+  `product_type`. De feed vertelde nergens WAT een product was; MC toonde
+  "Onbekend" bij Categorieën.
+- **#120 cookiebalk mobiel** van 31% naar 19% van het scherm.
+- **#121 vertrouwenscijfers homepage** (live uit de database) en /over-ons
+  dat expliciet zegt: vergelijker, geen webwinkel.
+- **#122 deelplaatje** — og:image bestond NIET (404), dus gedeelde links
+  hadden geen plaatje. Plus een logo voor Trustpilot; script staat in
+  `scripts/maak_beeldmateriaal.py`.
+- **#123 Trustpilot-link** in de voettekst; profiel geclaimd op
+  nl.trustpilot.com/review/witgoedaanbod.nl (gratis plan).
+- **#119 MediaMarkt-prijzen** — de sync nam blind regel [0] uit
+  priceHistory; nu de regel met de nieuwste datum. Bij een sprong komt de
+  ruwe feedprijs in het synclogboek.
+- **#128 teruggeroepen Rowenta's** — drie X-Force Flex 14.60 uit de
+  catalogus; de accu kan brand veroorzaken (CPSC-recall). Aparte lijst
+  `TERUGGEROEPEN_EANS` in catalogus_uitzonderingen.py.
+- **#130 terugsprong-venster** — een sprong telde als "teruggesprongen"
+  zodra die prijs OOIT eerder gold; nu alleen binnen twee dagen.
+- **#131 spamfilter contactformulier** — geen Nederlands woord ÉN vraagt om
+  iets wat wij niet hebben (newsletter, backlinks). Beide voorwaarden
+  tegelijk, anders sneuvelt een echte Engelse vraag over een wasmachine.
+
+### Nieuwe valkuilen — allemaal deze periode zelf gemaakt
+
+**Een verklaring geven vóór je hem hebt gemeten.** Toen zes producten
+"pagina niet beschikbaar" kregen, verklaarde ik dat met "dat was tijdens een
+uitrol". Daarna bleek de laatste merge twintig uur eerder te zijn geweest.
+Meet eerst, verklaar daarna.
+
+**Een steekproef van 100 kan liegen.** Crawldiepte leek het verschil te
+verklaren (38% tegen 18%). Bij 200 pagina's viel het weg. Verdubbel de
+steekproef vóór je een conclusie hardop uitspreekt.
+
+**Een alarm dat altijd afgaat, wordt genegeerd.** De prijssprongenmeting
+stond op 9 van 9 "teruggesprongen" terwijl geen enkele een feedfout was.
+Dan mist hij juist waar hij voor gebouwd is.
+
+**Getallen uit je hoofd zijn geen bron.** Ik noemde "binnen 28 dagen" voor
+een Search Console-validatie; dat getal staat nergens in Googles
+documentatie (die zegt "ongeveer twee weken, soms langer"). Peter vroeg
+ernaar en het klopte niet.
+
+**Drie modellen kunnen samen ongelijk hebben.** Zie de Merchant
+Center-correctie hierboven.
+
+### Wat er NU loopt (niets aan doen, wel volgen)
+
+1. **Shopping-vertoningen** — zetten die 1.050 van 31 aug door? Dagelijks
+   kijken.
+2. **Doorklikratio organisch** — nu 1,96%; half september opnieuw meten.
+   Google moet de nieuwe titels eerst opnieuw ophalen.
+3. **Railway 502** — adressen met een kaal procentteken geven nog steeds
+   502. Supportmelding staat sinds 19 aug op
+   station.railway.com/questions/edge-proxy-returns-502-for-paths-with-in-b2af4436
+   Eén reactie uit de gemeenschap, niets van het team zelf. Meetcommando:
+   `curl -o /dev/null -w "%{http_code}" https://www.witgoedaanbod.nl/%-`
+4. **1.243 onontdekte pagina's** — validatie loopt sinds 4 aug, nog geen
+   enkele gecrawld. Rekenkundig 45 dagen op basis van Googles
+   crawlstatistieken (264 crawls per dag, 15% ontdekking, 68% HTML), dus
+   half oktober. NIET opnieuw valideren.
+5. **"Gecrawld – niet geïndexeerd" validatie MISLUKT** (29 aug, 11
+   pagina's). Nagekeken: die pagina's geven 200, staan in de sitemap en
+   hebben een eigen tekst. Geen fout, wel Googles oordeel. Niet opnieuw
+   valideren.
+6. **Zes "productpagina niet beschikbaar"** in MC. Alle 2.893 feedlinks
+   getest als AdsBot-Google: allemaal 200. Loos alarm, maar neem het getal
+   dagelijks mee — loopt het op naar dertig, dan is er een patroon en moet
+   de sync uit het webproces (de planner draait nu in dezelfde gunicorn-
+   worker als de site).
+
+### Wat bewust NIET gedaan wordt
+
+- **Geen nieuwe filterpagina's en geen nieuwe koopgidsen** (met cijfers
+  onderbouwd, zie hierboven).
+- **Geen Cloudflare** voor de 502's. Op 23 aug voorgesteld toen ik dacht dat
+  die negen adressen het MC-account blokkeerden; dat bleek niet zo. Het
+  risico (verouderde prijzen door caching, botbescherming die Google
+  buitensluit) weegt niet op tegen negen dode adressen.
+- **Geen Google Mijn Bedrijf koppelen aan Trustpilot** — dat haalt het
+  winkelprofiel van Avantius binnen en herstelt precies de
+  tegenstrijdigheid die op /over-ons is opgeruimd.
+- **Geen TrustBox-widget, geen Google Tag Manager** — extern JavaScript, en
+  de widgets zijn vergrendeld in het gratis plan.
+- **Geen verzend- en retourbeleid invullen in MC** (Winkelkwaliteit toont
+  daardoor "Geen score"). Het retourvenster van 14 dagen is bewust zo
+  gelaten: vier van de zeven winkels geven niet meer.
+- **Model blijft claude-opus-5** voor de productteksten. Haiku bespaart
+  ongeveer 29 euro per jaar; die teksten brachten "Gecrawld – niet
+  geïndexeerd" van 100 naar 4 en dat risico is die besparing niet waard.
+  Automatisch aanvullen van het Anthropic-saldo staat sinds 24 aug aan.
 
 ---
 
@@ -218,12 +429,20 @@ winkelfeeds. Eigenaar is Peter Homan (Avantius, Sassenheim).
    `git branch --show-current` en `git show --stat HEAD`.
 10. **Geef Peter geen webadres alsof hij er iets mee moet.** Meetpagina's roep
     je zelf aan en je vertelt hem de uitkomst.
-11. **Wat Peter niet kan, kan hij wel laten zien.** Search Console, Railway,
-    TradeTracker en Anthropic zijn voor de browser hier geblokkeerd; Merchant
-    Center wel toegankelijk. Vraag om een schermafdruk en zeg er precies bij
-    waar hij moet klikken — hij leert er graag van.
+11. **Meet zelf; vraag alleen een schermafdruk als het echt niet kan.**
+    Search Console EN Merchant Center zijn beide toegankelijk via Peters
+    Chrome, mits met het juiste accountnummer in de URL — `/u/5/` bij
+    Search Console, `authuser=5` bij Merchant Center. Zonder dat nummer
+    krijg je een scherm dat suggereert dat je geen toegang hebt; dat is
+    misleidend. Railway, TradeTracker en de Anthropic-console zijn nog
+    ongetest of onbereikbaar: probeer die desnoods ook eens met een
+    accountnummer voordat je aanneemt dat het niet kan. Moet Peter toch
+    iets opzoeken, zeg er dan precies bij waar hij moet klikken.
 12. **Een meting die "alles goed" zegt, is pas te vertrouwen als je hem één
     keer tegen een andere bron hebt gelegd.** Zie de valkuilen.
+13. **Verklaar niets voordat je het hebt gemeten, en verdubbel je
+    steekproef voordat je een conclusie hardop uitspreekt.** Beide regels
+    komen uit fouten van eind augustus; zie het blok van 1 september.
 
 ---
 
@@ -373,13 +592,23 @@ die niemand had gemeld.
 - `/api/sync-status` → draaien alle tien routines? Staan er prijssprongen in
   `laatste_synclogs`? **Leg die naast /api/prijssprongen** — als het logboek
   sprongen meldt en de meetpagina niet, klopt er iets niet.
-- Merchant Center → daalt het aantal afgekeurde producten?
-- Search Console → nieuwe 404's, serverfouten, noindex?
+- Merchant Center (authuser=5) → daalt het aantal afgekeurde producten?
+  Sinds 1 sept ook: **hoeveel Shopping-vertoningen en klikken** (Analytics →
+  Producten → Verkeer, tabblad Datum). Op 31 aug sprong dat van minder dan
+  20 naar 1.050 met 11 klikken; de vraag is of dat doorzet.
+- Search Console (/u/5/) → nieuwe 404's, serverfouten, noindex?
+- Railway-proef: `curl -o /dev/null -w "%{http_code}" https://www.witgoedaanbod.nl/%-`
+  → nog steeds 502? Zodra dat iets anders wordt, heeft Railway het gerepareerd
+  en mag de 5xx-validatie in Search Console opnieuw.
 
 **Meld ook als alles goed is.** "Niets gevonden" is een uitkomst.
 
-Elke twee tot vier weken, niet vaker: "Gevonden — niet geïndexeerd" (918) en
-"Gecrawld — niet geïndexeerd" (4, was 100). Die bewegen in weken.
+Elke twee tot vier weken, niet vaker: "Gevonden — niet geïndexeerd" (1.243 op
+1 sept) en "Gecrawld — niet geïndexeerd" (11, validatie mislukt op 29 aug).
+Die bewegen in weken; niet opnieuw valideren.
+
+Half september: **de doorklikratio opnieuw meten** (was 1,96% op 25 aug).
+Google moet de nieuwe titels eerst opnieuw ophalen, eerder meten zegt niets.
 
 ---
 

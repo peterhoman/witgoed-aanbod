@@ -1481,6 +1481,10 @@ section h2 {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 8px 10px;
+    /* 44 pixels hoog, net als de andere tikdoelen (designrapport punt 16).
+       Het klikvlak was 39 en het vinkje zelf maar 17x17; op een telefoon
+       staat dit vlak vlak boven de knop naar de productpagina. */
+    min-height: 44px;
     margin-bottom: 10px;
     cursor: pointer;
     user-select: none;

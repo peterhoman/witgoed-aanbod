@@ -47,7 +47,15 @@
             {% if product.retailer_count > 1 %}
             <span class="shops-count">{{ t('offer.at_shops', count=product.retailer_count) }}</span>
             {% elif product.is_available %}
-            <span class="availability available">{{ t('product.in_stock') }}</span>
+            {# Bij één winkel stond hier "Op voorraad" -- waar terwijl het niets
+               toevoegt: een niet-leverbaar apparaat staat er niet tussen. De
+               levertijd hebben we wel (hij staat al op de productpagina) en dat
+               is bij witgoed vaak doorslaggevend. Het filter geeft alleen een
+               tekst terug als hij die met zekerheid kan lezen; lukt dat niet,
+               dan valt het terug op "Op voorraad" in plaats van iets te
+               verzinnen. Gemeten: bij ongeveer de helft van de apparaten is
+               er een levertijd. #}
+            <span class="availability available">{{ (best.delivery_time if best else '')|levertijd_kort or t('product.in_stock') }}</span>
             {% else %}
             <span class="availability unavailable">{{ t('product.out_of_stock') }}</span>
             {% endif %}

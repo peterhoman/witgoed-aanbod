@@ -70,7 +70,13 @@
            "AI" in de naam, de ondertitel in de kop en de zin in het
            welkomstbericht — drie plekken, zodat het ook duidelijk is voor
            wie de kop overslaat of het venster al open had staan. */
-        var knop = maakElement('<button id="babbelbot-knop" type="button">&#128172; Vraag de AI-Babbelbot</button>');
+        // Het opschrift zit in een eigen span, zodat het op een telefoon kan
+        // wijken en er een ronde knop van 52 pixels overblijft (main.css).
+        // De volledige naam blijft in aria-label staan, dus een schermlezer
+        // hoort hem nog steeds.
+        var knop = maakElement('<button id="babbelbot-knop" type="button" aria-label="Vraag de AI-Babbelbot">' +
+            '<span aria-hidden="true">&#128172;</span>' +
+            '<span class="babbelbot-label"> Vraag de AI-Babbelbot</span></button>');
         var venster = maakElement(
             '<div id="babbelbot-venster" role="dialog" aria-label="AI-Babbelbot productadvies">' +
             '<div id="babbelbot-kop"><div><strong>AI-Babbelbot</strong>' +

@@ -85,9 +85,12 @@
                 <nav class="nav-secondary">
                     <a href="/gidsen" class="nav-cta">{{ t('nav.guides') }}</a>
                     <a href="/blog">{{ t('blog.title') }}</a>
-                    <a href="/privacy">{{ t('nav.privacy') }}</a>
-                    <a href="/disclaimer">{{ t('nav.disclaimer') }}</a>
-                    <a href="/contact">{{ t('nav.contact') }}</a>
+                    {# Deze drie staan ook in de voettekst. Op een telefoon
+                       wijken ze daarheen: bovenaan een productpagina kost
+                       elke regel ruimte die de prijs naar beneden duwt. #}
+                    <a href="/privacy" class="nav-ook-in-voet">{{ t('nav.privacy') }}</a>
+                    <a href="/disclaimer" class="nav-ook-in-voet">{{ t('nav.disclaimer') }}</a>
+                    <a href="/contact" class="nav-ook-in-voet">{{ t('nav.contact') }}</a>
                 </nav>
             </div>
 
@@ -165,6 +168,14 @@
                 </div>
             </div>
             <div class="footer-bottom">
+                {# Dezelfde taalkeuze als bovenaan. Op een telefoon staat
+                   alleen deze; op een groot scherm alleen die in de kop.
+                   Zo verdwijnt de keuze nergens, maar kost hij bovenaan
+                   geen 55 beeldpunten meer. #}
+                <div class="lang-switcher lang-switcher-voet">
+                    <a href="/set-language/nl" class="{{ 'active' if current_lang == 'nl' }}">NL</a>
+                    <a href="/set-language/en" class="{{ 'active' if current_lang == 'en' }}">EN</a>
+                </div>
                 <p>{{ t('footer.copyright') }}</p>
             </div>
         </div>

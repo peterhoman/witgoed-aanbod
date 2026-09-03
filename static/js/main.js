@@ -44,6 +44,25 @@ function loadAnalytics() {
     window.gtag('config', window.GA_MEASUREMENT_ID, { anonymize_ip: true });
 }
 
+// Valt er eigenlijk wel iets te kiezen?
+//
+// Gemeten op de live site op 2 september 2026: document.cookie leeg,
+// localStorage leeg, geen meet-ID voor Analytics. De site sloeg dus niets op
+// wat niet strikt noodzakelijk is -- en vroeg toch op elke pagina om
+// toestemming, met een balk die op een telefoon 154 van de 812 beeldpunten
+// bedekte en het eerste was wat iemand uit Google te zien kreeg.
+//
+// Voor strikt noodzakelijke opslag (de cookiekeuze zelf, de taalkeuze en de
+// vergelijklijst -- zie /cookies) is toestemming niet vereist. De melding
+// verschijnt daarom pas zodra er werkelijk iets niet-noodzakelijks aanstaat.
+// Wordt Analytics later aangezet door GA_MEASUREMENT_ID te vullen, dan komt
+// de balk vanzelf terug: er hoeft dan niets teruggedraaid te worden, en het
+// cookiebeleid op /cookies belooft precies dat.
+function ietsOmToestemmingTeVragen() {
+    return !!window.GA_MEASUREMENT_ID;
+}
+
+
 function applyConsent(consent) {
     if (consent && consent.analytics) {
         loadAnalytics();
@@ -95,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Geen keuze gemaakt: toon de BALK onderaan, niet het venster
     // (designrapport punt 12). De pagina blijft leesbaar en bedienbaar;
     // het venster komt alleen nog op verzoek (instellingenknop).
-    if (!getConsent() && cookieBalk) {
+    if (!getConsent() && cookieBalk && ietsOmToestemmingTeVragen()) {
         cookieBalk.classList.remove('hidden');
         // Zolang de balk er staat, gaat de babbelbotknop weg. Die knop staat
         // vast rechtsonder op laag 9000 en de balk op laag 2000, dus hij lag

@@ -210,6 +210,10 @@ body {
     color: #fff;
 }
 
+.lang-switcher-voet {
+    display: none;
+}
+
 .nav-categories {
     display: flex;
     gap: 0;
@@ -1481,6 +1485,10 @@ section h2 {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 8px 10px;
+    /* 44 pixels hoog, net als de andere tikdoelen (designrapport punt 16).
+       Het klikvlak was 39 en het vinkje zelf maar 17x17; op een telefoon
+       staat dit vlak vlak boven de knop naar de productpagina. */
+    min-height: 44px;
     margin-bottom: 10px;
     cursor: pointer;
     user-select: none;
@@ -3080,6 +3088,43 @@ section h2 {
     display: none;
 }
 
+/* Een nieuwsbericht is een momentopname. Staat er later iets bij dat het
+   bericht achterhaalt, dan komt dat als zichtbare aantekening onder de
+   eerste alinea in plaats van dat de oude tekst stilletjes wordt herschreven
+   -- de lezer hoort te zien dat er iets is bijgekomen. */
+/* Korte kenmerken op een productkaart: capaciteit, toerental, energieklasse.
+   Ze staan op één regel en worden nooit afgebroken -- past de derde niet,
+   dan valt hij buiten beeld in plaats van de kaart hoger te maken, want
+   ongelijke kaarthoogtes maken het raster rommelig (designrapport punt 19). */
+.kaart-tags {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    gap: 4px;
+    margin: 0 0 6px;
+    padding: 0;
+    list-style: none;
+}
+
+.kaart-tags li {
+    flex: 0 0 auto;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-light, #5a6472);
+    background: var(--light, #f4f6f8);
+    border: 1px solid var(--border, #e2e6ea);
+    border-radius: 999px;
+    padding: 2px 8px;
+    white-space: nowrap;
+}
+
+.nieuws-update {
+    border-left: 3px solid var(--primary, #0090DA);
+    background: #f6fbfe;
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+}
+
 /* De babbelbotknop staat vast rechtsonder (laag 9000, gezet in
    static/js/babbelbot.js) en de cookiebalk onderaan (laag 2000). De bel lag
    daardoor over de knop "Alles accepteren": op een telefoon over 96% ervan,
@@ -3870,5 +3915,140 @@ body.cookiebalk-open #babbelbot-knop {
 
     .hero-content h1 {
         font-size: 24px;
+    }
+}
+
+
+/* ============================================
+   TELEFOON: DE PRIJS BOVEN DE VOUW
+   ============================================
+
+   Gemeten op 3 september 2026 op een scherm van 375x812, op een
+   productpagina met vier winkels. De prijs stond op 1.178 beeldpunten en de
+   eerste winkelknop op 1.239 -- anderhalf scherm naar beneden. Boven de foto
+   stond 458 beeldpunten navigatie: 56% van het eerste scherm.
+
+   Dat is de trechter waar deze site op draait: 92% van de klikken uit Google
+   komt op een productpagina binnen, vrijwel altijd op een modelcode. Wie dat
+   zoekt wil drie dingen weten -- wat kost het, bij wie, en waar klik ik --
+   en kreeg eerst een menu.
+
+   Hieronder verdwijnt niets; alles verhuist of wordt compacter:
+
+     taalknop        55  ->  naar de voettekst
+     juridische links 38  ->  staan al in de voettekst
+     categoriemenu   130  ->  44, één rij die zijwaarts schuift
+     kopruimte        36  ->  krappere marges
+     productfoto     335  ->  140
+     titel                 ->  kleiner lettertype, niets afgekapt
+     hartje en badges      ->  strakker op elkaar
+
+   Gemeten uitkomst op diezelfde pagina: de prijs staat op 804 in plaats van
+   1.178 en de eerste winkelknop op 866 in plaats van 1.239. De prijs valt
+   daarmee binnen het eerste scherm van 812; de knop ligt er net onder.
+
+   Wat er NIET is gedaan: de h1 afkappen. Op deze pagina is de feedtitel 150
+   tekens ("... - Extra stil - 10,5/6 kg - Automatisch doseren - Met stoom -
+   Home Connect") en dat zijn vijf regels, ongeveer 125 beeldpunten. Afkappen
+   zou de knop ook binnen het scherm brengen, maar "op de detailpagina hoort
+   de volledige titel te staan" is een eerdere, bewuste keuze -- die draai ik
+   niet stilletjes om. */
+
+@media (max-width: 600px) {
+    .header-top {
+        padding: 12px 0;
+        gap: 10px 30px;
+    }
+
+    /* De taalkeuze staat onderaan; de juridische links ook. */
+    .header-top .lang-switcher {
+        display: none;
+    }
+
+    .lang-switcher-voet {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    .nav-secondary .nav-ook-in-voet {
+        display: none;
+    }
+
+    /* Eén rij die zijwaarts schuift in plaats van vier gestapelde rijen.
+       Alle twaalf categorieën blijven in de HTML en blijven bereikbaar --
+       ze staan bovendien voluit in de voettekst. */
+    .nav-categories {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .nav-categories::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-categories a {
+        padding: 12px 12px;
+        font-size: 13px;
+    }
+
+    /* De foto hoeft niet het halve scherm te vullen: hij bevestigt alleen
+       dat je op het goede apparaat zit. */
+    .product-image-section {
+        margin-bottom: 8px;
+    }
+
+    .product-image-large {
+        max-height: 140px;
+        width: auto;
+        margin: 0 auto;
+        padding: 6px;
+        object-fit: contain;
+    }
+
+    .product-badges {
+        margin-bottom: 4px;
+    }
+
+    /* Kleiner, niet afgekapt: de volledige feedtitel blijft staan (dat was
+       een bewuste keuze), maar drie regels van 29px werden er twee van 22. */
+    .product-details h1 {
+        font-size: 21px;
+        line-height: 1.18;
+        margin-bottom: 4px;
+    }
+
+    .wishlist-toggle-large {
+        margin-top: 2px;
+        margin-bottom: 6px;
+        padding: 5px 10px;
+        font-size: 13px;
+    }
+
+    .breadcrumbs {
+        padding: 6px 0;
+        font-size: 12.5px;
+    }
+
+    /* De babbelbotknop is een balk van 222 van de 375 pixels breed en staat
+       vast rechtsonder. Daardoor lag hij op een telefoon over de oranje
+       winkelknop zodra die onderaan in beeld kwam -- dezelfde fout als bij
+       "Alles accepteren" in de cookiebalk. Op een telefoon wordt het een
+       ronde knop van 52 pixels; het opschrift blijft in aria-label staan.
+       Specifieker dan de regel in babbelbot.js, dus de volgorde van de
+       stijlbladen maakt niet uit. */
+    body #babbelbot-knop {
+        width: 52px;
+        height: 52px;
+        padding: 0;
+        border-radius: 50%;
+        font-size: 22px;
+        line-height: 52px;
+        text-align: center;
+    }
+
+    body #babbelbot-knop .babbelbot-label {
+        display: none;
     }
 }

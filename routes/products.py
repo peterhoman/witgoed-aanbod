@@ -56,7 +56,7 @@ def naar_winkel(offer_id):
     from flask import redirect
     from models import Offer
 
-    from pageviews import BRON_ANDERS, BRON_ROBOT, bron, tel
+    from pageviews import BRON_ANDERS, BRON_ROBOT, BRON_VOORUIT, bron, tel
 
     offer = Offer.query.get(offer_id)
     if offer is None or not offer.link:
@@ -71,7 +71,7 @@ def naar_winkel(offer_id):
     # tot nu toe werd een herkende robot alleen niet geteld, maar wel
     # doorgestuurd -- en dus telde het affiliate-netwerk hem gewoon als klik.
     # Precies het patroon waarop een account gemarkeerd wordt.
-    if soort in (BRON_ROBOT, BRON_ANDERS):
+    if soort in (BRON_ROBOT, BRON_ANDERS, BRON_VOORUIT):
         abort(403)
 
     tel(f"uit-{offer.retailer}")
@@ -93,7 +93,7 @@ def naar_winkel_product(product_id):
     """
     from flask import redirect
 
-    from pageviews import BRON_ANDERS, BRON_ROBOT, bron, tel
+    from pageviews import BRON_ANDERS, BRON_ROBOT, BRON_VOORUIT, bron, tel
 
     product = Product.query.get(product_id)
     if product is None:
@@ -104,7 +104,7 @@ def naar_winkel_product(product_id):
 
     soort = bron(request.headers)
     tel(soort)
-    if soort in (BRON_ROBOT, BRON_ANDERS):
+    if soort in (BRON_ROBOT, BRON_ANDERS, BRON_VOORUIT):
         abort(403)
 
     tel('uit-terugval')

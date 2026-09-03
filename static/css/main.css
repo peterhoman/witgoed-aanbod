@@ -3947,12 +3947,11 @@ body.cookiebalk-open #babbelbot-knop {
    1.178 en de eerste winkelknop op 866 in plaats van 1.239. De prijs valt
    daarmee binnen het eerste scherm van 812; de knop ligt er net onder.
 
-   Wat er NIET is gedaan: de h1 afkappen. Op deze pagina is de feedtitel 150
-   tekens ("... - Extra stil - 10,5/6 kg - Automatisch doseren - Met stoom -
-   Home Connect") en dat zijn vijf regels, ongeveer 125 beeldpunten. Afkappen
-   zou de knop ook binnen het scherm brengen, maar "op de detailpagina hoort
-   de volledige titel te staan" is een eerdere, bewuste keuze -- die draai ik
-   niet stilletjes om. */
+   De titel wordt op een telefoon tot drie regels getoond (besloten met Peter
+   op 3 september). Dat is een uitzondering op "op de detailpagina hoort de
+   volledige titel te staan": die keuze gold voor de tekst in de pagina, en
+   die blijft er onverkort in staan. Alleen de zichtbare hoogte is begrensd,
+   en alleen op een telefoon. */
 
 @media (max-width: 600px) {
     .header-top {
@@ -4013,10 +4012,20 @@ body.cookiebalk-open #babbelbot-knop {
 
     /* Kleiner, niet afgekapt: de volledige feedtitel blijft staan (dat was
        een bewuste keuze), maar drie regels van 29px werden er twee van 22. */
+    /* Drie regels op een telefoon. De volledige titel blijft gewoon in de
+       HTML staan -- Google leest hem onverkort -- alleen de zichtbare hoogte
+       is begrensd. Feedtitels van 150 tekens ("... - Extra stil - 10,5/6 kg
+       - Automatisch doseren - Met stoom - Home Connect") vulden anders vijf
+       regels, ongeveer 125 beeldpunten, en duwden de winkelknop van het
+       scherm. Op een groot scherm blijft de titel voluit staan. */
     .product-details h1 {
         font-size: 21px;
         line-height: 1.18;
         margin-bottom: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .wishlist-toggle-large {
@@ -4029,6 +4038,23 @@ body.cookiebalk-open #babbelbot-knop {
     .breadcrumbs {
         padding: 6px 0;
         font-size: 12.5px;
+    }
+
+    /* De laatste beeldpunten tussen de titel en de eerste winkelknop.
+       De grote prijs in de kop van het aanbiedingenblok staat daarmee op
+       664 en de eerste knop op 814 -- op een scherm van 812 dus precies op
+       de rand, en op elke telefoon die hoger is (een iPhone 14 is 844)
+       staan ze allebei in beeld. */
+    .offers-card {
+        margin-top: 8px;
+    }
+
+    .offers-card-head {
+        padding: 12px 16px;
+    }
+
+    .offer-row {
+        padding: 10px 12px;
     }
 
     /* De babbelbotknop is een balk van 222 van de 375 pixels breed en staat

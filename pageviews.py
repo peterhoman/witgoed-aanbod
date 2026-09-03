@@ -95,6 +95,23 @@ BRON_ROBOT = 'klik-robot-ua'
 BRON_GEEN_SECFETCH = 'klik-geen-secfetch'
 BRON_BROWSER = 'klik-browser'
 BRON_ANDERS = 'klik-anders'
+BRON_VOORUIT = 'klik-vooruit-opgehaald'
+
+# Koppen waarmee een browser zegt: ik haal dit vast op, er heeft niemand
+# geklikt. Chrome en Edge sturen Sec-Purpose (en vroeger Purpose), Firefox
+# X-Moz en Safari X-Purpose. Een vooruit opgehaald adres draagt óók
+# "Sec-Fetch-Mode: navigate", dus zonder deze controle telt het als een
+# echte klik -- en dat is precies wat er op 3 september gebeurde: 73
+# doorkliks bij 45 productpaginaweergaven, allemaal in het bakje browser.
+_VOORUIT_KOPPEN = (
+    ('Sec-Purpose', 'prefetch'),
+    ('Sec-Purpose', 'prerender'),
+    ('Purpose', 'prefetch'),
+    ('X-Purpose', 'preview'),
+    ('X-Purpose', 'prefetch'),
+    ('X-Moz', 'prefetch'),
+    ('X-Moz', 'preview'),
+)
 
 
 def bron(headers):
@@ -120,9 +137,20 @@ def bron(headers):
     browser die iemand vandaag gebruikt stuurt ze mee over https; een
     HTTP-bibliotheek stuurt ze niet. Bij een echte klik op een knop staat er
     `Sec-Fetch-Mode: navigate`.
+
+    Wat daar op 3 september aan ontbrak: een browser die een adres vást
+    ophaalt stuurt óók `Sec-Fetch-Mode: navigate`. Die verzoeken belandden
+    dus in het bakje "echte klik". Zichtbaar aan het cijfer: 73 doorkliks op
+    een dag waarop er 45 productpagina's werden bekeken, terwijl elke
+    winkelknop alleen op zo'n pagina staat. Nu wordt eerst op de
+    vooruit-ophaal-koppen gekeken; die gaan naar hun eigen bakje en worden
+    geweigerd, want er heeft niemand geklikt.
     """
     if is_bot(headers.get('User-Agent')):
         return BRON_ROBOT
+    for kop, waarde in _VOORUIT_KOPPEN:
+        if waarde in (headers.get(kop) or '').lower():
+            return BRON_VOORUIT
     modus = (headers.get('Sec-Fetch-Mode') or '').lower()
     doel = (headers.get('Sec-Fetch-Dest') or '').lower()
     if not modus and not doel:

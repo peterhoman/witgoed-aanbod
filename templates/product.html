@@ -324,58 +324,11 @@
     {# Categoriecontext: onze eigen meting over de hele categorie, in lopende
        zinnen. Dit is de enige inhoud op een dunne productpagina die nergens
        anders staat -- titel, prijs en leveranciersbeschrijving staan woordelijk
-       ook bij Bol en de fabrikant, en dat is waarom Google honderd van deze
-       pagina's wel crawlde maar niet indexeerde. Werkt op elke pagina, ook
-       zonder specificaties en bij één winkel: precies de dunne pagina's.
-       Onderdelen waarvoor de data ontbreekt staan er niet; zie
-       category_context.py. #}
-    {% if categoriecontext %}
-    <section class="cat-context">
-        <h2>{{ categoriecontext.kop }}</h2>
-        <p class="cat-context-tekst">{{ categoriecontext.tekst }}</p>
-        <p class="cat-context-voet">{{ categoriecontext.voet }}</p>
-    </section>
-    {% endif %}
-
-    {# Verfijningslinks: echte <a>'s naar facetpagina's die al bestaan en al in
-       de sitemap staan. Een productpagina wees tot nu toe alleen omhoog naar
-       zijn categorie; de merk-, energielabel- en subtypepagina's daaronder
-       kregen alleen links vanaf de categoriepagina zelf.
-       Bewust geen nieuwe filtercombinaties: die zouden honderden extra dunne
-       pagina's opleveren. Zie facet_links.py. #}
-    {% if verfijningslinks %}
-    <nav class="facet-links" aria-label="{{ verfijningslinks.kop }}">
-        <h2>{{ verfijningslinks.kop }}</h2>
-        <ul>
-            {% for link in verfijningslinks.links %}
-            <li><a href="{{ link.url }}">{{ link.tekst }} <span class="facet-links-aantal">({{ link.aantal }})</span></a></li>
-            {% endfor %}
-        </ul>
-    </nav>
-    {% endif %}
-
-    {# Wel te vergelijken: wijst door naar producten waar de vergelijker wél
-       werkt, in plaats van een doodlopende pagina. #}
-    {% if alternatieven %}
-    <section class="alternatieven">
-        <h2>Wel te vergelijken{% if alternatieven_kenmerk %}: {{ alternatieven_kenmerk }}{% endif %}</h2>
-        <ul class="alternatieven-lijst">
-            {% for alt in alternatieven %}
-            <li>
-                <a href="/product/{{ alt.slug|urlencode }}">
-                    {% if alt.image_url %}<img src="{{ alt.image_url|foto(120) }}" width="120" height="120" alt="" loading="lazy">{% endif %}
-                    <span class="alternatief-mid">
-                        <span class="alternatief-naam">{{ alt.title }}</span>
-                        <span class="alternatief-winkels">{{ t('offer.at_shops', count=alt.retailer_count) }}</span>
-                    </span>
-                    <span class="alternatief-prijs">&euro; {{ alt.lowest_price|euro }}</span>
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
-    </section>
-    {% endif %}
-
+    {# Het prijsverloop stond op 2.660 beeldpunten, drie schermen naar
+       beneden -- een externe beoordelaar concludeerde op 4 september 2026
+       dat de site "geen prijsbeoordeling" had terwijl die er wel was.
+       Nu staat het direct onder de winkellijst, waar de bezoeker net de
+       prijs heeft gezien en de vraag "is dit een goed moment" opkomt. #}
     <div class="product-lower">
         <!-- Prijsverloop: eigen meetdata, verschijnt zodra er historie is -->
         {% if price_history %}
@@ -429,7 +382,61 @@
             </details>
         </div>
         {% endif %}
+    </div>
 
+       ook bij Bol en de fabrikant, en dat is waarom Google honderd van deze
+       pagina's wel crawlde maar niet indexeerde. Werkt op elke pagina, ook
+       zonder specificaties en bij één winkel: precies de dunne pagina's.
+       Onderdelen waarvoor de data ontbreekt staan er niet; zie
+       category_context.py. #}
+    {% if categoriecontext %}
+    <section class="cat-context">
+        <h2>{{ categoriecontext.kop }}</h2>
+        <p class="cat-context-tekst">{{ categoriecontext.tekst }}</p>
+        <p class="cat-context-voet">{{ categoriecontext.voet }}</p>
+    </section>
+    {% endif %}
+
+    {# Verfijningslinks: echte <a>'s naar facetpagina's die al bestaan en al in
+       de sitemap staan. Een productpagina wees tot nu toe alleen omhoog naar
+       zijn categorie; de merk-, energielabel- en subtypepagina's daaronder
+       kregen alleen links vanaf de categoriepagina zelf.
+       Bewust geen nieuwe filtercombinaties: die zouden honderden extra dunne
+       pagina's opleveren. Zie facet_links.py. #}
+    {% if verfijningslinks %}
+    <nav class="facet-links" aria-label="{{ verfijningslinks.kop }}">
+        <h2>{{ verfijningslinks.kop }}</h2>
+        <ul>
+            {% for link in verfijningslinks.links %}
+            <li><a href="{{ link.url }}">{{ link.tekst }} <span class="facet-links-aantal">({{ link.aantal }})</span></a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {# Wel te vergelijken: wijst door naar producten waar de vergelijker wél
+       werkt, in plaats van een doodlopende pagina. #}
+    {% if alternatieven %}
+    <section class="alternatieven">
+        <h2>Wel te vergelijken{% if alternatieven_kenmerk %}: {{ alternatieven_kenmerk }}{% endif %}</h2>
+        <ul class="alternatieven-lijst">
+            {% for alt in alternatieven %}
+            <li>
+                <a href="/product/{{ alt.slug|urlencode }}">
+                    {% if alt.image_url %}<img src="{{ alt.image_url|foto(120) }}" width="120" height="120" alt="" loading="lazy">{% endif %}
+                    <span class="alternatief-mid">
+                        <span class="alternatief-naam">{{ alt.title }}</span>
+                        <span class="alternatief-winkels">{{ t('offer.at_shops', count=alt.retailer_count) }}</span>
+                    </span>
+                    <span class="alternatief-prijs">&euro; {{ alt.lowest_price|euro }}</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    <div class="product-lower">
         {# Prijsalert staat bij één winkel al in het uitlegblok hierboven,
            als tweede hoofdactie in plaats van een bijzaak onderaan. #}
         {% if alerts_enabled and product.is_available and not een_winkel %}

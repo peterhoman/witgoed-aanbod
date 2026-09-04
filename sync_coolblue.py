@@ -22,6 +22,7 @@ from app import create_app
 from filter_helpers import product_slug
 from models import db, Product, Category, Offer, SyncLog, utcnow, log_price, prijssprong_melding
 from ean_match import zoek_product
+from catalogus_uitzonderingen import is_geen_apparaat
 from sync_products import EXCLUDE_KEYWORDS, MIN_PRICES, guess_brand
 import logging
 
@@ -221,6 +222,15 @@ def sync_coolblue():
 
             lowered = title.lower()
             if any(keyword in lowered for keyword in EXCLUDE_KEYWORDS):
+                skipped += 1
+                continue
+
+            # Kookgerei en servies horen niet in een witgoedcatalogus. De
+            # uurlijkse opruimronde haalde ze er wel uit, maar de sync zette
+            # ze er daarna gewoon weer in -- gemeten op 4 september 2026:
+            # drie artikelen kwamen na verwijdering terug. Dezelfde regel dus
+            # ook hier, bij de voordeur.
+            if is_geen_apparaat(title):
                 skipped += 1
                 continue
 

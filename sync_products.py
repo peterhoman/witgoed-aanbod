@@ -513,6 +513,14 @@ def sync_products():
                         logger.debug(f"[-] Skipped accessory: {result.get('title')}")
                         continue
 
+                    # Zie de toelichting in sync_coolblue: kookgerei en
+                    # servies kwamen na de uurlijkse opruimronde terug,
+                    # omdat de sync de regel niet kende.
+                    from catalogus_uitzonderingen import is_geen_apparaat
+                    if is_geen_apparaat(result.get('title') or ''):
+                        logger.debug(f"[-] Geen apparaat: {result.get('title')}")
+                        continue
+
                     logger.debug(f"[*] Fetching details for EAN: {ean}")
                     # Detail-call voor specs; lukt die niet, dan is het
                     # zoekresultaat zelf (met include-image/include-offer)

@@ -154,6 +154,13 @@ def build_price_history(product):
     dagen_historie = (nu - sinds).days
     wisselaar = _wisselende_winkel(ruwe_rows, nu)
 
+    # Het oordeel in een paar woorden, voor naast de prijs boven aan de
+    # pagina. Het uitgebreide koopadvies hieronder stond op 2.660 beeldpunten
+    # diepte -- drie schermen naar beneden -- en een externe beoordelaar
+    # concludeerde op 4 september 2026 dat de site "geen prijsbeoordeling"
+    # had. Die was er wel; niemand kwam er. Zelfde regels, zelfde
+    # voorzichtigheid: geen uitspraak zonder onderbouwing.
+    oordeel = None
     koopadvies = None
     if wisselaar:
         # Repricer: de prijs pendelt heen en weer. "Laagste prijs ooit" is dan
@@ -162,8 +169,10 @@ def build_price_history(product):
         winkel, laag, hoog = wisselaar
         koopadvies = (f'Deze prijs wisselt bij {retailer_label(winkel)} regelmatig '
                       f'tussen &euro; {_euro(laag)} en &euro; {_euro(hoog)}.')
+        oordeel = f'wisselt tussen &euro; {_euro(laag)} en &euro; {_euro(hoog)}'
     elif laagste_is_nu and len(rows) > 1:
         koopadvies = 'Dit is de laagste prijs sinds we dit apparaat volgen — een goed moment om te kopen.'
+        oordeel = f'laagste prijs sinds {_datum(sinds)}'
     elif actuele:
         huidige_laagste = min(actuele.values())
         verschil = huidige_laagste - laagste.price
@@ -173,11 +182,13 @@ def build_price_history(product):
             koopadvies = (f'De laagste prijs sinds we meten was &euro; {_euro(laagste.price)} '
                           f'(op {_datum(laagste.recorded_at)}) — nu is de laagste prijs '
                           f'&euro; {_euro(huidige_laagste)}.')
+            oordeel = f'&euro; {_euro(verschil)} boven de laagste prijs sinds {_datum(sinds)}'
 
     resultaat = {
         'laagste_prijs': _euro(laagste.price),
         'laagste_is_nu': laagste_is_nu,
         'koopadvies': koopadvies,
+        'oordeel': oordeel,
         'sinds': _datum(sinds),
         'tabel': tabel,
         'svg': None,

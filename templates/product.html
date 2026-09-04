@@ -149,6 +149,14 @@
                             <span class="offers-price-shop">bij {{ laagste.retailer_name }}</span>
                             {% endif %}
                         </span>
+                        {# Het prijsoordeel hoort bij de prijs, niet drie
+                           schermen lager. Alleen als de historie een uitspraak
+                           draagt (price_chart.build_price_history); bij te
+                           weinig metingen staat er niets. De link springt naar
+                           het volledige verloop. #}
+                        {% if price_history and not price_history.te_kort and price_history.oordeel %}
+                        <a href="#prijsverloop" class="offers-oordeel{% if price_history.laagste_is_nu %} offers-oordeel-goed{% endif %}">{{ price_history.oordeel | safe }}</a>
+                        {% endif %}
                     </div>
                     {# Eén compacte regel in plaats van twee losse mededelingen
                        waar de bezoeker zelf de som van moest maken — op 375 px
@@ -371,7 +379,7 @@
     <div class="product-lower">
         <!-- Prijsverloop: eigen meetdata, verschijnt zodra er historie is -->
         {% if price_history %}
-        <div class="price-history-section">
+        <div class="price-history-section" id="prijsverloop">
             <h2>Prijsverloop</h2>
             {# Te weinig historie: geen "laagste prijs"-claim en geen badge.
                Bij drie dagen meten zonder één wijziging is de laagste prijs

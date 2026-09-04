@@ -96,6 +96,8 @@ BRON_GEEN_SECFETCH = 'klik-geen-secfetch'
 BRON_BROWSER = 'klik-browser'
 BRON_ANDERS = 'klik-anders'
 BRON_VOORUIT = 'klik-vooruit-opgehaald'
+BRON_LOS_ADRES = 'klik-los-adres'
+BRON_VAN_ELDERS = 'klik-van-elders'
 
 # Koppen waarmee een browser zegt: ik haal dit vast op, er heeft niemand
 # geklikt. Chrome en Edge sturen Sec-Purpose (en vroeger Purpose), Firefox
@@ -159,6 +161,20 @@ def bron(headers):
         # tellen, nog niet weigeren -- eerst een week meten hoe groot dit is.
         return BRON_GEEN_SECFETCH
     if modus == 'navigate' and doel in ('', 'document'):
+        # Waar kwam de navigatie vandaan? Een mens die op een winkelknop
+        # drukt komt altijd van onze eigen pagina (same-origin). Niemand
+        # typt /uit/aanbieding/56135 in de adresbalk; "none" is dus een
+        # programma dat het adres los opvraagt. Toegevoegd op 4 september
+        # 2026: na de vorige twee reparaties stonden er nog steeds meer
+        # doorkliks (224) dan productpaginaweergaven (170), alle in het
+        # bakje browser. Dit is het volgende onderscheid dat de koppen
+        # nog bieden. "cross-site" -- een gedeelde link -- gaat gewoon door,
+        # maar wordt apart geteld.
+        plek = (headers.get('Sec-Fetch-Site') or '').lower()
+        if plek == 'none':
+            return BRON_LOS_ADRES
+        if plek == 'cross-site':
+            return BRON_VAN_ELDERS
         return BRON_BROWSER
     # Wel Sec-Fetch-koppen, maar geen gewone navigatie: vooruit ophalen
     # (prefetch), of een script op een andere pagina dat het adres opvraagt.

@@ -4078,3 +4078,26 @@ body.cookiebalk-open #babbelbot-knop {
         display: none;
     }
 }
+
+
+/* Prijsoordeel naast de prijs: "laagste prijs sinds 14 jul" of "€ 40 boven
+   de laagste prijs sinds 14 jul". Groen alleen bij de laagste; de rest is
+   neutraal grijs, want "hoger dan ooit" hoeft niet rood te schreeuwen. */
+.offers-oordeel {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-light, #5a6472);
+    background: var(--light, #f4f6f8);
+    border: 1px solid var(--border, #e2e6ea);
+    text-decoration: none;
+}
+
+.offers-oordeel-goed {
+    color: #1a6b3a;
+    background: #e8f6ee;
+    border-color: #bfe3cc;
+}

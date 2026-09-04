@@ -120,6 +120,42 @@ def is_setje(titel):
     return bool(_TYPENUMMER.match(eerste_woord))
 
 
+# Woorden waaraan je kookgerei en servies herkent. Dit is de regel die de
+# EAN-lijst hierboven aanvult: die lijst vangt wat al gezien is, deze regel
+# vangt wat de feeds morgen aanleveren. Op 4 september 2026 stonden er,
+# naast de al geblokkeerde serviesset, opnieuw een serviesset, een wok, een
+# hapjespan en een mokkapot in de catalogus -- allemaal via de Bol-feed.
+_GEEN_APPARAAT = re.compile(
+    r'\b(serviesset|servies\b|bestekset|pannenset|koekenpan|hapjespan|braadpan|'
+    r'steelpan|grillpan|wokpan|wok\b|snelkookpan|moka ?pot|mokkapot|theepot|'
+    r'stellingkast|vervangborstel|geurfilter|waterfilter|filterpatroon)',
+    re.IGNORECASE)
+
+# Staat een van deze woorden in de titel, dan is het wel een apparaat, ook al
+# zit er een woord uit de lijst hierboven in ("afzuigkap met geurfilter",
+# "vaatwasser met bestekkorf"). De titel van een echt apparaat noemt vrijwel
+# altijd het soort apparaat.
+_WEL_APPARAAT = re.compile(
+    r'\b(wasmachine|wasdroger|droger|koelkast|vriezer|vrieskast|koelvries|'
+    r'vaatwasser|afwasmachine|oven|magnetron|airfryer|stofzuiger|koffiezet|'
+    r'koffiemachine|espresso|fornuis|kookplaat|afzuigkap|inbouw|wasautomaat|'
+    r'was-droog|combimagnetron|heteluchtoven)',
+    re.IGNORECASE)
+
+
+def is_geen_apparaat(titel):
+    """Is dit volgens de titel kookgerei, servies of een los onderdeel?
+
+    Streng in de goede richting: alleen waar als er een kookgerei-woord in
+    de titel staat EN geen apparaatwoord. "Ninja glazen airfryer" en
+    "vaatwasser met bestekkorf" blijven dus gewoon staan. Getoetst op alle
+    2.899 slugs uit de sitemap van 4 september 2026: vier treffers, allemaal
+    terecht, en geen enkel apparaat ten onrechte.
+    """
+    tekst = str(titel or '')
+    return bool(_GEEN_APPARAAT.search(tekst)) and not _WEL_APPARAAT.search(tekst)
+
+
 def hoort_niet_op_de_site(ean):
     """Staat dit artikel op een van de blokkeerlijsten?
 
@@ -163,7 +199,7 @@ def pas_toe(app):
 
         verwijderd = 0
         for product in Product.query.all():
-            if hoort_niet_op_de_site(product.ean):
+            if hoort_niet_op_de_site(product.ean) or is_geen_apparaat(product.title):
                 db.session.delete(product)
                 verwijderd += 1
 

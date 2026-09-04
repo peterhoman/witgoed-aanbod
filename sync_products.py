@@ -334,13 +334,70 @@ KNOWN_BRANDS = [
 ]
 
 
+# Woorden die vooraan in een producttitel staan maar geen merk zijn. Zonder
+# deze lijst zou "Dubbele Airfryer XXL 9L" het merk "Dubbele" opleveren, en
+# een merkpagina /merk/dubbele is erger dan geen merknaam.
+_GEEN_MERKWOORD = {
+    'airfryer', 'oven', 'fornuis', 'vaatwasser', 'afwasmachine', 'wasmachine',
+    'wasdroger', 'droger', 'koelkast', 'vriezer', 'magnetron', 'stofzuiger',
+    'kookplaat', 'afzuigkap', 'koffiezetapparaat', 'espressomachine',
+    'dubbele', 'elektrische', 'elektrisch', 'vrijstaande', 'vrijstaand',
+    'inbouw', 'inbouwoven', 'mini', 'compacte', 'compact', 'draadloze',
+    'draadloos', 'set', 'nieuwe', 'grote', 'kleine', 'professionele',
+    'keramisch', 'keramische', 'digitale', 'digitaal', 'smart', 'slimme',
+}
+
+# Merken van twee woorden. Zonder deze lijst levert de regel hieronder "G3"
+# op in plaats van "G3 Ferrari". Kort houden: alleen wat we in de feeds
+# tegenkomen.
+_MERK_TWEE_WOORDEN = ('G3 Ferrari', 'Vivid Green', 'Pure Living')
+
+
 def guess_brand(title):
-    """Herken een bekend merk in de producttitel (heel woord, hoofdletterongevoelig)."""
+    """Herken het merk in de producttitel, of geef None.
+
+    Drie stappen, in deze volgorde:
+
+    1. Een merk uit KNOWN_BRANDS, als heel woord.
+    2. Een merk van twee woorden vooraan.
+    3. Het eerste woord van de titel -- mits dat geen soortnaam is.
+
+    Stap 3 is er op 4 september 2026 bij gekomen. Bij 48 van de 2.896
+    producten liet de feed het merkveld leeg: allemaal kleine merken die niet
+    in KNOWN_BRANDS staan (Ventux, CENDO, Amica, Everglades, Joula, Skoov,
+    Klarstein). Zonder merk staat er "merk onbekend" op de productpagina,
+    ontbreekt het merk in de Merchant Center-feed, en valt het apparaat buiten
+    elke merkpagina.
+
+    Streng: staat er een soortnaam vooraan ("Dubbele Airfryer XXL"), dan
+    liever niets dan een verzonnen merk. Een handvol titels houdt daardoor
+    geen merk, en dat is de juiste uitkomst -- in die titels staat er ook
+    geen.
+    """
     import re
     for brand in KNOWN_BRANDS:
         if re.search(rf'\b{re.escape(brand)}\b', title, re.IGNORECASE):
             return brand
-    return None
+
+    schoon = str(title or '').strip().lstrip('-\u2013 ').strip()
+    for merk in _MERK_TWEE_WOORDEN:
+        if schoon.lower().startswith(merk.lower()):
+            return merk
+
+    delen = re.split(r'[\s\-\u2013]+', schoon)
+    if not delen:
+        return None
+    woord = delen[0].strip('\u00ae\u2122,.:;()[]').strip()
+    if len(woord) < 2 or woord.lower() in _GEEN_MERKWOORD:
+        return None
+    # Cijfers in het eerste woord betekenen vrijwel altijd een modelnummer
+    # ("AV361RVS VLAKSCHERM AFZUIGKAP"), geen merk. Merken met een cijfer
+    # staan in _MERK_TWEE_WOORDEN en zijn hierboven al afgevangen.
+    if any(teken.isdigit() for teken in woord):
+        return None
+    if not re.match(r"^[A-Za-z\u00c0-\u024f][A-Za-z0-9\u00c0-\u024f&.'-]*$", woord):
+        return None
+    return woord
 
 
 def sync_products():

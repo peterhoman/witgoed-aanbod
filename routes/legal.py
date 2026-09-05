@@ -54,13 +54,27 @@ def retourneren():
     return render_template('legal/retourneren.html')
 
 
-# Woorden die in een Nederlands bericht vrijwel altijd voorkomen. Eén
-# treffer is genoeg om een bericht als Nederlands te beschouwen.
-_NEDERLANDS = (
-    ' de ', ' het ', ' een ', ' ik ', ' is ', ' en ', ' van ', ' voor ',
-    ' met ', ' op ', ' niet ', ' mijn ', ' graag ', ' kan ', ' zou ',
-    ' heb ', ' hebben ', ' wil ', ' jullie ', ' wij ', ' u ', ' je ',
+# Woorden waaraan je ziet dat het bericht ergens over gaat: over een
+# apparaat, een prijs, een bestelling of over deze site. Eén treffer is
+# genoeg. Dit heeft de taaltoets vervangen -- zie _is_spam.
+_ONDERWERP = (
+    'wasmachine', 'wasdroger', 'droger', 'koelkast', 'vriezer', 'vaatwasser',
+    'afwasmachine', 'oven', 'magnetron', 'airfryer', 'friteuse', 'stofzuiger',
+    'kookplaat', 'fornuis', 'afzuigkap', 'koffie', 'espresso', 'apparaat',
+    'witgoed', 'wasmachines', 'koelkasten',
+    'prijs', 'prijzen', 'aanbieding', 'korting', 'goedkoop', 'euro', 'kosten',
+    'bestell', 'besteld', 'order', 'levering', 'bezorg', 'garantie', 'retour',
+    'winkel', 'coolblue', 'bol.com', 'mediamarkt', 'vergelijk',
+    'model', 'merk', 'energielabel', 'storing', 'defect', 'kapot',
+    'link werkt', 'klopt niet', 'werkt niet',
 )
+
+# Bewust NIET in de lijst hierboven: 'website', 'site', 'pagina' en
+# 'expert'. Elke SEO-aanbieding noemt "uw website", en dan zou dat woord
+# het bericht laten passeren -- gemeten met "Wij bieden linkbuilding en
+# gastartikelen aan voor uw website". Wie een echte melding doet over de
+# site noemt daarnaast vrijwel altijd een apparaat, een winkel of wat er
+# niet werkt, en komt daar dus alsnog door.
 
 # Waar de bots om vragen. Stuk voor stuk dingen die deze site niet heeft:
 # wij hebben geen nieuwsbrief, geen mailinglijst en geen eigen acties.
@@ -68,6 +82,9 @@ _SPAM_VRAAG = (
     'newsletter', 'email updates', 'e-mail updates', 'mailing list',
     'special offers', 'subscribe', 'seo services', 'link building',
     'guest post', 'backlink', 'crypto', 'casino',
+    # Nederlandse varianten, na de inzending van 4 september 2026.
+    'nieuwsbrief', 'mailinglijst', 'aanmelden voor', 'inschrijv',
+    'linkbuilding', 'gastartikel', 'samenwerking aanbieden',
 )
 
 
@@ -76,24 +93,32 @@ def _is_spam(onderwerp, bericht):
 
     Twee voorwaarden tegelijk, want elk apart is te grof:
 
-    1. er staat geen enkel Nederlands woord in, EN
+    1. het bericht gaat nergens over -- geen apparaat, geen prijs, geen
+       bestelling, niets over deze site, EN
     2. er wordt gevraagd om iets wat wij niet hebben.
 
-    Alleen op taal filteren zou een echte Engelstalige vraag over een
-    wasmachine weggooien -- de site heeft een Engelse versie, dus die
-    komen voor. Alleen op trefwoorden filteren zou een Nederlander die
-    "newsletter" schrijft treffen. Samen is het veilig: een echte vraag
-    over een apparaat gaat niet over backlinks of een nieuwsbrief.
+    Alleen op trefwoorden filteren zou een Nederlander treffen die vraagt
+    "hebben jullie een nieuwsbrief over wasmachine-aanbiedingen?" -- die
+    noemt een apparaat en komt er dus gewoon door.
 
-    Aanleiding: twee inzendingen binnen een week, allebei Engels, allebei
-    met een naam die niet bij het e-mailadres paste ("Joseph Miller" op
-    22 aug met "I want to subscribe to your newsletter", "Christopher
-    Martinez" op 31 aug met "Please include me in your email updates").
+    De eerste voorwaarde was tot 5 september 2026 "er staat geen enkel
+    Nederlands woord in". Dat werkte tegen de eerste twee inzendingen
+    (22 en 31 augustus, allebei Engels), maar op 4 september kwam
+    dezelfde soort inzending in het Nederlands binnen: onderwerp
+    "Nieuwsbriefinschrijving", bericht "Ik ontvang graag meer informatie.
+    Neem contact met mij op via e-mail.", met opnieuw een naam die niet
+    bij het e-mailadres paste. Vol Nederlandse woorden, dus het filter
+    liet hem door.
+
+    Taal is dus geen bruikbaar onderscheid meer; onderwerp wel. Een echte
+    vraag aan een witgoedvergelijker gaat over een apparaat, een prijs,
+    een bestelling of over de site zelf. Een bot die zich inschrijft voor
+    een nieuwsbrief die niet bestaat, noemt niets daarvan.
     """
     tekst = f' {onderwerp} {bericht} '.lower()
-    nederlands = any(w in tekst for w in _NEDERLANDS)
+    gaat_ergens_over = any(w in tekst for w in _ONDERWERP)
     vraagt_om = any(w in tekst for w in _SPAM_VRAAG)
-    return vraagt_om and not nederlands
+    return vraagt_om and not gaat_ergens_over
 
 
 @legal_bp.route('/contact', methods=['GET', 'POST'])

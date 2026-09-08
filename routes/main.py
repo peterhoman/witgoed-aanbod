@@ -394,6 +394,30 @@ def category_specs_debug(slug):
                                'top_waarden': f['options'][:8]} for f in facets]})
 
 
+# Opgehaalde winkelfeeds voor het meetpunt hieronder, per winkel, met het
+# moment van ophalen. Waarom: op 8 september 2026 is dit meetpunt tijdens het
+# wachten op een deploy een keer of vijftien achter elkaar aangeroepen, en
+# elke aanroep haalt bij Tradedoubler de complete feed op in ruim honderd
+# pagina's. Tradedoubler antwoordde daarna met 429 Too Many Requests -- ook
+# voor de gewone MediaMarkt-synchronisatie, die dezelfde ophaalcode gebruikt.
+# Een diagnose mag de productie niet kunnen raken; daarom komt de feed
+# hooguit een keer per half uur van buiten, en daartussen uit dit geheugen.
+_FEED_CACHE = {}
+_FEED_CACHE_SECONDEN = 30 * 60
+
+
+def _feed_met_geheugen(winkel, ophalen):
+    """Records van een winkelfeed, hooguit een keer per half uur echt opgehaald."""
+    import time
+    nu = time.time()
+    bewaard = _FEED_CACHE.get(winkel)
+    if bewaard and nu - bewaard[0] < _FEED_CACHE_SECONDEN:
+        return bewaard[1], int(nu - bewaard[0])
+    records = ophalen()
+    _FEED_CACHE[winkel] = (nu, records)
+    return records, 0
+
+
 @main_bp.route('/api/feed-velden/<winkel>')
 def feed_velden_debug(winkel):
     """Welke velden een winkelfeed levert, en hoe vaak ze gevuld zijn.
@@ -462,7 +486,8 @@ def feed_velden_debug(winkel):
         # complete catalogus gerekend worden. Bij Coolblue bleek een steekproef
         # van 1500 nul treffers te geven, puur omdat hun feed met accessoires
         # begint en het witgoed verderop staat.
-        alle = sm.fetch_full_feed(token, sm.MAIN_FEED_ID)
+        alle, cache_leeftijd = _feed_met_geheugen(
+            'mediamarkt', lambda: sm.fetch_full_feed(token, sm.MAIN_FEED_ID))
         velden = beschrijf(alle[:grens], uitpakken=('identifiers', 'attributes'))
         records = alle
     elif winkel == 'coolblue':
@@ -476,11 +501,13 @@ def feed_velden_debug(winkel):
         extra = ['mpn', 'model_number', 'product_model', 'specifications',
                  'manufacturer_part_number', 'product_short_description']
         origineel = sc.FEED_COLUMNS
-        try:
-            sc.FEED_COLUMNS = origineel + extra
-            records = sc.fetch_feed(apikey)
-        finally:
-            sc.FEED_COLUMNS = origineel
+        def _ophalen():
+            try:
+                sc.FEED_COLUMNS = origineel + extra
+                return sc.fetch_feed(apikey)
+            finally:
+                sc.FEED_COLUMNS = origineel
+        records, cache_leeftijd = _feed_met_geheugen('coolblue', _ophalen)
         velden = beschrijf(records[:grens])
     else:
         from flask import abort
@@ -580,6 +607,7 @@ def feed_velden_debug(winkel):
                         {'titel': (product.title or '')[:60], 'code': waarde[:40]})
 
     return jsonify({'winkel': winkel, 'records_in_feed': len(records),
+                    'feed_uit_geheugen_seconden_oud': cache_leeftijd,
                     'velden_beschreven_over': min(grens, len(records)),
                     'onze_producten_gevonden': gematcht_totaal,
                     'opbrengst_per_veld': opbrengst,

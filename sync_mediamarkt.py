@@ -75,19 +75,28 @@ WITGOED_CATEGORY_PATHS = {
 #  - een afzuigkap kan "voor inductiekookplaat" in de titel hebben.
 CATEGORY_PATTERNS = [
     ('wasdroogcombinaties', r'was[-\s]?droog|wasdroogcombinatie|washer[-\s]?dryer'),
-    ('wasmachines', r'wasmachine|wasautomaat'),
+    ('wasmachines', r'(?<!af)wasmachine|wasautomaat'),
     ('drogers', r'droger|droogkast|droogautomaat'),
-    ('koelkasten', r'koelkast|koel[-\s]?vries|vrieskast|vriezer|wijnklimaatkast|wijnkoelkast'),
-    ('vaatwassers', r'vaatwas'),
+    ('koelkasten', r'koelkast|koel[-\s]?vries|vrieskast|vriezer|vrieskist|diepvries|wijnklimaatkast|wijnkoelkast|wijnkoeler|wijnkast'),
+    ('vaatwassers', r'vaatwas|afwasmachine'),
     ('magnetrons', r'magnetron'),
     ('afzuigkappen', r'afzuigkap|dampkap|wasemkap'),
     ('fornuizen', r'fornuis'),
     ('kookplaten', r'kookplaat|kookveld|kooktoestel'),
     # "volautomatisch" bewust niet als los woord: te algemeen. Elke echte
     # koffiemachine bevat "koffie" of "espresso" in de titel.
-    ('koffiemachines', r'koffie|espresso|senseo|nespresso|dolce gusto|percolator|cafetiere'),
-    ('ovens', r'\boven\b|inbouwoven|combi[-\s]?oven|stoomoven|bakoven|airfryer|heteluchtfriteuse'),
-    ('stofzuigers', r'stofzuiger|kruimeldief'),
+    ('koffiemachines', r'koffie|espresso|senseo|nespresso|dolce gusto|percolator|cafetiere|pistonmachine'),
+    ('ovens', r'\boven\b|inbouwoven|combi[-\s]?oven|stoomoven|bakoven|heteluchtoven|mini[-\s]?oven|airfryer|heteluchtfriteuse'),
+    ('stofzuigers', r'stofzuiger|kruimeldief|kruimelzuiger|steelzuiger'),
+    # Laatste redmiddel, bewust helemaal onderaan: MediaMarkt zet bij een
+    # deel van de koelkasten en vriezers geen soortwoord in de titel
+    # ("KOENIC KTF 122 D Tafelmodel - breedte 50 cm - hoogte 84 cm -
+    # inhoud 92 L"). Gemeten op 8 september 2026 via /api/feed-velden:
+    # van de 575 records in Grote keukenapparatuur bleven er 73 liggen, en
+    # "tafelmodel" was daarin het vaakst voorkomende woord (13x). Een
+    # tafelmodel vaatwasser is hierboven al als vaatwasser herkend, dus dit
+    # patroon raakt alleen wat anders helemaal niet herkend zou worden.
+    ('koelkasten', r'tafelmodel'),
 ]
 
 

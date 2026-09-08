@@ -182,6 +182,20 @@ def bron(headers):
     return BRON_ANDERS
 
 
+# Dezelfde bakjes, maar dan voor de paginaweergave zelf. Korte namen, want
+# de kolom is dertig tekens lang en er komt "product-" voor te staan.
+_BRON_KORT = {
+    BRON_BROWSER: 'browser',
+    BRON_VAN_ELDERS: 'van-elders',
+    BRON_LOS_ADRES: 'los-adres',
+    BRON_GEEN_SECFETCH: 'geen-secfetch',
+    BRON_VOORUIT: 'vooruit',
+    BRON_ANDERS: 'anders',
+    # BRON_ROBOT staat er bewust niet bij: de teller hieronder slaat robots
+    # al eerder over, dus dat bakje zou altijd op nul blijven staan.
+}
+
+
 def registreer(app):
     """Hangt de teller achter elke succesvolle paginaweergave."""
 
@@ -199,10 +213,26 @@ def registreer(app):
             if not soort:
                 return response
 
-            sleutel = (date.today(), soort)
+            vandaag = date.today()
+            sleutels = [(vandaag, soort)]
+            if soort == 'product':
+                # Waar komt deze weergave vandaan? Bij de doorklik bleek de
+                # teller er dertig keer naast te zitten; hier is dezelfde
+                # vraag nog niet gesteld. Op 7 september stonden er 709
+                # productpaginaweergaven tegenover 10 echte doorkliks, en
+                # 171 verzoeken die het winkeladres los opvroegen -- terwijl
+                # de homepage in dezelfde week juist daalde van 74 naar 40.
+                # Alleen geteld, niets geweigerd: een productpagina die
+                # rechtstreeks wordt geopend kan een bladwijzer zijn, en het
+                # is nog niet bewezen dat het dat niet is.
+                kort = _BRON_KORT.get(bron(request.headers))
+                if kort:
+                    sleutels.append((vandaag, 'product-' + kort))
+
             tellingen = None
             with _slot:
-                _buffer[sleutel] = _buffer.get(sleutel, 0) + 1
+                for sleutel in sleutels:
+                    _buffer[sleutel] = _buffer.get(sleutel, 0) + 1
                 if sum(_buffer.values()) >= _DREMPEL:
                     tellingen = dict(_buffer)
                     _buffer.clear()

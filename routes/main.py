@@ -612,9 +612,29 @@ def _gemiste_categorieen(winkel, records):
     aantallen; geen titels, prijzen of beschrijvingen, want feedinhoud is
     commercieel gelicentieerd. Leest alleen en verandert niets.
     """
+    import re
     from collections import Counter
 
+    from models import db
+
     totaal, doorgelaten = Counter(), Counter()
+    # Voor de winkels die op de titel classificeren: welke woorden komen er
+    # voor in de titels van witgoedrecords die NIET door de classificatie
+    # komen? Losse woorden, geteld, zonder merknamen -- dat is geen
+    # feedinhoud maar een aanwijzing welk patroon ontbreekt ("vrieskist",
+    # "wijnkoeler", "afwasmachine").
+    woorden = Counter()
+    merken = {(p or '').strip().lower() for (p,) in
+              db.session.query(Product.brand).distinct().all()}
+    stop = {'met', 'en', 'voor', 'van', 'de', 'het', 'een', 'cm', 'kg',
+            'zwart', 'wit', 'rvs', 'grijs', 'zilver', 'inbouw', 'vrijstaand',
+            'liter', 'l', 'w', 'stuks', 'set', 'series', 'serie', 'pro', 'plus'}
+
+    def tel_woorden(titel):
+        for w in re.findall(r'[a-z]{4,}', (titel or '').lower()):
+            if w not in stop and w not in merken:
+                woorden[w] += 1
+
     if winkel == 'coolblue':
         import sync_coolblue as sc
         for r in records:
@@ -627,8 +647,11 @@ def _gemiste_categorieen(winkel, records):
         for r in records:
             naam = (sm._get_field(r, 'category_path') or '').strip() or '(leeg)'
             totaal[naam] += 1
-            if naam in sm.WITGOED_CATEGORY_PATHS and sm.classify(r.get('name') or ''):
-                doorgelaten[naam] += 1
+            if naam in sm.WITGOED_CATEGORY_PATHS:
+                if sm.classify(r.get('name') or ''):
+                    doorgelaten[naam] += 1
+                else:
+                    tel_woorden(r.get('name'))
     else:
         return None
 
@@ -641,10 +664,14 @@ def _gemiste_categorieen(winkel, records):
          'komt_erdoor': doorgelaten[naam], 'blijft_liggen': n - doorgelaten[naam]}
         for naam, n in totaal.items() if n - doorgelaten[naam] > 0]
     blijft_liggen.sort(key=lambda x: -x['blijft_liggen'])
+    # Geen afkapping: bij Coolblue staan er honderden categorieen boven
+    # de witgoedtakken (telefoonhoesjes, laptops), en de eerste versie van
+    # deze meting liet met een top-40 precies het deel weg dat ertoe doet.
     return {
         'records_bekeken': sum(totaal.values()),
         'komt_erdoor': sum(doorgelaten.values()),
-        'grootste_categorieen_die_blijven_liggen': blijft_liggen[:40],
+        'categorieen_die_blijven_liggen': blijft_liggen,
+        'woorden_in_witgoedtitels_die_blijven_liggen': woorden.most_common(40),
     }
 
 

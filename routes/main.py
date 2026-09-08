@@ -583,9 +583,69 @@ def feed_velden_debug(winkel):
                     'velden_beschreven_over': min(grens, len(records)),
                     'onze_producten_gevonden': gematcht_totaal,
                     'opbrengst_per_veld': opbrengst,
+                    'gemist_bij_de_voordeur': _gemiste_categorieen(winkel, records),
                     'bruikbare_modelcodes_per_merk': dict(sorted(
                         per_merk.items(), key=lambda x: -x[1]['met_code'])[:25]),
                     'velden': velden})
+
+
+def _gemiste_categorieen(winkel, records):
+    """Welke feedcategorieen komen er niet door onze voordeur, en hoe groot zijn ze?
+
+    Waarom dit bestaat: de winkeldekking staat op 45%. Bij ruim de helft van de
+    apparaten valt er niets te vergelijken, en dat is nu net het bestaansrecht
+    van de site. De zoektocht naar een achtste winkel loopt vast op de markt --
+    er is er nog maar een met een affiliateprogramma. Maar er is een tweede
+    mogelijkheid die nooit gemeten is: laten we bij de winkels die we al hebben
+    apparaten liggen?
+
+    De verdenking zit bij Coolblue. Die import laat alleen records door waarvan
+    het veld product_type letterlijk in een lijst van achttien namen staat
+    (sync_coolblue.PRODUCT_TYPE_MAP); al het andere valt stil weg, zonder
+    telling en zonder logregel. Noemt Coolblue morgen iets
+    "koel-vriescombinaties" in plaats van "koelkasten", dan verdwijnt die hele
+    tak zonder dat iemand het merkt. MediaMarkt loopt dat risico niet: die
+    kijkt naar woorden in de titel en niet naar een vaste lijst.
+
+    Deze functie telt daarom per feedcategorie hoeveel records er zijn en
+    hoeveel daarvan onze classificatie haalt. Alleen taxonomienamen en
+    aantallen; geen titels, prijzen of beschrijvingen, want feedinhoud is
+    commercieel gelicentieerd. Leest alleen en verandert niets.
+    """
+    from collections import Counter
+
+    totaal, doorgelaten = Counter(), Counter()
+    if winkel == 'coolblue':
+        import sync_coolblue as sc
+        for r in records:
+            naam = (r.get('product_type') or '').strip() or '(leeg)'
+            totaal[naam] += 1
+            if sc.classify(naam, r.get('product_name') or ''):
+                doorgelaten[naam] += 1
+    elif winkel == 'mediamarkt':
+        import sync_mediamarkt as sm
+        for r in records:
+            naam = (sm._get_field(r, 'category_path') or '').strip() or '(leeg)'
+            totaal[naam] += 1
+            if naam in sm.WITGOED_CATEGORY_PATHS and sm.classify(r.get('name') or ''):
+                doorgelaten[naam] += 1
+    else:
+        return None
+
+    # Alleen de categorieen waar iets blijft liggen, grootste eerst. Een
+    # categorie die volledig doorkomt hoeft niet bekeken te worden, en een
+    # categorie die volledig wegvalt kan net zo goed terecht wegvallen
+    # (Telefonie, Gaming) -- de naam vertelt dat, het aantal weegt het.
+    blijft_liggen = [
+        {'feedcategorie': naam, 'in_de_feed': n,
+         'komt_erdoor': doorgelaten[naam], 'blijft_liggen': n - doorgelaten[naam]}
+        for naam, n in totaal.items() if n - doorgelaten[naam] > 0]
+    blijft_liggen.sort(key=lambda x: -x['blijft_liggen'])
+    return {
+        'records_bekeken': sum(totaal.values()),
+        'komt_erdoor': sum(doorgelaten.values()),
+        'grootste_categorieen_die_blijven_liggen': blijft_liggen[:40],
+    }
 
 
 # Versie van de proefteksten. Elke geschreven tekst wordt onder deze sleutel

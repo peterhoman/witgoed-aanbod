@@ -139,6 +139,16 @@ def _backfill_offers_from_products(db):
     for product in Product.query.all():
         if product.id in existing_product_ids:
             continue
+        # Alleen de oude Bol-producten van voor de offers-tabel. Op 10
+        # september 2026 bleek deze routine bij elke herstart voor ELK product
+        # zonder aanbieding een rij aan te maken -- ook voor de 363 producten
+        # die Coolblue allang niet meer levert: lege link, oude datum, winkel
+        # 'coolblue'. De Coolblue-sync ruimde die elke run weer op, de
+        # volgende deploy zette ze terug. Een product van een andere winkel
+        # zonder aanbieding is geen migratiegeval maar een apparaat dat de
+        # winkel niet meer verkoopt; daar hoort geen aanbieding bij.
+        if (product.retailer or 'bol') != 'bol' or not product.bol_url:
+            continue
         db.session.add(Offer(
             product_id=product.id,
             retailer=product.retailer or 'bol',

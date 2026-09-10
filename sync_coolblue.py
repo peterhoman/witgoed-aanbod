@@ -298,7 +298,7 @@ def sync_coolblue():
 
         db.session.commit()
 
-        removed_offers, removed_products = _cleanup(seen_product_ids)
+        removed_offers, removed_products = _cleanup(seen_product_ids, sync_log)
 
         # Prijs en voorraad van het product afleiden uit de aanbiedingen, zodat
         # het prijsfilter en de sortering de goedkoopste winkel volgen.
@@ -316,7 +316,8 @@ def sync_coolblue():
         check_price_alerts()
 
         if prijssprongen:
-            sync_log.errors = ('Prijssprong >50% (feed checken): '
+            sync_log.errors = (((sync_log.errors + ' | ') if sync_log.errors else '')
+                               + 'Prijssprong >50% (feed checken): '
                                + '; '.join(prijssprongen[:15]))[:2000]
         sync_log.finished_at = utcnow()
         sync_log.products_synced = added
@@ -332,7 +333,7 @@ def sync_coolblue():
         logger.info(f"    - Producten verwijderd (nergens meer te koop): {removed_products}")
 
 
-def _cleanup(seen_product_ids):
+def _cleanup(seen_product_ids, sync_log=None):
     """Aanbiedingen weghalen die niet meer in de feed staan, en producten die
     daardoor bij geen enkele winkel meer te koop zijn."""
     bestaand = Offer.query.filter_by(retailer=RETAILER).count()
@@ -342,10 +343,13 @@ def _cleanup(seen_product_ids):
     # verdachte terugval slaan we het opruimen over; de volgende sync herstelt
     # het vanzelf.
     if bestaand and len(seen_product_ids) < bestaand * MIN_FEED_RATIO:
-        logger.error(
-            f"[!] Feed leverde maar {len(seen_product_ids)} van de {bestaand} bekende "
-            f"aanbiedingen; opruimen overgeslagen om dataverlies te voorkomen."
-        )
+        melding = (f"Feed leverde maar {len(seen_product_ids)} van de {bestaand} bekende "
+                   f"aanbiedingen; opruimen overgeslagen om dataverlies te voorkomen")
+        logger.error(f"[!] {melding}.")
+        # Ook in het synclogboek, zodat /api/sync-status het laat zien; bij EP
+        # bleef deze melding op 10 september 2026 zes weken onopgemerkt.
+        if sync_log is not None:
+            sync_log.errors = melding
         return 0, 0
 
     if not seen_product_ids:

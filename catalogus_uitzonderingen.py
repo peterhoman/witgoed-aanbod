@@ -229,6 +229,13 @@ def pas_toe(app):
 
         if verwijderd or verplaatst or hersteld:
             db.session.commit()
+
+        # Aanbiedingen die langer dan drie dagen niet zijn ververst niet
+        # meer als leverbaar tonen; zie verouderde_aanbiedingen.py.
+        from verouderde_aanbiedingen import verberg_verouderde
+        verborgen, _ = verberg_verouderde(db)
+
         return {'verwijderd': verwijderd, 'verplaatst': verplaatst,
+                'verouderd_verborgen': verborgen,
                 'webadres_hersteld': hersteld,
                 'ten_onrechte_in_setjes': [p.slug for p in terug]}

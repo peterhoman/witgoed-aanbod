@@ -239,11 +239,18 @@ def _winkelbijdrage():
         .all()
     )
 
+    # Per winkel ook: hoeveel aanbiedingen zijn er langer dan drie dagen niet
+    # ververst? Dat is het cijfer dat een stilstaande feed verraadt. EP stond
+    # op 10 september 2026 op 590 zonder dat iemand het zag.
+    from verouderde_aanbiedingen import telling_per_winkel
+    verouderd = telling_per_winkel(db)
+
     uit = []
     for winkel, aantal, onmisbaar, alleen in rijen:
         uit.append({
             'winkel': winkel,
             'aanbiedingen': aantal,
+            'niet_ververst_3d': verouderd.get(winkel, 0),
             # Apparaten waar deze winkel de tweede is: zonder hem geen vergelijking.
             'onmisbaar_voor': int(onmisbaar or 0),
             # Apparaten die alleen deze winkel voert: leveren nu geen vergelijking op.

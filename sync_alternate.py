@@ -146,8 +146,14 @@ def sync_alternate():
         removed = 0
         bestaand = Offer.query.filter_by(retailer=RETAILER).count()
         if bestaand and len(seen_product_ids) < bestaand * MIN_FEED_RATIO:
-            logger.error(f"[!] Feed leverde maar {len(seen_product_ids)} van de "
-                         f"{bestaand} bekende aanbiedingen; opruimen overgeslagen.")
+            # Ook in het synclogboek, niet alleen in de serverlogs: op 10
+            # september 2026 bleek EP deze melding al zes weken te geven
+            # zonder dat de dagelijkse controle (die /api/sync-status leest)
+            # er iets van zag.
+            melding = (f"Feed leverde maar {len(seen_product_ids)} van de "
+                       f"{bestaand} bekende aanbiedingen; opruimen overgeslagen")
+            logger.error(f"[!] {melding}.")
+            sync_log.errors = melding
         else:
             stale = Offer.query.filter(
                 Offer.retailer == RETAILER,
@@ -172,7 +178,8 @@ def sync_alternate():
         check_price_alerts()
 
         if prijssprongen:
-            sync_log.errors = ('Prijssprong >50% (feed checken): '
+            sync_log.errors = (((sync_log.errors + ' | ') if sync_log.errors else '')
+                               + 'Prijssprong >50% (feed checken): '
                                + '; '.join(prijssprongen[:15]))[:2000]
         sync_log.finished_at = utcnow()
         sync_log.products_synced = matched

@@ -93,8 +93,19 @@ def _geldig_ean(ean):
 
 
 def _beschrijving(product):
-    """Eigen tekst boven de winkeltekst; leeg veld liever dan opvulsel."""
+    """Eigen tekst boven de winkeltekst; leeg veld liever dan opvulsel.
+
+    Achter de tekst komt een korte feitenzin met afmetingen en kleur, als
+    we die hebben. Merchant Center vroeg daar op 11 september 2026 om bij
+    164 koelvriescombinaties ("Belangrijke informatie: Breedte; toevoegen:
+    Afwerking, Diepte"): wie een koelkast zoekt, zoekt op "60 cm breed".
+    Zie afmetingen.py voor waar de maten vandaan komen.
+    """
+    from afmetingen import kenmerken_zin
     tekst = (product.ai_description or product.description or '').strip()
+    feiten = kenmerken_zin(product)
+    if feiten:
+        tekst = (tekst + ' ' + feiten).strip() if tekst else feiten
     return tekst[:_MAX_BESCHRIJVING] if tekst else None
 
 

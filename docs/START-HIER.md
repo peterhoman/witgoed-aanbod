@@ -1,10 +1,86 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **1 september 2026** (het blok "Update 1 september" hieronder is
+Bijgewerkt **12 september 2026** (het blok "Update 12 september" hieronder is
 het nieuwste; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Update 12 september — de week van de tellers en de feeds (7-12 sept)
+
+Kort: de cijfers waar we op stuurden bleken op drie plekken niet te
+kloppen, en alle drie zijn gerepareerd. Daarnaast de eerste echte verkopen,
+en drie verzoeken die buiten de deur liggen.
+
+**Eerste verkopen.** Awin: 1-9 september 67 klikken, **3 transacties,
+EUR 143,83** in afwachting (augustus dezelfde dagen: 5 klikken, 0). Dat is
+het cijfer waar de site op stuurt. Shopping-klikken piekten op 6 sept (18
+per dag) en zakten daarna naar ~1; oorzaak onbekend, dagelijks volgen.
+
+**Teller 1 — doorkliks (2-5 sept).** Robots klikten op alle winkelknoppen.
+`/uit/...` weigert nu (403) verzoeken van robots, vooruit-ophalers en
+adressen die los worden opgevraagd (`Sec-Fetch-Site: none`). Echte
+doorkliks: 5-16 per dag. `pageviews.bron()` heeft de logica.
+
+**Teller 2 — productpaginaweergaven (8 sept).** Zelfde ziekte: 577
+weergaven op 9 sept waarvan 336 los opgevraagd en 49 zonder browserkoppen.
+Echte mensen ~190 per dag. Bakjes `product-browser`, `product-van-elders`,
+`product-los-adres`, `product-geen-secfetch` in `/api/sync-status`; niets
+wordt geweigerd. Uit de Railway HTTP-logs (`railway logs --http --json`):
+de "browser"-verzoeken komen van huurservers (Tencent Cloud met een
+iOS-13-iPhone-naam, DigitalOcean, AWS); Google is de grootste lezer.
+Besluit over weigeren pas na een week meten.
+
+**Teller 3 — winkeldekking en "laagste prijs" (10 sept, de ernstigste).**
+EP's TradeTracker-feed levert sinds begin augustus nog 373 van de 980
+EP-aanbiedingen (nu een selectie: Liebherr, Miele, inbouw, Exclusiv, tv's).
+De veiligheidsklep hield de rest terecht vast maar liet ze als leverbaar
+staan: **572 EP-prijzen van eind juli, bij 326 apparaten als laagste prijs
+getoond.** Reparatie: `verouderde_aanbiedingen.py` -- een aanbieding die
+langer dan drie dagen niet is ververst wordt niet-leverbaar (rij blijft,
+komt vanzelf terug). Dekking zakte daardoor eerlijk van 45% naar 38%.
+Bovendien: de klep schreef alleen naar de serverlogs; nu ook naar
+`sync_log.errors`, en `/api/sync-status` toont per winkel
+`niet_ververst_3d`. Coolblue had 363 "zombie"-aanbiedingen die
+`_backfill_offers_from_products` (app.py) bij elke deploy opnieuw aanmaakte;
+die routine doet nu alleen nog oude Bol-producten.
+
+**Feeds (buiten de deur, drie verzoeken lopen):**
+- TradeTracker/EP: mail 10 sept naar affiliate.support.nl@tradetracker.com
+  (feed 1944992, affiliate 512985) om de volledige feed. Geen antwoord nog.
+- Awin/Coolblue: case 03161140, 11 sept doorgezet naar accountmanager Mike
+  Kramer (Coolblue's Awin-feed mist producten die Coolblue wel verkoopt).
+- Witgoedhuis (achtste winkel via Daisycon, programma 6570, medium 428244):
+  aanmelding 4 sept, Daisycon-ticket 8 sept, directe mail 10 sept. Feed
+  geeft nog 204/0. Zodra er producten komen: offers-only sync op EAN bouwen
+  naar het recept van Voordeligwitgoed (velden staan in het chatgeheugen).
+
+**Ook deze week:** MediaMarkt herkent nu titels zonder soortwoord
+(tafelmodel, pistonmachine, kruimelzuiger; +38 en +33 apparaten);
+`/api/feed-velden/<winkel>` meet wat er bij de voordeur blijft liggen (bij
+Coolblue niets -- niet opnieuw onderzoeken) en haalt de feed hooguit een
+keer per half uur op (herhaald aanroepen gaf een 429 bij Tradedoubler);
+feedbeschrijvingen kregen een feitenzin met afmetingen en kleur
+(`afmetingen.py`, 1.123 van 2.720 items) op verzoek van Merchant Center;
+voorpagina-kop verbreed naar "witgoed, stofzuigers en koffiemachines".
+
+**Concurrentiemeting 8 sept (wekelijks herhalen, dezelfde vijf
+apparaten):** organisch staan wij bij 0 van 5 in de top 30; Tweakers,
+Kieskeurig, Knibble en Consumentenbond wel. Bij 2 van 4 lag onze "laagste
+prijs" EUR 200 boven de markt -- dat was deels teller 3. Structureel:
+Kieskeurig/Tweakers laten winkels per klik betalen, dus elke winkel doet
+mee; wij hangen aan affiliatenetwerken. Mail aan winkels zonder programma
+staat klaar op Peters bureaublad, versturen zodra Witgoedhuis live is.
+
+**Gereedschap dat er nu is:** Railway CLI is gekoppeld (project
+artistic-motivation, service witgoed-aanbod): `railway logs` voor
+tracebacks, `railway logs --http --json` voor verzoeken, en
+`railway run -s Postgres python <script>` om de productiedatabase te
+lezen (DATABASE_PUBLIC_URL). Alleen lezen. Nooit affiliate-links volgen in
+tests: dat telt als klik bij het netwerk (5 EP-klikken op 10 sept waren van
+ons).
 
 ---
 
@@ -596,10 +672,20 @@ die niemand had gemeld.
   Sinds 1 sept ook: **hoeveel Shopping-vertoningen en klikken** (Analytics →
   Producten → Verkeer, tabblad Datum). Op 31 aug sprong dat van minder dan
   20 naar 1.050 met 11 klikken; de vraag is of dat doorzet.
-- Search Console (/u/5/) → nieuwe 404's, serverfouten, noindex?
-- Railway-proef: `curl -o /dev/null -w "%{http_code}" https://www.witgoedaanbod.nl/%-`
-  → nog steeds 502? Zodra dat iets anders wordt, heeft Railway het gerepareerd
-  en mag de 5xx-validatie in Search Console opnieuw.
+- Search Console (/u/5/) → nieuwe 404's, serverfouten, noindex? (De
+  %-adressen geven sinds 10 sept 404 in plaats van 502; de 5xx-validatie
+  mag Peter opnieuw starten.)
+- `/api/sync-status` → `winkelbijdrage[].niet_ververst_3d`: staat er bij
+  een winkel iets anders dan 0 (Bol ~300 is bekend: oude uitverkochte
+  rijen), dan staat die feed stil -- dezelfde dag uitzoeken. Sinds 10 sept
+  meldt de veiligheidsklep zich ook in `laatste_synclogs`.
+- Daisycon-feed Witgoedhuis: `curl -sI "https://daisycon.io/datafeed/?media_id=428244&program_id=6570&standard_id=6&language_code=nl&locale_id=1&type=xml&records=5"`
+  → zolang `X-Total-Count: 0`, is de aanmelding niet goedgekeurd.
+- Klikbakjes in `/api/sync-status`: `klik-browser` moet in de buurt van het
+  aantal `uit-*` blijven; `product-los-adres` en `product-geen-secfetch` zijn
+  de robot. Groeit `klik-browser` opeens hard, dan is er weer een gat.
+- Merchant Center: staat de melding "Beschrijvingen voor
+  Koelvriescombinaties updaten" er nog (was 164 op 11 sept)?
 
 **Meld ook als alles goed is.** "Niets gevonden" is een uitkomst.
 

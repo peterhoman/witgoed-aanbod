@@ -489,7 +489,9 @@ body {
     display: flex;
     gap: 10px;
     max-width: 500px;
-    margin: 0 auto;
+    /* Iets meer lucht boven de zoekbalk nu de kop en de tekst breder
+       zijn (12 sept 2026, op verzoek van Peter). */
+    margin: 12px auto 0;
 }
 
 .hero-search input {

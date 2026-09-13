@@ -2528,7 +2528,8 @@ def category(slug):
     )
 
 
-def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_description, intro):
+def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_description, intro,
+                       facet_uitleg=None, kenmerk_video=None):
     """Gedeelde rendering voor merk-/energielabel-facetpagina's.
 
     In tegenstelling tot ?brand=/?spec= (client-side filters, alleen
@@ -2584,6 +2585,8 @@ def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_de
                                                    list_name=facet_title),
         facet_title=facet_title,
         facet_intro=intro,
+        facet_uitleg=facet_uitleg or [],
+        kenmerk_video=kenmerk_video,
         pros_cons_by_ean=_pros_cons_by_ean(),
     )
 
@@ -2845,6 +2848,35 @@ def category_kenmerk(slug, veld, stap_slug):
     return _render_facet_page(
         category, Product.id.in_(info['ids']), stap['label'],
         kop, meta_description, intro,
+    )
+
+
+@main_bp.route('/category/<slug>/kenmerk/<kenmerk_slug>')
+def category_zoekkenmerk(slug, kenmerk_slug):
+    """Kenmerkpagina op de zoekzin: /category/drogers/kenmerk/stoomfunctie.
+
+    Zie zoekkenmerken.py voor het waarom. Proef sinds 13 september 2026 met
+    drie pagina's; ze staan pas in de sitemap en in de categorielinks als
+    Peter ze heeft gezien en goedgekeurd.
+    """
+    from zoekkenmerken import kenmerken_voor, producten_met_kenmerk
+
+    category = Category.query.filter_by(slug=slug).first_or_404()
+    definitie = kenmerken_voor(slug).get(kenmerk_slug)
+    if not definitie:
+        abort(404)
+    ids = producten_met_kenmerk(category, kenmerk_slug)
+    if len(ids) < 3:
+        abort(404)
+
+    naam_lower = category.name.lower()
+    intro = (f"We volgen {len(ids)} {naam_lower} {definitie['label']}, hieronder "
+             f"gesorteerd op prijs; bij elk model staat de laagste actuele prijs "
+             f"van onze aangesloten winkels.")
+    return _render_facet_page(
+        category, Product.id.in_(ids), definitie['label'],
+        definitie['kop'], definitie['meta'][:160], intro,
+        facet_uitleg=definitie['uitleg'], kenmerk_video=definitie.get('video'),
     )
 
 

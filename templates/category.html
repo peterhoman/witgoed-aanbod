@@ -46,7 +46,7 @@
     {% endif %}
 
     {% if kenmerk_video %}
-    {% from '_macros.html' import video_facade %}
+    {% from '_macros.html' import video_facade with context %}
     <div class="kenmerk-video">
         {{ video_facade(kenmerk_video, facet_title) }}
     </div>

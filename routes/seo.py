@@ -221,6 +221,20 @@ def _bouw_entries():
                 'priority': '0.5',
                 'soort': 'kenmerken'
             })
+        # Kenmerkpagina's op de zoekzin (zoekkenmerken.py): zelfde
+        # herkenning als de route, dus sitemap en pagina zijn het eens.
+        from zoekkenmerken import kenmerken_voor, producten_met_kenmerk
+        for kenmerk_slug in kenmerken_voor(category.slug):
+            ids = producten_met_kenmerk(category, kenmerk_slug)
+            if len(ids) < 3:
+                continue
+            id_set = set(ids)
+            sitemap_entries.append({
+                'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}/kenmerk/{kenmerk_slug}",
+                'lastmod': _lastmod(moment_van(p for p in cat_products if p.id in id_set)),
+                'priority': '0.6',
+                'soort': 'kenmerken'
+            })
         # Subcategorie-pagina's (voorlader/bovenlader, warmtepomp/condens):
         # ongelimiteerd berekenen, want dit zijn geen priority-specs en
         # kunnen buiten de standaard top-6 vallen.

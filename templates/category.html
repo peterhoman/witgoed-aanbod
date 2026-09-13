@@ -78,6 +78,12 @@
        Google's crawler. Deze links geven diezelfde deelverzamelingen een
        eigen, indexeerbare URL (long-tail zoekverkeer als "Bosch witgoed"). #}
     <nav class="category-facet-links" aria-label="{{ t('filters.brand') }}">
+        {# Kenmerkpagina's op de zoekzin (zoekkenmerken.py) staan vooraan:
+           dit zijn de links die het dichtst bij een zoekvraag zitten. Peter
+           vond ze op 13 september 2026 niet terug, achter dertig merken. #}
+        {% for k in zoekkenmerk_options or [] %}
+        <a href="/category/{{ category.slug }}/kenmerk/{{ k.slug }}" class="facet-link-kenmerk">{{ k.kop }} ({{ k.aantal }})</a>
+        {% endfor %}
         {# Alle merken, niet de eerste twaalf. Dit is de enige crawlbare route
            naar de merkfacetpagina's, en die zijn op hun beurt de kortste route
            naar de producten erachter. Twaalf tonen liet zeven merken per
@@ -108,10 +114,6 @@
         {# Kenmerkpagina's op de EPREL-specificaties, zelfde ondergrens. #}
         {% for k in kenmerk_options or [] %}
         <a href="/category/{{ category.slug }}/{{ k.veld }}/{{ k.slug }}">{{ k.kop }} ({{ k.aantal }})</a>
-        {% endfor %}
-        {# Kenmerkpagina's op de zoekzin (zoekkenmerken.py). #}
-        {% for k in zoekkenmerk_options or [] %}
-        <a href="/category/{{ category.slug }}/kenmerk/{{ k.slug }}">{{ k.kop }} ({{ k.aantal }})</a>
         {% endfor %}
         {% if brand_facet %}
         <a href="/merken" class="category-facet-links-all">{{ t('nav.brands') }} →</a>

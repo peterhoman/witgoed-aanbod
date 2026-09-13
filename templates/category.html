@@ -80,7 +80,7 @@
     <nav class="category-facet-links" aria-label="{{ t('filters.brand') }}">
         {# Kenmerkpagina's op de zoekzin (zoekkenmerken.py) staan vooraan:
            dit zijn de links die het dichtst bij een zoekvraag zitten. Peter
-           vond ze op 14 september 2026 niet terug, achter dertig merken. #}
+           vond ze op 13 september 2026 niet terug, achter dertig merken. #}
         {% for k in zoekkenmerk_options or [] %}
         <a href="/category/{{ category.slug }}/kenmerk/{{ k.slug }}" class="facet-link-kenmerk">{{ k.kop }} ({{ k.aantal }})</a>
         {% endfor %}

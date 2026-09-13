@@ -856,6 +856,15 @@ body {
     border: 1px solid var(--border);
 }
 
+.category-facet-links a.facet-link-kenmerk {
+    /* Kenmerkpagina's (droger met stoomfunctie, no frost) opvallend tussen
+       de merkknopjes: eigen kleur, zelfde vorm. */
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    font-weight: 600;
+}
+
 .category-facet-links a:hover {
     border-color: var(--primary);
     color: var(--primary);

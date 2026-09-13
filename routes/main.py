@@ -2522,6 +2522,7 @@ def category(slug):
         subtype_options=subtype_options,
         winkel_options=_winkel_facet(category),
         kenmerk_options=_kenmerk_links(category),
+        zoekkenmerk_options=_zoekkenmerk_links(category),
         pros_cons_by_ean=_pros_cons_by_ean(),
         faq=faq,
         faq_jsonld=faq_jsonld,
@@ -2850,6 +2851,19 @@ def category_kenmerk(slug, veld, stap_slug):
         category, Product.id.in_(info['ids']), stap['label'],
         kop, meta_description, intro,
     )
+
+
+def _zoekkenmerk_links(category):
+    """[{slug, kop, aantal}] voor de categoriepagina: de kenmerkpagina's op de
+    zoekzin (zoekkenmerken.py) met genoeg apparaten. Zelfde bron als de route
+    en de sitemap, zodat die drie het nooit oneens zijn."""
+    from zoekkenmerken import kenmerken_voor, producten_met_kenmerk
+    links = []
+    for slug, definitie in kenmerken_voor(category.slug).items():
+        aantal = len(producten_met_kenmerk(category, slug))
+        if aantal >= 3:
+            links.append({'slug': slug, 'kop': definitie['kop'].split(':')[0], 'aantal': aantal})
+    return links
 
 
 @main_bp.route('/category/<slug>/kenmerk/<kenmerk_slug>')

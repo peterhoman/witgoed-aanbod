@@ -4103,3 +4103,11 @@ body.cookiebalk-open #babbelbot-knop {
     background: #e8f6ee;
     border-color: #bfe3cc;
 }
+
+
+/* Kenmerkpagina's op de zoekzin (zoekkenmerken.py): de video onder de kop
+   niet breder dan een leesbare alinea. */
+.kenmerk-video {
+    max-width: 640px;
+    margin: 0 0 24px;
+}

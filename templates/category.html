@@ -23,6 +23,9 @@
     <header class="category-header">
         <h1>{{ facet_title or category.name }}</h1>
         {% if facet_intro %}
+        {% for alinea in facet_uitleg %}
+        <p>{{ alinea }}</p>
+        {% endfor %}
         <p>{{ facet_intro }}</p>
         {% elif category.ai_intro %}
         <p>{{ category.ai_intro }}</p>
@@ -40,6 +43,13 @@
         </span>
         <span class="wizard-teaser-cta">Start →</span>
     </a>
+    {% endif %}
+
+    {% if kenmerk_video %}
+    {% from '_macros.html' import video_facade %}
+    <div class="kenmerk-video">
+        {{ video_facade(kenmerk_video, facet_title) }}
+    </div>
     {% endif %}
 
     {% if video_id %}

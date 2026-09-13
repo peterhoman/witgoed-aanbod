@@ -46,7 +46,7 @@ KENMERKEN = {
                 'Reken er niet op dat het strijkwerk helemaal verdwijnt: het wordt '
                 'minder. Een droger met stoom is duurder dan hetzelfde model zonder, '
                 'en een stoomprogramma kost wat water en tijd extra. Let bij het '
-                'kiezen ook op het vulgewicht en het energielabel -- die staan bij '
+                'kiezen ook op het vulgewicht en het energielabel; die staan bij '
                 'elk model hieronder.',
             ],
             'video': 'khtqhn4gTso',  # Coolblue Productadvies: stoomfunctie op een wasdroger

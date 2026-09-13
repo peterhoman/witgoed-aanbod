@@ -32,6 +32,8 @@ KENMERKEN = {
         'stoomfunctie': {
             'kop': 'Droger met stoomfunctie: minder strijkwerk',
             'label': 'met stoomfunctie',
+            'zin': '{n} drogers met stoomfunctie',
+            'paginatitel': 'Droger met stoomfunctie vergelijken - minder strijkwerk | WitgoedAanbod.nl',
             'patroon': _ONTKENNING + r'(stoomfunctie|stoomprogramma|steam|stoom)',
             'in_tekst': True,
             'uitleg': [
@@ -57,6 +59,8 @@ KENMERKEN = {
         'no-frost': {
             'kop': 'No frost koelkast: nooit meer ontdooien',
             'label': 'no frost',
+            'zin': '{n} no-frost koelkasten en koel-vriescombinaties',
+            'paginatitel': 'No frost koelkast vergelijken - nooit meer ontdooien | WitgoedAanbod.nl',
             'patroon': _ONTKENNING + r'(no[- ]?frost|nofrost)',
             'in_tekst': True,
             'uitleg': [
@@ -80,6 +84,8 @@ KENMERKEN = {
         'inbouw': {
             'kop': 'Inbouw vaatwasser: past in je keuken',
             'label': 'inbouw',
+            'zin': '{n} inbouw vaatwassers',
+            'paginatitel': 'Inbouw vaatwasser vergelijken - volledig en half geïntegreerd | WitgoedAanbod.nl',
             'patroon': _ONTKENNING + r'(\binbouw|volledig ge[ïi]ntegreerd|half ge[ïi]ntegreerd|onderbouw)',
             'in_tekst': False,  # "inbouw" in een winkeltekst zegt te vaak iets anders
             'uitleg': [

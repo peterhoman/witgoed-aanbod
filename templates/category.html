@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% from '_macros.html' import product_card, filter_opties, filter_groep, filter_hint with context %}
 
-{% block title %}{{ facet_title or category.name }} vergelijken - laagste prijs | WitgoedAanbod.nl{% endblock %}
+{% block title %}{% if facet_paginatitel %}{{ facet_paginatitel }}{% else %}{{ facet_title or category.name }} vergelijken - laagste prijs | WitgoedAanbod.nl{% endif %}{% endblock %}
 {% block meta_description %}{{ meta_description }}{% endblock %}
 
 {% block structured_data %}

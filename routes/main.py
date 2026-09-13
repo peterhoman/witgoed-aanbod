@@ -2529,7 +2529,7 @@ def category(slug):
 
 
 def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_description, intro,
-                       facet_uitleg=None, kenmerk_video=None):
+                       facet_uitleg=None, kenmerk_video=None, facet_paginatitel=None):
     """Gedeelde rendering voor merk-/energielabel-facetpagina's.
 
     In tegenstelling tot ?brand=/?spec= (client-side filters, alleen
@@ -2587,6 +2587,7 @@ def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_de
         facet_intro=intro,
         facet_uitleg=facet_uitleg or [],
         kenmerk_video=kenmerk_video,
+        facet_paginatitel=facet_paginatitel,
         pros_cons_by_ean=_pros_cons_by_ean(),
     )
 
@@ -2869,14 +2870,14 @@ def category_zoekkenmerk(slug, kenmerk_slug):
     if len(ids) < 3:
         abort(404)
 
-    naam_lower = category.name.lower()
-    intro = (f"We volgen {len(ids)} {naam_lower} {definitie['label']}, hieronder "
-             f"gesorteerd op prijs; bij elk model staat de laagste actuele prijs "
-             f"van onze aangesloten winkels.")
+    wat = definitie['zin'].format(n=len(ids))
+    intro = (f"We volgen {wat}, hieronder gesorteerd op prijs; bij elk model "
+             f"staat de laagste actuele prijs van onze aangesloten winkels.")
     return _render_facet_page(
         category, Product.id.in_(ids), definitie['label'],
         definitie['kop'], definitie['meta'][:160], intro,
         facet_uitleg=definitie['uitleg'], kenmerk_video=definitie.get('video'),
+        facet_paginatitel=definitie.get('paginatitel'),
     )
 
 

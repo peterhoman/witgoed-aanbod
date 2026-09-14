@@ -1,7 +1,8 @@
 """
 Coolblue productfeed sync (via Awin)
 
-Haalt de Coolblue-prijsvergelijkersfeed op (Awin Create-a-Feed), filtert het
+Haalt de Coolblue "NL full feed" op (Awin Create-a-Feed, sinds 14 september
+2026 op verzoek van Coolblue; daarvoor de prijsvergelijkersfeed), filtert het
 witgoed eruit en zet per apparaat een Coolblue-aanbieding (Offer) in de
 database. Bestaat het apparaat al door de Bol- of MediaMarkt-sync, dan wordt
 het via de EAN-streepjescode aan datzelfde product gekoppeld; anders komt er
@@ -31,14 +32,22 @@ logger = logging.getLogger(__name__)
 
 RETAILER = 'coolblue'
 
-# Feed 95930: "Alle producten pricecomparison/prijsvergelijkers publishers".
-# Speciaal door Coolblue samengesteld voor prijsvergelijkers, met EAN-kolom
-# (de gewone full feed heeft alleen 'upc'). ~16.000 producten, hele winkel.
-FEED_ID = 95930
+# Feed 96636: "NL full feed (alle producten)". Op 14 september 2026 vroeg
+# Coolblue (Michiel Croes, naar aanleiding van Awin-case 03161140) om over te
+# stappen van de prijsvergelijkersfeed 95930 naar deze feed: de oude werd
+# "geremd" en miste witgoed (wasmachines 69 tegen 139, koelkasten 59 tegen
+# 204, drogers 21 tegen 75 -- gemeten op de dag van de overstap).
+#
+# Verschil met 95930: de streepjescode staat hier in 'upc', niet in 'ean',
+# en bij ~15% van de regels staan er meerdere codes met komma's ertussen
+# (verpakkingsvarianten, met en zonder voorloopnul). Daarom leest normalize()
+# beide kolommen en levert een lijst kandidaten; de synclus koppelt op de
+# eerste kandidaat die al in de catalogus staat.
+FEED_ID = 96636
 
 # Alleen de kolommen die we echt gebruiken; scheelt downloadgrootte.
 FEED_COLUMNS = [
-    'ean', 'product_name', 'brand_name', 'description', 'merchant_image_url',
+    'ean', 'upc', 'product_name', 'brand_name', 'description', 'merchant_image_url',
     'aw_image_url', 'aw_deep_link', 'merchant_deep_link', 'search_price',
     'base_price', 'product_type', 'delivery_time', 'delivery_cost', 'condition',
 ]
@@ -122,12 +131,33 @@ def fetch_feed(apikey):
     return list(csv.DictReader(io.StringIO(text)))
 
 
+def ean_kandidaten(row):
+    """Alle bruikbare streepjescodes uit een feedregel, beste eerst.
+
+    De full feed zet ze in 'upc' (de oude prijsvergelijkersfeed in 'ean'),
+    soms meerdere gescheiden door komma's. Een 13-cijferige code is de
+    gewone EAN en gaat voorop; 12-cijferig (UPC, zonder voorloopnul) en
+    14-cijferig (verpakking) blijven als reserve, zoek_product() vult de
+    voorloopnullen zelf aan. Alles korter dan 8 of langer dan 14 cijfers is
+    geen streepjescode en valt af.
+    """
+    ruw = ','.join(row.get(k) or '' for k in ('ean', 'upc'))
+    codes = []
+    for deel in ruw.split(','):
+        deel = deel.strip()
+        if deel.isdigit() and 8 <= len(deel) <= 14 and deel not in codes:
+            codes.append(deel)
+    codes.sort(key=lambda c: (len(c) != 13, len(c) != 12))
+    return codes
+
+
 def normalize(row):
     """Zet een feedregel om in het handjevol velden dat wij nodig hebben."""
-    ean = (row.get('ean') or '').strip()
+    eans = ean_kandidaten(row)
     title = (row.get('product_name') or '').strip()
-    if not ean or not title:
+    if not eans or not title:
         return None
+    ean = eans[0]
 
     # De prijsvergelijkersfeed hoort alleen nieuwe producten te bevatten;
     # refurbished zit in aparte feeds. Extra slot op de deur.
@@ -149,6 +179,7 @@ def normalize(row):
 
     return {
         'ean': ean,
+        'eans': eans,
         'title': title,
         'brand': (row.get('brand_name') or '').strip() or None,
         'description': row.get('description'),
@@ -208,7 +239,7 @@ def sync_coolblue():
             record = normalize(row)
             if not record:
                 continue
-            if record['ean'] in seen_eans:
+            if any(e in seen_eans for e in record['eans']):
                 continue
 
             title = record['title']
@@ -239,9 +270,18 @@ def sync_coolblue():
                 skipped += 1
                 continue
 
-            seen_eans.add(record['ean'])
+            seen_eans.update(record['eans'])
 
-            product = zoek_product(Product, record['ean'])
+            # Meerdere codes op een regel: koppel op de eerste die al in de
+            # catalogus staat (via Bol, MediaMarkt, Expert, ...), zodat de
+            # Coolblue-prijs bij het bestaande apparaat komt en er geen
+            # dubbel product ontstaat. Staat geen enkele code erin, dan wordt
+            # de beste kandidaat (13-cijferig) de EAN van het nieuwe product.
+            product = None
+            for kandidaat in record['eans']:
+                product = zoek_product(Product, kandidaat)
+                if product:
+                    break
             if not product:
                 product = Product(
                     ean=record['ean'],

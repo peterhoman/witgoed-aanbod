@@ -138,9 +138,18 @@ Search Console bedienen: het zoekvak reageert niet op getypte tekst vanuit
 de Chrome-tool; zet de waarde in JS (value-setter + input-event + Enter
 KeyboardEvent) en klik knoppen op coördinaten.
 
+**Coolblue-feed (14 sept, middag):** Coolblue (Michiel Croes) antwoordde op
+case 03161140: de prijsvergelijkersfeed 95930 wordt "geremd", overstappen op
+"NL full feed (alle producten)" = Awin-feed 96636. Gedaan in
+`sync_coolblue.py`: streepjescode uit `upc` (soms meerdere per regel,
+komma's), koppelen op de eerste code die al in de catalogus staat.
+Leesproef op productie vóór de merge: 1.488 apparaten in plaats van 1.127,
+1.484 koppelen aan bestaande producten, 4 nieuw; wasmachines 69 → 139,
+koelkasten 86 → 271, drogers 21 → 75. Coolblue wil een bevestiging zodra
+het live is.
+
 **Nog open, buiten de deur:** TradeTracker/EP (volledige feed, mail 10
-sept), Awin/Coolblue (case 03161140, ligt bij accountmanager Mike Kramer
-sinds 11 sept), Witgoedhuis (Daisycon-aanmelding 4 sept, ticket 8 sept,
+sept), Witgoedhuis (Daisycon-aanmelding 4 sept, ticket 8 sept,
 mail 10 sept; feed geeft nog 204/0). Shopping-klikken zakten van 18/dag
 (6 sept) naar ~1-4; geen verklaring, dagelijks volgen.
 

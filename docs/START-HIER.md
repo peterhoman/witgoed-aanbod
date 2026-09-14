@@ -44,19 +44,56 @@ Niet één op één met de 1,96% van 25 aug (die gold voor modelcode-zoekwoorden
 op productpagina's); volgende keer op dezelfde manier meten (tabblad
 ZOEKOPDRACHTEN, modelcodes apart).
 
-**Wat dit betekent — de losse serverfouten zijn hetzelfde verschijnsel als
-de 28 in Merchant Center:** pagina's die bij ons altijd 200 geven, maar die
-Google op een bepaald moment niet kreeg. Verdachten: de uitrol (13 sept vijf
-uitrollen in 40 minuten, 8 sept vier; healthcheck staat wel aan in
-railway.toml) en de sync in hetzelfde gunicorn-proces (`--timeout 60`, één
-worker, 8 threads). Niet te bewijzen: `railway logs <oude-deployment-id>`
-geeft niets terug, alleen de lopende uitrol is leesbaar. **Daarom vanaf nu
-dagelijks, vóór een merge:**
-`railway logs --http --json -n 50000 -f "@httpStatus:>=500"` en
-`railway logs -d -n 50000 | grep -E "WORKER TIMEOUT|Booting worker"`.
-Staat daar iets in, dan is de sync uit het webproces halen de volgende stap
-(stond al als drempel "boven de dertig" in het blok van 1 september; we
-zitten op 28).
+**Uitgezocht dezelfde middag (14 sept) — wat het WEL en NIET is:**
+
+Google's crawlstatistieken (Search Console → Instellingen → Crawlstatistieken
+→ host www → rij "De pagina kan niet worden bereikt") zijn de bron met
+tijdstippen. Uitkomst:
+- **208 mislukte ophaalpogingen in 90 dagen**, sinds 11 juli, gemiddeld 2-3
+  per dag met uitschieters: 12 jul 22, 31 aug 17, 2 sep 15, **12 sep 27**.
+  Op ~450 crawls per dag is dat ~0,5%. Het is dus **niet nieuw**; Merchant
+  Center laat het pas zien sinds AdsBot na 28 aug de landingspagina's
+  controleert (Bosch PKF611BB2E: 12 sep 12:22 in de SC-lijst, dezelfde dag
+  afgekeurd in MC).
+- De 9 "Serverfout 5xx" in SC zijn in de crawlstatistieken **allemaal oude
+  %-adressen** (laatste 22 aug 03:06) -- de bekende Railway-edge-502, niet
+  de app.
+- **Uitgesloten:** de uitrollen (5 van de 58 momenten vallen binnen een
+  uitrol-kwartier), de syncs (12 van 58 binnen een job, Bol-sync duurt
+  10-12 min en loopt 4x per dag: te weinig overlap), worker-time-outs (geen
+  enkele `WORKER TIMEOUT` in 16 uitrollen sinds 4 sept), crashes (één
+  "Starting Container" per uitrol), CPU (max 0,01 vCPU), geheugen (max
+  1,06 GB van 8), DNS (TransIP, geen AAAA, www CNAME naar Railway), IPv6
+  (geen records), certificaat, en Railway's eigen storingen (september 100%).
+- **Railway zag niets:** `railway metrics --since 7d --raw --json` geeft 0
+  5xx buiten mijn eigen twee testfouten (8 sep 13:00 en 13 sep 11:00 UTC,
+  de 429 van Tradedoubler en de `t()`-macro), p99 meestal < 1,5 s, één uur
+  5,1 s (10 sep 15:00 UTC). Wat Google niet kon bereiken, is dus nooit bij
+  de app aangekomen: het strandt vóór de app, bij Railway's edge/netwerk of
+  onderweg. Dat is met onze middelen niet verder te meten.
+- 60 snelle proeven vanaf hier: 60 van 60 goed.
+- Wél gezien: de site draait in **US West (Californië)**, niet in Amsterdam.
+  Voor Nederlandse bezoekers scheelt dat ~150 ms per pagina. Postgres staat
+  in hetzelfde project; verhuizen moet dan samen. Los punt, geen oorzaak.
+
+**Wat er nog kan (beslissing Peter):**
+1. Merchant Center → probleem "Productpagina niet beschikbaar" → knop
+   **"Websitecontrole aanvragen"**: Google controleert de 28 opnieuw; alle
+   28 geven nu 200. Kost geen beoordelingspoging (het is een crawl, geen
+   beleidsbeoordeling). Niet zelf geklikt.
+2. Vraag bij Railway (station.railway.com) met de 58 tijdstippen: "zien
+   jullie edge-fouten voor service db27c6e1 in US West op deze momenten?"
+   Tekst staat klaar in "Bevindingen 14 september.txt" op het bureaublad.
+3. Externe bereikbaarheidsmeting (UptimeRobot of Better Stack, gratis, elke
+   minuut vanuit meerdere landen): dan hebben we eigen bewijs in plaats van
+   alleen Google's lijst. Account aanmaken moet Peter zelf doen.
+4. Regio naar EU West (Amsterdam) verhuizen: geen oorzaak van dit
+   probleem, wel sneller voor bezoekers; app én Postgres samen.
+
+Railway-logs: `-f "@httpStatus:..."` werkt NIET (geeft altijd 0), een los
+woord als `-f 404` wel. Oude uitrollen: deploy-logs zijn ~7 dagen leesbaar
+(`railway logs <deployment-id> -d --json -n 20000`), HTTP-logs alleen van de
+lopende uitrol. `railway metrics --since 7d --raw --json` is de betere bron.
 
 ---
 
@@ -788,11 +825,13 @@ die niemand had gemeld.
 - Merchant Center: staat de melding "Beschrijvingen voor
   Koelvriescombinaties updaten" er nog (was 164 op 11 sept)?
 
-- Railway, vóór een merge (daarna zijn de logs van die uitrol weg):
-  `railway logs --http --json -n 50000 -f "@httpStatus:>=500"` en
-  `railway logs -d -n 50000 | grep -E "WORKER TIMEOUT|Booting worker"`.
-  Iets anders dan de opstartregel = de verdachte voor "productpagina niet
-  beschikbaar" (MC) en de losse 5xx (SC); zie Dagcontrole 14 september.
+- Railway: `railway metrics --since 1d --json` → staat `5xx` op 0 en is
+  p99 onder de 2 s? En `railway logs -d -n 5000 | grep -E "WORKER TIMEOUT|Traceback"`
+  leeg? (Het `-f "@httpStatus:..."`-filter werkt niet; zie 14 sept.)
+- Search Console → Crawlstatistieken → host www → "De pagina kan niet
+  worden bereikt": hoeveel per dag? Normaal 2-3; boven de 15 is een
+  uitschieter (12 sep: 27). Dit is de teller achter MC's "productpagina
+  niet beschikbaar".
 - Mailbox: antwoord van TradeTracker, Awin (Mike Kramer) of Daisycon?
   (Gmail-zoekopdracht `tradetracker OR awin OR daisycon newer_than:7d`;
   op 14 sept: niets.)

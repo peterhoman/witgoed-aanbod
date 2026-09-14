@@ -88,7 +88,11 @@
            naar de merkfacetpagina's, en die zijn op hun beurt de kortste route
            naar de producten erachter. Twaalf tonen liet zeven merken per
            categorie onbereikbaar, terwijl het geen enkele nieuwe URL kost. #}
-        {% for option in brand_facet %}
+        {# Sinds 14 september 2026 alleen merken met minstens 8 producten
+           (dezelfde ondergrens als de andere facetpagina's en de sitemap):
+           264 kleine merkpagina's stonden bij Google in de wachtrij voor de
+           productpagina's. #}
+        {% for option in brand_facet if option.count >= 8 %}
         <a href="/category/{{ category.slug }}/merk/{{ option.value|slugify }}">{{ option.value }} ({{ option.count }})</a>
         {% endfor %}
         {% for facet in spec_facets if 'energielabel' in facet.key|lower %}
@@ -105,12 +109,8 @@
         {% for opt in subtype_options or [] %}
         <a href="/category/{{ category.slug }}/type/{{ opt.value|slugify }}">{{ opt.value }} ({{ opt.count }})</a>
         {% endfor %}
-        {# Winkelpagina's: alleen winkels met genoeg aanbod krijgen een link,
-           dezelfde ondergrens als de route zelf — een link naar een 404 kan
-           dus niet ontstaan. #}
-        {% for w in winkel_options or [] %}
-        <a href="/category/{{ category.slug }}/winkel/{{ w.code }}">Bij {{ w.label }} ({{ w.aantal }})</a>
-        {% endfor %}
+        {# Winkelpagina's ("drogers bij EP") worden sinds 14 september 2026
+           niet meer gelinkt en staan niet meer in de sitemap; zie routes/seo.py. #}
         {# Kenmerkpagina's op de EPREL-specificaties, zelfde ondergrens. #}
         {% for k in kenmerk_options or [] %}
         <a href="/category/{{ category.slug }}/{{ k.veld }}/{{ k.slug }}">{{ k.kop }} ({{ k.aantal }})</a>

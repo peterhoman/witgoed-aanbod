@@ -1,10 +1,62 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **14 september 2026** (het blok "Update 14 september" hieronder is
+Bijgewerkt **14 september 2026** (het blok "Dagcontrole 14 september" hieronder is
 het nieuwste; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 14 september (ochtend) — uitkomsten en twee nieuwe dingen
+
+Alle tien routines draaien, prijssprongen 1 (omhoog, niet teruggesprongen),
+teksten wachtrij 0 met sleutel, EPREL in onderhoudsstand zonder afbreking,
+Daisycon Witgoedhuis nog `X-Total-Count: 0`, kenmerkpagina's 200, home 0,3 s.
+Bekend en ongewijzigd: EP `niet_ververst_3d` 584 (feedselectie), Bol 315.
+
+**Merchant Center** (overzicht, authuser=5): 2,88K producten, 2,73K
+goedgekeurd (-236 in 7 dagen: dat is de EP-reparatie van 10 sept, de feed
+kromp van ~2,9K naar 2.706), **146 niet goedgekeurd waarvan 118 verborgen**
+(= de "Gevonden door Google"-producten met "prijs ontbreekt"; verborgen
+sinds 4 sept, staan er nog wel als getal). Echt van ons: **28 "productpagina
+niet beschikbaar"** (1 → 6 → 22 → 28 sinds eind aug) + 6 "availability
+ontbreekt". Alle 5 zichtbare voorbeelden staan in onze feed (in_stock) en
+geven als AdsBot 200 in 0,3 s. Shopping 28 dagen: 77 productklikken, 3,43K
+vertoningen, CTR 2,2%; per dag piek ~18 op 6 sept, sinds 10 sept 3-5.
+Melding koelvriescombinaties: 168 (was 164).
+
+**Search Console** (/u/5/): geïndexeerd 2,84K. Serverfout 5xx 9 (validatie
+gestart 17 aug, MISLUKT 5 sept) — en dat zijn **géén %-adressen** meer maar
+gewone productpagina's, laatst gezien 24 aug t/m 2 sep (Bosch SMS6ZCI11F,
+Roborock Qrevo Edge, Samsung RS70F65QEFEF, ...). Alle 9 geven nu 200.
+Niets nieuws na 2 sept. Verder: 404 45 (was 39), noindex 72 (verdwenen
+producten en kleine merkpagina's, laatste 2 sept; klopt), "gecrawld – niet
+geïndexeerd" 17 (was 11), "gevonden – niet geïndexeerd" 1.241 (loopt).
+`/%-` geeft vandaag weer **502** (3 van 3), niet 404 zoals op 10 sept
+gemeten; 5xx-validatie dus NIET herstarten.
+
+**Doorklikratio (de half-septembermeting):** 28 dagen 104 klikken, 11K
+vertoningen, CTR 0,9%, positie 6,3; 3 maanden 185 / 15,6K / 1,2% / 10,6.
+Dus: 70% van alle vertoningen van het kwartaal viel in de laatste 28 dagen,
+positie fors beter, maar de klikken groeien langzamer dan de vertoningen.
+Niet één op één met de 1,96% van 25 aug (die gold voor modelcode-zoekwoorden
+op productpagina's); volgende keer op dezelfde manier meten (tabblad
+ZOEKOPDRACHTEN, modelcodes apart).
+
+**Wat dit betekent — de losse serverfouten zijn hetzelfde verschijnsel als
+de 28 in Merchant Center:** pagina's die bij ons altijd 200 geven, maar die
+Google op een bepaald moment niet kreeg. Verdachten: de uitrol (13 sept vijf
+uitrollen in 40 minuten, 8 sept vier; healthcheck staat wel aan in
+railway.toml) en de sync in hetzelfde gunicorn-proces (`--timeout 60`, één
+worker, 8 threads). Niet te bewijzen: `railway logs <oude-deployment-id>`
+geeft niets terug, alleen de lopende uitrol is leesbaar. **Daarom vanaf nu
+dagelijks, vóór een merge:**
+`railway logs --http --json -n 50000 -f "@httpStatus:>=500"` en
+`railway logs -d -n 50000 | grep -E "WORKER TIMEOUT|Booting worker"`.
+Staat daar iets in, dan is de sync uit het webproces halen de volgende stap
+(stond al als drempel "boven de dertig" in het blok van 1 september; we
+zitten op 28).
 
 ---
 
@@ -735,6 +787,15 @@ die niemand had gemeld.
   de robot. Groeit `klik-browser` opeens hard, dan is er weer een gat.
 - Merchant Center: staat de melding "Beschrijvingen voor
   Koelvriescombinaties updaten" er nog (was 164 op 11 sept)?
+
+- Railway, vóór een merge (daarna zijn de logs van die uitrol weg):
+  `railway logs --http --json -n 50000 -f "@httpStatus:>=500"` en
+  `railway logs -d -n 50000 | grep -E "WORKER TIMEOUT|Booting worker"`.
+  Iets anders dan de opstartregel = de verdachte voor "productpagina niet
+  beschikbaar" (MC) en de losse 5xx (SC); zie Dagcontrole 14 september.
+- Mailbox: antwoord van TradeTracker, Awin (Mike Kramer) of Daisycon?
+  (Gmail-zoekopdracht `tradetracker OR awin OR daisycon newer_than:7d`;
+  op 14 sept: niets.)
 
 **Meld ook als alles goed is.** "Niets gevonden" is een uitkomst.
 

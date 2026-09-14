@@ -145,7 +145,16 @@ def _bouw_entries():
             'priority': '0.8',
             'soort': 'categorieen'
         })
+        # Merkpagina's per categorie alleen vanaf de gewone ondergrens.
+        # Gemeten 14 september 2026 in Search Console: van de 1.241
+        # "gevonden, niet geïndexeerd" waren er 264 merkfacetten, vaak met
+        # één of twee producten ("Princess stofzuigers (1)"). Google
+        # besteedt zijn leestijd aan die adressen terwijl 650 productpagina's
+        # en zelfs /category/drogers wachten. Kleine merkpagina's blijven
+        # bereikbaar op hun adres, maar worden niet meer aangeboden.
         for brand in compute_brand_facet(cat_products):
+            if brand['count'] < _MIN_PER_FILTERPAGINA:
+                continue
             merk_slug = slugify(brand['value'])
             sitemap_entries.append({
                 'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}/merk/{merk_slug}",
@@ -186,8 +195,15 @@ def _bouw_entries():
         for p in cat_products:
             for winkel in winkels_per_product.get(p.id, ()):
                 per_winkel.setdefault(winkel, []).append(p)
+        # Sinds 14 september 2026 niet meer in de sitemap: 53 van deze
+        # pagina's stonden in Search Console als "gevonden, niet
+        # geïndexeerd", en de wel geïndexeerde leverden op 25 augustus nul
+        # klikken op. De route blijft bestaan (geen 404 voor wie het adres
+        # kent), maar Google hoeft ze niet meer te lezen. Terugzetten: de
+        # regel hieronder op True.
+        winkelpaginas_in_sitemap = False
         for winkel, winkel_producten in sorted(per_winkel.items()):
-            if len(winkel_producten) < _MIN_PER_FILTERPAGINA:
+            if not winkelpaginas_in_sitemap or len(winkel_producten) < _MIN_PER_FILTERPAGINA:
                 continue
             sitemap_entries.append({
                 'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}/winkel/{winkel}",

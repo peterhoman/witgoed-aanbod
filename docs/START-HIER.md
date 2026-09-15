@@ -1,10 +1,46 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **14 september 2026** (het blok "Dagcontrole 14 september" hieronder is
+Bijgewerkt **15 september 2026** (het blok "Dagcontrole 15 september" hieronder is
 het nieuwste; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 15 september — Coolblue live, MC schoon, onbereikbaar houdt aan
+
+- **Coolblue-feed 96636 werkt:** ronde van 15 sept 06:13 UTC: 16.459 regels,
+  1.425 gekoppeld, 2 nieuw, 36 overgeslagen. Aanbiedingen 1.125 → **1.425**,
+  Merchant-feed 2.706 → **2.906 items**, leverbaar 2.709 → 2.910. Dekking
+  blijft 39% (de nieuwe Coolblue-prijzen zitten vooral bij apparaten die
+  al één andere winkel hadden of nog geen enkele: `enige_winkel_bij` 586 →
+  742). Peter heeft Coolblue bevestigd.
+- **Merchant Center:** na de websitecontrole van 14 sept: niet goedgekeurd
+  146 → **108, waarvan 101 verborgen** (Google's eigen vondsten). Echt van
+  ons nog 7 (was 34). Producten 3,07K, goedgekeurd 2,96K.
+  Koelvries-melding 207 (was 168; groeit mee met de feed).
+- **"Kan niet worden bereikt" houdt aan:** 12 sep 27, **13 sep 25**, 14 sep
+  4 (nog niet compleet). Reeks sinds 9 sept: 5, 11, 10, 27, 25. Dus geen
+  eenmalige uitschieter. Eigen proef vanaf Peters pc (elke 20 s, 2 uur,
+  15 sept vanaf 12:05 UTC): zie proef.log in de sessie; tussenstand 0
+  mislukt. Volgende stap ligt bij Peter: externe meter (gratis, eigen
+  account) — Railway-forum levert niets op.
+- **Search Console per dag (het cijfer achter de "daling"):** vóór 29 aug
+  20-60 vertoningen per dag op positie 40-50. Vanaf 29 aug (dag na de
+  MC-vrijgave) positie 3-9 en honderden vertoningen: 4-7 sept piek 1.134 /
+  1.383 / **1.497** / 1.092, daarna 786, 495, 673, 649, 307 (12 sept,
+  mogelijk nog niet compleet). Klikken 11/18/22/10, daarna 7, 3, 1, 6, 4.
+  Dat zijn productvermeldingen in Google Zoeken (positie 1-9, geen gewone
+  blauwe links). De piek zakt, maar het niveau is nog 10x dat van augustus.
+  Of de 28 afkeuringen en de onbereikbaarheid de daling veroorzaakten is
+  niet te bewijzen; nu de 28 weg zijn: **volgen of de vertoningen
+  terugkomen.** Tabblad DAGEN uitlezen: navigeer naar
+  `.../search-analytics?...&num_of_days=28&breakdown=date`, scroll, en lees
+  `document.querySelectorAll('table')` — klikken op tabbladen werkt niet
+  betrouwbaar vanuit de Chrome-tool.
+- Indexering ongewijzigd (9/17/72/62/45/10/1/1/1.241; geïndexeerd 2.839).
+- Daisycon/Witgoedhuis: Peter wacht tot 18 sept (tien werkdagen).
 
 ---
 

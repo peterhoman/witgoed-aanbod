@@ -8,6 +8,27 @@ leidend voor werkafspraken.
 
 ---
 
+## Rankingmeting 16 september — SC-posities zijn moduleposities
+
+Peter wil de ranking weer oppakken. Gemeten (SC 3 maanden, 1.000 rijen +
+tien zoekwoorden live): 52% van alle vertoningen staat op positie 1-3 met
+0,6% klikkans; dat is Googles blok "Vergelijkingssites" uit onze
+MC-feed, geen blauwe link. Organisch: **1 van 10 modelcodes in de top 18**
+(Bosch SMV4EMX01N op 16), ook bij MediaMarkt-huismerken (Koenic, OK) met
+weinig concurrentie. Titels/omschrijvingen verbeteren helpt daar niet;
+het ontbreekt aan domeingezag (links) en aan vergelijkingswaarde bij
+één-winkel-apparaten. Afgesproken: (1) wekelijkse live meting
+(`docs/RANKING-METING.md`, akkoord 16 sept), (2) links: Peter wil dit
+zelf met mij doen, morgen (17 sept) bekijken -- kansrijkste idee uit het
+geplakte advies is onze eigen prijsdata als "linkbare" publicatie
+(prijsverschillen tussen winkels over 1.136 apparaten met meerdere
+winkels; prijshistorie sinds 15 juli, dus nog géén jaarvergelijking),
+(3) vergelijkingswaarde: loopt (Coolblue-feed, Witgoedhuis, EP).
+Nieuwe concurrenten gezien: vergelijk.nl, beslist.nl, VergelijkEven.nl,
+supersales.nl.
+
+---
+
 ## Dagcontrole 16 september — eerste TradeTracker-verkoop
 
 - **Eerste verkoop via TradeTracker ooit:** 16 sept 10:56, Voordeligwitgoed,
@@ -917,6 +938,15 @@ die niemand had gemeld.
 Elke twee tot vier weken, niet vaker: "Gevonden — niet geïndexeerd" (1.243 op
 1 sept) en "Gecrawld — niet geïndexeerd" (11, validatie mislukt op 29 aug).
 Die bewegen in weken; niet opnieuw valideren.
+
+**Elke week (dinsdag):** de tien modelcodes live in Google meten en de tabel
+in `docs/RANKING-METING.md` aanvullen (werkwijze staat erin). Nulmeting 16
+sept: 1 van 10 in de top 18. Search Console-posities zijn hiervoor NIET
+bruikbaar (moduleposities); zie het blok van 16 september.
+
+- Productpagina zoals een bezoeker: `curl -s <productpagina> | grep -c -E '#\}|\{%|%\}|\{#'`
+  moet 0 geven (4-16 sept stond een programmeursnotitie zichtbaar op alle
+  productpagina's; de meetpagina's zagen dat niet).
 
 Half september: **de doorklikratio opnieuw meten** (was 1,96% op 25 aug).
 Google moet de nieuwe titels eerst opnieuw ophalen, eerder meten zegt niets.

@@ -1,10 +1,41 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **15 september 2026** (het blok "Dagcontrole 15 september" hieronder is
+Bijgewerkt **16 september 2026** (het blok "Dagcontrole 16 september" hieronder is
 het nieuwste; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 16 september — eerste TradeTracker-verkoop
+
+- **Eerste verkoop via TradeTracker ooit:** 16 sept 10:56, Voordeligwitgoed,
+  AEG AB81A2DG stofzuiger (EAN 7333394018447), bestelbedrag EUR 189,26 excl.
+  btw (EUR 229 in de winkel), commissie EUR 4,73 (2,5%), onder beoordeling.
+  Voordeligwitgoed was bij ons de goedkoopste: 229 tegen Bol/Coolblue 272,
+  Expert 309, EP 399,95 -- de vergelijking deed precies waar hij voor is.
+  TradeTracker telde vandaag 4 unieke kliks; onze eigen teller ook (2
+  Voordeligwitgoed + 2 EP). Juli was 894 kliks/0 verkopen (robots).
+  **TradeTracker is bereikbaar via Peters Chrome** (affiliate.tradetracker.com,
+  ingelogd): Rapportage → Transacties → Salestransacties; kolom "Referentie"
+  is onze EAN (`affiliate_ref.py`, `&r=EAN`). Product opzoeken op EAN:
+  `railway run -s Postgres python <script>` (zie zoek_ean.py in de sessie).
+- **Coolblue blijft 1.425.** Dekking 39%, leverbaar 2.929, feed groeit mee.
+- **Merchant Center:** niet goedgekeurd 116 waarvan 101 verborgen → 15 van
+  ons (gisteren 7; 5 "wordt beoordeeld"). Koelvries-melding 198.
+  Morgen kijken of die 15 weer zakken.
+- **Search Console per dag:** 12 sep 307, **13 sep 324** vertoningen (5
+  klikken). De daling is gestopt rond 300/dag; nog geen herstel richting
+  de 1.000+ van 4-7 sept. Blijven volgen.
+- **"Kan niet worden bereikt":** 12 sep 27, 13 sep 25, **14 sep 19**, 15 sep 3
+  (niet compleet). Houdt aan. Eigen proef 15 sept (345 pogingen, elke 20 s,
+  2 uur, vanaf Peters pc): **0 mislukt**, gemiddeld 0,28 s, max 0,54 s.
+  Vanuit Nederland is er niets te zien; het zit tussen Google (VS) en
+  Railway (US West). Externe meter blijft de keuze van Peter.
+- Overige meetpagina's schoon: prijssprongen 1/0 teruggesprongen, teksten
+  wachtrij 0, EPREL draait (1.253 gevonden), Daisycon nog 0 (wachten tot
+  18 sept), foto's 4 zonder (bekend).
 
 ---
 

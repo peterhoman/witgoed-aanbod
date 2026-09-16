@@ -321,9 +321,6 @@
         </div>
     </div>
 
-    {# Categoriecontext: onze eigen meting over de hele categorie, in lopende
-       zinnen. Dit is de enige inhoud op een dunne productpagina die nergens
-       anders staat -- titel, prijs en leveranciersbeschrijving staan woordelijk
     {# Het prijsverloop stond op 2.660 beeldpunten, drie schermen naar
        beneden -- een externe beoordelaar concludeerde op 4 september 2026
        dat de site "geen prijsbeoordeling" had terwijl die er wel was.
@@ -384,11 +381,15 @@
         {% endif %}
     </div>
 
+    {# Categoriecontext: onze eigen meting over de hele categorie, in lopende
+       zinnen. Dit is de enige inhoud op een dunne productpagina die nergens
+       anders staat -- titel, prijs en leveranciersbeschrijving staan woordelijk
        ook bij Bol en de fabrikant, en dat is waarom Google honderd van deze
-       pagina's wel crawlde maar niet indexeerde. Werkt op elke pagina, ook
-       zonder specificaties en bij één winkel: precies de dunne pagina's.
-       Onderdelen waarvoor de data ontbreekt staan er niet; zie
-       category_context.py. #}
+       pagina's wel crawlde maar niet indexeerde. Werkt op elke pagina, ook zonder specificaties en bij één winkel:
+       precies de dunne pagina's. Onderdelen waarvoor de data ontbreekt staan
+       er niet; zie category_context.py. Let op: op 4 sept 2026 werd het
+       prijsverloop-blok midden in deze opmerking geplakt, waardoor de staart
+       tot 16 sept als tekst op elke productpagina stond. #}
     {% if categoriecontext %}
     <section class="cat-context">
         <h2>{{ categoriecontext.kop }}</h2>

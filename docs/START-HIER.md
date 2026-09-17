@@ -32,6 +32,14 @@ leidend voor werkafspraken.
 - Daisycon Witgoedhuis nog `X-Total-Count: 0`. Gmail: de vijf winkelmails
   staan verzonden (10:26-10:42 UTC), nog geen antwoord; niets van
   Daisycon, TradeTracker, Awin.
+- **Externe bereikbaarheidsmeter staat aan (17 sept, ~13:30):** UptimeRobot,
+  gratis plan, account op pfmhoman@gmail.com (Register, niet via GitHub),
+  één meting op https://www.witgoedaanbod.nl/ elke 5 minuten. Dashboard:
+  dashboard.uptimerobot.com/monitors (Peters Chrome). Bij de dagcontrole
+  naast Google's "kan niet worden bereikt" leggen. Na ~2 weken: staat de
+  meter op 100% terwijl Google blijft klagen, dan zijn de haperingen korter
+  dan 5 minuten (Solo-plan met 60 s kost EUR 9/maand; pas dan afwegen).
+  Nog nakijken: staat e-mailmelding bij storing aan op dat adres?
 - Merchant Center en Search Console vanmiddag niet opnieuw geopend: de
   ochtendmeting van vandaag staat hieronder en de MC-knop mag pas na 12
   uur weer (vanavond na ~22:00, of morgen).
@@ -1154,6 +1162,8 @@ die niemand had gemeld.
   worden bereikt": hoeveel per dag? Normaal 2-3; boven de 15 is een
   uitschieter (12 sep: 27). Dit is de teller achter MC's "productpagina
   niet beschikbaar".
+- UptimeRobot (dashboard.uptimerobot.com, Peters Chrome): incidenten in de
+  afgelopen 24 uur? Leg ze naast de SC-teller "kan niet worden bereikt".
 - Mailbox: antwoord van TradeTracker, Awin (Mike Kramer) of Daisycon?
   (Gmail-zoekopdracht `tradetracker OR awin OR daisycon newer_than:7d`;
   op 14 sept: niets.)

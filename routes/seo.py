@@ -332,7 +332,8 @@ def _bouw_entries():
     # is de verantwoording waar elke productpagina naar verwijst, en Google
     # vraagt daar expliciet om waar inhoud grotendeels automatisch ontstaat.
     legal_pages = ['over-ons', 'privacy', 'disclaimer', 'cookies', 'voorwaarden',
-                   'retourneren', 'contact', 'productteksten']
+                   'retourneren', 'contact', 'productteksten',
+                   'onderzoek/prijsverschillen-witgoed']
     for page in legal_pages:
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/{page}",

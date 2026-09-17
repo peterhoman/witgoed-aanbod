@@ -4161,3 +4161,15 @@ body.cookiebalk-open #babbelbot-knop {
     .daling-foto img, .daling-geenfoto { width: 72px; height: 72px; }
     .daling-knop { grid-column: 2; justify-self: start; }
 }
+
+/* --- Onderzoek prijsverschillen (/onderzoek/prijsverschillen-witgoed) --- */
+.verschil-kern { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 20px 0 32px; }
+.verschil-kern li { background: var(--light); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
+.verschil-kern strong { display: block; font-size: 26px; color: var(--primary); }
+.verschil-kern span { font-size: 13px; color: #555; }
+.verschil-tabel-wrap { overflow-x: auto; margin: 0 0 32px; }
+.verschil-tabel { width: 100%; border-collapse: collapse; font-size: 14px; }
+.verschil-tabel th, .verschil-tabel td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.verschil-tabel th { background: var(--light); font-weight: 600; }
+.verschil-klein { display: block; font-size: 12px; color: #666; }
+.verschil-page h2 { margin-top: 28px; }

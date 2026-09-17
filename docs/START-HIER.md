@@ -1,10 +1,40 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **17 september 2026, 13:00** (het blok "Overdracht 17 september, slot"
-hieronder is het nieuwste; oudere blokken en hoofdstukken blijven gelden waar de update
+Bijgewerkt **17 september 2026, 13:15** (het blok "Dagcontrole 17 september (middag)"
+hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 17 september (middag, 12:50) — Google heeft geantwoord
+
+- **Merchant Center-support antwoordde binnen een uur** (ticket
+  7-8523000041223, medewerker Tiemen, 17 sept 12:46): Google ziet "op dit
+  moment geen fouten meer" bij de productpagina's en heeft **geen inzicht
+  meer in welke fout de crawler destijds kreeg** (time-out, verbinding of
+  DNS). Verwijst naar het rapport Crawlstatistieken in Search Console (dat
+  hadden we al gebruikt, blok 14 sept) en bevestigt: websitecontrole
+  maximaal 1x per 12 uur; opnieuw aanvragen zodra afkeuringen zichtbaar
+  zijn. **Deze lijn is daarmee gesloten: Google levert geen tijdstippen of
+  IP-bereik.** Wat overblijft is de externe bereikbaarheidsmeter (keuze
+  Peter, optie 3 van 14 sept). Niet terugmailen; er komt niets meer.
+- Meetpagina's schoon: EPREL 3.605 opgezocht / 1.258 gevonden, geen
+  afbreking; prijssprongen 1, teruggesprongen 0; teksten wachtrij 2 met
+  sleutel; alle tien routines gepland; Bol-sync liep om 12:45 nog
+  (klaar=None is normaal, duurt 10-12 min). `niet_ververst_3d`: EP 585 en
+  Bol 342 (bekend), rest 0. Coolblue 1.422, feed 2.911 items (allemaal
+  in_stock), /aanbiedingen 9 categorieën, productpagina zonder
+  sjabloonsporen, home 0,24 s.
+- Railway 24 uur: 5xx 0, foutpercentage 0, p99 max 2,6 s (één punt boven
+  de 2 s), geen WORKER TIMEOUT of Traceback in de logs.
+- Daisycon Witgoedhuis nog `X-Total-Count: 0`. Gmail: de vijf winkelmails
+  staan verzonden (10:26-10:42 UTC), nog geen antwoord; niets van
+  Daisycon, TradeTracker, Awin.
+- Merchant Center en Search Console vanmiddag niet opnieuw geopend: de
+  ochtendmeting van vandaag staat hieronder en de MC-knop mag pas na 12
+  uur weer (vanavond na ~22:00, of morgen).
 
 ---
 

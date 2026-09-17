@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ t('verschil.paginatitel', eur=d.totaal.gem_eur|int, jaar=d.stand.year) }}{% endblock %}
+{% block meta_description %}{{ t('verschil.meta', n=d.totaal.apparaten, winkels=d.aantal_winkels, eur=d.totaal.gem_eur|int, pct=d.totaal.gem_pct, vanaf100=d.totaal.vanaf_100) }}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">{{ structured_data | tojson }}</script>
+{% endblock %}
+
+{% block content %}
+<div class="container dalingen-page verschil-page">
+    <nav class="breadcrumbs">
+        <a href="/">Home</a> / <span>{{ t('verschil.kruimel') }}</span>
+    </nav>
+
+    <header class="category-header">
+        <h1>{{ t('verschil.kop', eur=d.totaal.gem_eur|int, jaar=d.stand.year) }}</h1>
+        <p class="dalingen-voet">{{ t('verschil.stand', datum=stand_tekst, sinds=sinds_tekst) }}</p>
+        <p>{{ t('verschil.intro', n=d.totaal.apparaten, winkels=d.aantal_winkels, opsomming=winkel_opsomming, eur=d.totaal.gem_eur|int, pct=d.totaal.gem_pct, mediaan=d.totaal.mediaan_eur|int) }}</p>
+    </header>
+
+    <ul class="verschil-kern">
+        <li><strong>{{ d.totaal.apparaten }}</strong><span>{{ t('verschil.kern_apparaten') }}</span></li>
+        <li><strong>&euro; {{ d.totaal.gem_eur|int }}</strong><span>{{ t('verschil.kern_gem', pct=d.totaal.gem_pct) }}</span></li>
+        <li><strong>{{ d.totaal.vanaf_50 }}</strong><span>{{ t('verschil.kern_50') }}</span></li>
+        <li><strong>{{ d.totaal.vanaf_100 }}</strong><span>{{ t('verschil.kern_100') }}</span></li>
+        <li><strong>{{ d.totaal.gelijk }}</strong><span>{{ t('verschil.kern_gelijk') }}</span></li>
+    </ul>
+
+    <h2>{{ t('verschil.cat_kop') }}</h2>
+    <p>{{ t('verschil.cat_intro') }}</p>
+    <div class="verschil-tabel-wrap">
+    <table class="verschil-tabel">
+        <thead><tr>
+            <th>{{ t('verschil.th_categorie') }}</th><th>{{ t('verschil.th_apparaten') }}</th>
+            <th>{{ t('verschil.th_gem') }}</th><th>{{ t('verschil.th_50') }}</th><th>{{ t('verschil.th_grootste') }}</th>
+        </tr></thead>
+        <tbody>
+        {% for r in d.categorieen %}
+        <tr>
+            <td><a href="/category/{{ r.categorie.slug }}">{{ r.categorie.name }}</a></td>
+            <td>{{ r.apparaten }}</td>
+            <td>&euro; {{ r.gem_eur|int }} ({{ r.gem_pct }}%)</td>
+            <td>{{ r.vanaf_50 }}</td>
+            <td>&euro; {{ r.max_eur|int }}: <a href="/product/{{ r.max_product.slug|urlencode }}">{{ r.max_product.title|kort(45) }}</a>
+                <span class="verschil-klein">&euro; {{ r.max_mn|euro }} {{ r.max_goedkoopste }} · &euro; {{ r.max_mx|euro }} {{ r.max_duurste }}</span></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    <h2>{{ t('verschil.top_kop', n=d.top|length) }}</h2>
+    <div class="verschil-tabel-wrap">
+    <table class="verschil-tabel">
+        <thead><tr>
+            <th>{{ t('verschil.th_apparaat') }}</th><th>{{ t('verschil.th_goedkoopste') }}</th>
+            <th>{{ t('verschil.th_duurste') }}</th><th>{{ t('verschil.th_verschil') }}</th>
+        </tr></thead>
+        <tbody>
+        {% for r in d.top %}
+        <tr>
+            <td><a href="/product/{{ r.product.slug|urlencode }}">{{ r.product.title|kort(60) }}</a>
+                <span class="verschil-klein">{{ r.categorie.name if r.categorie }} · {{ r.winkels }} {{ t('verschil.winkels') }}</span></td>
+            <td>&euro; {{ r.mn|euro }} <span class="verschil-klein">{{ r.goedkoopste }}</span></td>
+            <td>&euro; {{ r.mx|euro }} <span class="verschil-klein">{{ r.duurste }}</span></td>
+            <td><strong>&euro; {{ r.verschil|int }}</strong> <span class="verschil-klein">({{ r.pct|int }}%)</span></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    <h2>{{ t('verschil.winkel_kop') }}</h2>
+    <p>{{ t('verschil.winkel_intro') }}</p>
+    <div class="verschil-tabel-wrap">
+    <table class="verschil-tabel">
+        <thead><tr>
+            <th>{{ t('verschil.th_winkel') }}</th><th>{{ t('verschil.th_aanwezig') }}</th>
+            <th>{{ t('verschil.th_vaakst') }}</th><th>{{ t('verschil.th_aandeel') }}</th>
+        </tr></thead>
+        <tbody>
+        {% for w in d.winkels %}
+        <tr><td>{{ w.winkel }}</td><td>{{ w.aanwezig }}</td><td>{{ w.goedkoopste }}</td><td>{{ w.aandeel_pct }}%</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    <h2>{{ t('verschil.wissel_kop', dagen=d.wissel_dagen) }}</h2>
+    <p>{{ t('verschil.wissel_intro', dagen=d.wissel_dagen) }}</p>
+    <div class="verschil-tabel-wrap">
+    <table class="verschil-tabel">
+        <thead><tr>
+            <th>{{ t('verschil.th_winkel') }}</th><th>{{ t('verschil.th_aanbiedingen') }}</th>
+            <th>{{ t('verschil.th_gewijzigd') }}</th><th>{{ t('verschil.th_wijzigingen') }}</th>
+        </tr></thead>
+        <tbody>
+        {% for w in d.wisselingen %}
+        <tr><td>{{ w.winkel }}</td><td>{{ w.aanbiedingen }}</td><td>{{ w.apparaten_gewijzigd }} ({{ w.aandeel_gewijzigd_pct }}%)</td><td>{{ w.wijzigingen }} ({{ w.per_aanbieding }} {{ t('verschil.per_aanbieding') }})</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    <section class="dalingen-uitleg">
+        <h2>{{ t('verschil.methode_kop') }}</h2>
+        <p>{{ t('verschil.methode_1', winkels=d.aantal_winkels, opsomming=winkel_opsomming) }}</p>
+        <p>{{ t('verschil.methode_2') }}</p>
+        <p>{{ t('verschil.methode_3', sinds=sinds_tekst) }}</p>
+        <h2>{{ t('verschil.gebruik_kop') }}</h2>
+        <p>{{ t('verschil.gebruik_1') }}</p>
+        <p><a href="/aanbiedingen">{{ t('verschil.naar_dalingen') }} →</a></p>
+    </section>
+</div>
+{% endblock %}

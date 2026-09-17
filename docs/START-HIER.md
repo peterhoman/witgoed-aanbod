@@ -39,8 +39,28 @@ bewijzen. Bewust géén koopgids/filterpagina (die leveren niets op).
   productie" (railway run + app.py, dus zonder planner; create_app doet
   wel de idempotente migraties, zoals elke deploy).
 
-**Na de merge:** Search Console → Sitemaps → sitemap-aanbiedingen.xml
-aanmelden; na 2-4 weken kijken of "wasmachine aanbieding"/"droger
+**Gemerged 17 sept 10:51 (PR #163); sitemap-aanbiedingen.xml dezelfde dag apart
+aangemeld in Search Console (10 URL's, succes; het veld wil de VOLLEDIGE URL en
+de knop moet op coördinaat geklikt worden).** Live: 9 categorieën, 155
+apparaten.
+
+**Punt 2 gebouwd (tak feat/prijsverschillen):** `/onderzoek/prijsverschillen-witgoed`
+= `prijsverschillen.py` (cache 6 uur) + route in routes/prijsdalingen.py +
+`prijsverschillen.html`, teksten `verschil.*` in translations.py, link in
+de voettekst, in sitemap-overig, Dataset-structured data (CC BY 4.0).
+Cijfers 17 sept: 1.117 apparaten bij >=2 winkels, gemiddeld EUR 49 (9,7%),
+361 >=EUR50, 187 >=EUR100, 345 overal gelijk; wasdroogcombinaties EUR 78,
+ovens/airfryers 71, wasmachines 67. Aandeel goedkoopste: Voordeligwitgoed
+93% (55 apparaten), Bol 62%, Coolblue 48%, MediaMarkt 46%, EP 32%, Expert
+21%. Prijswisselingen 30 dagen: Bol 86% van de aanbiedingen gewijzigd (8,3
+wijzigingen per aanbieding), Coolblue 88%, MediaMarkt 73%, Expert 37%.
+Uitgesloten: setjes (Apparaatsets) en verschillen >60% (andere uitvoering
+of feedfout; de Bosch HSG7361B1 Bol 1279/Expert 2099 en een AEG-set 639/1359
+vielen daardoor weg). Tekst voor sites/pers staat op Peters bureaublad:
+"Prijsverschillen witgoed - tekst voor sites en pers.txt". Punt 3 (lijst
+sites om te benaderen) nog te maken.
+
+**Verder:** Search Console → Sitemaps → sitemap-aanbiedingen.xml; na 2-4 weken kijken of "wasmachine aanbieding"/"droger
 aanbieding" vertoningen geven (tabblad ZOEKOPDRACHTEN). Volgende stap
 (punt 2 van 17 sept): pagina "Prijsverschillen witgoed 2026" met de
 gemeten verschillen (gem. EUR 51/10% over 1.126 apparaten; Coolblue vaakst

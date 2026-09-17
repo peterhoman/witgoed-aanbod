@@ -11,6 +11,7 @@ from flask import Blueprint, render_template, abort, current_app
 
 from models import Category
 import prijsdalingen
+import prijsverschillen
 
 prijsdalingen_bp = Blueprint('prijsdalingen', __name__)
 
@@ -70,4 +71,45 @@ def categorie(slug):
         drempel_eur=int(prijsdalingen.DREMPEL_EUR),
         structured_data=_structured_data(category, lijst),
         andere=[(c, n) for c, n, _ in prijsdalingen.overzicht() if c.id != category.id],
+    )
+
+
+_MAANDEN = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli',
+            'augustus', 'september', 'oktober', 'november', 'december']
+
+
+def _datum_tekst(dt):
+    return f"{dt.day} {_MAANDEN[dt.month - 1]} {dt.year}" if dt else ''
+
+
+@prijsdalingen_bp.route('/onderzoek/prijsverschillen-witgoed')
+def prijsverschillen_witgoed():
+    """De publicatie met prijsverschillen tussen winkels (prijsverschillen.py).
+
+    Bedoeld als pagina waar andere sites naar linken; ververst vanzelf
+    (cache zes uur), de datum bovenaan is de stand van de cijfers.
+    """
+    d = prijsverschillen.cijfers()
+    if not d.get('apparaten', 1):
+        abort(404)
+    site = current_app.config['SITE_URL']
+    structured = {
+        '@context': 'https://schema.org',
+        '@type': 'Dataset',
+        'name': f"Prijsverschillen witgoed tussen Nederlandse winkels ({d['stand'].year})",
+        'description': (f"Verschil tussen de laagste en hoogste prijs van hetzelfde apparaat bij "
+                        f"{d['aantal_winkels']} Nederlandse winkels, over {d['totaal']['apparaten']} "
+                        f"apparaten. Gemiddeld EUR {int(d['totaal']['gem_eur'])}."),
+        'url': f"{site}/onderzoek/prijsverschillen-witgoed",
+        'creator': {'@type': 'Organization', 'name': 'WitgoedAanbod.nl', 'url': site},
+        'dateModified': d['stand'].strftime('%Y-%m-%d'),
+        'temporalCoverage': f"{d['historie_sinds'].strftime('%Y-%m-%d') if d['historie_sinds'] else ''}/{d['stand'].strftime('%Y-%m-%d')}",
+        'license': 'https://creativecommons.org/licenses/by/4.0/',
+    }
+    return render_template(
+        'prijsverschillen.html',
+        d=d,
+        stand_tekst=_datum_tekst(d['stand']),
+        sinds_tekst=_datum_tekst(d['historie_sinds']),
+        structured_data=structured,
     )

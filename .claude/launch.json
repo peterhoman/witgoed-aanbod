@@ -6,6 +6,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["wsgi.py"],
       "port": 5000
+    },
+    {
+      "name": "Proef tegen productie (alleen lezen, geen planner)",
+      "runtimeExecutable": "railway",
+      "runtimeArgs": ["run", "-s", "Postgres", "python", "-c", "import os; os.environ['DATABASE_URL']=os.environ['DATABASE_PUBLIC_URL']; from app import create_app; create_app().run(port=5001)"],
+      "port": 5001
     }
   ]
 }

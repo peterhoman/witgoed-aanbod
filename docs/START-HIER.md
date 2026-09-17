@@ -1,10 +1,98 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **17 september 2026** (het blok "17 september" hieronder is
-het nieuwste; oudere blokken en hoofdstukken blijven gelden waar de update
+Bijgewerkt **17 september 2026, middag** (het blok "Overdracht 17 september" hieronder
+is het nieuwste; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Overdracht 17 september (middag) — alles van vandaag, plus de open lijnen
+
+**Dit gesprek zat op 80% en is afgesloten met deze overdracht. Lees ook de
+blokken "17 september — prijsdalingenpagina's" en "Dagcontrole 16
+september" hieronder; MEMORY.md in de Claude-projectmap heeft dezelfde
+feiten compact.**
+
+### Live gezet vandaag (allemaal gemerged en gecontroleerd)
+- `/aanbiedingen` + `/aanbiedingen/<categorie>` (PR #163): 9 categorieën,
+  155 apparaten; sitemap-aanbiedingen.xml apart aangemeld in SC (10 URL's).
+- `/onderzoek/prijsverschillen-witgoed` (PR #164): 1.117 apparaten, gem.
+  EUR 49 (9,7%); setjes en >60% uitgesloten; in voettekst en
+  sitemap-overig; ververst elke 6 uur.
+- Voorpagina/over-ons noemen zich "witgoed prijsvergelijker" (PR #162,
+  16 sept). Trends: dat woord wordt nauwelijks gezocht; "wasmachine/droger
+  aanbieding" wel.
+
+### Op Peters bureaublad (hij verstuurt zelf)
+- "Prijsverschillen witgoed - tekst voor sites en pers.txt": mail + korte
+  versie + wat je niet moet claimen.
+- "Sites om te benaderen - prijsverschillen witgoed.txt": 17 doelen in 4
+  groepen (RetailTrends, Emerce, Twinkle; Kassa, Radar, ID.nl; Milieu
+  Centraal, Gaslicht, UnitedConsumers, Korting.blog, forhome, Kekmama,
+  Mammie Mammie, Wonen met Lef, That Lyfestyle; Leidsch Dagblad/Omroep
+  West), elk met bewijs-artikel. Max 5 per dag, één zin op maat.
+  Concurrenten (Consumentenbond, Tweakers, Kieskeurig, Knibble, Slimster)
+  niet benaderen. Bijhouden wie linkt; effect via docs/RANKING-METING.md.
+- "Mail aan winkels - meedoen op WitgoedAanbod.txt" (herzien 17 sept): zes
+  winkels zonder affiliateprogramma (Keukenloods, Correct, Electro World,
+  De Schouw, Witgoedspecialist, Bemmel & Kroon), zonder prijsvoorbeeld
+  (de voorbeelden van 8 sept gelden niet meer: Koenic KFZ 621 wij nu 397,
+  Inventum VKI6010ZIL wij 216,81 vs Keukenloods/Correct 219). **TP witgoed
+  verkoopt tweedehands: niet benaderen, niet als concurrent op nieuwprijs
+  tellen.** Zegt een winkel ja: koppeling op EAN per winkel bouwen (recept
+  Voordeligwitgoed), ~halve dag per winkel.
+
+### Verstuurd vandaag, antwoord afwachten (dagelijks in Gmail kijken)
+- **Daisycon-supportticket** over Witgoedhuis (campagne 6570, media
+  428244): route Support → Contacteer Daisycon → Campagne keuring → "Geen
+  antwoord van campagne". De chatbot laat niet door naar een medewerker.
+  Peter wilde eerst tot 18 sept wachten, koos toch voor het ticket.
+- **Merchant Center-supportvraag** over "Productpagina niet beschikbaar"
+  (? → Contact opnemen → Problemen met bestemmingspagina → E-mail;
+  bedrijfsnaam Avantius VOF, inzendingsmethode Planning, land Nederland,
+  samenvatting max 1.000 tekens). Gevraagd: welke fout de crawler krijgt,
+  tijdstippen/IP-bereik, en vaker dan 1x per 12 uur controleren. Geen
+  referentienummer; antwoord per mail op pfmhoman@gmail.com.
+
+### Dagcontrole 17 sept (ochtend)
+Alles schoon behalve: MC "productpagina niet beschikbaar" weer 24 → knop
+gedrukt (26 op dat moment; **Peter gaf toestemming dit dagelijks te doen
+zonder te vragen**, Google staat 1x per 12 uur toe); "kan niet worden
+bereikt" 14 sep 19, 15 sep 21 (houdt aan); SC 14 sep 338 vertoningen/6
+klikken (stabiel ~330); Coolblue 1.422; leverbaar 2.917; doorkliks 16
+sept 22 (record). TradeTracker-verkoop van 16 sept (Voordeligwitgoed,
+EUR 4,73) staat "onder beoordeling".
+
+### Werkwijze-lessen van vandaag
+- Sjablonen: `.claude/launch.json` heeft "Proef tegen productie" (railway
+  run + app.py, geen planner) → lokale server op :5001 tegen de
+  productie-DB voor een schermafbeelding vóór de merge. create_app() doet
+  de idempotente migraties (zoals elke deploy); niets anders schrijft.
+- Patches met veel aanhalingstekens: via een .py in de scratchpad
+  (Write-tool), niet via een bash-heredoc (brak twee keer).
+- SC-tabbladen (DAGEN, PAGINA'S) uitlezen: navigeer met `&breakdown=date`
+  resp. `page`, scroll, lees `document.querySelectorAll('table')`.
+  ZOEKOPMAAK rendert niet; overslaan.
+- Google Trends via Chrome: na laden scrollen, dan de regel die begint met
+  "Gemiddeld	" uit `document.body.innerText` lezen.
+- Peters e-mail voor de winkels/pers is peter@avantius.nl; Gmail-MCP ziet
+  alleen pfmhoman@gmail.com (Coolblue-mail zat op avantius).
+
+### Open lijnen (in volgorde)
+1. Dagelijks: dagcontrole + MC-knop + Gmail (Daisycon, Merchant Center,
+   TradeTracker/EP, Awin/Coolblue).
+2. Dinsdag: rankingmeting (docs/RANKING-METING.md), nu ook "witgoed
+   prijsvergelijkers" als elfde (16 sept: niet in top 50).
+3. Over 2-4 weken: SC-vertoningen op /aanbiedingen/* en
+   /onderzoek/prijsverschillen-witgoed; welke sites uit de lijst linkten.
+4. Onbereikbaar-probleem: afwachten wat Google antwoordt; anders externe
+   meter (keuze Peter). Railway-forum levert niets op (Hobby).
+5. 11 oktober: kenmerkpagina's beoordelen (blok 14 sept).
+6. Nog niet gedaan: winkel-koppelingen zonder netwerk (pas na een ja),
+   "Prijsverschillen"-publicatie maandelijks onder de aandacht brengen
+   (de pagina ververst zelf; de mails zijn handwerk van Peter).
 
 ---
 

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ t('dalingen.overzicht_paginatitel', n=totaal) }}{% endblock %}
+{% block meta_description %}{{ t('dalingen.overzicht_meta', n=totaal, dagen=venster, pct=drempel_pct, eur=drempel_eur) }}{% endblock %}
+
+{% block content %}
+<div class="container dalingen-page">
+    <nav class="breadcrumbs">
+        <a href="/">Home</a> / <span>{{ t('dalingen.kruimel') }}</span>
+    </nav>
+
+    <header class="category-header">
+        <h1>{{ t('dalingen.overzicht_kop') }}</h1>
+        <p>{{ t('dalingen.overzicht_intro', n=totaal, dagen=venster, pct=drempel_pct, eur=drempel_eur, winkels=aantal_winkels) }}</p>
+    </header>
+
+    {% if rijen %}
+    <ul class="dalingen-categorieen">
+        {% for c, n, grootste in rijen %}
+        <li>
+            <a href="/aanbiedingen/{{ c.slug }}" class="dalingen-categorie">
+                <span class="dalingen-categorie-naam">{{ c.name }}</span>
+                <span class="dalingen-categorie-aantal">{{ t('dalingen.overzicht_aantal', n=n) }}</span>
+                <span class="dalingen-categorie-grootste">{{ t('dalingen.overzicht_grootste', pct=grootste.pct_rond, titel=grootste.product.title|kort(50)) }}</span>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>{{ t('dalingen.geen') }}</p>
+    {% endif %}
+
+    <section class="dalingen-uitleg">
+        <h2>{{ t('dalingen.uitleg_kop') }}</h2>
+        <p>{{ t('dalingen.uitleg_1', winkels=aantal_winkels, opsomming=winkel_opsomming) }}</p>
+        <p>{{ t('dalingen.uitleg_2', pct=drempel_pct, eur=drempel_eur, dagen=venster) }}</p>
+        <p>{{ t('dalingen.uitleg_3') }}</p>
+    </section>
+</div>
+{% endblock %}

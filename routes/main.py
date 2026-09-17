@@ -2523,6 +2523,7 @@ def category(slug):
         winkel_options=_winkel_facet(category),
         kenmerk_options=_kenmerk_links(category),
         zoekkenmerk_options=_zoekkenmerk_links(category),
+        prijsdalingen_aantal=_prijsdalingen_aantal(category),
         pros_cons_by_ean=_pros_cons_by_ean(),
         faq=faq,
         faq_jsonld=faq_jsonld,
@@ -2851,6 +2852,13 @@ def category_kenmerk(slug, veld, stap_slug):
         category, Product.id.in_(info['ids']), stap['label'],
         kop, meta_description, intro,
     )
+
+
+def _prijsdalingen_aantal(category):
+    """Aantal echte prijsdalingen deze week, of 0 als de categorie (nog) geen
+    pagina krijgt; zelfde bron als route en sitemap (prijsdalingen.py)."""
+    import prijsdalingen
+    return len(prijsdalingen.dalingen_voor(category)) if prijsdalingen.heeft_pagina(category) else 0
 
 
 def _zoekkenmerk_links(category):

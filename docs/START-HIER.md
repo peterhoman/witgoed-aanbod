@@ -1,10 +1,55 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **16 september 2026** (het blok "Dagcontrole 16 september" hieronder is
+Bijgewerkt **17 september 2026** (het blok "17 september" hieronder is
 het nieuwste; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## 17 september — prijsdalingenpagina's (/aanbiedingen) gebouwd
+
+**Waarom:** Google Trends (16 sept): "goedkope wasmachine" en "witgoed
+prijsvergelijker" zoekt bijna niemand; "wasmachine aanbieding" (45) en
+"droger aanbieding" (51) wel. Productie-DB gemeten (17 sept): per week
+170-360 dalingen van >=10% én >=EUR30, afgelopen 7 dagen 168 die nog
+staan, 149 waarbij die winkel nu de goedkoopste is. Genoeg voor een pagina
+per categorie met échte, gemeten dalingen -- iets wat winkels niet kunnen
+bewijzen. Bewust géén koopgids/filterpagina (die leveren niets op).
+
+**Gebouwd (tak feat/prijsdalingen):**
+- `prijsdalingen.py`: window-query over price_history (lag per
+  product+winkel), drempels DREMPEL_PCT 10% én DREMPEL_EUR 30, venster 7
+  dagen, prijs moet nu nog gelden bij die winkel (anders "teruggesprongen"),
+  één regel per apparaat (grootste daling), MIN_PER_PAGINA 5. Procescache
+  15 min. Route, categorielink en sitemap gebruiken dezelfde functies.
+- `routes/prijsdalingen.py`: `/aanbiedingen` (overzicht per categorie) en
+  `/aanbiedingen/<slug>` (404 onder de 5). ItemList-structured data.
+- Sjablonen `prijsdalingen.html` / `prijsdalingen_overzicht.html`, teksten
+  via translations.py (`dalingen.*`, NL+EN), CSS onderaan main.css.
+- Categoriepagina: rode knop "Aanbiedingen: n echte prijsdalingen deze
+  week" vóór de kenmerkknopjes; sitemap-soort `aanbiedingen`
+  (sitemap-aanbiedingen.xml, in de index).
+- Leesproef tegen productie (test_prijsdalingen.py, `railway run`): 155
+  apparaten, 9 categorieën met pagina (wasmachines 17, drogers 18,
+  koelkasten 35, stofzuigers, koffiemachines, ovens, vaatwassers,
+  kookplaten, wasdroogcombinaties); afzuigkappen terecht 404.
+- Lokale proefserver tegen productie: `.claude/launch.json` → "Proef tegen
+  productie" (railway run + app.py, dus zonder planner; create_app doet
+  wel de idempotente migraties, zoals elke deploy).
+
+**Na de merge:** Search Console → Sitemaps → sitemap-aanbiedingen.xml
+aanmelden; na 2-4 weken kijken of "wasmachine aanbieding"/"droger
+aanbieding" vertoningen geven (tabblad ZOEKOPDRACHTEN). Volgende stap
+(punt 2 van 17 sept): pagina "Prijsverschillen witgoed 2026" met de
+gemeten verschillen (gem. EUR 51/10% over 1.126 apparaten; Coolblue vaakst
+goedkoopste) als linkbare publicatie.
+
+**MC-websitecontrole:** Peter gaf op 17 sept toestemming die dagelijks te
+klikken (Producten → Vereist aandacht → Alle problemen → Productpagina niet
+beschikbaar → Oplossing bekijken → Websitecontrole aanvragen → bevestigen).
+Google staat één aanvraag per 12 uur toe. 17 sept: 26 producten.
 
 ---
 

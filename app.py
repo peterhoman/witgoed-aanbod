@@ -249,6 +249,8 @@ def create_app(config_name=None):
     app.register_blueprint(alerts_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(merchant_bp)
+    from routes.prijsdalingen import prijsdalingen_bp
+    app.register_blueprint(prijsdalingen_bp)
 
     # Telt paginaweergaven per soort per dag. Geen cookies, geen IP, geen
     # sessie -- alleen aantallen, zodat zichtbaar is of bezoekers dieper de

@@ -69,6 +69,7 @@ SOORTEN = {
     'winkel-per-categorie': 'winkel binnen een categorie',
     'kenmerken': 'kenmerkpagina op EPREL-specificaties',
     'gidsen': 'koopgids en blog',
+    'aanbiedingen': 'echte prijsdalingen per categorie',
     'overig': 'homepage en juridische paginas',
 }
 
@@ -297,6 +298,26 @@ def _bouw_entries():
         })
 
     # Blog posts
+    # Prijsdalingenpagina's (prijsdalingen.py): alleen categorieën met genoeg
+    # echte dalingen, dezelfde grens als de route en de categorielinks.
+    import prijsdalingen
+    dalingen_overzicht = prijsdalingen.overzicht()
+    if dalingen_overzicht:
+        sitemap_entries.append({
+            'loc': f"{current_app.config['SITE_URL']}/aanbiedingen",
+            'lastmod': _lastmod(max(prijsdalingen.nieuwste_moment(prijsdalingen.dalingen_voor(c))
+                                    for c, _, _ in dalingen_overzicht)),
+            'priority': '0.7',
+            'soort': 'aanbiedingen'
+        })
+    for c, _, _ in dalingen_overzicht:
+        sitemap_entries.append({
+            'loc': f"{current_app.config['SITE_URL']}/aanbiedingen/{c.slug}",
+            'lastmod': _lastmod(prijsdalingen.nieuwste_moment(prijsdalingen.dalingen_voor(c))),
+            'priority': '0.7',
+            'soort': 'aanbiedingen'
+        })
+
     blog_posts = Guide.query.filter_by(post_type='blog').all()
     for post in blog_posts:
         sitemap_entries.append({

@@ -1,10 +1,73 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **17 september 2026, middag** (het blok "Overdracht 17 september" hieronder
-is het nieuwste; oudere blokken en hoofdstukken blijven gelden waar de update
+Bijgewerkt **17 september 2026, 13:00** (het blok "Overdracht 17 september, slot"
+hieronder is het nieuwste; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Overdracht 17 september, slot (13:00) — laatste stand vóór de nieuwe sessie
+
+**Gesprek van 14-17 september is vol en afgesloten. Dit blok + het blok
+"Overdracht 17 september (middag)" hieronder zijn samen de complete stand.
+MEMORY.md in de Claude-projectmap draagt dezelfde feiten compact.**
+
+### Winkelmails: verstuurd op 17 sept (door Peter zelf, vanuit Gmail)
+- Keukenloods (info@keukenloods.nl), Correct (verkoop@correct.nl), De
+  Schouw Witgoed (info@deschouwwitgoed.nl), Bemmel & Kroon
+  (verkoop@bemmelenkroon.nl) en **United Retail (sales@retail.nl)** — dat
+  is het hoofdkantoor in Huizen (tel. 035 525 95 95) van zowel Electro
+  World als De Witgoed Specialist, dus één mail dekt beide formules.
+  Witgoedspecialist niet apart gemaild. **TP witgoed bewust niet:
+  tweedehands/gereviseerd** (staat in hun eigen productteksten).
+- Onderwerp "Uw prijzen horen thuis in onze witgoedvergelijking"; aanbod:
+  productfeed (EAN, prijs, voorraad, link), drie maanden gratis, daarna
+  vergoeding per bezoeker/bestelling in overleg. Zonder prijsvoorbeeld:
+  de voorbeelden van 8 sept golden niet meer (Koenic KFZ 621 wij nu 397;
+  Inventum VKI6010ZIL wij 216,81 vs Keukenloods/Correct 219).
+- Bijhoudlijst: "Winkelmails - klaar om te versturen.txt" op Peters
+  bureaublad. **Dagelijks Gmail nakijken** (zoek: keukenloods OR correct
+  OR deschouw OR bemmelenkroon OR retail.nl). Zegt een winkel ja: per
+  winkel een offers-only sync op EAN bouwen naar het recept van
+  Voordeligwitgoed (~halve dag), klikken tellen via /uit/ (geen netwerk).
+  Na twee weken stilte: één herinnering, daarna laten rusten.
+
+### De Gmail-koppeling van Claude kan NIET versturen
+`send_message` gaf "requires additional permissions"; er is niets vanuit
+Claude verstuurd. Alleen lezen/zoeken werkt (pfmhoman@gmail.com; het
+zakelijke peter@avantius.nl zit er niet in). Mails voor Peter dus als .txt
+op het bureaublad klaarzetten met adres, onderwerp en aanhef per
+ontvanger. Wil Peter dat Claude verstuurt: Gmail-koppeling opnieuw
+verbinden in de Claude-app met verstuurrecht.
+
+### Bureaublad (stand 17 sept 13:00)
+- "Winkelmails - klaar om te versturen.txt" (met bijhoudlijst; alle vijf
+  verstuurd 17 sept).
+- "Sites om te benaderen - prijsverschillen witgoed.txt" (17 doelen; nog
+  niets verstuurd; Peter doet dat zelf, max 5 per dag, één zin op maat).
+- "Prijsverschillen witgoed - tekst voor sites en pers.txt" (mailtekst).
+- "Bevindingen 14 september.txt" (naslag; de Railway-tekst erin NIET
+  versturen, Railway antwoordt niet op Hobby; de vraag ligt nu bij Google
+  Merchant Center-support, antwoord per mail afwachten).
+
+### Wat de nieuwe sessie morgen (18 sept) doet, in volgorde
+1. Dagcontrole (lijst in "Elke dag: de storingscontrole"), inclusief:
+   MC-knop "Websitecontrole aanvragen" (dagelijks, zonder vragen; 1x per
+   12 uur toegestaan), SC "kan niet worden bereikt" per dag, en één
+   productpagina op sjabloonsporen.
+2. Gmail: antwoorden van Daisycon (Witgoedhuis-ticket), Google Merchant
+   Center-support, de vijf winkels, TradeTracker/EP, Awin/Coolblue.
+3. TradeTracker: staat de verkoop van 16 sept (Voordeligwitgoed, EUR 4,73)
+   nog op "onder beoordeling" of geaccepteerd? (affiliate.tradetracker.com
+   via Peters Chrome, Rapportage → Transacties → Salestransacties.)
+4. Coolblue-teller ~1.4K, feed ~2.9K items, /aanbiedingen telt nog 9
+   categorieën?
+5. Dinsdag 22 sept: rankingmeting (docs/RANKING-METING.md), met "witgoed
+   prijsvergelijkers" als elfde.
+6. Niet zelf oppakken zonder Peter: externe uptime-meter, verhuizing naar
+   EU West, nieuwe winkel-koppelingen (pas na een ja van een winkel).
 
 ---
 

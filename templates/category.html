@@ -81,6 +81,11 @@
         {# Kenmerkpagina's op de zoekzin (zoekkenmerken.py) staan vooraan:
            dit zijn de links die het dichtst bij een zoekvraag zitten. Peter
            vond ze op 13 september 2026 niet terug, achter dertig merken. #}
+        {# Echte prijsdalingen van deze week (prijsdalingen.py), 17 sept 2026:
+           het zoekwoord "aanbieding" wordt wél gezocht, "goedkope ..." niet. #}
+        {% if prijsdalingen_aantal %}
+        <a href="/aanbiedingen/{{ category.slug }}" class="facet-link-daling">{{ t('dalingen.kruimel') }}: {{ prijsdalingen_aantal }} {{ t('dalingen.link_rest') }}</a>
+        {% endif %}
         {% for k in zoekkenmerk_options or [] %}
         <a href="/category/{{ category.slug }}/kenmerk/{{ k.slug }}" class="facet-link-kenmerk">{{ k.kop }} ({{ k.aantal }})</a>
         {% endfor %}

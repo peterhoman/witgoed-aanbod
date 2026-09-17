@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ t('dalingen.paginatitel', categorie=category.name|lower, n=aantal) }}{% endblock %}
+{% block meta_description %}{{ t('dalingen.meta', categorie=category.name|lower, n=aantal, pct=drempel_pct, eur=drempel_eur, dagen=venster) }}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">{{ structured_data | tojson }}</script>
+{% endblock %}
+
+{% block content %}
+<div class="container dalingen-page">
+    <nav class="breadcrumbs">
+        <a href="/">Home</a> /
+        <a href="/category/{{ category.slug }}">{{ category.name }}</a> /
+        <span>{{ t('dalingen.kruimel') }}</span>
+    </nav>
+
+    <header class="category-header">
+        <h1>{{ t('dalingen.kop', categorie=category.name|lower) }}</h1>
+        <p>{{ t('dalingen.intro', n=aantal, categorie=category.name|lower, dagen=venster, pct=drempel_pct, eur=drempel_eur, winkels=aantal_winkels) }}</p>
+        <p class="dalingen-voet">{{ t('dalingen.spelregels', goedkoopste=goedkoopste, n=aantal, grootste=grootste.pct_rond) }}</p>
+    </header>
+
+    <ol class="dalingen-lijst">
+        {% for d in lijst %}
+        <li class="daling">
+            <a href="/product/{{ d.product.slug|urlencode }}" class="daling-foto">
+                {% if d.product.image_url %}
+                <img src="{{ d.product.image_url|foto(200) }}" alt="" width="100" height="100" loading="lazy">
+                {% else %}
+                <span class="daling-geenfoto" aria-hidden="true">📦</span>
+                {% endif %}
+            </a>
+            <div class="daling-tekst">
+                <a href="/product/{{ d.product.slug|urlencode }}" class="daling-titel">{{ d.product.title }}</a>
+                <div class="daling-prijs">
+                    <span class="daling-badge">-{{ d.pct_rond }}%</span>
+                    <span class="daling-van">&euro; {{ d.van|euro }}</span>
+                    <span class="daling-naar">&euro; {{ d.naar|euro }}</span>
+                </div>
+                <div class="daling-winkel">
+                    {{ t('dalingen.bij', winkel=d.winkel_naam, datum=d.wanneer.strftime('%d-%m')) }}
+                    {% if d.goedkoopste %}<span class="daling-goedkoopste">{{ t('dalingen.goedkoopste') }}</span>{% endif %}
+                </div>
+            </div>
+            <a href="/product/{{ d.product.slug|urlencode }}" class="btn btn-primary daling-knop">{{ t('dalingen.bekijk') }}</a>
+        </li>
+        {% endfor %}
+    </ol>
+
+    <section class="dalingen-uitleg">
+        <h2>{{ t('dalingen.uitleg_kop') }}</h2>
+        <p>{{ t('dalingen.uitleg_1', winkels=aantal_winkels, opsomming=winkel_opsomming) }}</p>
+        <p>{{ t('dalingen.uitleg_2', pct=drempel_pct, eur=drempel_eur, dagen=venster) }}</p>
+        <p>{{ t('dalingen.uitleg_3') }}</p>
+    </section>
+
+    {% if andere %}
+    <nav class="category-facet-links" aria-label="{{ t('dalingen.andere') }}">
+        <span class="dalingen-andere-label">{{ t('dalingen.andere') }}:</span>
+        {% for c, n in andere %}
+        <a href="/aanbiedingen/{{ c.slug }}">{{ c.name }} ({{ n }})</a>
+        {% endfor %}
+        <a href="/aanbiedingen" class="category-facet-links-all">{{ t('dalingen.alle') }} →</a>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

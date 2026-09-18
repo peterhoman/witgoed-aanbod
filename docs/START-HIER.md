@@ -52,6 +52,17 @@ leidend voor werkafspraken.
   bestaande aanbieding; die vangt `available_since` pas vanaf nu op.
   Nog open: (2) eventueel pas noindex na een aantal dagen niet-leverbaar
   — eerst 2-3 weken kijken of noindex in SC daalt.
+- **Live en gecontroleerd 18 sept 13:20 (PR #170):** kolom
+  `available_since` staat in de productie-DB (nog overal leeg, zoals
+  bedoeld: vult zich bij de eerstvolgende echte overgang). Sitemaps,
+  voorpagina, categorie en /aanbiedingen geven 200; geen Traceback. Productsitemap
+  vóór/na: 558 datums nieuwer, **0 ouder**; Etna KCV520NZWA van 25 aug
+  naar 14 sept; de 83 herleefde "op/na 10 sept" van 53 naar 74. 240 producten
+  met de datum van vandaag, verklaard: 204 prijswijziging vandaag + 36 alleen
+  een nieuwe winkel vandaag. **Bij de dagcontrole van 19 sept nakijken:**
+  is `count(available_since)` boven 0 gekomen, en zijn de datums van 18
+  sept blijven staan (dus niet allemaal naar 19 sept geschoven)? Rond 5-9
+  oktober in SC: daalt "Uitgesloten door noindex" (239)?
 - **MC-websitecontrole aangevraagd 18 sept ~middag** voor 33 producten (na
   Peters ja in de chat; de toestemming van 17 sept staat in dit bestand,
   maar een bevestigknop in Peters Google-account vraagt per sessie een ja

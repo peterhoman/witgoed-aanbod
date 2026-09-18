@@ -36,9 +36,22 @@ leidend voor werkafspraken.
   ouder dan 10 sept): `_laatste_wijziging_per_product()` in routes/seo.py
   kijkt naar prijswijzigingen, niet naar het weer leverbaar worden. Google
   krijgt dus geen seintje om terug te komen.
-- **Voorgelegd aan Peter (nog geen ja):** (1) moment van weer leverbaar
-  worden vastleggen en meenemen in `lastmod`; (2) eventueel pas noindex na
-  een aantal dagen niet-leverbaar. Niets gebouwd.
+- **Gebouwd 18 sept na Peters ja (tak fix/sitemap-datum-bij-weer-leverbaar):**
+  `products.available_since` (opstartmigratie in app.py) wordt gezet door
+  een luisteraar op `Product.is_available` in models.py, alleen bij een
+  echte overgang False → True. Bewust een luisteraar en niet in
+  `refresh_pricing`: sync_products zet is_available ook rechtstreeks.
+  `_laatste_wijziging_per_product()` in routes/seo.py neemt nu het nieuwste
+  van: laatste prijspunt, `created_at` van een leverbare aanbieding (nieuwe
+  winkel op de pagina) en `available_since`. **Niet** offers.updated_at of
+  last_synced gebruiken: die schuiven elke sync op en dan leert Google
+  lastmod te negeren. Gemeten tegen productie (alleen lezen): 495 van 2.921
+  producten krijgen een nieuwere datum, verspreid over veel dagen (14 sept
+  117 = Coolblue-feed); van de 83 herleefde gaat "datum op/na 10 sept" van
+  53 naar 75. De overige 8 klapten terug met dezelfde prijs op een
+  bestaande aanbieding; die vangt `available_since` pas vanaf nu op.
+  Nog open: (2) eventueel pas noindex na een aantal dagen niet-leverbaar
+  — eerst 2-3 weken kijken of noindex in SC daalt.
 - Het adres met `%2B` (setjes, bv. miele-wq-1000...%2B...) geeft 200, ook
   als AdsBot; dat is niet het Railway-%-probleem.
 - Valkuil opnieuw gemaakt: een script patchen met `sed` en `\n` brak het

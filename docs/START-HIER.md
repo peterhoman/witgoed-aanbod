@@ -52,11 +52,18 @@ hoort zo; ook "Proef tegen productie" geeft dus STORING op de routines).
 **Let op bij de dagcontrole:** een STORING geeft een 503 en telt dus mee in
 de 5xx van `railway metrics`. Dat is dan terecht een signaal.
 
-**Nog te doen door Peter na de merge:** tweede meting in UptimeRobot op
-`https://www.witgoedaanbod.nl/api/gezondheid` (gewone HTTP-meting, naam
-"Witgoed gezondheid: feeds en routines"). Een DOWN-mail van die meting betekent
-NIET dat de site plat ligt, maar dat er een feed of routine stilstaat; het
-adres openen op de telefoon toont wat er aan de hand is.
+**Live en gekoppeld 18 sept (PR #172):** `/api/gezondheid` geeft op productie
+GEZOND, 10 van 10 routines. Peter maakte om ~16:35 de tweede UptimeRobot-meting
+aan: naam "Witgoed gezondheid: feeds en routines" (Chrome vertaalt dat op zijn
+scherm naar "voedingen"; de echte naam en de mails zeggen "feeds"), gewone
+HTTP-meting, elke 5 minuten vanuit Noord-Amerika, e-mail naar
+pfmhoman@gmail.com. Eerste controle in de Railway-logs: `HEAD /api/gezondheid
+200`. **UptimeRobot vraagt alleen de kop op (HEAD), niet de tekst**: het alarm
+hangt dus aan de status 503, niet aan het woord STORING. Lokaal nagekeken dat
+HEAD bij een storing ook 503 geeft. Verander die statuscode dus nooit naar
+200-met-tekst. Een DOWN-mail met deze naam betekent NIET dat de site plat ligt,
+maar dat er een feed of routine stilstaat; het adres openen op de telefoon
+toont wat. Een DOWN-mail met de naam "www.witgoedaanbod.nl" = site onbereikbaar.
 
 ---
 

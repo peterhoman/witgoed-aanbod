@@ -1,11 +1,62 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **18 september 2026** (het blok "Dagcontrole 18 september"
-hieronder is het nieuwste, daaronder "Dagcontrole 17 september (middag)"
+Bijgewerkt **18 september 2026, middag** (het blok "18 september (middag) —
+gezondheidscontrole" hieronder is het nieuwste, dan "Dagcontrole 18 september", daaronder "Dagcontrole 17 september (middag)"
 hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## 18 september (middag) — gezondheidscontrole gebouwd; Peter weg 25 sept t/m 2 okt
+
+**Peter is op vakantie van vrijdag 25 september tot en met vrijdag 2 oktober.**
+In die week: geen dagcontrole, geen MC-knop (afkeuringen lopen naar schatting
+op van 33 naar ~50; herstelt met één klik), rankingmeting van 29 sept schuift
+door. **Na woensdag 23 september niets nieuws meer live zetten**, zodat er een
+dag overblijft om te zien dat alles rustig draait. Betaling Railway: wordt van Peters
+creditcard afgeschreven (door Peter bevestigd 18 sept), dus geen tegoed dat
+op kan raken.
+
+**Waarom de controle:** niets waarschuwde als een winkelfeed stilvalt. Sinds
+de veiligheidsklep (3 dagen niet ververst = niet-leverbaar) én noindex op
+niet-leverbare producten samen bestaan, kost een stille Coolblue-feed na drie
+dagen 741 productpagina's hun plek in Google (MediaMarkt: 509). De voorpagina
+blijft dan werken, dus de gewone UptimeRobot-meting ziet niets.
+
+**Gebouwd (tak feat/gezondheidscontrole):** `gezondheid.py` + route
+`/api/gezondheid` in routes/main.py. Antwoordt platte tekst, leesbaar op een
+telefoon: `GEZOND` met status 200, of `STORING` met status 503 en per punt
+in gewone taal wat er mis is. Controleert:
+- per winkel: laatste sync ouder dan **30 uur** (twee gemiste beurten; de klep
+  grijpt pas na 72 uur in, dus er blijft anderhalve dag);
+- per winkel: meer dan **30%** van de leverbare aanbiedingen ouder dan 36 uur
+  (feed levert maar een deel; alleen bij winkels met minstens 50 aanbiedingen);
+- leverbare producten onder de **2.500** (nu 2.923; vaste bodem, aanpassen als
+  de catalogus blijvend krimpt);
+- alle tien routines gepland en geen enkele meer dan 2 uur over tijd;
+- de sleutel voor de eigen teksten aanwezig.
+Bewust niet: EPREL, prijssprongen, foto's (kost niets als het hapert). Een
+controle die zelf crasht geeft STORING, nooit GEZOND.
+**Grenzen zijn gemeten, niet geschat** (productie 18 sept): bij elke gezonde
+winkel 0 leverbare aanbiedingen ouder dan 14 uur; alleen EP 54 van 400 (13,5%)
+ouder dan 36 uur = de bekende halve feed. Komt er een winkel bij, of gaat een
+winkel anders leveren: grenzen opnieuw meten, en de winkel toevoegen aan
+`WINKELS` en `VERWACHTE_ROUTINES` in gezondheid.py, anders geeft de nieuwe
+routine geen alarm als ze ontbreekt.
+Getest: 15 gevallen in een proefdatabase (`python test_gezondheid.py` in de
+projectmap; draai die opnieuw na elke wijziging van de grenzen),
+alleen-lezen tegen productie = GEZOND, lokaal = STORING/503 (geen planner,
+hoort zo; ook "Proef tegen productie" geeft dus STORING op de routines).
+**Let op bij de dagcontrole:** een STORING geeft een 503 en telt dus mee in
+de 5xx van `railway metrics`. Dat is dan terecht een signaal.
+
+**Nog te doen door Peter na de merge:** tweede meting in UptimeRobot op
+`https://www.witgoedaanbod.nl/api/gezondheid` (gewone HTTP-meting, naam
+"Witgoed gezondheid: feeds en routines"). Een DOWN-mail van die meting betekent
+NIET dat de site plat ligt, maar dat er een feed of routine stilstaat; het
+adres openen op de telefoon toont wat er aan de hand is.
 
 ---
 
@@ -1235,6 +1286,8 @@ die niemand had gemeld.
   worden bereikt": hoeveel per dag? Normaal 2-3; boven de 15 is een
   uitschieter (12 sep: 27). Dit is de teller achter MC's "productpagina
   niet beschikbaar".
+- `/api/gezondheid` → staat er GEZOND? Bij STORING staat eronder wat er
+  stilstaat; dezelfde dag uitzoeken.
 - UptimeRobot (dashboard.uptimerobot.com, Peters Chrome): incidenten in de
   afgelopen 24 uur? Leg ze naast de SC-teller "kan niet worden bereikt".
 - Mailbox: antwoord van TradeTracker, Awin (Mike Kramer) of Daisycon?

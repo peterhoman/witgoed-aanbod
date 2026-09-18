@@ -385,6 +385,31 @@ def sync_status():
     })
 
 
+@main_bp.route('/api/gezondheid')
+def gezondheid_status():
+    """GEZOND (200) of STORING (503), voor de externe meter. Zie gezondheid.py
+    voor wat er gecontroleerd wordt en waarom de grenzen zo liggen. Alleen
+    lezen, geen gevoelige data; valt onder Disallow /api/ in robots.txt."""
+    import gezondheid
+    from flask import Response
+    from models import db, Offer
+
+    jobs = None
+    try:
+        from scheduler import scheduler
+        jobs = [(j.name, j.next_run_time) for j in scheduler.get_jobs()]
+    except Exception:
+        jobs = []   # geen planner = alle routines "ontbreken" = STORING
+    gezond, meldingen, cijfers = gezondheid.rapport(
+        db, Offer, Product, jobs,
+        bool(current_app.config.get('ANTHROPIC_API_KEY')))
+    antwoord = Response(gezondheid.als_tekst(gezond, meldingen, cijfers),
+                        status=200 if gezond else 503,
+                        mimetype='text/plain')
+    antwoord.headers['Cache-Control'] = 'no-store'
+    return antwoord
+
+
 @main_bp.route('/api/category-specs/<slug>')
 def category_specs_debug(slug):
     """Alle spec-facetten van een categorie, ongelimiteerd (i.t.t. de 6 die

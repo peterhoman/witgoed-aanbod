@@ -37,6 +37,20 @@ def _ensure_products_strikethrough_column(db):
             conn.commit()
 
 
+def _ensure_products_available_since_column(db):
+    """Zelfde boot-migratiepatroon: kolom voor het moment waarop een product
+    weer leverbaar werd (zie models._markeer_weer_leverbaar). Blijft leeg voor
+    bestaande rijen; de sitemap valt dan terug op prijspunt en aanbieding."""
+    inspector = inspect(db.engine)
+    if 'products' not in inspector.get_table_names():
+        return
+    columns = [c['name'] for c in inspector.get_columns('products')]
+    if 'available_since' not in columns:
+        with db.engine.connect() as conn:
+            conn.execute(text("ALTER TABLE products ADD COLUMN available_since TIMESTAMP"))
+            conn.commit()
+
+
 def _ensure_guides_updated_at_column(db):
     """Zelfde boot-migratiepatroon: voeg updated_at toe aan een bestaande
     guides-tabel, zodat 'bijgewerkt op'-datums (E-E-A-T) ook op gidsen
@@ -214,6 +228,7 @@ def create_app(config_name=None):
         _ensure_guides_post_type_column(db)
         _ensure_guides_updated_at_column(db)
         _ensure_products_strikethrough_column(db)
+        _ensure_products_available_since_column(db)
         _ensure_offers_delivery_columns(db)
         _ensure_ai_content_bron_column(db)
         _ensure_eprel_gezocht_column(db)

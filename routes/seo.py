@@ -41,12 +41,37 @@ def _laatste_wijziging_per_product():
     rij weg als de prijs afwijkt van de laatst bekende. Het laatste prijspunt
     is dus het laatste moment waarop deze pagina inhoudelijk veranderde. Zonder
     prijshistorie valt het terug op de aanmaakdatum.
+
+    Sinds 18 september 2026 tellen twee dingen mee die de prijshistorie mist
+    (gemeten: van 210 adressen die Google als noindex had geboekt waren er 83
+    weer leverbaar, en bij 56 daarvan stond <lastmod> nog op een datum van
+    vóór Google's bezoek):
+    - een leverbare aanbieding van een winkel die er nog niet bij stond
+      (offers.created_at; bij 22 van de 83 kwam er wel een winkel bij maar
+      geen prijspunt). created_at wordt één keer gezet en schuift dus niet op.
+    - het moment waarop het product weer leverbaar werd
+      (products.available_since, gezet door models._markeer_weer_leverbaar):
+      dan gaat de pagina van noindex terug naar index, ook als de prijs
+      gelijk bleef.
+    Niet offers.updated_at of last_synced: die schuiven bij elke sync op.
     """
-    from models import db, PriceHistory
-    rijen = (db.session.query(PriceHistory.product_id,
+    from models import db, Offer, PriceHistory, Product
+    momenten = {}
+
+    def neem_mee(rijen):
+        for pid, moment in rijen:
+            if moment and (pid not in momenten or moment > momenten[pid]):
+                momenten[pid] = moment
+
+    neem_mee(db.session.query(PriceHistory.product_id,
                               db.func.max(PriceHistory.recorded_at))
              .group_by(PriceHistory.product_id).all())
-    return {pid: moment for pid, moment in rijen}
+    neem_mee(db.session.query(Offer.product_id, db.func.max(Offer.created_at))
+             .filter(Offer.is_available.is_(True))
+             .group_by(Offer.product_id).all())
+    neem_mee(db.session.query(Product.id, Product.available_since)
+             .filter(Product.available_since.isnot(None)).all())
+    return momenten
 
 
 def _nieuwste(momenten):

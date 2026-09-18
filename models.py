@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from urllib.parse import quote
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import event
 
 db = SQLAlchemy()
 
@@ -91,6 +92,10 @@ class Product(db.Model):
     specs = db.Column(db.JSON)
 
     is_available = db.Column(db.Boolean, default=True)
+    # Moment waarop dit product voor het laatst van niet-leverbaar naar
+    # leverbaar ging. Wordt gezet door de luisteraar onder deze klasse, niet
+    # met de hand. Zie _markeer_weer_leverbaar voor het waarom.
+    available_since = db.Column(db.DateTime, nullable=True)
     is_example = db.Column(db.Boolean, default=False)
     slug = db.Column(db.String(255), nullable=False)
 
@@ -184,6 +189,31 @@ class Product(db.Model):
 
     def __repr__(self):
         return f'<Product {self.title}>'
+
+
+def _markeer_weer_leverbaar(product, nieuw, oud, initiator):
+    """Leg vast wanneer een product weer leverbaar wordt.
+
+    Waarom (gemeten 18 september 2026): de productpagina zet 'noindex' zodra
+    is_available onwaar is. Wordt het apparaat daarna weer leverbaar, dan
+    springt de pagina terug naar 'index', maar de sitemap-datum keek alleen
+    naar prijswijzigingen. Klapte een aanbieding terug met dezelfde prijs, dan
+    bleef <lastmod> oud en kreeg Google geen seintje om terug te komen: 40% van
+    de noindex-lijst in Search Console was al weer leverbaar.
+
+    Als luisteraar op het veld, niet in refresh_pricing: sync_products zet
+    is_available ook rechtstreeks op True, en dan zou de overgang daar gemist
+    worden. active_history laadt de oude waarde ook als het veld verlopen is.
+    Alleen een echte overgang False -> True telt; True -> True (elke sync) en
+    een nieuw product (oud is None of onbekend) doen niets, anders schuift de
+    datum elke dag op en leert Google lastmod te negeren.
+    """
+    if nieuw is True and oud is False:
+        product.available_since = utcnow()
+
+
+event.listen(Product.is_available, 'set', _markeer_weer_leverbaar,
+             active_history=True)
 
 
 class Offer(db.Model):

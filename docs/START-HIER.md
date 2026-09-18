@@ -52,6 +52,17 @@ leidend voor werkafspraken.
   bestaande aanbieding; die vangt `available_since` pas vanaf nu op.
   Nog open: (2) eventueel pas noindex na een aantal dagen niet-leverbaar
   — eerst 2-3 weken kijken of noindex in SC daalt.
+- **MC-websitecontrole aangevraagd 18 sept ~middag** voor 33 producten (na
+  Peters ja in de chat; de toestemming van 17 sept staat in dit bestand,
+  maar een bevestigknop in Peters Google-account vraagt per sessie een ja
+  in de chat). Bewezen aangekomen: een tweede poging gaf "U heeft al een
+  beoordeling aangevraagd voor dit probleem". Volgende kan vanaf 19 sept.
+  **Werkwijze:** in Merchant Center klikt een coördinaat ernaast (het
+  venster schaalt afwijkend); zoek knoppen op naam met `find` en klik op de
+  `ref`. Het bevestigingsvenster verschijnt traag: wacht 3 s en zoek dan de
+  rechterknop in het venster. De donkere meldingsbalk onderaan verdwijnt
+  binnen seconden; zet vóór het klikken een MutationObserver op
+  document.body om de tekst op te vangen.
 - Het adres met `%2B` (setjes, bv. miele-wq-1000...%2B...) geeft 200, ook
   als AdsBot; dat is niet het Railway-%-probleem.
 - Valkuil opnieuw gemaakt: een script patchen met `sed` en `\n` brak het

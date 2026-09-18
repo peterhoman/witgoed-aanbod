@@ -1,10 +1,48 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **17 september 2026, 13:15** (het blok "Dagcontrole 17 september (middag)"
+Bijgewerkt **18 september 2026** (het blok "Dagcontrole 18 september"
+hieronder is het nieuwste, daaronder "Dagcontrole 17 september (middag)"
 hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 18 september — noindex 72 → 239: herleefde producten blijven bij Google op noindex
+
+- **Dagcontrole schoon:** EPREL 3.616/1.261 zonder afbreking, prijssprongen
+  0, tekstwachtrij 0, tien routines, EP 592 en Bol 342 (bekend), feed 2.918
+  items, /aanbiedingen 9, Railway 24 uur 0 serverfouten, p99 max 2,3 s,
+  geen Traceback. Daisycon nog 0. Gmail: niets van winkels, Daisycon,
+  TradeTracker, Awin. UptimeRobot: alleen de twee TEST-mails van het
+  aanmaken (17 sept 14:03), geen echt incident.
+- **Merchant Center (schermafdruk Peter):** 3,09K producten, 2,94K
+  goedgekeurd, 142 niet goedgekeurd waarvan 109 verborgen → **33 van
+  ons** (17 sept: 26, 16 sept: 15). 127 klikken in 28 dagen; van ~12/dag
+  (6 sept) naar ~4/dag.
+- **Search Console indexering (laatste update 14 sept):** geïndexeerd
+  2.839 → **2.717**; noindex 72 → **239**; gevonden-niet-geïndexeerd
+  1.241 → 1.012; 404 45 → 67; gecrawld-niet-geïndexeerd 17 → 22;
+  canoniek 62 → 69; omleiding 14; robots 5; dubbel 5; 5xx 9.
+- **Oorzaak gemeten:** `templates/product.html` regel 17 zet `noindex`
+  zodra `product.is_available` onwaar is. In de DB: 3.725 producten,
+  **804 niet leverbaar** (377 zonder enige aanbieding, 306 >14 dagen niet
+  gezien, 121 korter dan 14 dagen). Per dag klappen 30-75 producten om.
+  Steekproef van 210 noindex-adressen uit SC tegen de DB: **83 (40%) zijn
+  vandaag weer leverbaar** en staan dus weer op index; 49 daarvan via de
+  volledige Coolblue-feed van 15 sept, 13 Bol, 9 MediaMarkt. Alle 83 staan
+  in sitemap-producten.xml, maar bij 56 is `lastmod` ouder dan 15 sept (30
+  ouder dan 10 sept): `_laatste_wijziging_per_product()` in routes/seo.py
+  kijkt naar prijswijzigingen, niet naar het weer leverbaar worden. Google
+  krijgt dus geen seintje om terug te komen.
+- **Voorgelegd aan Peter (nog geen ja):** (1) moment van weer leverbaar
+  worden vastleggen en meenemen in `lastmod`; (2) eventueel pas noindex na
+  een aantal dagen niet-leverbaar. Niets gebouwd.
+- Het adres met `%2B` (setjes, bv. miele-wq-1000...%2B...) geeft 200, ook
+  als AdsBot; dat is niet het Railway-%-probleem.
+- Valkuil opnieuw gemaakt: een script patchen met `sed` en `\n` brak het
+  bestand. Gebruik het bewerkgereedschap of een .py uit de Write-tool.
 
 ---
 

@@ -15,8 +15,9 @@ leidend voor werkafspraken.
 In die week: geen dagcontrole, geen MC-knop (afkeuringen lopen naar schatting
 op van 33 naar ~50; herstelt met één klik), rankingmeting van 29 sept schuift
 door. **Na woensdag 23 september niets nieuws meer live zetten**, zodat er een
-dag overblijft om te zien dat alles rustig draait. Niet na te kijken vanaf
-hier: of de betaling bij Railway goed staat (aan Peter gevraagd).
+dag overblijft om te zien dat alles rustig draait. Betaling Railway: wordt van Peters
+creditcard afgeschreven (door Peter bevestigd 18 sept), dus geen tegoed dat
+op kan raken.
 
 **Waarom de controle:** niets waarschuwde als een winkelfeed stilvalt. Sinds
 de veiligheidsklep (3 dagen niet ververst = niet-leverbaar) én noindex op

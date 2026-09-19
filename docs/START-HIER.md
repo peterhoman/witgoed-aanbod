@@ -1,11 +1,65 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **18 september 2026, middag** (het blok "18 september (middag) —
-gezondheidscontrole" hieronder is het nieuwste, dan "Dagcontrole 18 september", daaronder "Dagcontrole 17 september (middag)"
+Bijgewerkt **19 september 2026** (het blok "Dagcontrole 19 september" hieronder
+is het nieuwste, dan "18 september (middag) — gezondheidscontrole" en
+"Dagcontrole 18 september", daaronder "Dagcontrole 17 september (middag)"
 hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 19 september (zaterdag) — alles gezond; zoekopdracht "x" vertekende 10-11 sept
+
+- **`/api/gezondheid`: GEZOND**, 10 van 10 routines. Coolblue 1.457, MediaMarkt
+  1.065, Expert 972, Bol 721, EP 365 (10 ouder dan 36 uur), leverbaar 2.949.
+  Feed 2.944 items, /aanbiedingen nu **10** categorieën, productpagina zonder
+  sjabloonsporen, EPREL 3.637/1.267 zonder afbreking, prijssprongen 0,
+  tekstwachtrij 0. Railway 24 uur: 0 serverfouten, geen Traceback, p99 één
+  uitschieter van 3,3 s. Doorkliks 18 sept: 14 (12 browser). Zonder foto 7
+  (was 4-5; volgen).
+- **Controlepunten van 18 sept, beide goed:** `available_since` is bij 46
+  producten gevuld (eerste 18 sept 19:10 NL; 34 in de Coolblue-ronde van 20:14;
+  via Coolblue 31, MediaMarkt 6, Bol 5, Expert 5; 0 alweer teruggeklapt). De
+  sitemap-datums schuiven niet mee: van de 238 met datum 18 sept staan er 182
+  nog op 18 sept, 54 kregen terecht 19 sept (prijswijziging); vandaag 136 van
+  2.949 met de datum van vandaag. **Wel gezien:** bij 7 producten werd de datum
+  ouder. Verklaring: de Bol-sync verwijdert een aanbieding die wegvalt, en dan
+  vervalt ook haar `created_at` als signaal. 0,2%, geen actie; niet "repareren"
+  door last_synced te gebruiken.
+- **Zoekopdracht "x" in Search Console (aanbeveling "+32.100%"):** 644
+  vertoningen, 0 klikken, positie 3,1, alleen op 10 en 11 september (~280 en
+  ~360), verspreid over tientallen productpagina's met elk 7-16 vertoningen.
+  Dat is een productmodule die Google twee dagen op de zoekterm "x" toonde; geen
+  bezoekers, geen waarde, niets aan te doen. **Gevolg voor onze cijfers:** 10
+  sept was niet 670 maar ~390 echte vertoningen, 11 sept niet 645 maar ~285. Het
+  niveau van ~300 per dag gold dus al vanaf 10-11 sept; de "daling op 12 sept"
+  was deels het wegvallen van deze ruis. Bij vergelijkingen over die week de
+  zoekopdracht "x" uitsluiten (filter Zoekopdracht → bevat niet).
+- **Mails:** niets van de vijf winkels (verstuurd do 17 sept 12:30; pas 1,5
+  werkdag), niets van TradeTracker of Awin. Daisycon Witgoedhuis nog
+  `X-Total-Count: 0`. **Peters Daisycon-account staat op peter@avantius.nl**
+  (bleek uit een automatische Daisycon-mail van 19 sept): het antwoord op het
+  ticket van 17 sept komt dáár binnen, niet in de Gmail die Claude kan lezen.
+  Peter moet dat postvak en MyDaisycon → Support zelf nakijken.
+- SC-overzicht (schermafdruk Peter): 205 klikken in 3 maanden, geïndexeerd
+  2.717 / niet 1.442 (ongewijzigd, laatste update 14 sept).
+- **Merchant Center 19 sept:** "Productpagina niet beschikbaar" van 33 naar
+  **9** na de websitecontrole van 18 sept (de knop werkt dus). Opnieuw
+  aangevraagd voor die 9 na Peters ja; Google bevestigde letterlijk
+  "Websitecontrole aangevraagd. Dit kan tot 12 uur duren." Verder: 111
+  "productprijs ontbreekt" (Google's eigen vondsten, verborgen) en 11
+  "availability ontbreekt". **Werkwijze aangescherpt:** de rechtstreekse link
+  naar de probleempagina laadt geen inhoud; ga via Producten → Vereist
+  aandacht (`priorityFixes=false`). Een klik op een `ref` pakt pas na
+  `scroll_to` op diezelfde `ref`. De MutationObserver vangt de
+  bevestigingsbalk wél, het openen van het venster niet altijd; een
+  schermafdruk laat het venster zien.
+- **Peter belt geen winkels of redacties** (19 sept: "zo mondig ben ik niet").
+  Niet meer voorstellen. Opvolging alleen per e-mail: na ~twee weken stilte
+  één korte herinnering als .txt op het bureaublad, daarna laten rusten.
+  Door de vakantie wordt dat de week van 5 oktober.
 
 ---
 

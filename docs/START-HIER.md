@@ -45,7 +45,21 @@ leidend voor werkafspraken.
   Peter moet dat postvak en MyDaisycon → Support zelf nakijken.
 - SC-overzicht (schermafdruk Peter): 205 klikken in 3 maanden, geïndexeerd
   2.717 / niet 1.442 (ongewijzigd, laatste update 14 sept).
-- MC-knop: nog niet gedrukt vandaag (vraagt per sessie een ja in de chat).
+- **Merchant Center 19 sept:** "Productpagina niet beschikbaar" van 33 naar
+  **9** na de websitecontrole van 18 sept (de knop werkt dus). Opnieuw
+  aangevraagd voor die 9 na Peters ja; Google bevestigde letterlijk
+  "Websitecontrole aangevraagd. Dit kan tot 12 uur duren." Verder: 111
+  "productprijs ontbreekt" (Google's eigen vondsten, verborgen) en 11
+  "availability ontbreekt". **Werkwijze aangescherpt:** de rechtstreekse link
+  naar de probleempagina laadt geen inhoud; ga via Producten → Vereist
+  aandacht (`priorityFixes=false`). Een klik op een `ref` pakt pas na
+  `scroll_to` op diezelfde `ref`. De MutationObserver vangt de
+  bevestigingsbalk wél, het openen van het venster niet altijd; een
+  schermafdruk laat het venster zien.
+- **Peter belt geen winkels of redacties** (19 sept: "zo mondig ben ik niet").
+  Niet meer voorstellen. Opvolging alleen per e-mail: na ~twee weken stilte
+  één korte herinnering als .txt op het bureaublad, daarna laten rusten.
+  Door de vakantie wordt dat de week van 5 oktober.
 
 ---
 

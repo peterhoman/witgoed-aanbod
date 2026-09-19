@@ -68,6 +68,25 @@ leidend voor werkafspraken.
   bereikbaar (robotcontrole + inlog; niet omzeilen). **Les voor de volgende
   kandidaat:** vooraf nagaan of de winkel op aanvragen reageert en of de feed
   dagelijks ververst ("Laatste update" in het netwerk).
+- **Twee merkwinkels aangevraagd via Awin (19 sept, door Peter zelf):**
+  **De'Longhi NL** (ID 22918; ~200 producten, tot 6%, productfeeds aanwezig,
+  cookie 15 dagen, uitbetaling ~120 dagen) en **AEG NL** (ID 26720; níet
+  "AEG Shop NL"; over een feed staat niets op de programmapagina, in de
+  aanvraag is gevraagd of er een feed met EAN is; commissie alleen op de
+  openbare winkel, niet op de "closed user group"). Beide met een Engelse
+  toelichting: prijsvergelijker, geen brand bidding/cashback/codes. Awin
+  bevestigde beide keren "aanvraag naar de adverteerder verzonden".
+  **Waarom deze twee** (gemeten 19 sept): AEG 225 leverbaar bij ons waarvan 144
+  bij maar één winkel; De'Longhi 55 waarvan 24; Smeg 37 waarvan 16 (te klein,
+  niet aangevraagd). Hele catalogus: 1.785 bij één winkel, 1.163 bij twee of
+  meer. Verwachting eerlijk gehouden: merkwinkels zijn zelden de goedkoopste,
+  dus weinig klikken; de winst is dat een solo-product een vergelijking wordt
+  (AEG hooguit +2 à 3 procentpunt dekking). **Bouwen pas na 5 oktober, en pas
+  nadat de feed is getoetst op EAN en dagelijkse verversing** (les
+  Witgoedhuis). Awin-berichten komen waarschijnlijk op peter@avantius.nl
+  binnen; dat postvak kan Claude niet lezen.
+- **Nog nakijken na de vakantie:** het merk De'Longhi staat op twee manieren
+  in de catalogus ("delonghi" 33, "de'longhi" 27). Geeft dat twee merkpagina's?
 - **Peter belt geen winkels of redacties** (19 sept: "zo mondig ben ik niet").
   Niet meer voorstellen. Opvolging alleen per e-mail: na ~twee weken stilte
   één korte herinnering als .txt op het bureaublad, daarna laten rusten.

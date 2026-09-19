@@ -56,6 +56,18 @@ leidend voor werkafspraken.
   `scroll_to` op diezelfde `ref`. De MutationObserver vangt de
   bevestigingsbalk wél, het openen van het venster niet altijd; een
   schermafdruk laat het venster zien.
+- **Witgoedhuis/Daisycon losgelaten (19 sept, advies Claude, stand uit
+  MyDaisycon via schermafdruk Peter):** status "Aangevraagd — je media is nog
+  niet gekeurd door de campagne": Daisycon liet de site op 7 sept toe, de
+  winkel zelf behandelt de aanvraag van 4 sept niet. En: **de Witgoedhuis-feed
+  is sinds 8 sept 17:46 niet bijgewerkt** (3.776 producten). Met onze klep van
+  3 dagen zou hun aanbod na goedkeuring meteen op niet-leverbaar gaan. Dus:
+  niet opnieuw mailen, geen nieuw ticket, niet meer dagelijks controleren. De
+  aanvraag blijft staan. Van het ticket van 17 sept kwam geen
+  ontvangstbevestiging; niet najagen. MyDaisycon is voor Claude niet
+  bereikbaar (robotcontrole + inlog; niet omzeilen). **Les voor de volgende
+  kandidaat:** vooraf nagaan of de winkel op aanvragen reageert en of de feed
+  dagelijks ververst ("Laatste update" in het netwerk).
 - **Peter belt geen winkels of redacties** (19 sept: "zo mondig ben ik niet").
   Niet meer voorstellen. Opvolging alleen per e-mail: na ~twee weken stilte
   één korte herinnering als .txt op het bureaublad, daarna laten rusten.
@@ -1332,7 +1344,8 @@ die niemand had gemeld.
   een winkel iets anders dan 0 (Bol ~300 is bekend: oude uitverkochte
   rijen), dan staat die feed stil -- dezelfde dag uitzoeken. Sinds 10 sept
   meldt de veiligheidsklep zich ook in `laatste_synclogs`.
-- Daisycon-feed Witgoedhuis: `curl -sI "https://daisycon.io/datafeed/?media_id=428244&program_id=6570&standard_id=6&language_code=nl&locale_id=1&type=xml&records=5"`
+- (VERVALLEN 19 sept: Witgoedhuis losgelaten, zie blok 19 sept; alleen nog af
+  en toe kijken.) Daisycon-feed Witgoedhuis: `curl -sI "https://daisycon.io/datafeed/?media_id=428244&program_id=6570&standard_id=6&language_code=nl&locale_id=1&type=xml&records=5"`
   → zolang `X-Total-Count: 0`, is de aanmelding niet goedgekeurd.
 - Klikbakjes in `/api/sync-status`: `klik-browser` moet in de buurt van het
   aantal `uit-*` blijven; `product-los-adres` en `product-geen-secfetch` zijn

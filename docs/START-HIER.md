@@ -36,10 +36,18 @@ leidend voor werkafspraken.
 - **URL-inspectie (alleen gelezen):** `/category/drogers` is nu **geïndexeerd**
   (op 14 sept nog "gevonden, niet geïndexeerd"). `/aanbiedingen/drogers` is
   **"onbekend bij Google"**, hoewel sitemap-aanbiedingen.xml vandaag is gelezen
-  (Succesvol, 10 pagina's ontdekt). Gewone vertraging. Aan Peter voorgelegd:
-  via URL-inspectie → "Indexering aanvragen" voor /aanbiedingen,
+  (Succesvol, 10 pagina's ontdekt). Gewone vertraging. **Indexering aangevraagd op 20 sept ~11:30 (na Peters
+  ja)** voor vier adressen, alle vier door Google bevestigd met "Indexering
+  aangevraagd — toegevoegd aan een prioriteitscrawlwachtrij": /aanbiedingen,
   /aanbiedingen/drogers, /aanbiedingen/wasmachines en
-  /onderzoek/prijsverschillen-witgoed (vraagt een ja in de chat).
+  /onderzoek/prijsverschillen-witgoed (alle vier stonden op "niet
+  geïndexeerd"). Opnieuw indienen verandert de plek in de rij niet; dus niet
+  herhalen. Over een week met URL-inspectie kijken of ze erin staan.
+  **Werkwijze aanvragen:** adres intypen (zie hieronder), knop "Indexering
+  aanvragen" via `find` + `scroll_to` + klik op de `ref`; de live test duurt
+  ~1 minuut; een MutationObserver vangt de bevestiging; daarna "Sluiten". Na een
+  tweede inspectie staan er meerdere knoppen met dezelfde naam in de pagina:
+  neem de laatste.
   **Werkwijze:** het inspectieveld bovenaan pakt tekst alleen na een klik op
   coördinaat (600, 27), niet via de `ref`; daarna typen, Enter, 10 s wachten.
 

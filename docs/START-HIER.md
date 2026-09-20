@@ -1,12 +1,47 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **19 september 2026** (het blok "Dagcontrole 19 september" hieronder
-is het nieuwste, dan "18 september (middag) — gezondheidscontrole" en
+Bijgewerkt **20 september 2026** (het blok "Dagcontrole 20 september" hieronder
+is het nieuwste, dan "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
 "Dagcontrole 18 september", daaronder "Dagcontrole 17 september (middag)"
 hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 20 september (zondag) — gezond; /aanbiedingen/* nog onbekend bij Google
+
+- **`/api/gezondheid`: GEZOND**, 10 van 10. Coolblue 1.443, MediaMarkt 1.085,
+  Expert 964, Bol 715, EP 368, Voordeligwitgoed 85 (was 72), leverbaar 2.946.
+  Feed 2.941, EPREL 3.645/1.270, prijssprongen 0, tekstwachtrij 0, Railway 0
+  serverfouten, p99 max 2,5 s, geen Traceback, productpagina zonder
+  sjabloonsporen. Doorkliks 19 sept: 9 (8 browser). Gmail: niets van winkels,
+  Awin, TradeTracker.
+- **/aanbiedingen telt vandaag 9 categorieën, gisteren 10.** Een categorie
+  schommelt rond de ondergrens van 5 dalingen en wisselt dus tussen pagina en
+  404. Niet goed voor indexering; na de vakantie bekijken (bv. een pagina pas
+  laten vervallen na een paar dagen onder de grens). Nu niets aan doen.
+- **Schermafdrukken Peter (MC en SC):** Google mailde "120 klikken in 28 dagen
+  via Zoeken" (17 sept). MC 28 dagen: 99 productklikken, 33 winkelklikken,
+  laatste dagen 2-4 per dag; producten met de meeste klikken: Dyson V12, Dyson
+  V8, AEG LR7386UD4, Beko BM3T3924WMM, Bosch SMV4ECX30E, condensdroger Beko. MC
+  totaal 3,08K, door ons ingevoerd 2,92K, 158 "meer gevonden door Google", 168
+  niet getoond. **De afgekeurde regels zonder prijs in de lijst "Alle
+  producten" zijn Google's eigen dubbele vondsten** (nagekeken: Everglades
+  EVCH6840B en Beko B5RCNA366HW1 staan wél in onze feed met prijs en in_stock,
+  id 3519 en 3718). Bekend sinds 4 sept; niet opnieuw onderzoeken.
+  Zoektrends volgens MC: **droger +16,2%**, dyson +9,1%, wasmachine +2,4%,
+  nespresso dalend: het drogerseizoen begint.
+- **URL-inspectie (alleen gelezen):** `/category/drogers` is nu **geïndexeerd**
+  (op 14 sept nog "gevonden, niet geïndexeerd"). `/aanbiedingen/drogers` is
+  **"onbekend bij Google"**, hoewel sitemap-aanbiedingen.xml vandaag is gelezen
+  (Succesvol, 10 pagina's ontdekt). Gewone vertraging. Aan Peter voorgelegd:
+  via URL-inspectie → "Indexering aanvragen" voor /aanbiedingen,
+  /aanbiedingen/drogers, /aanbiedingen/wasmachines en
+  /onderzoek/prijsverschillen-witgoed (vraagt een ja in de chat).
+  **Werkwijze:** het inspectieveld bovenaan pakt tekst alleen na een klik op
+  coördinaat (600, 27), niet via de `ref`; daarna typen, Enter, 10 s wachten.
 
 ---
 

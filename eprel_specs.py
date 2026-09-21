@@ -23,6 +23,34 @@ def _fmt_klasse(klasse):
     return {'APPP': 'A+++', 'APP': 'A++', 'AP': 'A+'}.get(klasse, klasse)
 
 
+# EPREL-registers waarvan de energieklasse niet meer geldt.
+#
+# 'tumbledriers' is het oude drogerregister (schaal A+++ tot D). Sinds 1 juli
+# 2025 dragen drogers het nieuwe label A tot G, en de nieuwe registraties
+# staan in een ander register. eprel.py zoekt drogers nog in het oude op.
+# Gemeten op 21 september 2026: bij alle 56 leverbare drogers met
+# EPREL-gegevens toonde de pagina daardoor A+++ (41x), A++ (14x) of A+ (1x),
+# met de Europese Commissie als bron, terwijl dezelfde apparaten in de winkel
+# B of C dragen. In de Merchant-feed werd het nog erger: daar bleef van "A+++"
+# alleen de eerste letter over en ging er "A" naar Google.
+#
+# De klasse uit zo'n register tonen we niet en sturen we niet mee. De overige
+# gegevens (geluid, vulgewicht, afmetingen, garantie) zijn metingen en blijven
+# kloppen. Valt de klasse weg, dan laat ontdubbel_specs het labelveld van de
+# winkel weer staan, en dat is meestal wél de nieuwe schaal.
+#
+# Haal 'tumbledriers' hier pas weg als eprel.py drogers in het nieuwe register
+# opzoekt EN de bestaande rijen opnieuw zijn opgehaald: de oude rijen houden
+# hun oude productgroep tot ze ververst zijn, en dat is precies wat deze regel
+# nodig heeft om te blijven werken.
+VEROUDERDE_LABELGROEPEN = frozenset({'tumbledriers'})
+
+
+def klasse_geldt_nog(productgroep):
+    """Mag de energieklasse uit deze EPREL-productgroep nog getoond worden?"""
+    return (productgroep or '').strip().lower() not in VEROUDERDE_LABELGROEPEN
+
+
 def _getal(waarde):
     """1400 -> '1400', 9.5 -> '9,5', 55.0 -> '55'."""
     afgerond = round(float(waarde), 1)
@@ -38,7 +66,7 @@ def _regels(gegevens, productgroep):
     def voeg(label, tekst):
         uit.append((label, tekst))
 
-    if gegevens.get('energyClass'):
+    if gegevens.get('energyClass') and klasse_geldt_nog(productgroep):
         voeg('Energieklasse', _fmt_klasse(gegevens['energyClass']))
     if gegevens.get('noise') is not None:
         tekst = f"{_getal(gegevens['noise'])} dB"

@@ -131,7 +131,11 @@ def _te_doen(limiet):
 # wekelijks na in plaats van maandelijks. Fabrikanten melden hun drogers nog
 # steeds opnieuw aan, en zolang dat niet gebeurd is tonen wij geen klasse. Dat
 # zijn hoogstens enkele tientallen verzoeken per week.
-_DROGERS_HERZIEN_VOOR = datetime(2026, 9, 22, 0, 0)
+# 21 september 2026 14:00 UTC: de laatste ronde met de oude code liep rond
+# 09:13 UTC, de eerste met de nieuwe rond 15:13 UTC. Alles van voor dit moment
+# is dus met de oude code opgehaald; wat de nieuwe code ophaalt valt erbuiten en
+# komt niet nog eens aan de beurt.
+_DROGERS_HERZIEN_VOOR = datetime(2026, 9, 21, 14, 0)
 _VERVALLEN_REGISTER_NA_DAGEN = 7
 
 
@@ -156,12 +160,49 @@ def _drogers_in_te_halen(limiet):
             .limit(limiet).all())
 
 
+def _afwijkend_typenummer(limiet):
+    """Koppelingen waar het gevonden typenummer niet precies het gezochte is,
+    opgehaald vóór de peildatum.
+
+    Tot 21 september 2026 nam eprel._bevraag altijd de eerste treffer, terwijl
+    EPREL op "begint met" zoekt. Gemeten: van 1.275 koppelingen 885 exact, 380
+    langer, 10 anders. De meeste langere zijn goed (AEG en Beko zetten hun
+    productcode erachter), maar een deel hangt aan een zustermodel terwijl het
+    exacte model gewoon in het register staat (LG RT90X8 -> RT90X8BC). Opnieuw
+    opzoeken met de nieuwe keuze zet die recht; wie goed stond, blijft goed.
+    In Python gefilterd: 1.300 rijen, en "zonder opmaak vergelijken" is in SQL
+    niet draagbaar tussen Postgres en SQLite.
+    """
+    from eprel import _kaal
+    from models import EprelData
+
+    uit = []
+    for rij in (EprelData.query.filter(EprelData.gevonden.is_(True),
+                                       EprelData.opgehaald_at < _DROGERS_HERZIEN_VOOR)
+                .order_by(EprelData.opgehaald_at)):
+        codes = {_kaal(c) for c in (rij.gezocht_op or '').split(',')}
+        if _kaal(rij.modelnummer) not in codes:
+            uit.append(rij)
+            if len(uit) >= limiet:
+                break
+    return uit
+
+
+def _inhaalslag(limiet):
+    """Eerst de drogers (daar staat een fout label), dan de rest."""
+    rijen = _drogers_in_te_halen(limiet)
+    if len(rijen) < limiet:
+        al = {r.id for r in rijen}
+        rijen += [r for r in _afwijkend_typenummer(limiet) if r.id not in al]
+    return rijen[:limiet]
+
+
 def _te_verversen(limiet):
-    """Rijen die te oud zijn geworden, oudste eerst. De inhaalslag voor
-    drogers gaat voor: dat zijn rijen waarvan we weten dat ze fout zijn."""
+    """Rijen die te oud zijn geworden, oudste eerst. De inhaalslag gaat voor:
+    dat zijn rijen waarvan we weten dat ze fout zijn of kunnen zijn."""
     from models import EprelData, Product, utcnow
 
-    rijen = _drogers_in_te_halen(limiet)
+    rijen = _inhaalslag(limiet)
     if len(rijen) < limiet:
         grens = utcnow() - timedelta(days=_VERVERS_NA_DAGEN)
         al = [r.id for r in rijen]
@@ -225,7 +266,7 @@ def vul_eprel_gegevens(app):
         # zijn (195 op 21 september 2026); met een kwart per ronde duurt dat
         # twee dagen, met een hele ronde twaalf uur. Nog steeds honderd
         # apparaten per ronde, dus Brussel merkt geen verschil.
-        inhaal = len(_drogers_in_te_halen(_PER_RONDE))
+        inhaal = len(_inhaalslag(_PER_RONDE))
         oud = _te_verversen(max(inhaal, int(_PER_RONDE * _VERVERS_DEEL)))
         nieuw = _te_doen(_PER_RONDE - len(oud))
 

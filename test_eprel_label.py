@@ -68,6 +68,23 @@ check('schrijfwijze met streepje of schuine streep telt als gelijk',
       eprel._kies_treffer([{'modelIdentifier': 'HW90-B14939S8'}, {'modelIdentifier': 'HW90B14939'}], 'Hw90-b14939')['modelIdentifier'] == 'HW90B14939')
 check('geen treffers: None', eprel._kies_treffer([], 'X1234') is None)
 
+# Hoort de treffer bij dit apparaat? De vier echte misgrepen van 21 september, en wat goed moet blijven
+kk = eprel.koppeling_klopt
+check('AEG met productcode erachter: klopt', kk('TR73CB96', 'TR73CB96 916099294', 'AEG TR73CB96 SensiDry'))
+check('landcode erachter: klopt', kk('WF5S1045BB', 'WF5S1045BB/PL', 'Hisense 5S Serie WF5S1045BB'))
+check('gezocht op het staartje, titel bevat het hele nummer: klopt', kk('Hs61w', 'W8F HS61W', 'Whirlpool W8f Hs61w - Maxispace'))
+check('merknaam voor het nummer, titel bevat het: klopt', kk('WBDW40CB', 'Wisberg WBDW40CB', 'Wisberg WBDW40CB'))
+check('Whirlpool W2F HD624 is NIET de P2F HD624 A', not kk('Hd624', 'P2F HD624 A', 'Whirlpool W2f Hd624 - Vrijstaande Vaatwasser'))
+check('Inventum KK550B is NIET de RKK550B/02', not kk('KK550B', 'RKK550B/02', 'Inventum KK550B tafelmodel koelkast'))
+check('Etna Vv856wit -> KVV856WIT: niet te bewijzen, dus niet', not kk('Vv856wit', 'KVV856WIT', 'Etna Vv856wit Vrijstaand Vrieskast'))
+check('meerdere gezochte codes: een die past is genoeg', kk('X99, TR73CB96', 'TR73CB96 916099294', 'AEG iets'))
+check('leeg gevonden nummer: klopt niet', not kk('ABC123', '', 'titel') and not kk('ABC123', None, 'titel'))
+check('kies_treffer slaat een treffer over waar het nummer alleen middenin zit',
+      eprel._kies_treffer([{'modelIdentifier': 'P2F HD624 A'}], 'Hd624', 'Whirlpool W2f Hd624') is None)
+check('kies_treffer: tweede treffer klopt wel',
+      eprel._kies_treffer([{'modelIdentifier': 'P2F HD624 A'}, {'modelIdentifier': 'W2F HD624 X'}], 'Hd624',
+                          'Whirlpool W2F HD624 X - Vrijstaand')['modelIdentifier'] == 'W2F HD624 X')
+
 # De inhaalslag: rijen uit het oude register en niet-gevonden drogers, precies één keer
 from datetime import timedelta
 from flask import Flask
@@ -105,6 +122,19 @@ with app.app_context():
     rij.opgehaald_at = utcnow() - timedelta(days=8); db.session.commit()
     check('oud register en een week niet nagekeken: wel weer aan de beurt',
           e in {r.product_id for r in eprel_bijwerken._drogers_in_te_halen(100)})
+    h = maak(8, was, gevonden=True, productgroep='washingmachines2019', gezocht_op='Hw90-b14939',
+             modelnummer='HW90-B14939S8', opgehaald_at=voor)
+    i = maak(9, was, gevonden=True, productgroep='washingmachines2019', gezocht_op='WAN28', modelnummer='wan28',
+             opgehaald_at=voor)
+    j = maak(10, was, gevonden=True, productgroep='washingmachines2019', gezocht_op='X1', modelnummer='X1BC',
+             opgehaald_at=na)
+    afw = {r.product_id for r in eprel_bijwerken._afwijkend_typenummer(100)}
+    check('afwijkend typenummer van voor de peildatum: opnieuw opzoeken', h in afw)
+    check('exact gelijk (alleen hoofdletters anders): met rust laten', i not in afw)
+    check('afwijkend maar al met de nieuwe code opgehaald: met rust laten', j not in afw)
+    alles = [r.product_id for r in eprel_bijwerken._inhaalslag(100)]
+    check('inhaalslag: drogers eerst, dan afwijkende typenummers, niets dubbel',
+          set(alles[:3]) == {a, b, e} and alles.index(h) >= 3 and len(alles) == len(set(alles)), str(alles))
     paren = eprel_bijwerken._te_verversen(10)
     check('_te_verversen zet de inhaalslag voorop en levert (rij, product)',
           [r.product_id for r, p in paren][:1] != [] and all(p is not None for r, p in paren) and {a, b} <= {r.product_id for r, p in paren})

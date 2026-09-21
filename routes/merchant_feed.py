@@ -121,14 +121,21 @@ def _eprel_per_product():
     de infomelding "Ontbrekend certificeringskenmerk" die Merchant
     Center op 13 aug bij de producten zette.
     """
+    from eprel import koppeling_klopt
     from eprel_specs import _fmt_klasse, klasse_geldt_nog
 
     rijen = (EprelData.query.filter_by(gevonden=True)
+             .join(Product, Product.id == EprelData.product_id)
              .with_entities(EprelData.product_id, EprelData.energieklasse,
                             EprelData.registratienummer,
-                            EprelData.productgroep).all())
+                            EprelData.productgroep, EprelData.gezocht_op,
+                            EprelData.modelnummer, Product.title).all())
     info = {}
-    for pid, klasse, regnr, groep in rijen:
+    for pid, klasse, regnr, groep, gezocht_op, model, titel in rijen:
+        # Een rij die aan een ander model hangt gaat niet naar Google: een
+        # verkeerd registratienummer is erger dan geen (eprel.koppeling_klopt).
+        if not koppeling_klopt(gezocht_op, model, titel):
+            continue
         # Drogers staan nog in het oude register (schaal A+++ tot D, vervallen
         # op 1 juli 2025). Tot 21 september 2026 ging daar "A" van naar Google,
         # omdat van "A+++" alleen de eerste letter overbleef, voor apparaten die

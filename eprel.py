@@ -197,8 +197,36 @@ def _kaal(tekst):
     return re.sub(r'[^a-z0-9]', '', (tekst or '').lower())
 
 
-def _kies_treffer(treffers, code):
-    """De treffer met precies dit typenummer, anders de eerste.
+def koppeling_klopt(gezocht_op, gevonden_model, titel):
+    """Hoort deze EPREL-treffer bij dit apparaat?
+
+    Ja als het gevonden typenummer BEGINT met het gezochte ('TR73CB96' ->
+    'TR73CB96 916099294': AEG zet zijn productcode erachter), of als het hele
+    gevonden nummer in onze titel staat ('Hs61w' -> 'W8F HS61W' bij de titel
+    "Whirlpool W8f Hs61w").
+
+    Nee als het gezochte nummer alleen ergens ín een ander model zit. Gemeten
+    op 21 september 2026, vier gevallen: Whirlpool "W2F HD624" hing (twee keer)
+    aan 'P2F HD624 A', Inventum "KK550B" aan 'RKK550B/02' (een ander apparaat,
+    en prompt zei het register E waar de winkel D zei), Etna "Vv856wit" aan
+    'KVV856WIT'. Dat laatste is waarschijnlijk wél hetzelfde apparaat met een
+    verminkte winkeltitel, maar dat weten we niet zeker, en een verkeerd
+    registratienummer is erger dan geen (zie de kop van dit bestand).
+
+    gezocht_op kan meerdere codes bevatten ("A123, B456"); één die past is
+    genoeg.
+    """
+    model = _kaal(gevonden_model)
+    if not model:
+        return False
+    codes = [_kaal(c) for c in (gezocht_op or '').split(',')]
+    if any(c and model.startswith(c) for c in codes):
+        return True
+    return model in _kaal(titel)
+
+
+def _kies_treffer(treffers, code, titel=''):
+    """De treffer met precies dit typenummer, anders de eerste die klopt.
 
     EPREL zoekt op "begint met": 'RT90X8' geeft RT90X8BC, RT90X8C, RT90X8,
     RT90X8B en RT90X8YB, in die volgorde. Tot 21 september 2026 namen we
@@ -214,10 +242,15 @@ def _kies_treffer(treffers, code):
     for treffer in treffers:
         if _kaal(treffer.get('modelIdentifier')) == doel:
             return treffer
-    return treffers[0] if treffers else None
+    # Geen exacte: de eerste die aantoonbaar bij dit apparaat hoort. Een
+    # treffer waar het gezochte nummer alleen middenin zit valt af.
+    for treffer in treffers:
+        if koppeling_klopt(code, treffer.get('modelIdentifier'), titel):
+            return treffer
+    return None
 
 
-def _bevraag(groep, code):
+def _bevraag(groep, code, titel=''):
     """Eén zoekopdracht bij EPREL. Geeft de beste treffer of None."""
     # limit=10 en niet 2: de exacte treffer staat lang niet altijd vooraan.
     adres = (f"{_BASIS}/{groep}"
@@ -246,7 +279,7 @@ def _bevraag(groep, code):
         raise EprelFout("EPREL gaf geen leesbare JSON") from e
     if not data.get('size'):
         return None
-    return _kies_treffer(data.get('hits') or [], code)
+    return _kies_treffer(data.get('hits') or [], code, titel)
 
 
 def _uitpakken(hit, groep, code):
@@ -295,7 +328,7 @@ def zoek(categorie, titel, pauze=_PAUZE):
 
     for code in codes:
         for groep in groepen:
-            hit = _bevraag(groep, code)
+            hit = _bevraag(groep, code, titel)
             if pauze:
                 time.sleep(pauze)
             if hit:

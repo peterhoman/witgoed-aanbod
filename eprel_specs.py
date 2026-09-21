@@ -229,9 +229,15 @@ def eprel_blok(product):
     """Alles wat de sjabloon nodig heeft, of None (dan valt het blok weg)."""
     from models import EprelData
 
+    from eprel import koppeling_klopt
+
     rij = EprelData.query.filter_by(product_id=product.id,
                                     gevonden=True).first()
     if rij is None:
+        return None
+    # Hangt de rij aan een ander model, dan tonen we er niets van: niet de
+    # klasse, niet het geluid, niet het registratienummer (eprel.koppeling_klopt).
+    if not koppeling_klopt(rij.gezocht_op, rij.modelnummer, product.title):
         return None
     gegevens = rij.gegevens or {}
     regels = _regels(gegevens, rij.productgroep)

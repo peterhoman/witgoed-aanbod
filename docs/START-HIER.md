@@ -58,9 +58,30 @@ leidend voor werkafspraken.
   price_history):** Bol, Coolblue, MediaMarkt en EP hadden op álle 45 dagen
   prijswijzigingen (minimaal 94, 75, 15 en 3 per dag; grootste gat 1 dag).
   Expert grootste gat 2 dagen, Voordeligwitgoed 5, Alternate 18 (te klein).
-  Voorstel aan Peter (nog geen ja): in gezondheid.py een vierde controle
-  "geen enkele prijswijziging bij Bol/Coolblue/MediaMarkt in 60 uur = STORING".
-  Klein, alleen lezen, vóór woensdag 23 sept live of anders na de vakantie.
+  **Gebouwd 21 sept na Peters ja (tak feat/bevroren-feed-controle):** vierde
+  controle in gezondheid.py, `controleer_prijsbeweging`: geen enkele
+  prijswijziging bij **Bol, Coolblue of MediaMarkt in 60 uur = STORING**
+  ("feed wordt wel gelezen maar lijkt bevroren"). Grens gemeten over 60 dagen:
+  langste gat zonder prijswijziging 6 uur (Bol), 24 (Coolblue), 36
+  (MediaMarkt). Bewust niet: Expert (gaten van 48 uur), Voordeligwitgoed
+  (144), Alternate (420), EP (halve feed). Sloeg de winkelcontrole al alarm
+  voor dezelfde winkel, dan komt er geen tweede melding. `rapport()` heeft nu
+  een verplichte parameter `PriceHistory`; ontbreekt die, dan is dat STORING,
+  nooit stil overslaan. `python test_gezondheid.py`: 23 gevallen goed.
+  Alleen-lezen tegen productie: GEZOND (Bol 0,5 uur, Coolblue en MediaMarkt 12
+  uur sinds de laatste prijswijziging). Het adres toont die drie regels nu ook.
+- **Merchant Center 21 sept:** "Productpagina niet beschikbaar" 15 (19 sept: 9,
+  18 sept: 33); websitecontrole aangevraagd na Peters ja, Google bevestigde
+  "Websitecontrole aangevraagd. Dit kan tot 12 uur duren." Verder 63
+  "productprijs ontbreekt" en 20 "availability ontbreekt" (Google's eigen
+  vondsten). **Werkwijze die wél betrouwbaar is:** klikken op `ref` of
+  coördinaat mist in Merchant Center geregeld (het venster wisselt van
+  schaal). Roep de knop aan vanuit de pagina met `javascript_tool`: zoek het
+  `article` met de tekst "Productpagina niet beschikbaar", daarin de `button`
+  die begint met "Oplossing bekijken", en doe `.click()`; op de probleempagina
+  hetzelfde voor de ene knop "Websitecontrole aanvragen". De bevestigknop in
+  het venster vindt `find` wel ("rechter knop naast Annuleren") en die klikt
+  goed op `ref`. De MutationObserver vangt de bevestigingstekst.
 - **Valkuil opnieuw gemaakt:** shellvariabelen in een `python -c "..."` plakken
   brak op een Windows-regeleinde (\r) uit een tussenbestand. Een steekproef
   tegen een winkelsite altijd als los .py-script (urllib, 1,5 s pauze).
@@ -1481,7 +1502,8 @@ die niemand had gemeld.
   uitschieter (12 sep: 27). Dit is de teller achter MC's "productpagina
   niet beschikbaar".
 - `/api/gezondheid` → staat er GEZOND? Bij STORING staat eronder wat er
-  stilstaat; dezelfde dag uitzoeken.
+  stilstaat; dezelfde dag uitzoeken. Sinds 21 sept ook "laatste
+  prijswijziging" per grote winkel: boven de 36 uur is al ongewoon.
 - UptimeRobot (dashboard.uptimerobot.com, Peters Chrome): incidenten in de
   afgelopen 24 uur? Leg ze naast de SC-teller "kan niet worden bereikt".
 - Mailbox: antwoord van TradeTracker, Awin (Mike Kramer) of Daisycon?

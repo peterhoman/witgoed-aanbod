@@ -41,12 +41,36 @@ leidend voor werkafspraken.
     Op die pagina's staan dus twee verschillende labels onder elkaar.
   - Titel tegenover specificatie botst bij 18 producten, maar 15 daarvan zijn
     was-droogcombinaties met terecht twee labels (A wassen, D wassen+drogen).
-- **Voorgelegd aan Peter (nog geen ja):** (a) kleine tussenstap: bij drogers
-  geen EPREL-klasse van de oude schaal (met een plus) meer tonen; (b) na de
-  vakantie: drogers opzoeken in de nieuwe EPREL-groep (naam eerst verifiëren
-  in het register, niet gokken) en de 166 opnieuw laten opzoeken; (c) regel
-  voor botsende labels: EPREL wint van de winkel, en bij een botsing het
-  gekleurde blokje weglaten in plaats van een van beide te beweren.
+- **Stap (a) gebouwd op 21 sept na Peters ja (tak fix/drogerlabel-oude-schaal):**
+  `eprel_specs.VEROUDERDE_LABELGROEPEN = {'tumbledriers'}` +
+  `klasse_geldt_nog(productgroep)`. Eén regel, twee plekken:
+  - **Productpagina:** `_regels` laat de energieklasse weg bij die groep; de
+    overige EPREL-gegevens (geluid, vulgewicht, afmetingen, garantie) blijven.
+    Omdat de klasse wegvalt, laat `ontdubbel_specs` het winkelveld "Waarde
+    energielabel" weer staan; dat werd tot nu toe juist verdrongen door het
+    oude label ("EPREL wint").
+  - **Merchant-feed (erger dan de pagina):** `_eprel_per_product` pakte alleen
+    de eerste letter van de klasse, dus van "A+++" ging **"A" naar Google** voor
+    apparaten die B of C dragen. Drogers uit het oude register sturen nu geen
+    klasse en ook geen registratienummer meer mee (met dat nummer zoekt Google
+    zelf het oude label op). Kan de infomelding "Ontbrekend
+    certificeringskenmerk" bij ~56 drogers terugbrengen; dat is een melding,
+    geen afkeuring, en weegt lichter dan een fout label.
+  Proef tegen productie (alleen lezen): productgroepen in de database zijn
+  refrigeratingappliances2019 473, dishwashers2019 200, washingmachines2019
+  186, ovens 171, rangehoods 111, **tumbledriers 71**, washerdriers2019 63; op
+  precies 56 leverbare pagina's valt de klasse weg, 979 ongewijzigd; in de feed
+  0 drogers uit het oude register. `python test_eprel_label.py`: 8 gevallen.
+  **Haal 'tumbledriers' pas uit die lijst als eprel.py drogers in het nieuwe
+  register opzoekt én de rijen opnieuw zijn opgehaald** (oude rijen houden hun
+  oude productgroep tot ze ververst zijn).
+- **Nog open, na de vakantie:** (b) drogers opzoeken in het nieuwe
+  EPREL-register (naam eerst verifiëren, niet gokken) en de 166 opnieuw
+  ophalen; (c) regel voor botsende labels: EPREL wint, en bij een botsing het
+  gekleurde blokje weglaten. **(d) nieuw gevonden:** dezelfde afkapping in de
+  feed treft ook 86 ovens en 29 afzuigkappen: die hebben terecht nog de
+  plus-schaal, maar "A+" gaat als "A" naar Google (te laag, niet te hoog).
+  Google accepteert A+, A++ en A+++; drie regels werk, nog geen ja gevraagd.
 
 ---
 

@@ -1,12 +1,52 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **21 september 2026** (het blok "Dagcontrole 21 september" hieronder
-is het nieuwste, dan "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
+Bijgewerkt **21 september 2026, middag** (het blok "21 september (middag)"
+hieronder is het nieuwste, dan "Dagcontrole 21 september", "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
 "Dagcontrole 18 september", daaronder "Dagcontrole 17 september (middag)"
 hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## 21 september (middag) — bevroren-feed-controle live; drogers tonen een verouderd EPREL-label
+
+- **Bevroren-feed-controle live en gecontroleerd (PR #180, uitrol 14:34):**
+  `/api/gezondheid` op productie GEZOND, 10 van 10, met de drie nieuwe regels
+  (Bol 0,8 uur, Coolblue 6,3, MediaMarkt 6,4 sinds de laatste prijswijziging).
+- **Prijsalert werkt** (schermafdruk Peter: mail "Prijsdaling: Jet Set
+  wasdroger", 295,52 → 288,13). Drempel is 2% (`DALING_DREMPEL` in
+  price_alerts.py); deze daling was 2,5%. Zo bedoeld.
+- **Gevonden via die productpagina: energielabels bij drogers kloppen niet.**
+  Sinds 1 juli 2025 geldt voor drogers een nieuwe labelschaal A-G (de oude liep
+  van A+++ tot D). Gemeten 21 sept, alleen lezen:
+  - `eprel.py` regel 96 zoekt drogers op in de EPREL-groep **`tumbledriers`**:
+    dat is het OUDE register. Gevolg: bij **alle 56 leverbare drogers met
+    EPREL-gegevens** (van de 166) toont het blok "Gegevens van het
+    energielabel" een klasse van de oude schaal: A+++ 41x, A++ 14x, A+ 1x, met
+    de bronvermelding "EPREL, het energielabelregister van de Europese
+    Commissie". In de winkel dragen die apparaten nu B of C.
+  - Het gekleurde blokje bovenaan komt NIET uit EPREL maar uit het
+    specificatieveld van de winkel ("Waarde energielabel", energy_costs.py).
+    Bij 42 drogers gevuld: C 21, A 7, B 5, E 4, D 3, G 2 — meestal de nieuwe
+    schaal, maar niet altijd: de Klarstein Jet Set heeft in de specificatie C
+    (oude schaal) en in de verkoperstitel "EEK G" (nieuwe schaal); dezelfde
+    titel zegt "condensdroger" terwijl de specificatie "Luchtafvoerdroger"
+    zegt (dat laatste klopt: machinevertaling van de verkoper).
+  - Over alle categorieën: bij 241 leverbare producten zijn EPREL-klasse én
+    winkelklasse bekend; bij **33 verschillen ze**: 19 drogers (oude tegenover
+    nieuwe schaal, zie boven), 10+3 koelkasten (winkel zegt D, EPREL zegt E of
+    F: de winkel is daar één tot twee klassen te gunstig), 3 vaatwassers.
+    Op die pagina's staan dus twee verschillende labels onder elkaar.
+  - Titel tegenover specificatie botst bij 18 producten, maar 15 daarvan zijn
+    was-droogcombinaties met terecht twee labels (A wassen, D wassen+drogen).
+- **Voorgelegd aan Peter (nog geen ja):** (a) kleine tussenstap: bij drogers
+  geen EPREL-klasse van de oude schaal (met een plus) meer tonen; (b) na de
+  vakantie: drogers opzoeken in de nieuwe EPREL-groep (naam eerst verifiëren
+  in het register, niet gokken) en de 166 opnieuw laten opzoeken; (c) regel
+  voor botsende labels: EPREL wint van de winkel, en bij een botsing het
+  gekleurde blokje weglaten in plaats van een van beide te beweren.
 
 ---
 

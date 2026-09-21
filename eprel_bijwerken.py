@@ -30,7 +30,7 @@ Waarom dit niet kan ontsporen
 """
 
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -117,15 +117,59 @@ def _te_doen(limiet):
     return uit
 
 
+# Eenmalige inhaalslag voor drogers (21 september 2026). Tot die dag zocht
+# eprel.py drogers alleen in het oude register; alles wat daarvóór is
+# opgehaald moet opnieuw, nu met het nieuwe register voorop: de 71 rijen uit
+# 'tumbledriers', en de drogers die toen "niet gevonden" waren (modellen van
+# na 1 juli 2025 staan alleen in het nieuwe register). Dat het bij één keer
+# blijft zit in de peildatum: na het opnieuw ophalen is opgehaald_at nieuwer
+# en valt de rij hier niet meer onder, ook als hij in het oude register
+# blijft staan. Zonder peildatum zou zo'n rij elke ronde opnieuw aan de beurt
+# komen en het verversbudget van 25 per ronde opeten.
+#
+# Daarnaast: een rij die in een vervallen register blijft staan kijken we
+# wekelijks na in plaats van maandelijks. Fabrikanten melden hun drogers nog
+# steeds opnieuw aan, en zolang dat niet gebeurd is tonen wij geen klasse. Dat
+# zijn hoogstens enkele tientallen verzoeken per week.
+_DROGERS_HERZIEN_VOOR = datetime(2026, 9, 22, 0, 0)
+_VERVALLEN_REGISTER_NA_DAGEN = 7
+
+
+def _drogers_in_te_halen(limiet):
+    from eprel_specs import VEROUDERDE_LABELGROEPEN
+    from models import Category, EprelData, Product, db, utcnow
+
+    voor_peildatum = EprelData.opgehaald_at < _DROGERS_HERZIEN_VOOR
+    oud_register = EprelData.productgroep.in_(list(VEROUDERDE_LABELGROEPEN))
+    week_oud = EprelData.opgehaald_at < utcnow() - timedelta(
+        days=_VERVALLEN_REGISTER_NA_DAGEN)
+    droger_niet_gevonden = db.and_(
+        EprelData.gevonden.is_(False),
+        EprelData.product_id.in_(
+            db.session.query(Product.id).join(Category, Category.id == Product.category_id)
+            .filter(Category.slug == 'drogers')))
+    return (EprelData.query
+            .filter(db.or_(
+                db.and_(oud_register, db.or_(voor_peildatum, week_oud)),
+                db.and_(droger_niet_gevonden, voor_peildatum)))
+            .order_by(EprelData.opgehaald_at)
+            .limit(limiet).all())
+
+
 def _te_verversen(limiet):
-    """Rijen die te oud zijn geworden, oudste eerst."""
+    """Rijen die te oud zijn geworden, oudste eerst. De inhaalslag voor
+    drogers gaat voor: dat zijn rijen waarvan we weten dat ze fout zijn."""
     from models import EprelData, Product, utcnow
 
-    grens = utcnow() - timedelta(days=_VERVERS_NA_DAGEN)
-    rijen = (EprelData.query
-             .filter(EprelData.opgehaald_at < grens)
-             .order_by(EprelData.opgehaald_at)
-             .limit(limiet).all())
+    rijen = _drogers_in_te_halen(limiet)
+    if len(rijen) < limiet:
+        grens = utcnow() - timedelta(days=_VERVERS_NA_DAGEN)
+        al = [r.id for r in rijen]
+        rest = EprelData.query.filter(EprelData.opgehaald_at < grens)
+        if al:
+            rest = rest.filter(~EprelData.id.in_(al))
+        rijen += (rest.order_by(EprelData.opgehaald_at)
+                  .limit(limiet - len(rijen)).all())
     if not rijen:
         return []
     producten = {p.id: p for p in Product.query.filter(
@@ -175,7 +219,14 @@ def vul_eprel_gegevens(app):
         # de eerste maand na de start -- gaat de hele ronde naar nieuwe
         # apparaten in plaats van naar een gereserveerd kwart dat leegblijft.
         # Dat scheelt bij het vullen van 2.700 apparaten ruim twee dagen.
-        oud = _te_verversen(int(_PER_RONDE * _VERVERS_DEEL))
+        #
+        # Uitzondering: zolang de inhaalslag voor drogers loopt, mag die de
+        # hele ronde gebruiken. Dat zijn rijen waarvan we wéten dat ze fout
+        # zijn (195 op 21 september 2026); met een kwart per ronde duurt dat
+        # twee dagen, met een hele ronde twaalf uur. Nog steeds honderd
+        # apparaten per ronde, dus Brussel merkt geen verschil.
+        inhaal = len(_drogers_in_te_halen(_PER_RONDE))
+        oud = _te_verversen(max(inhaal, int(_PER_RONDE * _VERVERS_DEEL)))
         nieuw = _te_doen(_PER_RONDE - len(oud))
 
         if not nieuw and not oud:

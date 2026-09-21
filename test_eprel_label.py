@@ -52,5 +52,62 @@ check('feed: APPP wordt A+++', feedklasse('APPP') == 'A+++')
 check('feed: gewone letters ongewijzigd', [feedklasse(x) for x in 'ABCDEFG'] == list('ABCDEFG'))
 check('feed: rommel gaat niet mee', feedklasse('NVT') is None and feedklasse('') is None and feedklasse(None) is None and feedklasse('H') is None)
 
+# De koppeling zelf: nieuw drogerregister voorop, en de exacte treffer wint
+import eprel
+check('drogers: nieuw register eerst, oud als vangnet',
+      eprel.groepen_voor('Drogers', 'Bosch WQG133DBNL warmtepompdroger') == ['tumbledryers20232534', 'tumbledriers'],
+      str(eprel.groepen_voor('Drogers', 'Bosch WQG133DBNL warmtepompdroger')))
+check('was-droogcombinatie blijft in haar eigen register',
+      eprel.groepen_voor('Combi Was-Droog', 'AEG LWR9506BN4 was-droogcombinatie') == ['washerdriers2019'])
+lg = [{'modelIdentifier': m} for m in ('RT90X8BC', 'RT90X8C', 'RT90X8', 'RT90X8B', 'RT90X8YB')]
+check('exacte treffer wint van de eerste (LG RT90X8, zoals EPREL ze echt teruggeeft)',
+      eprel._kies_treffer(lg, 'Rt90x8')['modelIdentifier'] == 'RT90X8')
+check('zonder exacte treffer blijft de eerste gelden (AEG met productcode erachter)',
+      eprel._kies_treffer([{'modelIdentifier': 'TR73CB96 916099294'}], 'TR73CB96')['modelIdentifier'] == 'TR73CB96 916099294')
+check('schrijfwijze met streepje of schuine streep telt als gelijk',
+      eprel._kies_treffer([{'modelIdentifier': 'HW90-B14939S8'}, {'modelIdentifier': 'HW90B14939'}], 'Hw90-b14939')['modelIdentifier'] == 'HW90B14939')
+check('geen treffers: None', eprel._kies_treffer([], 'X1234') is None)
+
+# De inhaalslag: rijen uit het oude register en niet-gevonden drogers, precies één keer
+from datetime import timedelta
+from flask import Flask
+from models import db, Product, Category, EprelData, utcnow
+import eprel_bijwerken
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+db.init_app(app)
+with app.app_context():
+    db.create_all()
+    drogers = Category(name='Drogers', slug='drogers'); was = Category(name='Wasmachines', slug='wasmachines')
+    db.session.add_all([drogers, was]); db.session.commit()
+    voor = eprel_bijwerken._DROGERS_HERZIEN_VOOR - timedelta(days=5)
+    na = max(eprel_bijwerken._DROGERS_HERZIEN_VOOR, utcnow()) + timedelta(hours=1)
+    def maak(n, cat, **kw):
+        p = Product(ean=str(n), title='t' + str(n), price=1, bol_url='x', slug=str(n), category_id=cat.id)
+        db.session.add(p); db.session.flush()
+        db.session.add(EprelData(product_id=p.id, **kw)); db.session.commit()
+        return p.id
+    a = maak(1, drogers, gevonden=True, productgroep='tumbledriers', opgehaald_at=voor)
+    b = maak(2, drogers, gevonden=False, opgehaald_at=voor)
+    c = maak(3, was, gevonden=False, opgehaald_at=voor)
+    d = maak(4, was, gevonden=True, productgroep='washingmachines2019', opgehaald_at=voor)
+    e = maak(5, drogers, gevonden=True, productgroep='tumbledriers', opgehaald_at=na)
+    f = maak(6, drogers, gevonden=False, opgehaald_at=na)
+    g = maak(7, drogers, gevonden=True, productgroep='tumbledryers20232534', opgehaald_at=voor)
+    gekozen = {r.product_id for r in eprel_bijwerken._drogers_in_te_halen(100)}
+    check('inhaalslag: droger uit het oude register, opgehaald voor de peildatum', a in gekozen)
+    check('inhaalslag: droger die toen niet gevonden was', b in gekozen)
+    check('inhaalslag: wasmachine die niet gevonden was doet NIET mee', c not in gekozen)
+    check('inhaalslag: gewone wasmachine doet NIET mee', d not in gekozen)
+    check('na het opnieuw ophalen komt een rij niet nog eens aan de beurt', e not in gekozen and f not in gekozen)
+    check('droger die al in het nieuwe register staat doet NIET mee', g not in gekozen)
+    rij = EprelData.query.filter_by(product_id=e).first()
+    rij.opgehaald_at = utcnow() - timedelta(days=8); db.session.commit()
+    check('oud register en een week niet nagekeken: wel weer aan de beurt',
+          e in {r.product_id for r in eprel_bijwerken._drogers_in_te_halen(100)})
+    paren = eprel_bijwerken._te_verversen(10)
+    check('_te_verversen zet de inhaalslag voorop en levert (rij, product)',
+          [r.product_id for r, p in paren][:1] != [] and all(p is not None for r, p in paren) and {a, b} <= {r.product_id for r, p in paren})
+
 print('ALLES GOED' if ok else 'ER GAAT IETS FOUT')
 sys.exit(0 if ok else 1)

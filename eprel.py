@@ -93,7 +93,15 @@ _GROEPEN = (
     ('wasdroog', ('washerdriers2019',)),
     ('was-droog', ('washerdriers2019',)),
     ('wasmachine', ('washingmachines2019', 'washerdriers2019')),
-    ('droger', ('tumbledriers',)),
+    # Drogers: eerst het register van de nieuwe labelschaal A-G (geldt sinds
+    # 1 juli 2025), dan pas het oude. Tot 21 september 2026 stond hier alleen
+    # 'tumbledriers' en toonden 56 pagina's een vervallen A+++. De naam is bij
+    # EPREL zelf nagevraagd (/api/product-groups), niet gegokt: de Bosch
+    # WQG133DBNL staat in het oude register op A++ en in het nieuwe op C. Het
+    # oude blijft als vangnet voor geluid en afmetingen van modellen die niet
+    # opnieuw zijn aangemeld; de klasse daaruit tonen we niet
+    # (eprel_specs.VEROUDERDE_LABELGROEPEN).
+    ('droger', ('tumbledryers20232534', 'tumbledriers')),
     ('vaatwasser', ('dishwashers2019',)),
     ('koelkast', ('refrigeratingappliances2019', 'refrigeratingappliances')),
     ('vries', ('refrigeratingappliances2019', 'refrigeratingappliances')),
@@ -184,10 +192,36 @@ def codes_uit_titel(titel):
     return gevonden[:_MAX_KANDIDATEN]
 
 
+def _kaal(tekst):
+    """Typenummer zonder opmaak: 'WF5S1045BB/PL' -> 'wf5s1045bbpl'."""
+    return re.sub(r'[^a-z0-9]', '', (tekst or '').lower())
+
+
+def _kies_treffer(treffers, code):
+    """De treffer met precies dit typenummer, anders de eerste.
+
+    EPREL zoekt op "begint met": 'RT90X8' geeft RT90X8BC, RT90X8C, RT90X8,
+    RT90X8B en RT90X8YB, in die volgorde. Tot 21 september 2026 namen we
+    altijd de eerste, en hing de LG RT90X8 dus aan het registratienummer van
+    de RT90X8BC. Staat het exacte nummer ertussen, dan wint dat.
+
+    Zonder exacte treffer blijft de eerste gelden, en dat is met opzet: AEG en
+    Beko melden hun modellen aan met hun eigen productcode erachter
+    ('GI5200C2SZ 911571123'). Dat is hetzelfde apparaat, en zulke koppelingen
+    (een paar honderd) zouden anders verdwijnen.
+    """
+    doel = _kaal(code)
+    for treffer in treffers:
+        if _kaal(treffer.get('modelIdentifier')) == doel:
+            return treffer
+    return treffers[0] if treffers else None
+
+
 def _bevraag(groep, code):
-    """Eén zoekopdracht bij EPREL. Geeft de eerste treffer of None."""
+    """Eén zoekopdracht bij EPREL. Geeft de beste treffer of None."""
+    # limit=10 en niet 2: de exacte treffer staat lang niet altijd vooraan.
     adres = (f"{_BASIS}/{groep}"
-             f"?modelIdentifier={urllib.parse.quote(code)}&limit=2")
+             f"?modelIdentifier={urllib.parse.quote(code)}&limit=10")
     try:
         antwoord = requests.get(adres, headers=_KOP, timeout=_TIMEOUT)
     except requests.exceptions.RequestException as e:
@@ -212,8 +246,7 @@ def _bevraag(groep, code):
         raise EprelFout("EPREL gaf geen leesbare JSON") from e
     if not data.get('size'):
         return None
-    treffers = data.get('hits') or []
-    return treffers[0] if treffers else None
+    return _kies_treffer(data.get('hits') or [], code)
 
 
 def _uitpakken(hit, groep, code):

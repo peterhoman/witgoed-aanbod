@@ -86,8 +86,38 @@ leidend voor werkafspraken.
     vaatwassers; 1 was-droogcombinatie), 227 ongewijzigd. Het blokje staat
     alleen op de productpagina, niet op lijstpagina's.
   `python test_eprel_label.py`: 21 gevallen.
-- **Nog te doen (b):** drogers opzoeken in het nieuwe EPREL-register en de
-  rijen opnieuw ophalen; naam van het register eerst verifiëren, niet gokken.
+- **(b) ook gebouwd op 21 sept (zelfde tak): drogers in het nieuwe register.**
+  De naam is bij EPREL zelf nagevraagd (`https://eprel.ec.europa.eu/api/product-groups`
+  geeft alle registers): **`tumbledryers20232534`**. Bewijs: Bosch WQG133DBNL
+  staat in het oude register op A++ en in het nieuwe op **C** (precies wat de
+  winkel zegt); LG RT90X8 van A+++ naar **B**. Het nieuwe register levert
+  dezelfde velden die wij bewaren (energyClass, noise, ratedCapacity, maten).
+  - `eprel.py`: drogers zoeken eerst in `tumbledryers20232534`, dan in
+    `tumbledriers` (vangnet voor geluid/maten; de klasse daaruit tonen we niet).
+  - **Tweede fout gevonden en gerepareerd: `_bevraag` nam altijd de eerste
+    treffer.** EPREL zoekt op "begint met": "RT90X8" geeft RT90X8BC, RT90X8C,
+    RT90X8, RT90X8B, RT90X8YB. De LG hing dus aan het registratienummer van een
+    andere variant. `_kies_treffer` neemt nu de exacte treffer (limit 2 → 10);
+    zonder exacte blijft de eerste gelden, want AEG en Beko melden aan met hun
+    productcode erachter ("TR73CB96 916099294" = hetzelfde apparaat). Gemeten:
+    van 1.275 koppelingen 885 exact, 380 langer (grotendeels die productcodes),
+    10 anders. **Nog niet opgelost:** bestaande rijen met een mogelijk
+    zustermodel worden pas bij hun maandelijkse verversing opnieuw gekozen; en
+    echte misgrepen zoals Whirlpool "W2F HD624" → "P2F HD624 A" (het gezochte
+    nummer zit míddenin een ander model) vangt dit niet. Dat zijn er hooguit
+    10; eerst per geval bekijken, dan een regel.
+  - `eprel_bijwerken.py`: **eenmalige inhaalslag** `_drogers_in_te_halen`: rijen
+    uit een vervallen register en drogers die "niet gevonden" waren, opgehaald
+    vóór de peildatum 22 sept 00:00 UTC, gaan voor en mogen de hele ronde van
+    100 gebruiken. Alleen-lezen geteld: **195 rijen** (71 oud register, 124 niet
+    gevonden) = twee rondes, ~12 uur. Rijen die in het oude register blijven
+    worden daarna wekelijks nagekeken in plaats van maandelijks.
+  Echte opzoeking bij EPREL met de nieuwe code: Bosch C, LG B (model RT90X8
+  exact), AEG TR73CB96 C, alle drie `tumbledryers20232534`.
+  `python test_eprel_label.py`: 35 gevallen. **Na de merge nakijken:**
+  `/api/eprel` (ronde zonder afbreking), daarna in de DB het aantal rijen met
+  productgroep `tumbledryers20232534`, en een drogerpagina: staat er weer een
+  energieklasse, nu van de nieuwe schaal?
 
 ---
 

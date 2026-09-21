@@ -1,12 +1,69 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **20 september 2026** (het blok "Dagcontrole 20 september" hieronder
-is het nieuwste, dan "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
+Bijgewerkt **21 september 2026** (het blok "Dagcontrole 21 september" hieronder
+is het nieuwste, dan "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
 "Dagcontrole 18 september", daaronder "Dagcontrole 17 september (middag)"
 hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 21 september (maandag) — Witgoedhuis keurde toch goed; feed gemeten en te oud; gat in de klep gevonden
+
+- **`/api/gezondheid`: GEZOND**, 10 van 10. Leverbaar 2.912, feed 2.907,
+  /aanbiedingen 10 categorieën, EPREL 3.649/1.273, prijssprongen 2 (0
+  teruggesprongen), tekstwachtrij 0, productpagina zonder sjabloonsporen.
+  Railway: 0 serverfouten, geen Traceback, **p99 één uitschieter van 7,7 s**
+  (gemiddeld 0,5 s; volgen, bij herhaling uitzoeken). **Doorkliks 20 sept: 24,
+  waarvan 17 browser = record** (13 naar MediaMarkt, 6 naar Voordeligwitgoed).
+- **Witgoedhuis keurde op 20 sept 20:00 alsnog goed** (melding in MyDaisycon,
+  schermafdruk Peter), één dag na het advies "loslaten". De feed staat open:
+  `X-Total-Count: 3776`, 3.763 met EAN, velden o.a. ean, price, price_old,
+  in_stock, link (de parameter `dl` in de link is het gewone winkelpad:
+  `https://www.witgoedhuis.nl/<dl>`; dáár testen, nooit de affiliatelink).
+- **Gemeten 21 sept (alleen lezen):** 807 feedproducten staan ook in onze
+  catalogus; 770 leverbaar bij ons, 37 zouden herleven; **163 staan nu bij
+  één winkel en worden een vergelijking** (dekking 39% → ~45%); volgens de
+  feed is Witgoedhuis bij 83 de goedkoopste, 201 gelijk, 486 duurder.
+  **Maar de feed is oud:** `last_modified` 6 sept, geen enkel product na 6
+  sept bijgewerkt, bijwerkdata alleen in plukken (16 aug, 22 aug, 4-6 sept),
+  en **alle 3.776 staan op in_stock**. Tegen hun eigen site gelegd:
+  willekeurige steekproef van 16: 14 prijzen gelijk, 2 €4,90 te laag, **4
+  uitverkocht**; steekproef van 6 uit de groep "goedkoper": **4 prijzen fout**
+  (actieprijs voorbij; de echte prijs was precies onze laagste) en 4
+  uitverkocht. De feed is dus het minst betrouwbaar precies waar hij ons de
+  "laagste prijs" zou geven. **Besluit: niet bouwen zolang de feed niet
+  dagelijks ververst.** **Bericht aan Witgoedhuis verstuurd op 21 sept**
+  door Peter, als ticket in MyDaisycon: Reageer → **"Contacteer adverteerder"**
+  (niet "Contacteer Daisycon") → campagne Witgoedhuis.nl (6570), media
+  WitgoedAanbod.nl (428244); Daisycon bevestigde "Ticket succesvol aangemaakt".
+  Via "Reageer" vult Daisycon het berichtvak met de eigen meldingstekst
+  inclusief losse HTML: eerst leegmaken. De tekst staat ook op Peters
+  bureaublad ("Bericht aan Witgoedhuis - feed dagelijks verversen.txt").
+  Antwoord komt in MyDaisycon (Support) en op peter@avantius.nl; niet leesbaar
+  voor Claude. Na de vakantie kijken of
+  `last_modified` in de feed is gaan bewegen; pas dan bouwen.
+- **CORRECTIE op het blok van 19 sept:** daar staat dat onze klep van 3 dagen
+  het Witgoedhuis-aanbod vanzelf zou verbergen. **Dat is onjuist.**
+  `verouderde_aanbiedingen.py` kijkt naar `Offer.last_synced`, en elke sync
+  zet dat op nu voor alles wat in de feed stáát (bv.
+  sync_voordeligwitgoed.py regel 161). Een feed die bevroren is maar wel
+  alles blijft opsommen, ververst `last_synced` dus gewoon en glipt langs de
+  klep én langs `/api/gezondheid`. De klep vangt alleen aanbiedingen die UIT
+  de feed verdwijnen (het EP-geval van 10 sept). **Dit gat geldt voor elke
+  winkel.**
+- **Hoe een bevroren feed wél te herkennen is (gemeten, 45 dagen
+  price_history):** Bol, Coolblue, MediaMarkt en EP hadden op álle 45 dagen
+  prijswijzigingen (minimaal 94, 75, 15 en 3 per dag; grootste gat 1 dag).
+  Expert grootste gat 2 dagen, Voordeligwitgoed 5, Alternate 18 (te klein).
+  Voorstel aan Peter (nog geen ja): in gezondheid.py een vierde controle
+  "geen enkele prijswijziging bij Bol/Coolblue/MediaMarkt in 60 uur = STORING".
+  Klein, alleen lezen, vóór woensdag 23 sept live of anders na de vakantie.
+- **Valkuil opnieuw gemaakt:** shellvariabelen in een `python -c "..."` plakken
+  brak op een Windows-regeleinde (\r) uit een tussenbestand. Een steekproef
+  tegen een winkelsite altijd als los .py-script (urllib, 1,5 s pauze).
 
 ---
 
@@ -103,8 +160,9 @@ leidend voor werkafspraken.
   MyDaisycon via schermafdruk Peter):** status "Aangevraagd — je media is nog
   niet gekeurd door de campagne": Daisycon liet de site op 7 sept toe, de
   winkel zelf behandelt de aanvraag van 4 sept niet. En: **de Witgoedhuis-feed
-  is sinds 8 sept 17:46 niet bijgewerkt** (3.776 producten). Met onze klep van
-  3 dagen zou hun aanbod na goedkeuring meteen op niet-leverbaar gaan. Dus:
+  is sinds 8 sept 17:46 niet bijgewerkt** (3.776 producten). (ONJUIST, zie correctie 21 sept: de klep vangt een bevroren feed niet.)
+  ~~Met onze klep van 3 dagen zou hun aanbod na goedkeuring meteen op
+  niet-leverbaar gaan.~~ Dus:
   niet opnieuw mailen, geen nieuw ticket, niet meer dagelijks controleren. De
   aanvraag blijft staan. Van het ticket van 17 sept kwam geen
   ontvangstbevestiging; niet najagen. MyDaisycon is voor Claude niet

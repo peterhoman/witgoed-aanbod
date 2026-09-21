@@ -27,6 +27,10 @@ want een loos alarm op vakantie kost meer dan een uur later gewaarschuwd
 worden. Controleer de grenzen opnieuw als er een winkel bij komt of als
 een winkel structureel anders gaat leveren.
 
+Sinds 21 september 2026 is er een vierde controle: een bevroren feed, te
+herkennen aan prijzen die niet meer bewegen. Zie BEWEGENDE_WINKELS hieronder
+voor het waarom en de gemeten grenzen.
+
 Bewust NIET gecontroleerd: EPREL (een afgebroken ronde kost niets),
 prijssprongen en foto's. Alleen wat geld of vindbaarheid kost.
 """
@@ -51,6 +55,22 @@ MIN_LEVERBARE_PRODUCTEN = 2500
 
 # Een routine die meer dan twee uur over haar geplande tijd heen is, zit vast.
 MAX_UREN_OVER_TIJD = 2
+
+# Bevroren feed (toegevoegd 21 september 2026). De controles hierboven kijken
+# naar offers.last_synced, en elke sync zet dat op nu voor alles wat in de feed
+# STAAT. Een feed die bevroren is maar nog alles opsomt, ververst last_synced
+# dus gewoon en glipt langs de veiligheidsklep en langs de winkelcontrole. Dat
+# bleek bij het toetsen van de Witgoedhuis-feed: 15 dagen niet gewijzigd, alles
+# "op voorraad", actieprijzen die al voorbij waren. Wij zouden zulke prijzen
+# als actueel tonen.
+# Herkenbaar aan het uitblijven van prijswijzigingen. Gemeten over 60 dagen
+# price_history: het langste gat zonder enige prijswijziging was 6 uur bij Bol,
+# 24 uur bij Coolblue en 36 uur bij MediaMarkt. 60 uur ligt daar ruim boven.
+# Bewust alleen deze drie: Expert had gaten van 48 uur, Voordeligwitgoed 144 en
+# Alternate 420; daar zegt stilte niets en geeft ze alleen loos alarm. EP niet
+# omdat die feed al half is. Komt er een grote winkel bij: eerst meten.
+BEWEGENDE_WINKELS = ('bol', 'coolblue', 'mediamarkt')
+MAX_UREN_ZONDER_PRIJSWIJZIGING = 60
 
 WINKELS = ('bol', 'mediamarkt', 'coolblue', 'expert', 'alternate', 'ep',
            'voordeligwitgoed')
@@ -99,6 +119,32 @@ def controleer_winkels(db, Offer, nu=None):
     return meldingen, cijfers
 
 
+def controleer_prijsbeweging(db, PriceHistory, nu=None, sla_over=()):
+    """Meldingen over grote winkels waar geen enkele prijs meer beweegt.
+
+    `sla_over`: winkels waarvoor de winkelcontrole al alarm sloeg; een sync die
+    niet loopt verklaart de stilte al, twee meldingen over hetzelfde is ruis.
+    """
+    nu = nu or _nu()
+    meldingen, cijfers = [], {}
+    for winkel in BEWEGENDE_WINKELS:
+        laatst = (db.session.query(db.func.max(PriceHistory.recorded_at))
+                  .filter(PriceHistory.retailer == winkel).scalar())
+        uren = None if laatst is None else round((nu - laatst).total_seconds() / 3600, 1)
+        cijfers[winkel] = {'uren_sinds_laatste_prijswijziging': uren}
+        if winkel in sla_over:
+            continue
+        if uren is None:
+            meldingen.append(f"{winkel}: nog nooit een prijswijziging vastgelegd.")
+        elif uren > MAX_UREN_ZONDER_PRIJSWIJZIGING:
+            meldingen.append(
+                f"{winkel}: al {uren:.0f} uur geen enkele prijswijziging (grens "
+                f"{MAX_UREN_ZONDER_PRIJSWIJZIGING}; normaal hooguit 36). De feed "
+                f"wordt wel gelezen maar lijkt bevroren: de prijzen op de site "
+                f"kunnen verouderd zijn.")
+    return meldingen, cijfers
+
+
 def controleer_catalogus(Product):
     leverbaar = Product.query.filter_by(is_available=True).filter(
         Product.is_example.isnot(True)).count()
@@ -128,12 +174,20 @@ def controleer_routines(jobs, nu_utc=None):
     return meldingen, {'routines_gepland': len(jobs)}
 
 
-def rapport(db, Offer, Product, jobs, ai_sleutel_aanwezig):
+def rapport(db, Offer, Product, jobs, ai_sleutel_aanwezig, PriceHistory):
     """(gezond, meldingen, cijfers). Elke controle staat los: faalt er één
     met een fout, dan is dat zelf een melding en lopen de andere door."""
     meldingen, cijfers = [], {}
+
+    def prijsbeweging():
+        # Winkels die de winkelcontrole al noemde niet nog eens melden.
+        al_gemeld = {w for w in BEWEGENDE_WINKELS
+                     if any(m.startswith(w + ':') for m in meldingen)}
+        return controleer_prijsbeweging(db, PriceHistory, sla_over=al_gemeld)
+
     onderdelen = (
         ('winkels', lambda: controleer_winkels(db, Offer)),
+        ('prijsbeweging', prijsbeweging),      # na 'winkels': gebruikt haar meldingen
         ('catalogus', lambda: controleer_catalogus(Product)),
         ('routines', lambda: controleer_routines(jobs)),
     )
@@ -161,6 +215,9 @@ def als_tekst(gezond, meldingen, cijfers, nu=None):
         regels.append(f"{winkel}: {c['leverbaar']} leverbaar, laatste sync "
                       f"{c['uren_sinds_laatste_sync']} uur geleden, "
                       f"{c['ouder_dan_36u']} ouder dan {OUD_NA_UREN} uur")
+    for winkel, c in (cijfers.get('prijsbeweging') or {}).items():
+        regels.append(f"{winkel}: laatste prijswijziging "
+                      f"{c['uren_sinds_laatste_prijswijziging']} uur geleden")
     if 'catalogus' in cijfers:
         regels.append(f"Leverbare producten: {cijfers['catalogus']['leverbare_producten']}")
     if 'routines' in cijfers:

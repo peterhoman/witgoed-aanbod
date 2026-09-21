@@ -392,7 +392,7 @@ def gezondheid_status():
     lezen, geen gevoelige data; valt onder Disallow /api/ in robots.txt."""
     import gezondheid
     from flask import Response
-    from models import db, Offer
+    from models import db, Offer, PriceHistory
 
     jobs = None
     try:
@@ -402,7 +402,8 @@ def gezondheid_status():
         jobs = []   # geen planner = alle routines "ontbreken" = STORING
     gezond, meldingen, cijfers = gezondheid.rapport(
         db, Offer, Product, jobs,
-        bool(current_app.config.get('ANTHROPIC_API_KEY')))
+        bool(current_app.config.get('ANTHROPIC_API_KEY')),
+        PriceHistory=PriceHistory)
     antwoord = Response(gezondheid.als_tekst(gezond, meldingen, cijfers),
                         status=200 if gezond else 503,
                         mimetype='text/plain')

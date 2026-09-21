@@ -35,9 +35,15 @@ leidend voor werkafspraken.
   (actieprijs voorbij; de echte prijs was precies onze laagste) en 4
   uitverkocht. De feed is dus het minst betrouwbaar precies waar hij ons de
   "laagste prijs" zou geven. **Besluit: niet bouwen zolang de feed niet
-  dagelijks ververst.** Bericht aan Witgoedhuis staat op Peters bureaublad
-  ("Bericht aan Witgoedhuis - feed dagelijks verversen.txt"; versturen via de
-  knop "Reageer" bij de melding in MyDaisycon). Na de vakantie kijken of
+  dagelijks ververst.** **Bericht aan Witgoedhuis verstuurd op 21 sept**
+  door Peter, als ticket in MyDaisycon: Reageer → **"Contacteer adverteerder"**
+  (niet "Contacteer Daisycon") → campagne Witgoedhuis.nl (6570), media
+  WitgoedAanbod.nl (428244); Daisycon bevestigde "Ticket succesvol aangemaakt".
+  Via "Reageer" vult Daisycon het berichtvak met de eigen meldingstekst
+  inclusief losse HTML: eerst leegmaken. De tekst staat ook op Peters
+  bureaublad ("Bericht aan Witgoedhuis - feed dagelijks verversen.txt").
+  Antwoord komt in MyDaisycon (Support) en op peter@avantius.nl; niet leesbaar
+  voor Claude. Na de vakantie kijken of
   `last_modified` in de feed is gaan bewegen; pas dan bouwen.
 - **CORRECTIE op het blok van 19 sept:** daar staat dat onze klep van 3 dagen
   het Witgoedhuis-aanbod vanzelf zou verbergen. **Dat is onjuist.**

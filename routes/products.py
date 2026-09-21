@@ -471,7 +471,7 @@ def product_detail(slug):
 
     from price_chart import build_price_history
     from energy_costs import bereken_energiekosten
-    from eprel_specs import eprel_blok, ontdubbel_specs
+    from eprel_specs import eprel_blok, label_zonder_botsing, ontdubbel_specs
     from product_specs import (kernspecs, groepeer_specs, modelnummer,
                                zoektitel)
     from category_context import bepaal_categoriecontext, meta_beschrijving
@@ -498,7 +498,10 @@ def product_detail(slug):
                            structured_data=_product_structured_data(product, merk_facet),
                            price_history=build_price_history(product),
                            prijzen_opgehaald=prijzen_opgehaald(product),
-                           energiekosten=bereken_energiekosten(product),
+                           # Spreken winkellabel en EPREL elkaar tegen, dan valt
+                           # het gekleurde blokje weg (eprel_specs).
+                           energiekosten=label_zonder_botsing(
+                               bereken_energiekosten(product), eprel_data),
                            kernspecs=kern,
                            spec_groepen=spec_groepen,
                            # Voor de "Alle N specificaties"-knop: het aantal

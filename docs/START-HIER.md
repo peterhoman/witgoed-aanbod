@@ -64,13 +64,30 @@ leidend voor werkafspraken.
   **Haal 'tumbledriers' pas uit die lijst als eprel.py drogers in het nieuwe
   register opzoekt én de rijen opnieuw zijn opgehaald** (oude rijen houden hun
   oude productgroep tot ze ververst zijn).
-- **Nog open, na de vakantie:** (b) drogers opzoeken in het nieuwe
-  EPREL-register (naam eerst verifiëren, niet gokken) en de 166 opnieuw
-  ophalen; (c) regel voor botsende labels: EPREL wint, en bij een botsing het
-  gekleurde blokje weglaten. **(d) nieuw gevonden:** dezelfde afkapping in de
-  feed treft ook 86 ovens en 29 afzuigkappen: die hebben terecht nog de
-  plus-schaal, maar "A+" gaat als "A" naar Google (te laag, niet te hoog).
-  Google accepteert A+, A++ en A+++; drie regels werk, nog geen ja gevraagd.
+- **Stap (a) live en gecontroleerd (PR #182, uitrol 15:24):** op de
+  LG RT90X8-pagina staat geen "A+++" en geen regel "Energieklasse" meer in het
+  EPREL-blok (geluid en bron staan er nog); in de live feed heeft die droger
+  geen klasse en geen certificering meer.
+- **VASTE REGEL van Peter (21 sept): fouten direct oplossen, nooit uitstellen**
+  naar morgen of na de vakantie. Daarom dezelfde middag ook (c) en (d) gebouwd
+  (tak fix/feed-plusklasse-en-botsende-labels):
+  - **(d) feed kapte de klasse af tot de eerste letter.** `_eprel_per_product`
+    stuurt nu de hele klasse (`_fmt_klasse`: AP → A+), geldig = A+++ t/m G.
+    Proef tegen productie: 91x A+ en 24x A++ gaan nu goed naar Google (was
+    allemaal "A"); ovens en afzuigkappen hebben de plus-schaal nog terecht.
+  - **(c) botsende labels.** `eprel_specs.label_zonder_botsing`: zegt het
+    winkelveld iets anders dan EPREL, dan valt het gekleurde blokje bovenaan
+    weg, en de zin "label X kost € Y meer" ook (die rekende met het
+    winkellabel). Het EPREL-blok blijft, met bron en registratienummer; de
+    stroomkosten blijven (komen uit kWh, niet uit de letter). Bewust niet
+    "EPREL wint in het blokje": onze koppeling kan een zustermodel hebben
+    gevonden, dus bovenaan beweren we niets. Proef tegen productie: 14 pagina's
+    (10 koelkasten, vooral Inventum/Tomado "winkel D, register E"; 3
+    vaatwassers; 1 was-droogcombinatie), 227 ongewijzigd. Het blokje staat
+    alleen op de productpagina, niet op lijstpagina's.
+  `python test_eprel_label.py`: 21 gevallen.
+- **Nog te doen (b):** drogers opzoeken in het nieuwe EPREL-register en de
+  rijen opnieuw ophalen; naam van het register eerst verifiëren, niet gokken.
 
 ---
 

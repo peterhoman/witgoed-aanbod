@@ -28,5 +28,29 @@ k_was, _ = eprel_specs.ontdubbel_specs({'regels': was}, kern, [])
 check('droger: het winkellabel komt terug in de specificaties', ('Waarde energielabel', 'C') in k_droger, str(k_droger))
 check('wasmachine: EPREL wint nog steeds van het winkelveld', ('Waarde energielabel', 'C') not in k_was, str(k_was))
 
+# Botsende labels: het gekleurde blokje valt weg, de rest blijft
+kosten = {'label': 'D', 'jaar_kwh': 200, 'jaar_kosten': '60', 'meerkosten_slechter_label': {'label': 'E', 'bedrag': '120'}}
+botst = eprel_specs.label_zonder_botsing(kosten, {'regels': [('Energieklasse', 'E'), ('Geluidsniveau', '38 dB')]})
+check('winkel D, register E: blokje weg', botst['label'] is None, str(botst))
+check('winkel D, register E: zin over meerkosten weg', botst['meerkosten_slechter_label'] is None, str(botst))
+check('winkel D, register E: stroomkosten blijven staan', botst['jaar_kosten'] == '60' and botst['jaar_kwh'] == 200, str(botst))
+check('het origineel is niet aangepast (geen bijwerking op gecachte gegevens)', kosten['label'] == 'D' and kosten['meerkosten_slechter_label'] is not None)
+gelijk = eprel_specs.label_zonder_botsing(kosten, {'regels': [('Energieklasse', 'D')]})
+check('winkel D, register D: blokje blijft', gelijk['label'] == 'D' and gelijk['meerkosten_slechter_label'] is not None)
+check('kleine letter en spatie tellen niet als botsing', eprel_specs.label_zonder_botsing({'label': ' d '}, {'regels': [('Energieklasse', 'D')]})['label'] == ' d ')
+check('geen EPREL-blok: niets verandert', eprel_specs.label_zonder_botsing(kosten, None) is kosten)
+check('EPREL zonder klasse (droger oud register): winkellabel blijft', eprel_specs.label_zonder_botsing(kosten, {'regels': droger})['label'] == 'D')
+check('geen stroomkosten: blijft None', eprel_specs.label_zonder_botsing(None, {'regels': [('Energieklasse', 'E')]}) is None)
+
+# De feed: de hele klasse, niet alleen de eerste letter
+from routes.merchant_feed import _GELDIGE_KLASSEN
+def feedklasse(ruw):
+    k = eprel_specs._fmt_klasse((ruw or '').strip().upper())
+    return k if k in _GELDIGE_KLASSEN else None
+check('feed: AP wordt A+ (was: afgekapt tot A)', feedklasse('AP') == 'A+')
+check('feed: APPP wordt A+++', feedklasse('APPP') == 'A+++')
+check('feed: gewone letters ongewijzigd', [feedklasse(x) for x in 'ABCDEFG'] == list('ABCDEFG'))
+check('feed: rommel gaat niet mee', feedklasse('NVT') is None and feedklasse('') is None and feedklasse(None) is None and feedklasse('H') is None)
+
 print('ALLES GOED' if ok else 'ER GAAT IETS FOUT')
 sys.exit(0 if ok else 1)

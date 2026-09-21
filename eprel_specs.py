@@ -172,6 +172,36 @@ _FEEDVELD_DUBBEL = {
 }
 
 
+def label_zonder_botsing(energiekosten, eprel):
+    """Het gekleurde labelblokje weglaten als winkel en EPREL elkaar tegenspreken.
+
+    Het blokje bovenaan de pagina komt uit het winkelveld "Waarde energielabel"
+    (energy_costs), het blok onderaan uit EPREL. Gemeten op 21 september 2026:
+    bij 241 leverbare producten zijn beide bekend en bij 33 verschillen ze. Na
+    het weglaten van de vervallen drogerklasse blijven er 17 over: 13 koelkasten
+    waar de winkel D zegt en het register E of F, 3 vaatwassers en 1
+    was-droogcombinatie. Op die pagina's stonden twee verschillende labels.
+
+    Wij weten niet zeker wie gelijk heeft: het register is de wettelijke opgave
+    van de fabrikant, maar onze koppeling kan ook een zustermodel hebben
+    gevonden. Dus beweren we bovenaan niets: het blokje valt weg, en daarmee
+    ook de zin "label X kost € Y meer", die op het winkellabel was gebaseerd.
+    Het EPREL-blok blijft staan, mét bron en registratienummer, zodat de
+    bezoeker kan nakijken waar het label vandaan komt. De stroomkosten zelf
+    blijven: die komen uit het opgegeven verbruik in kWh, niet uit de letter.
+    """
+    if not energiekosten or not eprel:
+        return energiekosten
+    officieel = next((w for l, w in eprel.get('regels', []) if l == 'Energieklasse'), None)
+    winkel = (energiekosten.get('label') or '').strip().upper()
+    if officieel and winkel and officieel.strip().upper() != winkel:
+        uit = dict(energiekosten)
+        uit['label'] = None
+        uit['meerkosten_slechter_label'] = None
+        return uit
+    return energiekosten
+
+
 def ontdubbel_specs(eprel, kern, groepen):
     """(kernspecs, spec_groepen) zonder de velden die EPREL al toont."""
     if not eprel:

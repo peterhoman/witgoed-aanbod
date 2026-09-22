@@ -21,7 +21,11 @@
 
     <!-- Category Header -->
     <header class="category-header">
-        <h1>{{ facet_title or category.name }}</h1>
+        {# H1 van de categoriepagina (22 sept): was alleen "Wasmachines".
+           Nu het zoekwoord vooraan plus de kerncijfers, in lijn met de
+           <title> "... vergelijken - laagste prijs". Facetpagina's houden
+           hun eigen titel. #}
+        <h1>{% if facet_title %}{{ facet_title }}{% elif kerncijfers and kerncijfers.aantal %}{{ category.name }} vergelijken: {{ kerncijfers.aantal }} modellen{% if kerncijfers.vanaf %} vanaf € {{ kerncijfers.vanaf }}{% endif %}{% else %}{{ category.name }}{% endif %}</h1>
         {% if facet_intro %}
         {% for alinea in facet_uitleg %}
         <p>{{ alinea }}</p>
@@ -29,8 +33,10 @@
         <p>{{ facet_intro }}</p>
         {% elif category.ai_intro %}
         <p>{{ category.ai_intro }}</p>
-        {% else %}
-        <p>Vergelijk en vind de beste {{ category.name }}. Alle producten, prijzen en aanbiedingen op één plek.</p>
+        {% elif category_intro %}
+        {# Uit live data (routes.main._category_intro): tot 22 sept stond op
+           alle 13 categorieën dezelfde vaste zin. #}
+        <p>{{ category_intro }}</p>
         {% endif %}
     </header>
 
@@ -138,10 +144,12 @@
             <span class="filters-toggle-arrow" aria-hidden="true">▾</span>
         </button>
         <aside class="filters-sidebar" id="filters-sidebar">
-            {# h2, geen h3 (designrapport punt 20): na de h1 van de pagina
-               sloeg dit een kopniveau over. De maat blijft die van een h3
-               via .filters-sidebar h2 in de css. #}
-            <h2>{{ t('filters.title') }}</h2>
+            {# Geen kop meer (22 sept): "Filters" is een bedieningselement,
+               geen onderwerp van de pagina. Als h2 stond het voor Google
+               als eerste subonderwerp, vóór de producten. Eerder (punt 20
+               designrapport) was het een h3 en daarna een h2; de opmaak is
+               die van .filters-sidebar h2 gebleven. #}
+            <p class="filters-titel">{{ t('filters.title') }}</p>
 
             <form method="get" action="" class="filters-form">
                 {# Alleen Prijs staat open bij het laden, de rest dicht -- ook
@@ -184,7 +192,10 @@
         <!-- Products Grid -->
         <div class="category-products">
             <div class="products-toolbar">
-                <span class="results-count">{{ pagination.total }} {{ t('results.count') }}</span>
+                {# h2 (22 sept): de kop boven de productkaartjes (h3). Sinds
+                   "Filters" geen kop meer is, is dit de enige h2 vóór de
+                   kaartjes; zonder deze sprong de pagina van h1 naar h3. #}
+                <h2 class="results-count">{% if pagination.total == 1 %}1 model{% else %}{{ pagination.total }} {{ category.name|lower }}{% endif %}</h2>
                 <label for="sort-select" class="sort-label">
                     {{ t('sort.label') }}
                     <select id="sort-select" onchange="applySort(this.value)">

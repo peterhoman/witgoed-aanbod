@@ -91,17 +91,62 @@ weer alleen main. **Alle metingen gedaan, niets stuk.**
      los "en"/"bij" als laatste woord, punt erachter. `python
      test_meta_kort.py`: 4 gevallen. Lokaal gerenderd: /category/wasmachines
      eindigt nu op "Bol.com, MediaMarkt, Coolblue." (155 tekens).
-  2. **Nog niet gedaan, keuze voor Peter: de H1 van productpagina's is de
-     kale feedtitel.** Gemeten op 150 live productpagina's: 25% heeft
-     verkeerde hoofdletters uit de feed ("LG Rt90x8 ... 62 Db", "Haier
-     Hw90-b14939 ... 9 Kg 1400 Rpm"), de mediaan is 60 tekens, de langste
-     250. De `<title>` is al schoon en op zoekgedrag afgestemd ("LG RT90X8
-     droger", uit `zoektitel()` in product_specs.py). Voorstel: H1 =
-     dezelfde schone titel, met de feedtitel als kleinere regel eronder
-     zodat de maten zichtbaar blijven. Kosten: één sjabloonregel plus CSS,
-     geen databasewerk. Eerlijk erbij: H1 en meta-omschrijving zijn voor de
-     ranking zwakke signalen; de meta-omschrijving telt niet mee voor de
-     positie maar wel voor de doorklik, en dat is precies onze hefboom.
+  2. **Koppen en intro's gebouwd na Peters ja ("stap 1 en 2 vandaag"), tak
+     feat/koppen-h1-intro.** Peter legde een SEO-checklist voor (één H1,
+     zoekwoord vooraan, uniek, geschreven voor de gebruiker, intro-alinea
+     met het zoekwoord, H1→H2→H3 zonder sprongen, titel en H1 op elkaar
+     afgestemd). Gemeten: één H1 en geen kopsprongen klopte al overal;
+     wat niet klopte is nu gerepareerd:
+     - **Productpagina's, H1 was de kale feedtitel**: op 150 live pagina's
+       had 25% verkeerde hoofdletters uit de MediaMarkt-feed ("LG Rt90x8 -
+       Warmtepompdroger 9kg 62 Db"). Nieuw filter `nette_titel`
+       (titel_netjes.py, geregistreerd in app.py): typenummers in
+       hoofdletters, eenheden vast (kg, dB, rpm, cm, RVS; "9kg" → "9 kg"),
+       en ALLEEN bij feeds die elk woord met een hoofdletter schrijven
+       (geen enkel woord in kleine letters ná het merk, minstens drie
+       Netjes-woorden) gaan gewone woorden uit een vaste lijst naar kleine
+       letters, behalve aan het begin en direct na " - ". Zonder die
+       drempel raakte het filter goede Coolblue/Bol-titels ("Philips
+       airfryer met Stoomfunctie"); met drempel: 300 live titels, 135
+       gewijzigd, allemaal nagekeken. Toegepast op de H1, het kruimelpad,
+       de alternatieven, alle productkaartjes (h3 in _macros.html), de
+       dalingenlijst, vergelijken en de prijsverschillenpagina. De titel in
+       de database verandert niet. `python test_nette_titel.py`: 21 gevallen.
+     - **Productpagina's, intro-zin onder de H1** (`product_specs.intro_zin`,
+       css .product-intro): "De LG RT90X8 is een droger van LG. We
+       vergelijken de prijs bij 2 winkels en volgen het prijsverloop dag na
+       dag." Alleen als merk én typenummer bekend zijn, anders geen zin.
+     - **Categoriepagina's, H1 en intro**: H1 was "Wasmachines", nu
+       "Wasmachines vergelijken: 216 modellen vanaf € 259" (in lijn met de
+       `<title>`); de vaste zin "Vergelijk en vind de beste ..." (stond op
+       alle 13 categorieën) is vervangen door een zin uit live data:
+       "We vergelijken 216 wasmachines van o.a. Bosch, Samsung en AEG bij 7
+       winkels. Per model zie je de laagste prijs (vanaf € 259) en het
+       prijsverloop; 41 apparaten werden deze week echt goedkoper." Bron:
+       `_category_kerncijfers` (aantal, vanaf, drie meest voorkomende
+       merken; zit in de facetcache, die nu vier waarden teruggeeft) en
+       `_category_intro` in routes/main.py. `category.ai_intro` gaat nog
+       steeds voor als die ooit gevuld wordt. Facetpagina's ongewijzigd.
+     - **"Filters" is geen h2 meer** (categorie én zoekpagina; nu
+       `<p class="filters-titel">`, zelfde opmaak). Daardoor was er geen h2
+       meer vóór de kaartjes en sprong de pagina van h1 naar h3 (precies
+       wat designrapport punt 20 eerder oploste door er een h2 van te
+       maken). Daarom is de resultatenteller nu de h2: "216 wasmachines"
+       (was een span "216 resultaten"; bij 1 treffer "1 model"), en op de
+       zoekpagina "6 resultaten gevonden". Opmaak ongewijzigd (css
+       .results-count en .search-resultaten).
+     Lokaal gerenderd (app in het geheugen, demodatabase): voorpagina,
+     categorie, categorie met merkfilter, zoeken, aanbiedingen, product:
+     overal precies één h1, geen kopsprongen, 0 serverfouten.
+     **Na de merge op productie nakijken:** /category/wasmachines (H1 met
+     aantal en vanaf-prijs, intro met drie merken, h2 "N wasmachines"), de
+     LG RT90X8-pagina (H1 "LG RT90X8 - Warmtepompdroger 9 kg 62 dB
+     energielabel B" en de intro-zin), en de voorpagina-kaartjes ("OK. Owm
+     8126 - Wasmachine voorlader 8 kg 1400 rpm 76 dB").
+     Eerlijk erbij: H1 en meta-omschrijving zijn voor de ranking zwakke
+     signalen; de meta-omschrijving telt niet mee voor de positie maar wel
+     voor de doorklik, en dat is precies onze hefboom. De meta-reparatie
+     (punt 1) is gemerged als PR #188.
 
 ---
 

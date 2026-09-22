@@ -41,7 +41,7 @@
         <a href="{{ merk_facet.url }}">{{ merk_facet.naam }}</a>
         {% endif %}
         <span aria-hidden="true">/</span>
-        <span>{{ product.title|kort(50) }}</span>
+        <span>{{ product.title|nette_titel|kort(50) }}</span>
     </nav>
 
     <div class="product-main{% if een_winkel %} product-main-solo{% endif %}">
@@ -69,7 +69,13 @@
                Model-veld gevuld is. Nooit uit de titel gegokt — dat gaat mis
                bij was/droog-sets met twee modelnummers in de naam. #}
             <p class="product-eyebrow">{{ (product.brand or t('product.brand_unknown'))|upper }}{% if modelnummer %} &middot; {{ modelnummer }}{% endif %}</p>
-            <h1>{{ product.title }}</h1>
+            {# nette_titel (22 sept): de feedtitel had bij een kwart van de
+               producten een hoofdletter per woord ("Rt90x8", "62 Db"). #}
+            <h1>{{ product.title|nette_titel }}</h1>
+            {# Eén zin die zegt wat dit is, met merk en typenummer: de
+               intro-alinea onder de H1 ontbrak. Alleen als merk en type
+               bekend zijn (product_specs.intro_zin), anders niets. #}
+            {% if intro_zin %}<p class="product-intro">{{ intro_zin }}</p>{% endif %}
 
             {# Badgerij: energielabel groen, daarna maximaal vier kernspecs
                met alleen een rand. Groen betekent op deze site besparing. #}
@@ -426,7 +432,7 @@
                 <a href="/product/{{ alt.slug|urlencode }}">
                     {% if alt.image_url %}<img src="{{ alt.image_url|foto(120) }}" width="120" height="120" alt="" loading="lazy">{% endif %}
                     <span class="alternatief-mid">
-                        <span class="alternatief-naam">{{ alt.title }}</span>
+                        <span class="alternatief-naam">{{ alt.title|nette_titel }}</span>
                         <span class="alternatief-winkels">{{ t('offer.at_shops', count=alt.retailer_count) }}</span>
                     </span>
                     <span class="alternatief-prijs">&euro; {{ alt.lowest_price|euro }}</span>

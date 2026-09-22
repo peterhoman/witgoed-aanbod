@@ -489,6 +489,38 @@ def zoektitel(product):
     return titel[:_TITEL_MAX].rsplit(' ', 1)[0].rstrip(' -–—,;:/|') + '…'
 
 
+def intro_zin(product):
+    """Eén zin onder de H1 van de productpagina: wat dit apparaat is, van
+    welk merk, en bij hoeveel winkels we de prijs vergelijken.
+
+    Gemeten 22 sept: direct onder de H1 stond "Alle 2 winkels vragen
+    dezelfde prijs", nergens een zin die zegt wat het ding is. Een korte
+    intro waarin merk en typenummer terugkomen is de gangbare opbouw
+    (H1, intro, dan de H2's). Alleen als merk én typenummer bekend zijn;
+    anders None, want een zin met een gok erin is erger dan geen zin.
+    """
+    merk = merknaam(product)
+    model = modelnummer(product)
+    if not (merk and model):
+        return None
+    kop = model if model.upper().startswith(merk.upper()) else f"{merk} {model}"
+    soort = _CATEGORIE_ENKELVOUD.get(
+        product.category.slug if product.category else '')
+    if not soort:
+        return None
+    lidwoord = 'Deze' if soort in ('was-droogcombinatie', 'apparaatset') else 'De'
+    eerste = f"{lidwoord} {kop} is een {soort} van {merk}."
+    winkels = product.retailer_count
+    if winkels >= 2:
+        tweede = (f" We vergelijken de prijs bij {winkels} winkels en volgen "
+                  f"het prijsverloop dag na dag.")
+    elif winkels == 1:
+        tweede = " Eén winkel levert hem op dit moment; we volgen de prijs dag na dag."
+    else:
+        tweede = " Op dit moment levert geen van onze winkels hem; we volgen de prijs dag na dag."
+    return eerste + tweede
+
+
 def _model_uit_titel(product):
     """Het typenummer uit de producttitel, of None.
 

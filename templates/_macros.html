@@ -31,7 +31,7 @@
             data-product-title="{{ product.title }}"
             aria-label="{{ t('wishlist.toggle_aria') }}" title="{{ t('wishlist.toggle_aria') }}">&#9825;</button>
     <div class="product-info">
-        <h3><a href="/product/{{ product.slug|urlencode }}">{{ product.title }}</a></h3>
+        <h3><a href="/product/{{ product.slug|urlencode }}">{{ product.title|nette_titel }}</a></h3>
         <p class="brand">{{ product.brand or t('product.brand_unknown') }}</p>
         {% if show_excerpt and product.description %}
         <p class="excerpt">{{ product.description[:100] }}...</p>

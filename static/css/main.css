@@ -533,8 +533,12 @@ body {
 }
 
 .results-count {
+    /* Sinds 22 sept een h2 (kop boven de productkaartjes); oogt als de
+       teller van daarvoor. */
     font-size: 14px;
+    font-weight: 400;
     color: var(--gray);
+    margin: 0;
 }
 
 .sort-label {
@@ -2248,6 +2252,15 @@ section h2 {
     margin-bottom: 4px;
 }
 
+/* Eén zin onder de H1: wat het apparaat is en bij hoeveel winkels we de
+   prijs vergelijken (22 sept). */
+.product-intro {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--tekst-secundair);
+    margin: 4px 0 12px;
+}
+
 .product-badges {
     display: flex;
     flex-wrap: wrap;
@@ -3499,7 +3512,8 @@ body.cookiebalk-open #babbelbot-knop {
    h2 met de maat van een h3: de kop "Filters" is in de HTML een h2
    geworden (designrapport punt 20: h1 -> h3 sloeg een niveau over), maar
    hoort er niet groter uit te zien dan eerst. */
-.filters-sidebar h2 {
+.filters-sidebar h2,
+.filters-sidebar .filters-titel {
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 12px;
@@ -3668,9 +3682,12 @@ body.cookiebalk-open #babbelbot-knop {
     margin-bottom: 8px;
 }
 
-.search-header p {
+.search-header p,
+.search-header .search-resultaten {
     color: var(--gray);
     font-size: 14px;
+    font-weight: 400;
+    margin: 0;
 }
 
 .no-results {

@@ -13,7 +13,8 @@
     <header class="search-header">
         <h1>{{ t('search.results_for', query=query) }}</h1>
         {% if results %}
-        <p>{{ pagination.total }} {{ t('search.results_found') }}</p>
+        {# h2 (22 sept): kop boven de kaartjes (h3), nu "Filters" geen kop meer is. #}
+        <h2 class="search-resultaten">{{ pagination.total }} {{ t('search.results_found') }}</h2>
         {% endif %}
     </header>
 
@@ -29,9 +30,9 @@
         </button>
         <!-- Filters Sidebar -->
         <aside class="filters-sidebar" id="filters-sidebar">
-            {# h2, geen h3: zelfde kopniveau-reparatie als op de
-               categoriepagina (designrapport punt 20). #}
-            <h2>{{ t('filters.title') }}</h2>
+            {# Geen kop: zelfde keuze als op de categoriepagina (22 sept),
+               "Filters" is bediening, geen onderwerp. #}
+            <p class="filters-titel">{{ t('filters.title') }}</p>
             <form method="get" action="/search" class="filters-form">
                 <input type="hidden" name="q" value="{{ query }}">
 

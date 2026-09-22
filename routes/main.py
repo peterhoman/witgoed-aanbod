@@ -59,9 +59,61 @@ def _category_facets(category):
                                         is_available=True).all()
     data = (compute_brand_facet(producten),
             compute_spec_facets(producten),
-            _category_meta_description(category, producten))
+            _category_meta_description(category, producten),
+            _category_kerncijfers(producten))
     _FACET_CACHE[category.id] = (nu, data)
     return data
+
+
+def _category_kerncijfers(products):
+    """Aantal, vanaf-prijs en de drie meest voorkomende merken van een
+    categorie, voor de H1 en de intro van de categoriepagina (22 sept: de H1
+    was alleen "Wasmachines" en de intro op alle 13 categorieën dezelfde
+    vaste zin). Zit in dezelfde cache als de facetten."""
+    from collections import Counter
+    telling = Counter()
+    spelling = {}
+    for p in products:
+        key = (p.brand or '').strip().lower()
+        if key:
+            telling[key] += 1
+            spelling.setdefault(key, p.brand.strip())
+    prices = [p.lowest_price for p in products if p.lowest_price]
+    return {
+        'aantal': len(products),
+        'vanaf': int(min(prices)) if prices else None,
+        'merken': [spelling[k] for k, _ in telling.most_common(3)],
+    }
+
+
+def _category_intro(category, kern, dalingen):
+    """De intro-alinea onder de H1 van de categoriepagina, uit live data.
+
+    Tot 22 sept stond hier op alle 13 categorieën dezelfde vaste zin
+    ("Vergelijk en vind de beste Wasmachines. Alle producten, prijzen en
+    aanbiedingen op één plek."), terwijl de meta-omschrijving al uniek was.
+    Google leest de zichtbare intro, niet alleen de meta-omschrijving.
+    Alleen wat de data draagt: geen merken bekend, dan geen merken genoemd.
+    """
+    from models import RETAILER_LABELS
+    if not kern or not kern.get('aantal'):
+        return None
+    naam = category.name.lower()
+    merken = kern.get('merken') or []
+    zin = f"We vergelijken {kern['aantal']} {naam}"
+    if len(merken) >= 2:
+        zin += f" van o.a. {', '.join(merken[:-1])} en {merken[-1]}"
+    elif merken:
+        zin += f" van {merken[0]}"
+    zin += f" bij {len(RETAILER_LABELS)} winkels. Per model zie je de laagste prijs"
+    if kern.get('vanaf'):
+        zin += f" (vanaf € {kern['vanaf']})"
+    zin += " en het prijsverloop"
+    if dalingen == 1:
+        zin += "; 1 apparaat werd deze week echt goedkoper"
+    elif dalingen:
+        zin += f"; {dalingen} apparaten werden deze week echt goedkoper"
+    return zin + "."
 
 
 def _meta_kort(tekst, maxlen=160):
@@ -2483,7 +2535,7 @@ def category(slug):
     selected_specs = parse_spec_filters(request.args.getlist('spec'))
 
     # Filteropties + meta-description uit de cache (zie _category_facets)
-    brand_facet, spec_facets, meta_description = _category_facets(category)
+    brand_facet, spec_facets, meta_description, kerncijfers = _category_facets(category)
 
     q = Product.query.filter_by(category_id=category.id, is_available=True)
     q = q.filter(Product.price.between(min_price, max_price))
@@ -2548,6 +2600,7 @@ def category(slug):
         subtype_options = compute_spec_facets(alle_producten, max_filters=999, max_options=999)
         subtype_options = next((f['options'] for f in subtype_options if f['key'] == subtype_key), None)
 
+    dalingen = _prijsdalingen_aantal(category)
     return render_template(
         'category.html',
         category=category,
@@ -2569,10 +2622,13 @@ def category(slug):
         winkel_options=_winkel_facet(category),
         kenmerk_options=_kenmerk_links(category),
         zoekkenmerk_options=_zoekkenmerk_links(category),
-        prijsdalingen_aantal=_prijsdalingen_aantal(category),
+        prijsdalingen_aantal=dalingen,
         pros_cons_by_ean=_pros_cons_by_ean(),
         faq=faq,
         faq_jsonld=faq_jsonld,
+        # H1 en intro uit live data (22 sept), zie _category_kerncijfers.
+        kerncijfers=kerncijfers,
+        category_intro=_category_intro(category, kerncijfers, dalingen),
     )
 
 
@@ -2643,7 +2699,7 @@ def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_de
 @main_bp.route('/category/<slug>/merk/<merk_slug>')
 def category_brand(slug, merk_slug):
     category = Category.query.filter_by(slug=slug).first_or_404()
-    brand_facet, _, _ = _category_facets(category)
+    brand_facet, _, _, _ = _category_facets(category)
     match = next((b for b in brand_facet if slugify(b['value']) == merk_slug), None)
     if not match:
         abort(404)
@@ -2669,7 +2725,7 @@ def category_energielabel(slug, letter):
     letter = letter.upper()
     if letter not in ('A', 'B', 'C', 'D', 'E', 'F', 'G'):
         abort(404)
-    _, spec_facets, _ = _category_facets(category)
+    _, spec_facets, _, _ = _category_facets(category)
     energie_facet = next((f for f in spec_facets if 'energielabel' in f['key'].lower()), None)
     # Exact op een kale letter matchen, niet op startswith: ovens leveren
     # "Energielabel niet van toepassing" en dat gaf een pagina voor label E
@@ -2718,7 +2774,7 @@ def category_subtype(slug, waarde_slug):
     spec_key = SUBCATEGORY_SPECS.get(slug)
     if not spec_key:
         abort(404)
-    _, spec_facets, _ = _category_facets(category)
+    _, spec_facets, _, _ = _category_facets(category)
     facet = next((f for f in spec_facets if f['key'] == spec_key), None)
     if not facet:
         # Uncapped: deze spec zit niet altijd in de (top-6) sidebar-cache.
@@ -3120,7 +3176,7 @@ def wizard_count(slug):
     '397 wasmachines'-teller tijdens het doorlopen van de wizard."""
     from flask import jsonify
     category = Category.query.filter_by(slug=slug).first_or_404()
-    _, spec_facets, _ = _category_facets(category)
+    _, spec_facets, _, _ = _category_facets(category)
     q = Product.query.filter_by(category_id=category.id, is_available=True)
     for key, values in parse_spec_filters(request.args.getlist('spec')).items():
         # Zelfde vertaalslag als de categoriepagina, anders zou de teller een

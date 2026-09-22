@@ -80,6 +80,7 @@ VERWACHTE_ROUTINES = (
     'Expert Product Sync', 'Alternate Product Sync', 'EP Product Sync',
     'Voordeligwitgoed Product Sync', 'Eigen productteksten bijwerken',
     'EPREL-gegevens bijwerken', 'Catalogusuitzonderingen toepassen',
+    'IndexNow: gewijzigde adressen melden',
 )
 
 

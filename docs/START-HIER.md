@@ -112,6 +112,29 @@ weer alleen main. **Alle metingen gedaan, niets stuk.**
   /sitemap-overig.xml. Daarna de specialist-chat berichten dat het live
   staat (Peter mailt de redacties zelf, max 5 per dag; zie linkplan 17
   sept).
+- **IndexNow gebouwd (tak feat/indexnow), na Peters ja via de specialist-chat.**
+  Bing (en Yandex/Naver/Seznam; Google doet niet mee) dagelijks de adressen
+  melden die veranderd zijn. `indexnow.py`: sleutel in config
+  (`INDEXNOW_KEY`, vaste waarde in de code, met de omgevingsvariabele te
+  vervangen; geen geheim), sleutelbestand op `/indexnow-<sleutel>.txt`
+  (route in routes/seo.py, andere naam = 404), plannertaak "IndexNow:
+  gewijzigde adressen melden" elke dag 07:30 UTC als cron (bewust geen
+  interval: die vuurt na elke uitrol opnieuw), die alle sitemap-adressen
+  met een datum van gisteren of vandaag verzamelt (zelfde datumlogica als
+  de sitemap; soort 'overig' niet, die staat altijd op vandaag) en ze in
+  stukken van hooguit 10.000 als JSON naar api.indexnow.org stuurt.
+  Uitkomst op /api/sync-status onder `indexnow` (wanneer, aantal,
+  statuscode per bericht: 200/202 = ontvangen, 403 = sleutelbestand niet
+  bereikbaar, 422 = adres hoort niet bij de host, 429 = te veel). Staat in
+  VERWACHTE_ROUTINES van gezondheid.py (nu 11 routines). Tests:
+  `python test_indexnow.py` (9 controles) en test_gezondheid.py groen.
+  Lokale proef met een neppe verzender: 13 adressen, 1 bericht, 202.
+  **Na de merge:** in `railway logs` de regel "IndexNow: eerstvolgende run
+  ... 07:30" zien, op productie `/indexnow-<sleutel>.txt` opvragen (moet de
+  sleutel teruggeven), en de ochtend erna op /api/sync-status kijken of de
+  eerste ronde status 200/202 kreeg. Peter meldt de site zelf aan bij Bing
+  Webmaster Tools (import uit Search Console); de sleutel hoeft daar niet
+  ingevoerd te worden.
 - **SMEG NL via Awin aangevraagd (14:00, Peter klikte zelf op Join).** Peter
   vroeg of het programma iets voor de site is. Gelezen in zijn Awin-account
   (programma 104589): 6% commissie, feed 731 producten (dagelijks ververst),

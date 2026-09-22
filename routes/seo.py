@@ -454,6 +454,16 @@ _CRAWLERS = (
 )
 
 
+@seo_bp.route('/indexnow-<sleutel>.txt')
+def indexnow_sleutel(sleutel):
+    """Sleutelbestand voor IndexNow (indexnow.py): Bing haalt dit op om te
+    controleren dat een melding van deze site komt. Alleen de eigen sleutel
+    bestaat; elke andere naam is een 404."""
+    if not sleutel or sleutel != current_app.config.get('INDEXNOW_KEY'):
+        abort(404)
+    return sleutel, 200, {'Content-Type': 'text/plain; charset=utf-8'}
+
+
 @seo_bp.route('/robots.txt')
 def robots():
     """Generate robots.txt.

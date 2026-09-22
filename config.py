@@ -47,6 +47,12 @@ class Config:
     _http_idx = _site_url.find('http')
     SITE_URL = _site_url[_http_idx:].rstrip('/') if _http_idx >= 0 else 'https://www.witgoedaanbod.nl'
 
+    # IndexNow-sleutel (indexnow.py, 22 sept 2026). Geen geheim: Bing haalt
+    # /indexnow-<sleutel>.txt op om te zien dat de melding van deze site
+    # komt. Vast in de code zodat de uitrol niets aan Railway hoeft te
+    # vragen; met de omgevingsvariabele is hij te vervangen.
+    INDEXNOW_KEY = os.getenv('INDEXNOW_KEY', '5cf8cc31394ba8870bd8145f6ae065fd')
+
     # Google site-verificatie: de content-waarde van de meta-verificatietag.
     # De Search Console-property zelf is een domein-property (DNS-geverifieerd
     # onder pfmhoman@gmail.com); deze HTML-tag is 23-07 toegevoegd voor de

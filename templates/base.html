@@ -15,15 +15,18 @@
        op productie, gevonden 24 aug), dus gedeelde links kregen nooit een
        plaatje. Zie scripts/maak_beeldmateriaal.py. #}
     <meta property="og:image" content="{% block og_image %}{{ config.SITE_URL }}/static/img/og-image.png{% endblock %}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image:width" content="{% block og_image_width %}1200{% endblock %}">
+    <meta property="og:image:height" content="{% block og_image_height %}630{% endblock %}">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="{{ self.og_image() }}">
     <meta property="og:url" content="{{ request.url }}">
     <meta property="og:site_name" content="WitgoedAanbod.nl">
     <meta property="og:locale" content="nl_NL">
-    <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
+    {# max-image-preview:large (22 sept, linkplan): laat Google grote
+       voorvertoningen van onze afbeeldingen tonen, o.a. voorwaarde voor
+       Discover. Geldt voor elke pagina; op noindex-pagina's doet het niets. #}
+    <meta name="robots" content="{% block robots %}index, follow{% endblock %}, max-image-preview:large">
     {# Canonical zonder querystring: filter-, sorteer- en paginaparameters
        (?brand=&sort=&page=) zijn varianten van dezelfde pagina. Met
        request.url kreeg elke filtercombinatie een eigen canonical en zou

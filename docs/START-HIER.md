@@ -143,6 +143,13 @@ weer alleen main. **Alle metingen gedaan, niets stuk.**
   eerste ronde status 200/202 kreeg. Peter meldt de site zelf aan bij Bing
   Webmaster Tools (import uit Search Console); de sleutel hoeft daar niet
   ingevoerd te worden.
+- **Twee kleine regels uit het linkplan (tak fix/robots-meta-og-pers):**
+  `max-image-preview:large` achter de robots-meta in base.html (elke
+  pagina; voorwaarde voor grote voorvertoningen en Discover),
+  `Claude-SearchBot` expliciet in de crawlerlijst van robots.txt
+  (routes/seo.py, nu 11 groepen), en de persgrafiek (1600×900) als
+  paginaspecifieke og:image van /pers (nieuwe blokken og_image_width/height
+  in base.html). Lokaal gerenderd op /, /pers en /search.
 - **Bezoekersbron in de eigen teller gebouwd (avond, tak feat/bezoekersbron),
   na Peters ja via de specialist-chat; zijn merge is de bevestiging.** Vraag
   van het linkplan: welke zoekmachine, AI-assistent of verwijzende site

@@ -526,6 +526,36 @@ class Guide(db.Model):
         return f'<Guide {self.title}>'
 
 
+class Bezoekersbron(db.Model):
+    """Waar binnenkomende bezoekers vandaan komen, per bron per dag.
+
+    Gebouwd 22 september 2026 op verzoek van het linkplan: welke zoekmachine,
+    AI-assistent of verwijzende site levert bezoekers op? Geteld uit de
+    Referer-kop van het verzoek, aan de serverkant, alleen bij een echte
+    navigatie van buiten de site. Geen IP, geen cookie, geen sessie, geen
+    user-agent: alleen een teller per (dag, bron, domein). Daarom is er geen
+    toestemming nodig en blijft de cookiebalk uit (pageviews.py).
+
+    'bron' is een vaste naam (google, bing, chatgpt, direct, verwijzing, ...);
+    'domein' is alleen gevuld bij 'verwijzing': het domein van de andere site,
+    zodat te zien is welke linkplaatsingen bezoekers opleveren.
+    """
+    __tablename__ = 'bezoekersbronnen'
+
+    id = db.Column(db.Integer, primary_key=True)
+    datum = db.Column(db.Date, nullable=False)
+    bron = db.Column(db.String(40), nullable=False)
+    domein = db.Column(db.String(120), nullable=False, default='')
+    aantal = db.Column(db.Integer, nullable=False, default=0)
+
+    __table_args__ = (
+        db.UniqueConstraint('datum', 'bron', 'domein', name='uq_bezoekersbron_datum_bron_domein'),
+    )
+
+    def __repr__(self):
+        return f'<Bezoekersbron {self.datum} {self.bron} {self.domein} {self.aantal}>'
+
+
 class PageView(db.Model):
     """Aantal paginaweergaven per soort per dag. Geen bezoekersmeting.
 

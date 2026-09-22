@@ -24,7 +24,7 @@
        samenvatting of tekst verschilt, dus updated_at schuift niet op bij
        een gewone uitrol. Niet aan tornen: een datum die opschuift zonder
        inhoudelijke wijziging is precies wat Google afraadt. #}
-    <p class="guide-author">Door <a href="/over-ons#peter"><strong>Peter Homan</strong></a>, oprichter van WitgoedAanbod.nl (Avantius, ruim 20 jaar in huishoudelijke apparaten){% if guide.created_at %} · gepubliceerd {{ guide.created_at.strftime('%d-%m-%Y') }}{% endif %}{% if gewijzigd %} · laatst bijgewerkt {{ guide.updated_at.strftime('%d-%m-%Y') }}{% endif %} · zie onze <a href="/over-ons#werkwijze">werkwijze</a></p>
+    <p class="guide-author">Door <a href="/over-ons#peter"><strong>Peter Homan</strong></a>, oprichter van WitgoedAanbod.nl (Avantius, familiebedrijf sinds 2007, verkoopt zelf geen witgoed){% if guide.created_at %} · gepubliceerd {{ guide.created_at.strftime('%d-%m-%Y') }}{% endif %}{% if gewijzigd %} · laatst bijgewerkt {{ guide.updated_at.strftime('%d-%m-%Y') }}{% endif %} · zie onze <a href="/over-ons#werkwijze">werkwijze</a></p>
 
     <div class="legal-content">
         {{ (rendered_content or guide.content)|safe }}

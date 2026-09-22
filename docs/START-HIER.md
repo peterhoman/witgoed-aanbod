@@ -759,6 +759,26 @@ Google staat één aanvraag per 12 uur toe. 17 sept: 26 producten.
 
 ---
 
+## Rankingmeting 16 september — SC-posities zijn moduleposities
+
+(Overgenomen op 22 sept van de tak docs/rankingmeting-wekelijks, die nooit is
+doorgevoerd.) Peter wil de ranking weer oppakken. Gemeten (SC 3 maanden,
+1.000 rijen + tien zoekwoorden live): 52% van alle vertoningen staat op
+positie 1-3 met 0,6% klikkans; dat is Googles blok "Vergelijkingssites" uit
+onze MC-feed, geen blauwe link. Organisch: **1 van 10 modelcodes in de top
+18** (Bosch SMV4EMX01N op 16), ook bij MediaMarkt-huismerken (Koenic, OK) met
+weinig concurrentie. Titels/omschrijvingen verbeteren helpt daar niet; het
+ontbreekt aan domeingezag (links) en aan vergelijkingswaarde bij
+één-winkel-apparaten. Afgesproken: (1) wekelijkse live meting
+(`docs/RANKING-METING.md`, dinsdag), (2) links: Peter doet dit zelf met
+Claude, per e-mail; kansrijkste idee is onze eigen prijsdata als "linkbare"
+publicatie (sinds 17 sept live: /onderzoek/prijsverschillen-witgoed), (3)
+vergelijkingswaarde: loopt (Coolblue-feed, Witgoedhuis, De'Longhi, AEG).
+Nieuwe concurrenten gezien: vergelijk.nl, beslist.nl, VergelijkEven.nl,
+supersales.nl.
+
+---
+
 ## Dagcontrole 16 september — eerste TradeTracker-verkoop
 
 - **Eerste verkoop via TradeTracker ooit:** 16 sept 10:56, Voordeligwitgoed,
@@ -1660,6 +1680,12 @@ die niemand had gemeld.
   worden bereikt": hoeveel per dag? Normaal 2-3; boven de 15 is een
   uitschieter (12 sep: 27). Dit is de teller achter MC's "productpagina
   niet beschikbaar".
+- Productpagina zoals een bezoeker: `curl -s <productpagina> | grep -c -E '#\}|\{%|%\}|\{#'`
+  moet 0 geven (4-16 sept stond een programmeursnotitie zichtbaar op alle
+  productpagina's; de meetpagina's zagen dat niet).
+- **Elke dinsdag:** de tien modelcodes live in Google meten en de tabel in
+  `docs/RANKING-METING.md` aanvullen (werkwijze staat erin). SC-posities zijn
+  hiervoor NIET bruikbaar (moduleposities).
 - `/api/gezondheid` → staat er GEZOND? Bij STORING staat eronder wat er
   stilstaat; dezelfde dag uitzoeken. Sinds 21 sept ook "laatste
   prijswijziging" per grote winkel: boven de 36 uur is al ongewoon.

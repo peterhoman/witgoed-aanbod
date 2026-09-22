@@ -37,6 +37,19 @@ leidend voor werkafspraken.
   prijsvergelijkers" niet in de top 20. De gemailde winkels staan zelf op
   pagina 1-2. Volgende meting: dinsdag 6 oktober (29 sept valt in de
   vakantie).
+- **Takken opgeruimd (22 sept, na Peters ja):** 154 lokale takken die volledig
+  in main zaten verwijderd; de zes nooit-doorgevoerde één voor één bekeken en
+  alle zes overbodig: docs/rankingmeting-wekelijks (inhoud overgenomen, zie
+  hierboven), fix/tekstroutine-onthoudt-wanneer en docs/dagelijks-controleren
+  (geen verschil met main), fix/fotos-eigen-domein (plan B van 13 aug: foto's
+  via ons eigen domein; niet nodig, de feed gebruikt wsrv en Merchant Center
+  keurt 2,91K goed), fix/robots-uitsluitingen (oude versie van setprijs.py;
+  main heeft de nieuwere met de setvergelijking), docs/start-hier-12-september
+  (blok staat al op main). Lokaal staat nu alleen main. Op GitHub staan nog
+  twaalf takken van al doorgevoerde PR's (GitHub bewaart die na een merge);
+  die zitten volledig in main en doen niets.
+  **Wie in oude gesprekken een taknaam tegenkomt: die bestaat niet meer, de
+  inhoud zit in main of was achterhaald.**
 - Mail: niets van winkels, Daisycon/Witgoedhuis, De'Longhi, AEG. CookieYes
   (reclame voor een betaalde cookiebanner met Claude-koppeling): niet nodig,
   de site heeft een eigen cookievenster en zet geen volgcookies.

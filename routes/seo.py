@@ -450,7 +450,8 @@ _UITGESLOTEN = (
 _CRAWLERS = (
     '*', 'Googlebot', 'Bingbot',
     'GPTBot', 'OAI-SearchBot', 'ChatGPT-User',
-    'ClaudeBot', 'Claude-User', 'PerplexityBot', 'Google-Extended',
+    'ClaudeBot', 'Claude-User', 'Claude-SearchBot', 'PerplexityBot',
+    'Google-Extended',
 )
 
 

@@ -112,6 +112,13 @@ weer alleen main. **Alle metingen gedaan, niets stuk.**
   /sitemap-overig.xml. Daarna de specialist-chat berichten dat het live
   staat (Peter mailt de redacties zelf, max 5 per dag; zie linkplan 17
   sept).
+- **Twee kleine regels uit het linkplan (tak fix/robots-meta-og-pers):**
+  `max-image-preview:large` achter de robots-meta in base.html (elke
+  pagina; voorwaarde voor grote voorvertoningen en Discover),
+  `Claude-SearchBot` expliciet in de crawlerlijst van robots.txt
+  (routes/seo.py, nu 11 groepen), en de persgrafiek (1600×900) als
+  paginaspecifieke og:image van /pers (nieuwe blokken og_image_width/height
+  in base.html). Lokaal gerenderd op /, /pers en /search.
 - **SMEG NL via Awin aangevraagd (14:00, Peter klikte zelf op Join).** Peter
   vroeg of het programma iets voor de site is. Gelezen in zijn Awin-account
   (programma 104589): 6% commissie, feed 731 producten (dagelijks ververst),

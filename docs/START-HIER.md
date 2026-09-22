@@ -138,11 +138,14 @@ weer alleen main. **Alle metingen gedaan, niets stuk.**
      Lokaal gerenderd (app in het geheugen, demodatabase): voorpagina,
      categorie, categorie met merkfilter, zoeken, aanbiedingen, product:
      overal precies één h1, geen kopsprongen, 0 serverfouten.
-     **Na de merge op productie nakijken:** /category/wasmachines (H1 met
-     aantal en vanaf-prijs, intro met drie merken, h2 "N wasmachines"), de
-     LG RT90X8-pagina (H1 "LG RT90X8 - Warmtepompdroger 9 kg 62 dB
-     energielabel B" en de intro-zin), en de voorpagina-kaartjes ("OK. Owm
-     8126 - Wasmachine voorlader 8 kg 1400 rpm 76 dB").
+     **Gemerged als PR #189, uitrol 12:17, op productie gecontroleerd:**
+     /category/wasmachines (H1 "Wasmachines vergelijken: 216 modellen vanaf
+     € 259", intro met AEG/Samsung/Bosch en 31 dalingen, h2 "216
+     wasmachines"), de LG RT90X8-pagina (H1 "LG RT90X8 - Warmtepompdroger
+     9 kg 62 dB energielabel B" plus intro-zin), voorpagina-kaartjes ("OK.
+     Owm 8126 - Wasmachine voorlader 8 kg 1400 rpm 76 dB"), merkpagina en
+     kenmerkpagina: overal één h1, geen kopsprongen, 0 sjabloonsporen,
+     GEZOND, Railway 0 5xx.
      Eerlijk erbij: H1 en meta-omschrijving zijn voor de ranking zwakke
      signalen; de meta-omschrijving telt niet mee voor de positie maar wel
      voor de doorklik, en dat is precies onze hefboom. De meta-reparatie
@@ -166,9 +169,12 @@ leidend voor werkafspraken; lees daar vooral "Fouten direct oplossen".**
 - **Knoppen in Peters accounts** (Merchant Center websitecontrole, Search
   Console indexering, Awin/Daisycon) vragen per sessie een ja in de chat; de
   betrouwbare klikroutes staan in de dagblokken van 19-21 sept.
-- **Vakantie Peter: vrijdag 25 sept t/m vrijdag 2 okt.** Na woensdag 23 sept
-  niets nieuws meer live. In die week geen dagcontrole; UptimeRobot mailt bij
-  storing (twee metingen: site plat / feed of routine stil).
+- **Vakantie Peter: vrijdag 25 sept t/m vrijdag 2 okt.** In die week geen
+  dagcontrole; UptimeRobot mailt bij storing (twee metingen: site plat / feed
+  of routine stil). **Geen vaste grens "na woensdag niets meer live"** (Peter,
+  22 sept): per dag beoordelen of iets nog verantwoord live kan. Maatstaf: kan
+  het een nacht draaien terwijl er nog iemand kijkt? Fouten altijd direct
+  oplossen, ook donderdag.
 
 ### Wat er live staat sinds 18 sept (alles gecontroleerd op productie)
 sitemap-datum bij weer leverbaar (PR #170), `/api/gezondheid` + UptimeRobot
@@ -193,7 +199,8 @@ inhaalslag 566 rijen). Rankingmeting week 39 (#184), oude takken opgeruimd
    Witgoedhuis-ticket (21 sept), De'Longhi en AEG (Awin, 19 sept).
 3. Witgoedhuis-feed: `curl -sI` op de Daisycon-feed-URL (blok 21 sept) →
    beweegt `Last-Modified` (stond op 6 sept)? Zo ja: bouwen na de vakantie.
-4. Woensdag 23 sept: laatste dag voor iets nieuws live. Donderdag alleen kijken.
+4. Vóór de vakantie per dag beoordelen wat nog live kan (geen vaste
+   woensdaggrens meer, zie hierboven).
 5. Optioneel, na Peters ja: de twaalf al-doorgevoerde takken op GitHub
    verwijderen (lijst via `git branch -r`; alle twaalf zitten in main).
 6. Na de vakantie: rankingmeting di 6 okt; SC noindex (239) rond 5-9 okt;
@@ -602,8 +609,8 @@ inhaalslag 566 rijen). Rankingmeting week 39 (#184), oude takken opgeruimd
 **Peter is op vakantie van vrijdag 25 september tot en met vrijdag 2 oktober.**
 In die week: geen dagcontrole, geen MC-knop (afkeuringen lopen naar schatting
 op van 33 naar ~50; herstelt met één klik), rankingmeting van 29 sept schuift
-door. **Na woensdag 23 september niets nieuws meer live zetten**, zodat er een
-dag overblijft om te zien dat alles rustig draait. Betaling Railway: wordt van Peters
+door. ~~Na woensdag 23 september niets nieuws meer live zetten~~ (op 22 sept
+door Peter losgelaten: per dag beoordelen, zie het blok van 22 sept). Betaling Railway: wordt van Peters
 creditcard afgeschreven (door Peter bevestigd 18 sept), dus geen tegoed dat
 op kan raken.
 

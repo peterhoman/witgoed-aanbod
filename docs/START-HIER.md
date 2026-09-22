@@ -79,6 +79,29 @@ weer alleen main. **Alle metingen gedaan, niets stuk.**
 - Proefscript bewaard in de scratchpad van deze sessie
   (`bereikbaarheidsproef.py`: sitemap → N productpagina's → statussen en
   tijden); bij herhaling opnieuw aanmaken, het staat niet in de repo.
+- **Peters vraag (12:30): hebben we een meta-omschrijving en een H1?** Ja,
+  op alle vijf gemeten paginasoorten (voorpagina, product, categorie,
+  /aanbiedingen, kenmerkpagina): titel, meta-omschrijving, precies één H1,
+  canonical, 9 og-tags, robots index/follow. Twee bevindingen:
+  1. **Fout, dezelfde sessie gerepareerd (tak fix/meta-omschrijving-
+     woordgrens):** 11 van 60 categorie-, merk- en filterpagina's hadden een
+     meta-omschrijving die midden in een woord eindigde ("... MediaMarkt,
+     Coolblu", "... Voordeligwitgo"), door een kale `[:160]` op acht plekken
+     in routes/main.py. Nu `_meta_kort()`: afkappen op een woordgrens, geen
+     los "en"/"bij" als laatste woord, punt erachter. `python
+     test_meta_kort.py`: 4 gevallen. Lokaal gerenderd: /category/wasmachines
+     eindigt nu op "Bol.com, MediaMarkt, Coolblue." (155 tekens).
+  2. **Nog niet gedaan, keuze voor Peter: de H1 van productpagina's is de
+     kale feedtitel.** Gemeten op 150 live productpagina's: 25% heeft
+     verkeerde hoofdletters uit de feed ("LG Rt90x8 ... 62 Db", "Haier
+     Hw90-b14939 ... 9 Kg 1400 Rpm"), de mediaan is 60 tekens, de langste
+     250. De `<title>` is al schoon en op zoekgedrag afgestemd ("LG RT90X8
+     droger", uit `zoektitel()` in product_specs.py). Voorstel: H1 =
+     dezelfde schone titel, met de feedtitel als kleinere regel eronder
+     zodat de maten zichtbaar blijven. Kosten: één sjabloonregel plus CSS,
+     geen databasewerk. Eerlijk erbij: H1 en meta-omschrijving zijn voor de
+     ranking zwakke signalen; de meta-omschrijving telt niet mee voor de
+     positie maar wel voor de doorklik, en dat is precies onze hefboom.
 
 ---
 

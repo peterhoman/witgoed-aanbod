@@ -276,6 +276,14 @@ def _paginaweergaven():
         return {'nog_geen_data': str(e)[:120]}
 
 
+def _indexnow_status():
+    try:
+        import indexnow
+        return indexnow.status()
+    except Exception as e:
+        return {'fout': str(e)[:120]}
+
+
 def _bezoekersbronnen():
     """Bezoekersbronnen uit pageviews.py (22 sept 2026); faalt stil zonder tabel."""
     try:
@@ -441,6 +449,11 @@ def sync_status():
         # 'product_per_categorie' is het cijfer om te volgen: hoeveel
         # productpagina's er per categoriepagina worden bekeken.
         'paginaweergaven': _paginaweergaven(),
+        # Laatste IndexNow-ronde (indexnow.py): wanneer, hoeveel adressen,
+        # statuscode per bericht (200/202 = ontvangen).
+        'indexnow': _indexnow_status(),
+
+
         # Waar binnenkomende bezoekers vandaan komen (Google, Bing, AI-
         # assistenten, verwijzende sites, direct), per dag; zie pageviews.py.
         'bezoekersbronnen': _bezoekersbronnen(),

@@ -253,6 +253,24 @@ def start_scheduler(app=None):
             next_run_time=datetime.now(timezone.utc) + timedelta(minutes=3),
         )
 
+    # IndexNow (indexnow.py, 22 sept 2026): Bing dagelijks de adressen melden
+    # waarvan de sitemapdatum gisteren of vandaag is. Vast tijdstip na de
+    # ochtendsyncs (Bol ~05:45, MediaMarkt ~06:10, Coolblue ~06:15 UTC), en
+    # bewust geen interval: een interval-taak vuurt na elke uitrol opnieuw
+    # en zou dan dezelfde adressen meerdere keren per dag melden.
+    if app is not None:
+        from indexnow import meld_gewijzigde_adressen
+        scheduler.add_job(
+            meld_gewijzigde_adressen,
+            'cron',
+            hour=7,
+            minute=30,
+            id='indexnow_job',
+            name='IndexNow: gewijzigde adressen melden',
+            replace_existing=True,
+            args=[app],
+        )
+
     scheduler.start()
     for job in scheduler.get_jobs():
         print(f"[+] {job.name}: eerstvolgende run {job.next_run_time}")

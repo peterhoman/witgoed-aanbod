@@ -1,12 +1,84 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **22 september 2026, middag** (het blok "Overdracht 22 september,
-slot" hieronder is het nieuwste, dan "Dagcontrole 22 september", "21 september (middag)", "Dagcontrole 21 september", "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
+Bijgewerkt **22 september 2026, 12:00** (het blok "Dagcontrole 22 september
+(tweede sessie, 11:10-12:00)" hieronder is het nieuwste, dan "Overdracht 22 september,
+slot", dan "Dagcontrole 22 september", "21 september (middag)", "Dagcontrole 21 september", "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
 "Dagcontrole 18 september", daaronder "Dagcontrole 17 september (middag)"
 hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 22 september (tweede sessie, 11:10-12:00) — alles gezond; "kan niet worden bereikt" nu ~20 per dag
+
+Nieuwe sessie gestart om 11:10 NL, twee minuten nadat Peter PR #186 (de
+overdracht) doorvoerde; die merge gaf een nieuwe uitrol om 11:08. Lokaal staat
+weer alleen main. **Alle metingen gedaan, niets stuk.**
+
+- **`/api/gezondheid`: GEZOND**, 10 van 10, prijsbewegingen Bol/Coolblue/
+  MediaMarkt alle drie ~3 uur oud. Leverbaar 2.903. Prijssprongen 6, 0
+  teruggesprongen (het logboek meldt één sprong >50%, EAN 5038061142860
+  150→74, feed zegt 74,32: echte daling, geen fout). Tekstwachtrij 0, sleutel
+  aanwezig. Winkelbijdrage `niet_ververst_3d`: Bol 355 en EP 632 zijn de
+  bekende oude rijen (EP-feed is sinds augustus een selectie, 354 van 996 in
+  de nachtsync), rest 0. Sjabloonsporen op de LG RT90X8-pagina: 0.
+- **Railway:** 0 serverfouten in 24 uur, p99 152 ms (nacht) en 58 ms (ochtend).
+  **De uitschieter van 7,6 s van de twee vorige dagen is weg**; niets uit te
+  zoeken. Geen WORKER TIMEOUT of Traceback in de logs van de drie uitrollen
+  van vandaag. CPU 0,1%, geheugen max 575 MB van 8 GB.
+  Let op bij `railway metrics`: `--since 1d` weigert ("stepSeconds must be at
+  least 87"), gebruik twee vensters `--since 24h --until 12h` en `--since 12h`.
+  `railway logs --http` geeft alleen de lopende uitrol; na een merge is de
+  nacht dus niet meer terug te lezen. Oudere uitrollen wel: `railway logs -d
+  <uitrol-id> -n 5000` (20000 weigert).
+- **EPREL-inhaalslag is begonnen en werkt.** Om 11:10 stond `/api/eprel` nog
+  op `tumbledriers` 71 (laatste ronde 08:13 NL, vóór de uitrol van #183) en
+  verwees de LG RT90X8-pagina nog naar het oude register. De ronde van
+  11:15 NL (de planner draait elke **3** uur, niet 6; volgende 14:13, 17:13,
+  20:13 …) ververste 100 rijen: nu `tumbledriers` 27, **`tumbledryers20232534`
+  72**. De LG RT90X8-pagina toont weer een regel "Energieklasse **B**" en
+  verwijst naar `tumbledryers20232534/2386548` (nieuw register, nieuwe
+  schaal). De resterende 466 rijen (566 - 100) gaan in ~5 rondes van 100,
+  dus klaar rond woensdagochtend 23 sept ~02:15. Nakijken morgen: staat
+  `tumbledriers` op 0 en zijn er in de Merchant-feed drogers mét klasse?
+- **Merchant Center (gelezen via Peters Chrome, geen knop gebruikt):**
+  "productpagina niet beschikbaar" **15 → 9 → 1** (alleen nog de Sharp
+  R-982 combi-magnetron; de websitecontrole van vanochtend heeft gewerkt).
+  Niet goedgekeurd 44 waarvan 42 verborgen = 2 van ons. Wordt beoordeeld 29
+  (27 verborgen). Goedgekeurd 2,93K (+179 in een week). Klikken 142 in 28
+  dagen. De vier "oplossingen": productpagina niet beschikbaar 1, prijs
+  ontbreekt 42 (verborgen, Google's eigen vondsten), availability 9, foto 1.
+  De tabel op de diagnostiekpagina is virtueel: tellen via JavaScript op
+  `innerText` ziet maar ~7 rijen; lees de kaartjes "Alle oplossingen tonen".
+- **Search Console:** geïndexeerd 2,68K; niet geïndexeerd 1,56K. **Noindex
+  239 → 282** (Google verwerkt de sitemap-datumfix van 18 sept in weken; pas
+  rond 5-9 okt beoordelen, zoals afgesproken). 5xx 9 (oud), 404 71, gevonden-
+  niet-geïndexeerd 1.088 (was 1.243).
+- **"De pagina kan niet worden bereikt" gemeten uit alle 362 voorbeelden**
+  (90 dagen, JavaScript op de tabel): tot 8 sept 0-5 per dag, daarna elke
+  dag 10-27: 12 sept 27, 13: 25, 14: 19, 15: 21, 16: 5, 17: 19, 18: 19,
+  19: 23, 20: 24 (21 sept nog onvolledig). Totaal 407 in 90 dagen (14 sept
+  stond de teller op 208). Verdeling over de uren van de dag is vlak (4-23
+  per uur over 90 dagen, geen piek rond de nachtsyncs), 337 van 362 zijn
+  productpagina's. **Het hangt dus niet aan de feedroutines.** Tegelijk
+  UptimeRobot 100% (twee meters, 0 incidenten), Railway 0 5xx, en een
+  eigen proef van 300 productpagina's met 6 gelijktijdige verbindingen
+  (24 verzoeken/s) gaf 300× 200, mediaan 0,24 s, max 0,57 s. DNS: alleen
+  IPv4 via CNAME naar Railway, geen IPv6-record (dus geen IPv6-verklaring).
+  Merchant Center heeft er intussen geen last meer van (1 product). Geen
+  nieuwe actie voorgesteld; dit is dezelfde open vraag als 14 sept, alleen
+  met een hogere teller. Het crawlvolume steeg in september ook (pieken
+  tot 3K/dag in de grafiek), de verhouding is niet uit de tabel te halen.
+- **Witgoedhuis-feed (Daisycon):** `Last-Modified` nog steeds 6 september,
+  3.776 records. Niet bouwen.
+- **Mail (pfmhoman):** niets van de winkels, Daisycon/Witgoedhuis, De'Longhi,
+  AEG, TradeTracker of Awin. Alleen een UptimeRobot-reclame. Peter moet
+  peter@avantius.nl nog nakijken.
+- Proefscript bewaard in de scratchpad van deze sessie
+  (`bereikbaarheidsproef.py`: sitemap → N productpagina's → statussen en
+  tijden); bij herhaling opnieuw aanmaken, het staat niet in de repo.
 
 ---
 

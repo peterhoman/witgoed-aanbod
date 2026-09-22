@@ -64,6 +64,26 @@ def _category_facets(category):
     return data
 
 
+def _meta_kort(tekst, maxlen=160):
+    """Meta-omschrijving inkorten op een woordgrens, met een punt erachter.
+
+    Tot 22 september stond hier overal een kale `[:160]`. Gemeten op 60
+    categorie-, merk- en filterpagina's op productie: 11 omschrijvingen
+    eindigden midden in een woord ("... MediaMarkt, Coolblu"), omdat de
+    opsomming van zeven winkels de tekst over de 160 tekens duwt. Google
+    toont zo'n fragment letterlijk, afgebroken woord en al.
+    """
+    tekst = ' '.join((tekst or '').split())
+    if len(tekst) <= maxlen:
+        return tekst
+    kort = tekst[:maxlen - 1].rsplit(' ', 1)[0].rstrip(' ,;:-\u2013\u2014')
+    # Geen los voegwoord of voorzetsel als laatste woord.
+    for staart in (' en', ' o.a.', ' bij', ' van', ' met', ' of', ' de', ' het'):
+        if kort.endswith(staart):
+            kort = kort[:-len(staart)].rstrip(' ,;:')
+    return kort.rstrip('.') + '.'
+
+
 def _category_meta_description(category, products):
     """Unieke meta-description per categorie: aantal, merken en vanaf-prijs.
 
@@ -90,7 +110,7 @@ def _category_meta_description(category, products):
     if prices:
         parts.append(f"al vanaf € {min(prices):.0f}".replace('.', ','))
     tekst = ' '.join(parts) + f". Vind de laagste prijs bij o.a. {winkel_opsomming()}."
-    return tekst[:160]
+    return _meta_kort(tekst)
 
 
 def _category_structured_data(category, page_products, extra_crumb=None, list_name=None):
@@ -2633,9 +2653,9 @@ def category_brand(slug, merk_slug):
     intro = (f"We volgen momenteel {match['count']} {merk}-modellen in de categorie "
             f"{naam_lower}. Bekijk per model de actuele prijs bij onze aangesloten "
             f"winkels, plus het prijsverloop over tijd.")
-    meta_description = (f"Vergelijk {match['count']} {merk} {naam_lower} op prijs. "
+    meta_description = _meta_kort(f"Vergelijk {match['count']} {merk} {naam_lower} op prijs. "
                         f"Bekijk actuele prijzen en prijsverloop bij "
-                        f"{winkel_opsomming()}.")[:160]
+                        f"{winkel_opsomming()}.")
 
     return _render_facet_page(
         category, Product.brand.ilike(merk), merk,
@@ -2671,9 +2691,9 @@ def category_energielabel(slug, letter):
     else:
         intro = (f"Dit zijn de {aantal} modellen met energielabel {letter} in onze "
                  f"{naam_lower}-vergelijker, met de actuele prijs per winkel.")
-    meta_description = (f"Energielabel {letter} {naam_lower} vergelijken: {aantal} "
+    meta_description = _meta_kort(f"Energielabel {letter} {naam_lower} vergelijken: {aantal} "
                         f"{'model' if aantal == 1 else 'modellen'} op prijs, bij "
-                        f"{winkel_opsomming()}.")[:160]
+                        f"{winkel_opsomming()}.")
 
     return _render_facet_page(
         category, Product.specs[energie_facet['key']].as_string().ilike(f"{letter}%"),
@@ -2714,8 +2734,8 @@ def category_subtype(slug, waarde_slug):
     naam_lower = category.name.lower()
     intro = (f"We volgen momenteel {match['count']} {waarde.lower()}s in de categorie "
             f"{naam_lower}. Bekijk per model de actuele prijs bij onze aangesloten winkels.")
-    meta_description = (f"{waarde} {naam_lower} vergelijken: {match['count']} modellen op prijs "
-                        f"bij {winkel_opsomming()}.")[:160]
+    meta_description = _meta_kort(f"{waarde} {naam_lower} vergelijken: {match['count']} modellen op prijs "
+                        f"bij {winkel_opsomming()}.")
 
     return _render_facet_page(
         category, Product.specs[spec_key].as_string() == waarde, waarde,
@@ -2773,9 +2793,9 @@ def category_winkel(slug, winkel):
              f"{label}. Bij elk model staat de laagste actuele prijs van al "
              f"onze aangesloten winkels — zo zie je direct of {label} de "
              f"goedkoopste is, of dat een andere winkel minder vraagt.")
-    meta_description = (f"{category.name} bij {label}: vergelijk {aantal} "
+    meta_description = _meta_kort(f"{category.name} bij {label}: vergelijk {aantal} "
                         f"modellen op prijs en zie direct of {label} of een "
-                        f"andere winkel de goedkoopste is.")[:160]
+                        f"andere winkel de goedkoopste is.")
 
     return _render_facet_page(
         category,
@@ -2870,9 +2890,9 @@ def category_kenmerk(slug, veld, stap_slug):
              f"energielabelregister (EPREL) van de Europese Commissie; bij "
              f"elk model staat de laagste actuele prijs van onze "
              f"aangesloten winkels.")
-    meta_description = (f"{kop} vergelijken: {aantal} modellen op prijs, met "
+    meta_description = _meta_kort(f"{kop} vergelijken: {aantal} modellen op prijs, met "
                         f"specificaties uit het officiële EU-energieregister "
-                        f"(EPREL).")[:160]
+                        f"(EPREL).")
 
     return _render_facet_page(
         category, Product.id.in_(info['ids']), stap['label'],
@@ -2923,7 +2943,7 @@ def category_zoekkenmerk(slug, kenmerk_slug):
              f"staat de laagste actuele prijs van onze aangesloten winkels.")
     return _render_facet_page(
         category, Product.id.in_(ids), definitie['label'],
-        definitie['kop'], definitie['meta'][:160], intro,
+        definitie['kop'], _meta_kort(definitie['meta']), intro,
         facet_uitleg=definitie['uitleg'], kenmerk_video=definitie.get('video'),
         facet_paginatitel=definitie.get('paginatitel'),
     )
@@ -3055,8 +3075,8 @@ def brand_detail(merk_slug):
     intro = (f"We vergelijken momenteel {match['aantal']} {merk}-producten"
             + (f", verdeeld over {len(categorieen)} categorieën: {', '.join(categorieen[:6])}."
                if categorieen else "."))
-    meta_description = (f"Vergelijk {match['aantal']} {merk}-producten op prijs bij "
-                        f"{winkel_opsomming()}.")[:160]
+    meta_description = _meta_kort(f"Vergelijk {match['aantal']} {merk}-producten op prijs bij "
+                        f"{winkel_opsomming()}.")
 
     site_url = current_app.config['SITE_URL']
     structured_data = [{

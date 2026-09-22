@@ -9,6 +9,13 @@
 {% block title %}Pers: prijsonderzoek witgoed 2026 | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}Persinformatie over het prijsonderzoek van WitgoedAanbod.nl: hetzelfde apparaat scheelt gemiddeld 53 euro tussen Nederlandse winkels (1.136 apparaten, 7 winkels, stand 22 september 2026). Met grafiek, achtergrond en contact.{% endblock %}
 
+{# De persgrafiek als deelafbeelding van deze pagina (22 sept): wie /pers
+   deelt of in Discover ziet, krijgt de grafiek in plaats van het algemene
+   sitebeeld. #}
+{% block og_image %}{{ config.SITE_URL }}/static/img/pers/prijsverschillen-per-categorie-2026-09-22.png{% endblock %}
+{% block og_image_width %}1600{% endblock %}
+{% block og_image_height %}900{% endblock %}
+
 {% block structured_data %}
 <script type="application/ld+json">
 {

@@ -90,8 +90,8 @@ weer alleen main. **Alle metingen gedaan, niets stuk.**
      stoomoven), een staafdiagram om te downloaden (PNG 1600×900 en SVG in
      static/img/pers/, gemaakt met Pillow, script in de scratchpad van deze
      sessie), cijfertabel, "hoe wij meten", "Over WitgoedAanbod.nl", en
-     contact **Peter Homan, oprichter, pfmhoman@gmail.com** (adres zoals de
-     specialist het met Peter afsprak; geen telefoonnummer). CC BY 4.0,
+     contact **Peter Homan, oprichter, info@witgoedaanbod.nl** (Peter koos
+     dit adres op 22 sept boven zijn Gmail-adres; geen telefoonnummer). CC BY 4.0,
      zelfde licentie als de Dataset op de onderzoekspagina. Bewust niet
      live: een persbericht dat hierheen verwijst moet na een week nog
      kloppen; de levende versie is /onderzoek/prijsverschillen-witgoed.

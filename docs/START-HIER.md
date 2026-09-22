@@ -1,12 +1,81 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **22 september 2026** (het blok "Dagcontrole 22 september" hieronder
-is het nieuwste, dan "21 september (middag)", "Dagcontrole 21 september", "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
+Bijgewerkt **22 september 2026, middag** (het blok "Overdracht 22 september,
+slot" hieronder is het nieuwste, dan "Dagcontrole 22 september", "21 september (middag)", "Dagcontrole 21 september", "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
 "Dagcontrole 18 september", daaronder "Dagcontrole 17 september (middag)"
 hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Overdracht 22 september, slot (middag) — laatste stand vóór de nieuwe sessie
+
+**Het gesprek van 17-22 september zit op 77% en is afgesloten. Dit blok +
+de dagblokken van 18-22 september hieronder zijn samen de complete stand.
+MEMORY.md in de Claude-projectmap draagt dezelfde feiten compact en is
+leidend voor werkafspraken; lees daar vooral "Fouten direct oplossen".**
+
+### Vaste regels die deze week zijn bijgekomen
+- **Fouten direct oplossen** (Peter, 21 sept): een gevonden fout dezelfde
+  sessie meten, bouwen, testen en klaarzetten. Nooit "morgen" of "na de
+  vakantie". Nieuwe functies en ontwerpkeuzes wél eerst voorleggen.
+- **Peter belt niet** (19 sept): contact met winkels en redacties alleen per
+  e-mail; na ~2 weken stilte één herinnering als .txt op het bureaublad.
+- **Knoppen in Peters accounts** (Merchant Center websitecontrole, Search
+  Console indexering, Awin/Daisycon) vragen per sessie een ja in de chat; de
+  betrouwbare klikroutes staan in de dagblokken van 19-21 sept.
+- **Vakantie Peter: vrijdag 25 sept t/m vrijdag 2 okt.** Na woensdag 23 sept
+  niets nieuws meer live. In die week geen dagcontrole; UptimeRobot mailt bij
+  storing (twee metingen: site plat / feed of routine stil).
+
+### Wat er live staat sinds 18 sept (alles gecontroleerd op productie)
+sitemap-datum bij weer leverbaar (PR #170), `/api/gezondheid` + UptimeRobot
+(#172, #180 bevroren-feed-controle), energielabels drogers (#182) en de
+volledige EPREL-reparatie (#183: hele klasse in de feed, botsende labels,
+nieuw drogerregister `tumbledryers20232534`, exacte treffer, koppeling_klopt,
+inhaalslag 566 rijen). Rankingmeting week 39 (#184), oude takken opgeruimd
+(#185 en de tak van 22 sept).
+
+### Wat de nieuwe sessie doet, in volgorde
+1. **Dagcontrole** (lijst "Elke dag: de storingscontrole"), plus:
+   - `/api/eprel` → per productgroep moet `tumbledryers20232534` verschijnen
+     en `tumbledriers` (was 71) slinken; de inhaalslag van 566 rijen loopt in
+     rondes van 100 (~6 uur per ronde) en is ~woensdagochtend klaar. Een
+     drogerpagina (bv. /product/lg-rt90x8-...-8806096198186) hoort weer een
+     energieklasse te tonen, nu B of C. Blijft `tumbledriers` op 71 staan: dan
+     draait de inhaalslag niet; kijk in `railway logs` naar "eprel".
+   - Railway p99: twee dagen op rij één uitschieter van 7,6 s. Vandaag weer?
+     Dan met `railway logs --http` het trage adres opzoeken (fout = oplossen).
+   - Merchant Center-knop (9 afkeuringen op 22 sept; ja vragen).
+2. Gmail (pfmhoman) én Peter vragen naar peter@avantius.nl: winkels (17 sept),
+   Witgoedhuis-ticket (21 sept), De'Longhi en AEG (Awin, 19 sept).
+3. Witgoedhuis-feed: `curl -sI` op de Daisycon-feed-URL (blok 21 sept) →
+   beweegt `Last-Modified` (stond op 6 sept)? Zo ja: bouwen na de vakantie.
+4. Woensdag 23 sept: laatste dag voor iets nieuws live. Donderdag alleen kijken.
+5. Optioneel, na Peters ja: de twaalf al-doorgevoerde takken op GitHub
+   verwijderen (lijst via `git branch -r`; alle twaalf zitten in main).
+6. Na de vakantie: rankingmeting di 6 okt; SC noindex (239) rond 5-9 okt;
+   kenmerkpagina's beoordelen rond 11 okt; UptimeRobot-uitkomst rond 1 okt;
+   herinnering aan de winkels week van 5 okt; De'Longhi-spelling ("delonghi"
+   33 / "de'longhi" 27) nakijken; /aanbiedingen-categorie die rond de
+   ondergrens van 5 wisselt.
+
+### Valkuilen van deze week (allemaal zelf gemaakt)
+- Beweer niets over wat de code doet zonder het in de code te lezen (de
+  klep-bewering van 19 sept was fout, gecorrigeerd 21 sept).
+- Steekproeven tegen een winkelsite: los .py-script met urllib en pauze,
+  nooit shellvariabelen in `python -c` (brak op een \r).
+- Windows-console: `PYTHONIOENCODING=utf-8` vóór python-aanroepen die
+  é/→ printen, anders een codec-fout.
+- Merchant Center: knoppen via `javascript_tool` `.click()` op het `article`
+  met de probleemtekst; `find` alleen voor de bevestigknop in het venster.
+- Search Console URL-inspectie: veld pakt tekst pas na klik op coördinaat
+  (600, 27); na meerdere inspecties staan er meerdere gelijknamige knoppen,
+  neem de laatste.
+- Google's AI-lijst "top 10 vergelijkers" is een samenvatting van
+  vermeldingen elders, geen meting (blok in memory: knibble-slimster).
 
 ---
 
@@ -37,6 +106,19 @@ leidend voor werkafspraken.
   prijsvergelijkers" niet in de top 20. De gemailde winkels staan zelf op
   pagina 1-2. Volgende meting: dinsdag 6 oktober (29 sept valt in de
   vakantie).
+- **Takken opgeruimd (22 sept, na Peters ja):** 154 lokale takken die volledig
+  in main zaten verwijderd; de zes nooit-doorgevoerde één voor één bekeken en
+  alle zes overbodig: docs/rankingmeting-wekelijks (inhoud overgenomen, zie
+  hierboven), fix/tekstroutine-onthoudt-wanneer en docs/dagelijks-controleren
+  (geen verschil met main), fix/fotos-eigen-domein (plan B van 13 aug: foto's
+  via ons eigen domein; niet nodig, de feed gebruikt wsrv en Merchant Center
+  keurt 2,91K goed), fix/robots-uitsluitingen (oude versie van setprijs.py;
+  main heeft de nieuwere met de setvergelijking), docs/start-hier-12-september
+  (blok staat al op main). Lokaal staat nu alleen main. Op GitHub staan nog
+  twaalf takken van al doorgevoerde PR's (GitHub bewaart die na een merge);
+  die zitten volledig in main en doen niets.
+  **Wie in oude gesprekken een taknaam tegenkomt: die bestaat niet meer, de
+  inhoud zit in main of was achterhaald.**
 - Mail: niets van winkels, Daisycon/Witgoedhuis, De'Longhi, AEG. CookieYes
   (reclame voor een betaalde cookiebanner met Claude-koppeling): niet nodig,
   de site heeft een eigen cookievenster en zet geen volgcookies.

@@ -120,6 +120,36 @@ weer alleen main. **Alle metingen gedaan, niets stuk.**
   /sitemap-overig.xml. Daarna de specialist-chat berichten dat het live
   staat (Peter mailt de redacties zelf, max 5 per dag; zie linkplan 17
   sept).
+- **Bezoekersbron in de eigen teller gebouwd (avond, tak feat/bezoekersbron),
+  na Peters ja via de specialist-chat; zijn merge is de bevestiging.** Vraag
+  van het linkplan: welke zoekmachine, AI-assistent of verwijzende site
+  levert bezoekers op? Antwoord van deze sessie op de vragen van die chat
+  (netwerken per winkel, meting, IndexNow, robots, schema) staat in het
+  bericht van 22 sept avond; gekozen: **geen GA4, geen Umami**, wel de eigen
+  teller uitbreiden. Gebouwd:
+  - Nieuwe tabel `bezoekersbronnen` (models.Bezoekersbron: datum, bron,
+    domein, aantal; create_all maakt hem aan bij de eerste uitrol).
+  - `pageviews.bezoekersbron(headers)`: uit Referer en Sec-Fetch-Site, alleen
+    bij binnenkomst van buiten. Bronnen: google (alle landen + Android-app),
+    gemini, bing, copilot, duckduckgo, yahoo, ecosia, chatgpt (chatgpt.com/
+    openai.com), perplexity, claude, ai-overig, zoekmachine-overig,
+    verwijzing (met domein zonder www.), app, direct (Sec-Fetch-Site none),
+    extern-onbekend (cross-site zonder Referer), zonder-secfetch (geen
+    Sec-Fetch-koppen én geen Referer = vrijwel zeker een programma).
+    Navigatie binnen de site (same-origin of eigen domein) telt niet.
+    Bing Chat op bing.com/chat is niet van Bing zoeken te onderscheiden
+    (browsers sturen alleen de oorsprong mee), dus dat valt onder bing.
+  - Zelfde buffer- en drempelmechanisme als de paginaweergaven (25), zelfde
+    botfilter op user-agent; geen IP, cookie, sessie of user-agent bewaard.
+  - Uitlezen: `/api/sync-status` → `bezoekersbronnen` = per_dag (nieuwste
+    eerst, totaal + per bron) en verwijzende_sites (top 40 domeinen over 14
+    dagen). `python test_bezoekersbron.py`: 27 gevallen. Lokale proef met 32
+    nagebootste bezoeken: google 8, verwijzing 4 (tweakers.net), chatgpt 4,
+    direct 4, zonder-secfetch 4; same-origin en python-requests niet geteld.
+  **Na de merge:** in `railway logs` kijken of er geen fout op de nieuwe
+  tabel staat, en de volgende dag `bezoekersbronnen` op /api/sync-status
+  lezen. Verwachting: google veruit het grootst; de eerste 'verwijzing'-
+  domeinen laten zien welke linkplaatsingen werken.
 - **SMEG NL via Awin aangevraagd (14:00, Peter klikte zelf op Join).** Peter
   vroeg of het programma iets voor de site is. Gelezen in zijn Awin-account
   (programma 104589): 6% commissie, feed 731 producten (dagelijks ververst),

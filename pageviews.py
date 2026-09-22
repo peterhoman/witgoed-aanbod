@@ -13,14 +13,105 @@ productpagina zijn gaan wijzen.
 De tellingen worden gebufferd in het geheugen en periodiek weggeschreven, zodat
 een paginaweergave geen extra databaseschrijfactie kost.
 """
+import re
 import threading
 from datetime import date
+from urllib.parse import urlsplit
 
 # Buffer: {(datum, soort): aantal}. Wordt leeggeschreven zodra hij groot
 # genoeg is; een slot omdat gunicorn met meerdere threads draait.
 _buffer = {}
+# Zelfde idee voor de bezoekersbron: {(datum, bron, domein): aantal}.
+_bron_buffer = {}
 _slot = threading.Lock()
 _DREMPEL = 25
+
+# ---------------------------------------------------------------------------
+# Bezoekersbron (22 september 2026). Vraag van het linkplan: welke zoekmachine,
+# AI-assistent of verwijzende site levert bezoekers op? Het antwoord staat in
+# de Referer-kop van het eerste verzoek van een bezoek. Geteld aan de
+# serverkant, per (dag, bron, domein), zonder iets over de persoon te
+# bewaren; daarom geen toestemming en geen cookiebalk. Google Analytics zou
+# de balk terugbrengen en dan alleen meten wie ja zegt; dit meet iedereen.
+# ---------------------------------------------------------------------------
+_EIGEN_DOMEIN = 'witgoedaanbod.nl'
+
+# Vaste bronnen, op volgorde van controle: specifiek vóór algemeen (Gemini
+# vóór Google, Copilot vóór Microsoft). Een regel is (bron, test op de
+# hostnaam zonder "www.").
+_GOOGLE = re.compile(r'(^|\.)google\.[a-z]{2,3}(\.[a-z]{2})?$')
+_BRONNEN = (
+    ('gemini',      lambda h: h in ('gemini.google.com', 'bard.google.com')),
+    ('google',      lambda h: bool(_GOOGLE.match(h)) or h == 'com.google.android.googlequicksearchbox'),
+    ('copilot',     lambda h: h in ('copilot.microsoft.com', 'copilot.cloud.microsoft')),
+    # Bing Chat/Copilot op bing.com/chat is niet te onderscheiden van Bing
+    # zoeken: browsers sturen bij een sprong naar een andere site alleen de
+    # oorsprong (https://www.bing.com/) mee, niet het pad.
+    ('bing',        lambda h: h == 'bing.com' or h.endswith('.bing.com')),
+    ('duckduckgo',  lambda h: h == 'duckduckgo.com' or h.endswith('.duckduckgo.com')),
+    ('yahoo',       lambda h: h == 'yahoo.com' or '.yahoo.' in ('.' + h) or h.endswith('.yahoo.com')),
+    ('ecosia',      lambda h: h == 'ecosia.org' or h.endswith('.ecosia.org')),
+    ('chatgpt',     lambda h: h in ('chatgpt.com', 'openai.com') or h.endswith('.chatgpt.com') or h.endswith('.openai.com')),
+    ('perplexity',  lambda h: h == 'perplexity.ai' or h.endswith('.perplexity.ai')),
+    ('claude',      lambda h: h in ('claude.ai', 'anthropic.com') or h.endswith('.claude.ai') or h.endswith('.anthropic.com')),
+    ('ai-overig',   lambda h: any(h == d or h.endswith('.' + d) for d in
+                                  ('you.com', 'mistral.ai', 'meta.ai', 'grok.com', 'x.ai',
+                                   'deepseek.com', 'poe.com', 'character.ai', 'kagi.com'))),
+    ('zoekmachine-overig', lambda h: any(h == d or h.endswith('.' + d) for d in
+                                         ('startpage.com', 'qwant.com', 'search.brave.com', 'brave.com',
+                                          'seznam.cz', 'baidu.com', 'ask.com', 'aol.com'))
+                                    or bool(re.match(r'(^|\.)yandex\.[a-z]{2,3}$', h))),
+)
+
+BRON_DIRECT = 'direct'
+BRON_VERWIJZING = 'verwijzing'
+BRON_EXTERN_ONBEKEND = 'extern-onbekend'
+BRON_ZONDER_SECFETCH = 'zonder-secfetch'
+BRON_APP = 'app'
+
+
+def _host(referer):
+    """Hostnaam uit een Referer, zonder "www." en poort; leeg als er niets is."""
+    try:
+        delen = urlsplit(referer.strip())
+    except Exception:
+        return '', ''
+    host = (delen.hostname or '').lower()
+    if host.startswith('www.'):
+        host = host[4:]
+    return host, delen.scheme.lower()
+
+
+def bezoekersbron(headers):
+    """(bron, domein) voor een binnenkomende paginaweergave, of None als dit
+    geen binnenkomst is (navigatie binnen de site zelf).
+
+    Alleen de koppen van het verzoek: Referer en Sec-Fetch-Site. Elke
+    browser stuurt bij een sprong van een andere site de oorsprong mee
+    (https://www.google.com/), tenzij de andere site dat verbiedt; dan komt
+    de bezoeker in 'extern-onbekend'. Zonder Sec-Fetch-koppen is het vrijwel
+    zeker een programma (zie bron() hieronder); dat gaat in een eigen bakje
+    zodat 'direct' niet vervuild raakt.
+    """
+    modus = headers.get('Sec-Fetch-Mode')
+    plek = (headers.get('Sec-Fetch-Site') or '').lower()
+    referer = headers.get('Referer') or ''
+    host, schema = _host(referer)
+
+    if modus is None and not referer:
+        return (BRON_ZONDER_SECFETCH, '')
+    if plek == 'same-origin' or (host and (host == _EIGEN_DOMEIN or host.endswith('.' + _EIGEN_DOMEIN))):
+        return None
+    if not host:
+        if plek in ('cross-site', 'same-site'):
+            return (BRON_EXTERN_ONBEKEND, '')
+        return (BRON_DIRECT, '')
+    for bron, test in _BRONNEN:
+        if test(host):
+            return (bron, '')
+    if schema == 'android-app':
+        return (BRON_APP, host[:120])
+    return (BRON_VERWIJZING, host[:120])
 
 # Bots tellen niet mee: die bezoeken alles en zeggen niets over of een mens
 # dieper de site in komt.
@@ -229,17 +320,31 @@ def registreer(app):
                 if kort:
                     sleutels.append((vandaag, 'product-' + kort))
 
+            # Waar komt de bezoeker vandaan? Alleen bij binnenkomst van
+            # buiten (of zonder verwijzer); navigatie binnen de site telt
+            # niet, anders zou elke klik op een kaartje een 'verwijzing'
+            # van onszelf zijn.
+            herkomst = bezoekersbron(request.headers)
+
             tellingen = None
+            brontellingen = None
             with _slot:
                 for sleutel in sleutels:
                     _buffer[sleutel] = _buffer.get(sleutel, 0) + 1
+                if herkomst:
+                    bsleutel = (vandaag,) + herkomst
+                    _bron_buffer[bsleutel] = _bron_buffer.get(bsleutel, 0) + 1
                 if sum(_buffer.values()) >= _DREMPEL:
                     tellingen = dict(_buffer)
                     _buffer.clear()
+                    brontellingen = dict(_bron_buffer)
+                    _bron_buffer.clear()
             # Buiten het slot wegschrijven: de database mag geen andere
             # verzoeken laten wachten.
             if tellingen:
                 _wegschrijven(tellingen)
+            if brontellingen:
+                _wegschrijven_bronnen(brontellingen)
         except Exception:
             # Een teller mag nooit een pagina stukmaken.
             pass
@@ -258,6 +363,53 @@ def _wegschrijven(tellingen):
         db.session.commit()
     except Exception:
         db.session.rollback()
+
+
+def _wegschrijven_bronnen(tellingen):
+    from models import db, Bezoekersbron
+    try:
+        for (datum, bron, domein), aantal in tellingen.items():
+            rij = Bezoekersbron.query.filter_by(datum=datum, bron=bron, domein=domein).first()
+            if rij:
+                rij.aantal += aantal
+            else:
+                db.session.add(Bezoekersbron(datum=datum, bron=bron, domein=domein, aantal=aantal))
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+
+
+def overzicht_bronnen(dagen=14):
+    """Bezoekersbronnen per dag (nieuwste eerst) plus de verwijzende sites
+    over de hele periode. Voor /api/sync-status."""
+    from datetime import timedelta
+    from models import Bezoekersbron
+
+    vanaf = date.today() - timedelta(days=dagen)
+    rijen = Bezoekersbron.query.filter(Bezoekersbron.datum >= vanaf).all()
+
+    per_dag = {}
+    sites = {}
+    for r in rijen:
+        dag = per_dag.setdefault(str(r.datum), {})
+        dag[r.bron] = dag.get(r.bron, 0) + r.aantal
+        if r.bron in (BRON_VERWIJZING, BRON_APP) and r.domein:
+            sites[r.domein] = sites.get(r.domein, 0) + r.aantal
+
+    uit = []
+    for datum in sorted(per_dag, reverse=True):
+        bronnen = per_dag[datum]
+        uit.append({'datum': datum, 'totaal': sum(bronnen.values()),
+                    **dict(sorted(bronnen.items(), key=lambda kv: -kv[1]))})
+    return {
+        'uitleg': ('Binnenkomende paginaweergaven per bron per dag, uit de Referer-kop; '
+                   'navigatie binnen de site telt niet mee. verwijzing = andere site '
+                   '(zie verwijzende_sites), direct = geen verwijzer, extern-onbekend = '
+                   'van buiten maar zonder verwijzer, zonder-secfetch = vrijwel zeker een programma.'),
+        'per_dag': uit,
+        'verwijzende_sites': [{'domein': d, 'aantal': n}
+                              for d, n in sorted(sites.items(), key=lambda kv: -kv[1])[:40]],
+    }
 
 
 def overzicht(dagen=14):

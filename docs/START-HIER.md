@@ -96,8 +96,16 @@ weer alleen main. **Alle metingen gedaan, niets stuk.**
      live: een persbericht dat hierheen verwijst moet na een week nog
      kloppen; de levende versie is /onderzoek/prijsverschillen-witgoed.
   2. **/over-ons**: nieuw blok "Wie zit erachter?" (anker #peter) met
-     Peter Homan, oprichter, twintig jaar bij Avantius, waarom de
-     vergelijker; `founder` (Person) in het Organization-schema. **Geen
+     Peter Homan, oprichter, en waarom de vergelijker; `founder` (Person)
+     in het Organization-schema. **Feit gecorrigeerd dezelfde avond (tak
+     fix/avantius-sinds-2007, via de specialist-chat van Peter): Avantius
+     bestaat sinds 2007 en verkoopt zelf GEEN witgoed.** De oude claim
+     "ruim 20 jaar in huishoudelijke apparaten / witgoed is ons dagelijks
+     werk" stond al sinds de eerste over-ons-tekst en was overgenomen op
+     /pers en boven elke gids. Overal nu dezelfde formulering: "familiebedrijf
+     uit Sassenheim dat sinds 2007 bestaat; Avantius verkoopt zelf geen
+     witgoed, daardoor kan de vergelijker onafhankelijk zijn." Nooit meer
+     "20 jaar" schrijven. **Geen
      foto**: Peter heeft er geen aangeleverd; komt erbij als hij dat wil.
   3. **Gidsen en blog** (guide_detail.html): zichtbaar "Door Peter Homan,
      oprichter ..." met link naar /over-ons#peter, en in het Article-schema

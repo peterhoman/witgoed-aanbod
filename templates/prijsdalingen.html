@@ -32,7 +32,7 @@
                 {% endif %}
             </a>
             <div class="daling-tekst">
-                <a href="/product/{{ d.product.slug|urlencode }}" class="daling-titel">{{ d.product.title }}</a>
+                <a href="/product/{{ d.product.slug|urlencode }}" class="daling-titel">{{ d.product.title|nette_titel }}</a>
                 <div class="daling-prijs">
                     <span class="daling-badge">-{{ d.pct_rond }}%</span>
                     <span class="daling-van">&euro; {{ d.van|euro }}</span>

@@ -372,6 +372,13 @@ def create_app(config_name=None):
         afgekapt = tekst[:lengte].rsplit(' ', 1)[0]
         return afgekapt.rstrip(' -–—,;:/|') + '…'
 
+    @app.template_filter('nette_titel')
+    def nette_titel_filter(value):
+        """Feedtitel opgeknapt voor koppen: "LG Rt90x8 ... 62 Db" wordt
+        "LG RT90X8 ... 62 dB". Zie titel_netjes.py (22 september)."""
+        from titel_netjes import nette_titel
+        return nette_titel(value)
+
     @app.template_filter('levertijd_kort')
     def levertijd_kort_filter(value):
         """De levertijd in twee of drie woorden, of leeg als we het niet zeker weten.

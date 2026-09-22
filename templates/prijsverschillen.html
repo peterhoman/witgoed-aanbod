@@ -42,7 +42,7 @@
             <td>{{ r.apparaten }}</td>
             <td>&euro; {{ r.gem_eur|int }} ({{ r.gem_pct }}%)</td>
             <td>{{ r.vanaf_50 }}</td>
-            <td>&euro; {{ r.max_eur|int }}: <a href="/product/{{ r.max_product.slug|urlencode }}">{{ r.max_product.title|kort(45) }}</a>
+            <td>&euro; {{ r.max_eur|int }}: <a href="/product/{{ r.max_product.slug|urlencode }}">{{ r.max_product.title|nette_titel|kort(45) }}</a>
                 <span class="verschil-klein">&euro; {{ r.max_mn|euro }} {{ r.max_goedkoopste }} · &euro; {{ r.max_mx|euro }} {{ r.max_duurste }}</span></td>
         </tr>
         {% endfor %}
@@ -60,7 +60,7 @@
         <tbody>
         {% for r in d.top %}
         <tr>
-            <td><a href="/product/{{ r.product.slug|urlencode }}">{{ r.product.title|kort(60) }}</a>
+            <td><a href="/product/{{ r.product.slug|urlencode }}">{{ r.product.title|nette_titel|kort(60) }}</a>
                 <span class="verschil-klein">{{ r.categorie.name if r.categorie }} · {{ r.winkels }} {{ t('verschil.winkels') }}</span></td>
             <td>&euro; {{ r.mn|euro }} <span class="verschil-klein">{{ r.goedkoopste }}</span></td>
             <td>&euro; {{ r.mx|euro }} <span class="verschil-klein">{{ r.duurste }}</span></td>

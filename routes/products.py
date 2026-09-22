@@ -473,7 +473,7 @@ def product_detail(slug):
     from energy_costs import bereken_energiekosten
     from eprel_specs import eprel_blok, label_zonder_botsing, ontdubbel_specs
     from product_specs import (kernspecs, groepeer_specs, modelnummer,
-                               zoektitel)
+                               zoektitel, intro_zin)
     from category_context import bepaal_categoriecontext, meta_beschrijving
     from setprijs import setzin
     from facet_links import merk_facetpagina, verfijningslinks
@@ -513,6 +513,8 @@ def product_detail(slug):
                            eprel=eprel_data,
                            modelnummer=modelnummer(product),
                            zoektitel=zoektitel(product),
+                           # Zin onder de H1 (22 sept); None = geen zin.
+                           intro_zin=intro_zin(product),
                            # Eigen meting over de hele categorie: de enige
                            # inhoud op een dunne productpagina die nergens
                            # anders staat. Gecachet per categorie, dus dit

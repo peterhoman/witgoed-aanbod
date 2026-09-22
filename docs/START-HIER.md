@@ -64,13 +64,75 @@ leidend voor werkafspraken.
   **Haal 'tumbledriers' pas uit die lijst als eprel.py drogers in het nieuwe
   register opzoekt én de rijen opnieuw zijn opgehaald** (oude rijen houden hun
   oude productgroep tot ze ververst zijn).
-- **Nog open, na de vakantie:** (b) drogers opzoeken in het nieuwe
-  EPREL-register (naam eerst verifiëren, niet gokken) en de 166 opnieuw
-  ophalen; (c) regel voor botsende labels: EPREL wint, en bij een botsing het
-  gekleurde blokje weglaten. **(d) nieuw gevonden:** dezelfde afkapping in de
-  feed treft ook 86 ovens en 29 afzuigkappen: die hebben terecht nog de
-  plus-schaal, maar "A+" gaat als "A" naar Google (te laag, niet te hoog).
-  Google accepteert A+, A++ en A+++; drie regels werk, nog geen ja gevraagd.
+- **Stap (a) live en gecontroleerd (PR #182, uitrol 15:24):** op de
+  LG RT90X8-pagina staat geen "A+++" en geen regel "Energieklasse" meer in het
+  EPREL-blok (geluid en bron staan er nog); in de live feed heeft die droger
+  geen klasse en geen certificering meer.
+- **VASTE REGEL van Peter (21 sept): fouten direct oplossen, nooit uitstellen**
+  naar morgen of na de vakantie. Daarom dezelfde middag ook (c) en (d) gebouwd
+  (tak fix/feed-plusklasse-en-botsende-labels):
+  - **(d) feed kapte de klasse af tot de eerste letter.** `_eprel_per_product`
+    stuurt nu de hele klasse (`_fmt_klasse`: AP → A+), geldig = A+++ t/m G.
+    Proef tegen productie: 91x A+ en 24x A++ gaan nu goed naar Google (was
+    allemaal "A"); ovens en afzuigkappen hebben de plus-schaal nog terecht.
+  - **(c) botsende labels.** `eprel_specs.label_zonder_botsing`: zegt het
+    winkelveld iets anders dan EPREL, dan valt het gekleurde blokje bovenaan
+    weg, en de zin "label X kost € Y meer" ook (die rekende met het
+    winkellabel). Het EPREL-blok blijft, met bron en registratienummer; de
+    stroomkosten blijven (komen uit kWh, niet uit de letter). Bewust niet
+    "EPREL wint in het blokje": onze koppeling kan een zustermodel hebben
+    gevonden, dus bovenaan beweren we niets. Proef tegen productie: 14 pagina's
+    (10 koelkasten, vooral Inventum/Tomado "winkel D, register E"; 3
+    vaatwassers; 1 was-droogcombinatie), 227 ongewijzigd. Het blokje staat
+    alleen op de productpagina, niet op lijstpagina's.
+  `python test_eprel_label.py`: 21 gevallen.
+- **(b) ook gebouwd op 21 sept (zelfde tak): drogers in het nieuwe register.**
+  De naam is bij EPREL zelf nagevraagd (`https://eprel.ec.europa.eu/api/product-groups`
+  geeft alle registers): **`tumbledryers20232534`**. Bewijs: Bosch WQG133DBNL
+  staat in het oude register op A++ en in het nieuwe op **C** (precies wat de
+  winkel zegt); LG RT90X8 van A+++ naar **B**. Het nieuwe register levert
+  dezelfde velden die wij bewaren (energyClass, noise, ratedCapacity, maten).
+  - `eprel.py`: drogers zoeken eerst in `tumbledryers20232534`, dan in
+    `tumbledriers` (vangnet voor geluid/maten; de klasse daaruit tonen we niet).
+  - **Tweede fout gevonden en gerepareerd: `_bevraag` nam altijd de eerste
+    treffer.** EPREL zoekt op "begint met": "RT90X8" geeft RT90X8BC, RT90X8C,
+    RT90X8, RT90X8B, RT90X8YB. De LG hing dus aan het registratienummer van een
+    andere variant. `_kies_treffer` neemt nu de exacte treffer (limit 2 → 10);
+    zonder exacte blijft de eerste gelden, want AEG en Beko melden aan met hun
+    productcode erachter ("TR73CB96 916099294" = hetzelfde apparaat). Gemeten:
+    van 1.275 koppelingen 885 exact, 380 langer (grotendeels die productcodes),
+    10 anders.
+  - **Derde fout, dezelfde middag opgelost: koppelingen aan een ander model.**
+    De 10 "anders" per stuk bekeken: 6 kloppen (de titel bevat het hele
+    gevonden nummer, bv. "Hs61w" → "W8F HS61W"), **4 niet**: Whirlpool "W2F
+    HD624" (2x) hing aan "P2F HD624 A", Inventum "KK550B" aan "RKK550B/02" (een
+    ander apparaat, en prompt zei het register E waar de winkel D zei), Etna
+    "Vv856wit" aan "KVV856WIT" (waarschijnlijk wél goed, maar niet te bewijzen).
+    `eprel.koppeling_klopt(gezocht_op, gevonden_model, titel)`: het gevonden
+    nummer moet BEGINNEN met het gezochte, of in zijn geheel in de titel staan.
+    Geldt op vier plekken: `_kies_treffer` (nieuwe opzoekingen),
+    `eprel_specs.eprel_blok` (pagina toont niets), `product_specs.modelnummer`
+    (daar stond anders het typenummer van het andere model) en de Merchant-feed
+    (geen klasse, geen registratienummer). Proef tegen productie: precies die
+    4 van de 1.275 tegengehouden, 0 daarvan nog in de feed.
+  - **De inhaalslag is daarom verbreed** (`_inhaalslag` = drogers eerst, dan
+    `_afwijkend_typenummer`): ook de 390 koppelingen waar het gevonden nummer
+    niet precies het gezochte is worden één keer opnieuw opgezocht, zodat ze op
+    het exacte model uitkomen waar dat bestaat. Samen **566 rijen = 6 rondes
+    (~36 uur)**, klaar woensdagochtend 23 sept. Peildatum 21 sept 14:00 UTC (de
+    eerste ronde met de nieuwe code is 15:13 UTC of later).
+  - `eprel_bijwerken.py`: **eenmalige inhaalslag** `_drogers_in_te_halen`: rijen
+    uit een vervallen register en drogers die "niet gevonden" waren, opgehaald
+    vóór de peildatum 22 sept 00:00 UTC, gaan voor en mogen de hele ronde van
+    100 gebruiken. Alleen-lezen geteld: **195 rijen** (71 oud register, 124 niet
+    gevonden) = twee rondes, ~12 uur. Rijen die in het oude register blijven
+    worden daarna wekelijks nagekeken in plaats van maandelijks.
+  Echte opzoeking bij EPREL met de nieuwe code: Bosch C, LG B (model RT90X8
+  exact), AEG TR73CB96 C, alle drie `tumbledryers20232534`.
+  `python test_eprel_label.py`: 50 gevallen. **Na de merge nakijken:**
+  `/api/eprel` (ronde zonder afbreking), daarna in de DB het aantal rijen met
+  productgroep `tumbledryers20232534`, en een drogerpagina: staat er weer een
+  energieklasse, nu van de nieuwe schaal?
 
 ---
 

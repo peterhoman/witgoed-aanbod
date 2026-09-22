@@ -31,7 +31,9 @@ draagt":
   dus die verzinnen we niet. Keurt Google producten af op ontbrekende
   verzendkosten, dan is dat zichtbaar in Merchant Center en beslissen we
   dan -- niet vooraf met een gegokt bedrag.
-- g:energy_efficiency_class alleen als EPREL de klasse echt kent (A-G).
+- g:energy_efficiency_class alleen als EPREL de klasse echt kent (A+++ t/m G,
+  de hele klasse en niet alleen de eerste letter), en niet uit een vervallen
+  register (zie eprel_specs.VEROUDERDE_LABELGROEPEN).
 - De productlink is percent-gecodeerd zoals in de sitemap (De'Longhi,
   "Hot & Cold"), en wijst met www, zodat de doorstuur nooit meespeelt.
 - g:id is het interne product-id: stabiel, ook als een titel of slug
@@ -53,7 +55,7 @@ from product_specs import merknaam, modelnummer
 merchant_bp = Blueprint('merchant', __name__)
 
 _G = 'http://base.google.com/ns/1.0'
-_GELDIGE_KLASSEN = {'A', 'B', 'C', 'D', 'E', 'F', 'G'}
+_GELDIGE_KLASSEN = {'A+++', 'A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'}
 # Merchant Center kapt titels op 150 tekens en beschrijvingen op 5000.
 _MAX_TITEL = 150
 _MAX_BESCHRIJVING = 5000
@@ -119,14 +121,21 @@ def _eprel_per_product():
     de infomelding "Ontbrekend certificeringskenmerk" die Merchant
     Center op 13 aug bij de producten zette.
     """
-    from eprel_specs import klasse_geldt_nog
+    from eprel import koppeling_klopt
+    from eprel_specs import _fmt_klasse, klasse_geldt_nog
 
     rijen = (EprelData.query.filter_by(gevonden=True)
+             .join(Product, Product.id == EprelData.product_id)
              .with_entities(EprelData.product_id, EprelData.energieklasse,
                             EprelData.registratienummer,
-                            EprelData.productgroep).all())
+                            EprelData.productgroep, EprelData.gezocht_op,
+                            EprelData.modelnummer, Product.title).all())
     info = {}
-    for pid, klasse, regnr, groep in rijen:
+    for pid, klasse, regnr, groep, gezocht_op, model, titel in rijen:
+        # Een rij die aan een ander model hangt gaat niet naar Google: een
+        # verkeerd registratienummer is erger dan geen (eprel.koppeling_klopt).
+        if not koppeling_klopt(gezocht_op, model, titel):
+            continue
         # Drogers staan nog in het oude register (schaal A+++ tot D, vervallen
         # op 1 juli 2025). Tot 21 september 2026 ging daar "A" van naar Google,
         # omdat van "A+++" alleen de eerste letter overbleef, voor apparaten die
@@ -134,7 +143,12 @@ def _eprel_per_product():
         # zoekt Google zelf het oude label op. Zie eprel_specs.
         if not klasse_geldt_nog(groep):
             continue
-        letter = (klasse or '').strip().upper()[:1]
+        # De hele klasse, niet alleen de eerste letter. Ovens en afzuigkappen
+        # hebben nog de schaal A+++ tot D, en EPREL schrijft A+ als "AP". Tot
+        # 21 september 2026 bleef daar alleen "A" van over: bij 86 ovens en 29
+        # afzuigkappen ging een te lage klasse naar Google. Google kent A+,
+        # A++ en A+++ gewoon. Alles wat geen geldige klasse is, gaat niet mee.
+        letter = _fmt_klasse((klasse or '').strip().upper())
         letter = letter if letter in _GELDIGE_KLASSEN else None
         # EPREL-nummers zijn kale cijferreeksen; alles anders is ruis
         # en gaat niet mee (beweer niets wat de data niet draagt).

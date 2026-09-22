@@ -561,10 +561,16 @@ def modelnummer(product):
     else:
         uitkomst = None
         try:
+            from eprel import koppeling_klopt
             from models import EprelData
             rij = EprelData.query.filter_by(product_id=product.id,
                                             gevonden=True).first()
-            if rij and (rij.modelnummer or '').strip():
+            # Alleen als de rij aantoonbaar bij dit apparaat hoort: anders
+            # stond hier het typenummer van een ander model (Whirlpool
+            # "W2F HD624" kreeg 'P2F HD624 A'; gemeten 21 september 2026).
+            if (rij and (rij.modelnummer or '').strip()
+                    and koppeling_klopt(rij.gezocht_op, rij.modelnummer,
+                                        product.title)):
                 uitkomst = rij.modelnummer.strip()
         except Exception:
             # Geen app-context of geen tabel: dan gewoon door naar de titel.

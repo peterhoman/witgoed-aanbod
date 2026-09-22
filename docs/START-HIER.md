@@ -76,6 +76,25 @@ weer alleen main. **Alle metingen gedaan, niets stuk.**
 - **Mail (pfmhoman):** niets van de winkels, Daisycon/Witgoedhuis, De'Longhi,
   AEG, TradeTracker of Awin. Alleen een UptimeRobot-reclame. Peter moet
   peter@avantius.nl nog nakijken.
+- **SMEG NL via Awin aangevraagd (14:00, Peter klikte zelf op Join).** Peter
+  vroeg of het programma iets voor de site is. Gelezen in zijn Awin-account
+  (programma 104589): 6% commissie, feed 731 producten (dagelijks ververst),
+  cookie 30 dagen, conversie 1,5%, EPC € 0,23, goedkeuring 100%, betaaltermijn
+  gemiddeld 77 dagen en **"Exposure Level 4"** (SMEG heeft kredietlimiet én
+  betaaltermijn bij Awin overschreden: commissie wordt pas uitbetaald nadat
+  SMEG aan Awin betaalt). Wij hebben 37 Smeg-apparaten (15 koelkasten, 13
+  koffiemachines, verder ovens/fornuizen/magnetrons), meestal bij 2-3 winkels;
+  de retro koel-vriescombinaties kosten € 1.849 (6% = ruim € 110 per verkoop).
+  Een merkwinkel verkoopt tegen adviesprijs en wint dus zelden de vergelijking;
+  de waarde zit in een extra prijs per apparaat en in Smeg-apparaten die geen
+  andere winkel bij ons heeft. **Na goedkeuring eerst de feed meten** (EAN-
+  overlap, aantal grote apparaten, prijsniveau) en pas bouwen als het genoeg
+  vergelijkingen oplevert; voorbeeldcode is de Awin-feed van Coolblue.
+  Meegestuurd bericht: prijsvergelijker, 2.900 apparaten, 7 winkels, 37 Smeg-
+  apparaten, feed → volledig assortiment met link naar smeg.com. Awin-knoppen
+  reageren niet op klikken via een element-ref; wel op klikken op coördinaten,
+  en de tabbladen hebben eigen adressen (`.../merchant-profile/<id>/performance`,
+  `/commission-groups`, commissie via `/commission-manager/.../timeline?advertiserIds=<id>`).
 - Proefscript bewaard in de scratchpad van deze sessie
   (`bereikbaarheidsproef.py`: sitemap → N productpagina's → statussen en
   tijden); bij herhaling opnieuw aanmaken, het staat niet in de repo.
@@ -196,7 +215,8 @@ inhaalslag 566 rijen). Rankingmeting week 39 (#184), oude takken opgeruimd
      Dan met `railway logs --http` het trage adres opzoeken (fout = oplossen).
    - Merchant Center-knop (9 afkeuringen op 22 sept; ja vragen).
 2. Gmail (pfmhoman) én Peter vragen naar peter@avantius.nl: winkels (17 sept),
-   Witgoedhuis-ticket (21 sept), De'Longhi en AEG (Awin, 19 sept).
+   Witgoedhuis-ticket (21 sept), De'Longhi en AEG (Awin, 19 sept), **SMEG NL
+   (Awin, 22 sept)**.
 3. Witgoedhuis-feed: `curl -sI` op de Daisycon-feed-URL (blok 21 sept) →
    beweegt `Last-Modified` (stond op 6 sept)? Zo ja: bouwen na de vakantie.
 4. Vóór de vakantie per dag beoordelen wat nog live kan (geen vaste

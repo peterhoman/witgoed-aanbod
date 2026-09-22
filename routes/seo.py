@@ -358,7 +358,7 @@ def _bouw_entries():
     # vraagt daar expliciet om waar inhoud grotendeels automatisch ontstaat.
     legal_pages = ['over-ons', 'privacy', 'disclaimer', 'cookies', 'voorwaarden',
                    'retourneren', 'contact', 'productteksten',
-                   'onderzoek/prijsverschillen-witgoed']
+                   'onderzoek/prijsverschillen-witgoed', 'pers']
     for page in legal_pages:
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/{page}",

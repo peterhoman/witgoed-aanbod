@@ -11,6 +11,14 @@ def over_ons():
     return render_template('legal/over_ons.html')
 
 
+@legal_bp.route('/pers')
+def pers():
+    """Perspagina voor het linkplan (22 september 2026): het prijsonderzoek
+    met de cijfers vastgezet op één datum, een grafiek om over te nemen,
+    wie erachter zit en een contactpersoon. Staat in sitemap-overig."""
+    return render_template('legal/pers.html')
+
+
 @legal_bp.route('/productteksten')
 def productteksten():
     """Hoe de productbeschrijvingen tot stand komen.

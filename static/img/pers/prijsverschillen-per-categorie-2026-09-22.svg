@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" font-family="Arial, Helvetica, sans-serif">
+<rect width="1600" height="900" fill="#fff"/>
+<text x="60" y="76" font-size="40" font-weight="700" fill="#141414">Hetzelfde apparaat, andere winkel: gemiddeld prijsverschil per categorie</text>
+<text x="60" y="162" font-size="26" fill="#141414">Wasmachines</text>
+<rect x="380" y="136" width="760" height="38" rx="6" fill="#1f4e79"/>
+<text x="1154" y="162" font-size="26" font-weight="700" fill="#141414">€ 81  (13,2%)</text>
+<text x="1344" y="162" font-size="22" fill="#5a5a5a">71 apparaten</text>
+<text x="60" y="214" font-size="26" fill="#141414">Ovens &amp; airfryers</text>
+<rect x="380" y="188" width="731" height="38" rx="6" fill="#1f4e79"/>
+<text x="1125" y="214" font-size="26" font-weight="700" fill="#141414">€ 78  (14,6%)</text>
+<text x="1315" y="214" font-size="22" fill="#5a5a5a">109 apparaten</text>
+<text x="60" y="266" font-size="26" fill="#141414">Was-droogcombinaties</text>
+<rect x="380" y="240" width="675" height="38" rx="6" fill="#1f4e79"/>
+<text x="1069" y="266" font-size="26" font-weight="700" fill="#141414">€ 72  (9,6%)</text>
+<text x="1259" y="266" font-size="22" fill="#5a5a5a">36 apparaten</text>
+<text x="60" y="318" font-size="26" fill="#141414">Drogers</text>
+<rect x="380" y="292" width="544" height="38" rx="6" fill="#1f4e79"/>
+<text x="938" y="318" font-size="26" font-weight="700" fill="#141414">€ 58  (8,6%)</text>
+<text x="1128" y="318" font-size="22" fill="#5a5a5a">66 apparaten</text>
+<text x="60" y="370" font-size="26" fill="#141414">Kookplaten</text>
+<rect x="380" y="344" width="544" height="38" rx="6" fill="#1f4e79"/>
+<text x="938" y="370" font-size="26" font-weight="700" fill="#141414">€ 58  (12,8%)</text>
+<text x="1128" y="370" font-size="22" fill="#5a5a5a">63 apparaten</text>
+<text x="60" y="422" font-size="26" fill="#141414">Koffiemachines</text>
+<rect x="380" y="396" width="534" height="38" rx="6" fill="#1f4e79"/>
+<text x="928" y="422" font-size="26" font-weight="700" fill="#141414">€ 57  (14,1%)</text>
+<text x="1118" y="422" font-size="22" fill="#5a5a5a">195 apparaten</text>
+<text x="60" y="474" font-size="26" fill="#141414">Magnetrons</text>
+<rect x="380" y="448" width="440" height="38" rx="6" fill="#1f4e79"/>
+<text x="834" y="474" font-size="26" font-weight="700" fill="#141414">€ 47  (12,3%)</text>
+<text x="1024" y="474" font-size="22" fill="#5a5a5a">57 apparaten</text>
+<text x="60" y="526" font-size="26" fill="#141414">Stofzuigers</text>
+<rect x="380" y="500" width="422" height="38" rx="6" fill="#1f4e79"/>
+<text x="816" y="526" font-size="26" font-weight="700" fill="#141414">€ 45  (14,7%)</text>
+<text x="1006" y="526" font-size="22" fill="#5a5a5a">117 apparaten</text>
+<text x="60" y="578" font-size="26" fill="#141414">Koelkasten</text>
+<rect x="380" y="552" width="384" height="38" rx="6" fill="#1f4e79"/>
+<text x="778" y="578" font-size="26" font-weight="700" fill="#141414">€ 41  (5,8%)</text>
+<text x="968" y="578" font-size="22" fill="#5a5a5a">250 apparaten</text>
+<text x="60" y="630" font-size="26" fill="#141414">Vaatwassers</text>
+<rect x="380" y="604" width="384" height="38" rx="6" fill="#1f4e79"/>
+<text x="778" y="630" font-size="26" font-weight="700" fill="#141414">€ 41  (7,0%)</text>
+<text x="968" y="630" font-size="22" fill="#5a5a5a">68 apparaten</text>
+<text x="60" y="682" font-size="26" fill="#141414">Fornuizen</text>
+<rect x="380" y="656" width="356" height="38" rx="6" fill="#1f4e79"/>
+<text x="750" y="682" font-size="26" font-weight="700" fill="#141414">€ 38  (5,8%)</text>
+<text x="940" y="682" font-size="22" fill="#5a5a5a">49 apparaten</text>
+<text x="60" y="734" font-size="26" fill="#141414">Afzuigkappen</text>
+<rect x="380" y="708" width="243" height="38" rx="6" fill="#1f4e79"/>
+<text x="637" y="734" font-size="26" font-weight="700" fill="#141414">€ 26  (11,9%)</text>
+<text x="827" y="734" font-size="22" fill="#5a5a5a">55 apparaten</text>
+<line x1="60" y1="778" x2="1540" y2="778" stroke="#e1e0d9" stroke-width="2"/>
+<text x="60" y="814" font-size="22" fill="#5a5a5a">Verschil tussen de goedkoopste en de duurste van 7 Nederlandse winkels, per apparaat. 1.136 apparaten, stand 22 september 2026. Bron: WitgoedAanbod.nl</text>
+<text x="60" y="848" font-size="22" fill="#5a5a5a">Gemiddeld over alle categorieën: € 53 (10,8%). Grootste verschil: € 530 bij een Siemens inbouwstoomoven.</text>
+</svg>

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{# Perspagina (22 september 2026), gevraagd door het linkplan: redacties en
+   beheerders van linkpagina's willen één adres met de kern van het
+   prijsonderzoek, een afbeelding om over te nemen, wie erachter zit en een
+   contactpersoon. De cijfers staan hier BEWUST VAST op één datum: een
+   persbericht dat naar deze pagina verwijst moet na een week nog kloppen.
+   De levende versie staat op /onderzoek/prijsverschillen-witgoed. #}
+
+{% block title %}Pers: prijsonderzoek witgoed 2026 | WitgoedAanbod.nl{% endblock %}
+{% block meta_description %}Persinformatie over het prijsonderzoek van WitgoedAanbod.nl: hetzelfde apparaat scheelt gemiddeld 53 euro tussen Nederlandse winkels (1.136 apparaten, 7 winkels, stand 22 september 2026). Met grafiek, achtergrond en contact.{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Pers: prijsonderzoek witgoed 2026",
+    "url": "{{ config.SITE_URL }}/pers",
+    "datePublished": "2026-09-22",
+    "about": {
+        "@type": "Dataset",
+        "name": "Prijsverschillen witgoed tussen Nederlandse winkels (2026)",
+        "url": "{{ config.SITE_URL }}/onderzoek/prijsverschillen-witgoed",
+        "license": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "WitgoedAanbod.nl",
+        "url": "{{ config.SITE_URL }}/",
+        "founder": {"@type": "Person", "name": "Peter Homan", "url": "{{ config.SITE_URL }}/over-ons#peter"}
+    }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container legal-page">
+    <nav class="breadcrumbs">
+        <a href="/">Home</a> / <span>Pers</span>
+    </nav>
+
+    <h1>Pers: prijsonderzoek witgoed 2026</h1>
+
+    <div class="legal-content">
+        <p class="pers-stand">Stand van de cijfers: <strong>22 september 2026</strong>. Deze pagina verandert niet;
+        de <a href="/onderzoek/prijsverschillen-witgoed">levende versie van het onderzoek</a> ververst dagelijks.</p>
+
+        <h2>Het onderzoek in vijf zinnen</h2>
+        <p>WitgoedAanbod.nl volgt sinds 14 juli 2026 dag na dag de prijzen van zeven Nederlandse winkels: Bol.com, MediaMarkt, Coolblue, Expert, Alternate, EP en Voordeligwitgoed.
+        Van de 1.136 apparaten die bij minstens twee van die winkels te koop zijn, scheelt hetzelfde apparaat tussen de goedkoopste en de duurste winkel gemiddeld <strong>53 euro, ofwel 10,8 procent</strong>.
+        Bij 397 apparaten is het verschil 50 euro of meer, bij 212 apparaten 100 euro of meer; 319 apparaten kosten overal precies evenveel.
+        Het verschil is het grootst bij wasmachines (gemiddeld 81 euro), ovens en airfryers (78 euro) en was-droogcombinaties (72 euro), en het kleinst bij afzuigkappen (26 euro).
+        Het grootste verschil van dit moment is 530 euro: een Siemens inbouwstoomoven kost 1.269 euro bij Bol.com en 1.799 euro bij Expert.</p>
+
+        <h2>Grafiek om over te nemen</h2>
+        <p>Gemiddeld prijsverschil per categorie, liggend formaat (1600 × 900 pixels). Vrij te gebruiken met bronvermelding "WitgoedAanbod.nl"
+        (<a href="https://creativecommons.org/licenses/by/4.0/deed.nl" target="_blank" rel="noopener">CC BY 4.0</a>).</p>
+        <figure class="pers-figuur">
+            <a href="/static/img/pers/prijsverschillen-per-categorie-2026-09-22.png" download>
+                <img src="/static/img/pers/prijsverschillen-per-categorie-2026-09-22.png" width="1600" height="900"
+                     alt="Staafdiagram: gemiddeld prijsverschil per categorie tussen de goedkoopste en duurste winkel, van wasmachines (81 euro) tot afzuigkappen (26 euro), stand 22 september 2026" loading="lazy">
+            </a>
+            <figcaption>
+                Downloaden: <a href="/static/img/pers/prijsverschillen-per-categorie-2026-09-22.png" download>PNG (1600 × 900)</a> ·
+                <a href="/static/img/pers/prijsverschillen-per-categorie-2026-09-22.svg" download>SVG (schaalbaar)</a>
+            </figcaption>
+        </figure>
+
+        <h2>De cijfers per categorie</h2>
+        <p>Gemiddeld verschil tussen de goedkoopste en de duurste winkel per apparaat; alleen categorieën met minstens tien apparaten bij meerdere winkels.</p>
+        <table class="pers-tabel">
+            <thead><tr><th>Categorie</th><th>Apparaten</th><th>Gemiddeld verschil</th><th>Vanaf 50 euro</th></tr></thead>
+            <tbody>
+                <tr><td>Wasmachines</td><td>71</td><td>€ 81 (13,2%)</td><td>41</td></tr>
+                <tr><td>Ovens &amp; airfryers</td><td>109</td><td>€ 78 (14,6%)</td><td>52</td></tr>
+                <tr><td>Was-droogcombinaties</td><td>36</td><td>€ 72 (9,6%)</td><td>18</td></tr>
+                <tr><td>Drogers</td><td>66</td><td>€ 58 (8,6%)</td><td>27</td></tr>
+                <tr><td>Kookplaten</td><td>63</td><td>€ 58 (12,8%)</td><td>28</td></tr>
+                <tr><td>Koffiemachines</td><td>195</td><td>€ 57 (14,1%)</td><td>58</td></tr>
+                <tr><td>Magnetrons</td><td>57</td><td>€ 47 (12,3%)</td><td>17</td></tr>
+                <tr><td>Stofzuigers</td><td>117</td><td>€ 45 (14,7%)</td><td>37</td></tr>
+                <tr><td>Koelkasten</td><td>250</td><td>€ 41 (5,8%)</td><td>74</td></tr>
+                <tr><td>Vaatwassers</td><td>68</td><td>€ 41 (7,0%)</td><td>23</td></tr>
+                <tr><td>Fornuizen</td><td>49</td><td>€ 38 (5,8%)</td><td>14</td></tr>
+                <tr><td>Afzuigkappen</td><td>55</td><td>€ 26 (11,9%)</td><td>8</td></tr>
+            </tbody>
+        </table>
+
+        <h2>Hoe wij meten</h2>
+        <p>Alle prijzen komen automatisch uit de officiële productfeeds van de winkels en worden meerdere keren per dag ververst.
+        We vergelijken alleen apparaten met dezelfde EAN-code (het streepjescodenummer), zodat het echt om hetzelfde model gaat.
+        Sets van wasmachine plus droger tellen niet mee, en een verschil van meer dan 60 procent laten we buiten beschouwing omdat dat vaker een andere uitvoering of een feedfout is dan een echt prijsverschil.
+        Alle cijfers zijn na te rekenen op de <a href="/onderzoek/prijsverschillen-witgoed">onderzoekspagina</a>, waar per categorie ook het grootste verschil van dit moment staat.</p>
+
+        <h2>Over WitgoedAanbod.nl</h2>
+        <p>WitgoedAanbod.nl is een onafhankelijke Nederlandse prijsvergelijker voor witgoed, stofzuigers en koffiemachines, en geen webwinkel: bezoekers bestellen altijd rechtstreeks bij de winkel van hun keuze.
+        De site vergelijkt ruim 2.900 apparaten bij zeven winkels, toont per apparaat het prijsverloop en de gegevens van het Europese energielabel, en zet de laagste prijs altijd bovenaan; winkels kunnen hun positie niet kopen.
+        WitgoedAanbod.nl is een initiatief van <a href="https://www.avantius.nl/" target="_blank" rel="noopener">Avantius</a>, een familiebedrijf uit Sassenheim dat al ruim twintig jaar actief is in huishoudelijke artikelen.
+        Meer over de werkwijze en de mensen erachter: <a href="/over-ons">over ons</a>.</p>
+
+        <h2>Contact voor pers</h2>
+        <p>
+            <strong>Peter Homan</strong>, oprichter van WitgoedAanbod.nl<br>
+            E-mail: <a href="mailto:info@witgoedaanbod.nl">info@witgoedaanbod.nl</a><br>
+            Avantius, J.J. van Rhijnstraat 27, 2171 PT Sassenheim
+        </p>
+        <p>Vragen over de cijfers, een andere uitsplitsing (bijvoorbeeld per winkel of per merk) of een quote: mail gerust, we antwoorden binnen een werkdag.</p>
+    </div>
+</div>
+{% endblock %}

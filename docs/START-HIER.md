@@ -76,6 +76,42 @@ weer alleen main. **Alle metingen gedaan, niets stuk.**
 - **Mail (pfmhoman):** niets van de winkels, Daisycon/Witgoedhuis, De'Longhi,
   AEG, TradeTracker of Awin. Alleen een UptimeRobot-reclame. Peter moet
   peter@avantius.nl nog nakijken.
+- **Fase 0 van het linkplan gebouwd (avond, tak feat/pers-en-auteur), op
+  verzoek van Peters aparte SEO-chat "Google specialist" met Peters groen
+  licht vooraf.** Die chat mag alleen vragen stellen en voorstellen
+  doorgeven; bouwen gebeurt hier (afspraak Peter 22 sept, staat in memory).
+  Analyse van die chat: techniek en inhoud op orde, het probleem is
+  autoriteit (551 van 552 externe links komen van avantius.nl). Gebouwd:
+  1. **/pers** (templates/legal/pers.html, route in legal.py, in
+     sitemap-overig): het prijsonderzoek in vijf zinnen met de cijfers
+     **vastgezet op 22 september 2026** (1.136 apparaten, gemiddeld € 53 =
+     10,8%, 397 ≥ € 50, 212 ≥ € 100, 319 gelijk; per categorie wasmachines
+     € 81 t/m afzuigkappen € 26; grootste verschil € 530 Siemens
+     stoomoven), een staafdiagram om te downloaden (PNG 1600×900 en SVG in
+     static/img/pers/, gemaakt met Pillow, script in de scratchpad van deze
+     sessie), cijfertabel, "hoe wij meten", "Over WitgoedAanbod.nl", en
+     contact **Peter Homan, oprichter, info@witgoedaanbod.nl** (Peter koos
+     dit adres op 22 sept boven zijn Gmail-adres; geen telefoonnummer). CC BY 4.0,
+     zelfde licentie als de Dataset op de onderzoekspagina. Bewust niet
+     live: een persbericht dat hierheen verwijst moet na een week nog
+     kloppen; de levende versie is /onderzoek/prijsverschillen-witgoed.
+  2. **/over-ons**: nieuw blok "Wie zit erachter?" (anker #peter) met
+     Peter Homan, oprichter, twintig jaar bij Avantius, waarom de
+     vergelijker; `founder` (Person) in het Organization-schema. **Geen
+     foto**: Peter heeft er geen aangeleverd; komt erbij als hij dat wil.
+  3. **Gidsen en blog** (guide_detail.html): zichtbaar "Door Peter Homan,
+     oprichter ..." met link naar /over-ons#peter, en in het Article-schema
+     author = Person (was Organization) met worksFor. `dateModified` was al
+     eerlijk: guides_content.py schrijft een gids alleen weg als titel,
+     samenvatting of tekst echt verschilt, dus updated_at schuift niet op
+     bij een uitrol; het label heet nu "laatst bijgewerkt".
+  Lokaal gerenderd: /pers 200 (index/follow, PNG en SVG 200, JSON-LD
+  geldig), /over-ons met founder, gids met author Person en dateModified
+  2026-07-25 = datePublished, sitemap-overig bevat /pers. **Na de merge
+  nakijken op productie:** /pers, /over-ons#peter, één gids, en
+  /sitemap-overig.xml. Daarna de specialist-chat berichten dat het live
+  staat (Peter mailt de redacties zelf, max 5 per dag; zie linkplan 17
+  sept).
 - **SMEG NL via Awin aangevraagd (14:00, Peter klikte zelf op Join).** Peter
   vroeg of het programma iets voor de site is. Gelezen in zijn Awin-account
   (programma 104589): 6% commissie, feed 731 producten (dagelijks ververst),

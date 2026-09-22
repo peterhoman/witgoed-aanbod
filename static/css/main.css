@@ -2984,6 +2984,15 @@ section h2 {
     }
 }
 
+/* Perspagina (22 sept): grafiek en cijfertabel. */
+.pers-stand { color: var(--gray); font-size: 14px; }
+.pers-figuur { margin: 0 0 24px; }
+.pers-figuur img { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px; }
+.pers-figuur figcaption { font-size: 14px; color: var(--gray); margin-top: 8px; }
+.pers-tabel { width: 100%; border-collapse: collapse; margin: 0 0 24px; font-size: 15px; }
+.pers-tabel th, .pers-tabel td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.pers-tabel th { font-weight: 700; }
+
 .legal-content strong {
     font-weight: 500;
     color: var(--gray);

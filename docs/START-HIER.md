@@ -1,12 +1,45 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **21 september 2026, middag** (het blok "21 september (middag)"
-hieronder is het nieuwste, dan "Dagcontrole 21 september", "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
+Bijgewerkt **22 september 2026** (het blok "Dagcontrole 22 september" hieronder
+is het nieuwste, dan "21 september (middag)", "Dagcontrole 21 september", "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
 "Dagcontrole 18 september", daaronder "Dagcontrole 17 september (middag)"
 hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 22 september (dinsdag) — rankingmeting week 39; labelreparaties live
+
+- **`/api/gezondheid`: GEZOND**, 10 van 10, drie prijsbewegingsregels vers
+  (< 1 uur). Leverbaar 2.903, feed 2.901, /aanbiedingen 11 categorieën,
+  prijssprongen 6 (0 teruggesprongen), tekstwachtrij 0, geen sjabloonsporen,
+  Railway 0 serverfouten, geen Traceback. **p99 voor de tweede dag een
+  uitschieter van 7,6 s** (gem. 0,5 s); morgen nog zo, dan uitzoeken welk
+  adres. Doorkliks 21 sept: 13 browser (Coolblue 8, MediaMarkt 5).
+- **PR #183 (energielabels + EPREL-koppeling) is live** (uitrol 08:39,
+  GEZOND daarna). De inhaalslag begint bij de eerste EPREL-ronde erna (~14:15
+  NL); daarvoor stonden de 71 drogers nog in `tumbledriers`. **Morgen
+  nakijken:** per productgroep in `/api/eprel` moet `tumbledryers20232534`
+  verschijnen en `tumbledriers` slinken; een drogerpagina (bv. LG RT90X8)
+  hoort weer een klasse te tonen, nu B/C.
+- **Merchant Center (schermafdruk Peter + knop):** "productpagina niet
+  beschikbaar" 15 → **9**; websitecontrole opnieuw aangevraagd na Peters ja
+  (bevestigd "Dit kan tot 12 uur duren"). Niet goedgekeurd 45 waarvan 35
+  verborgen = 10 van ons (week ervoor 116). 141 Shopping-klikken in 28
+  dagen. Koelvriesmelding 204.
+- **Search Console (schermafdruk):** 7 dagen 26 klikken / 2.010 vertoningen /
+  CTR 1,3% / positie 5,6; 3 maanden 215 klikken.
+- **Rankingmeting week 39 gedaan** (docs/RANKING-METING.md, nu ook echt op
+  main: het document stond alleen op de nooit doorgevoerde tak
+  docs/rankingmeting-wekelijks). Stand 1 van 10, onveranderd; "witgoed
+  prijsvergelijkers" niet in de top 20. De gemailde winkels staan zelf op
+  pagina 1-2. Volgende meting: dinsdag 6 oktober (29 sept valt in de
+  vakantie).
+- Mail: niets van winkels, Daisycon/Witgoedhuis, De'Longhi, AEG. CookieYes
+  (reclame voor een betaalde cookiebanner met Claude-koppeling): niet nodig,
+  de site heeft een eigen cookievenster en zet geen volgcookies.
 
 ---
 

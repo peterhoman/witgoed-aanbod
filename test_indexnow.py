@@ -51,18 +51,18 @@ def poster(body):
     verstuurd.append(body)
     return 202
 uitkomst = indexnow.verstuur(uit, 'www.witgoedaanbod.nl', 'sleutel123',
-                             'https://www.witgoedaanbod.nl/indexnow-sleutel123.txt', poster=poster)
+                             'https://www.witgoedaanbod.nl/sleutel123.txt', poster=poster)
 check('één bericht, status 202', uitkomst == [(3, 202)], repr(uitkomst))
 b = verstuurd[0]
 check('bericht: host', b['host'] == 'www.witgoedaanbod.nl')
-check('bericht: key + keyLocation', b['key'] == 'sleutel123' and b['keyLocation'].endswith('/indexnow-sleutel123.txt'))
+check('bericht: key + keyLocation', b['key'] == 'sleutel123' and b['keyLocation'].endswith('/sleutel123.txt'))
 check('bericht: urlList', b['urlList'] == uit)
 
 # 4. Niets te melden: geen bericht.
 check('leeg = geen bericht', indexnow.verstuur([], 'h', 'k', 'l', poster=poster) == [] and len(verstuurd) == 1)
 
 # 5. Sleutelbestand-pad.
-check('sleutelbestand', indexnow.sleutelbestand('abc') == '/indexnow-abc.txt')
+check('sleutelbestand op de standaardplek', indexnow.sleutelbestand('abc') == '/abc.txt')
 
 print(f"\n{fouten} fout")
 sys.exit(1 if fouten else 0)

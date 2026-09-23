@@ -38,7 +38,9 @@ _laatste = {'wanneer': None, 'adressen': 0, 'berichten': [], 'fout': None}
 
 def sleutelbestand(sleutel):
     """Pad van het sleutelbestand op de eigen site."""
-    return f'/indexnow-{sleutel}.txt'
+    # Standaardplek volgens de documentatie: /<sleutel>.txt in de root. De
+    # oude naam /indexnow-<sleutel>.txt blijft ook bestaan (routes/seo.py).
+    return f'/{sleutel}.txt'
 
 
 def gewijzigde_adressen(per_soort, sinds):

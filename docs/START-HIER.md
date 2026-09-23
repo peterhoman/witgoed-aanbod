@@ -1,13 +1,56 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **22 september 2026, 12:00** (het blok "Dagcontrole 22 september
-(tweede sessie, 11:10-12:00)" hieronder is het nieuwste, dan "Overdracht 22 september,
+Bijgewerkt **23 september 2026, 12:15** (het blok "Dagcontrole 23 september"
+hieronder is het nieuwste, dan "Dagcontrole 22 september (tweede sessie)" met
+alles wat die dag 's middags en 's avonds is gebouwd, dan "Overdracht 22 september,
 slot", dan "Dagcontrole 22 september", "21 september (middag)", "Dagcontrole 21 september", "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
 "Dagcontrole 18 september", daaronder "Dagcontrole 17 september (middag)"
 hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blokken en hoofdstukken blijven gelden waar de update
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 23 september (woensdag) — gezond; IndexNow-403 gerepareerd; EPREL-inhaalslag klaar
+
+- **`/api/gezondheid`: GEZOND**, 11 van 11 routines (IndexNow telt mee sinds
+  gisteravond). Leverbaar 2.913. Prijssprongen 2, 0 teruggesprongen (logboek:
+  Bosch 4242003917879 699→1049, feed zegt 1049, dus echt). Tekstwachtrij 0.
+  `niet_ververst_3d`: Bol 350 en EP 631 = bekend, rest 0. Sjabloonsporen 0.
+  Railway 0 5xx; p99 46 ms 's nachts, 815 ms vanochtend (uitrollen), geen
+  uitschieter. Witgoedhuis-feed nog 6 september. Mail: geen winkel, geen
+  SMEG/De'Longhi/AEG; wel bevestiging van Awin dat Peter een case (03172772,
+  "Publisher ...") heeft geopend, vermoedelijk de Spotlight-aanvraag; en een
+  Google-melding dat Peter met zijn Google-account bij bing.com inlogde
+  (Bing Webmaster Tools; die bleek al sinds juli ingericht, 3.300 URL's).
+- **EPREL-inhaalslag drogers is klaar:** `tumbledriers` 71 → **2**,
+  `tumbledryers20232534` 0 → **141** (meer dan de 71 van eerst, omdat ook
+  eerder niet-gevonden drogers nu in het nieuwe register gevonden worden).
+  De 2 overgebleven rijen staan waarschijnlijk alleen in het oude register;
+  die tonen geen klasse (VEROUDERDE_LABELGROEPEN) en dat is goed zo.
+- **IndexNow: eerste ronde (07:30 UTC) kreeg 403 voor alle 849 adressen**,
+  gemeld door de specialist-chat. Gemeten: een losse melding met één adres
+  en keyLocation gaf 's avonds al 200, dus de sleutel werkte; Bing had het
+  bestand om 07:30 vermoedelijk nog niet opgehaald, en de naam
+  `/indexnow-<sleutel>.txt` is niet de standaardplek. **Gerepareerd dezelfde
+  ochtend (PR #197):** sleutelbestand ook op `/<sleutel>.txt` (root), de
+  melding wijst daarheen, oude naam blijft werken, andere namen 404. Proef
+  vanuit productie zonder keyLocation met 3 adressen: **200**. Volgende
+  ronde 24 sept 07:30 UTC; nakijken op /api/sync-status → indexnow (na een
+  uitrol staat daar weer `wanneer: None`, dat is geheugen, geen fout).
+- **Bezoekersbron, eerste dag:** 22 sept (vanaf ~22:00) direct 44,
+  extern-onbekend 23, zonder-secfetch 26; 23 sept tot 12:00: direct 95,
+  extern-onbekend 35, zonder-secfetch 30, google 3, chatgpt 2, bing 1,
+  duckduckgo 1; nog geen verwijzende sites. **Let op bij het lezen:**
+  'direct' loopt gelijk op met `product-los-adres` (93 vandaag): dat zijn
+  grotendeels de programma's uit datacenters die productadressen los
+  opvragen ([[scraper-uit-datacenters]]), geen mensen met een bladwijzer.
+  Google 3 tegenover 3-8 Search Console-klikken per dag: mogelijk komen
+  Google-app/Discover-bezoekers zonder Referer binnen (extern-onbekend).
+  Over een week naast Search Console leggen; nu geen actie.
+- Alle takken van 22 sept zijn gemerged (#193-#197); lokaal en op GitHub
+  staat alleen main.
 
 ---
 

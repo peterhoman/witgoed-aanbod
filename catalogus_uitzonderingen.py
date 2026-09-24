@@ -137,9 +137,31 @@ _GEEN_APPARAAT = re.compile(
 # altijd het soort apparaat.
 _WEL_APPARAAT = re.compile(
     r'\b(wasmachine|wasdroger|droger|koelkast|vriezer|vrieskast|koelvries|'
-    r'vaatwasser|afwasmachine|oven|magnetron|airfryer|stofzuiger|koffiezet|'
+    # "oven" telde ook in "Ovenbestendig" en "ovenschaal" mee (24 sept:
+    # daardoor bleven twee hapjespannen staan). Een pan die de oven in mag
+    # is nog steeds een pan.
+    r'vaatwasser|afwasmachine|oven(?!bestendig|vast|schaal|schalen|want|handschoen)|'
+    r'magnetron|airfryer|stofzuiger|koffiezet|'
     r'koffiemachine|espresso|fornuis|kookplaat|afzuigkap|inbouw|wasautomaat|'
     r'was-droog|combimagnetron|heteluchtoven)',
+    re.IGNORECASE)
+
+# Wat nooit een apparaat is, ook al staat er een apparaatwoord bij. Gevonden
+# 24 september 2026 (audit specialist-chat): "3 x NIVEA MEN Gezichtscrème ...
+# - Koffie - Koffiezetapparaat" (Bol plakt zoektermen achter de titel) en
+# "BK Profiline soeppan" stonden op index. Cosmetica en verzorging, en
+# pannen die de lijst hierboven miste.
+_ZEKER_GEEN_APPARAAT = re.compile(
+    r'\b(gezichtscr[eè]me|dagcr[eè]me|nachtcr[eè]me|bodylotion|handcr[eè]me|'
+    r'scheergel|scheerschuim|aftershave|deodorant|deo\b|shampoo|conditioner|'
+    r'douchegel|tandpasta|tandenborstelkop|opzetborstel|parfum|eau de|'
+    r'zonnebrand|lippenbalsem|make-?up|mascara|nagellak|'
+    r'soeppan|kookpan|sauspan|sauteuse|bakpan|pannen\b|pan set|ovenschaal|'
+    # Bewust geen kaal "bestek" of "pannen": "Vario lade voor bestek en
+    # kookgerei" is een vaatwasser (Bosch SMS4ECW28E, proef 24 sept).
+    r'bakvorm|snijplank|messenset|messenblok|keukenmes|koksmes|'
+    r'kommenset|glazenset|wijnglazen|drinkfles|lunchbox|'
+    r'vershouddoos|vershouddozen|voorraadpot|broodtrommel)',
     re.IGNORECASE)
 
 
@@ -153,6 +175,8 @@ def is_geen_apparaat(titel):
     terecht, en geen enkel apparaat ten onrechte.
     """
     tekst = str(titel or '')
+    if _ZEKER_GEEN_APPARAAT.search(tekst):
+        return True
     return bool(_GEEN_APPARAAT.search(tekst)) and not _WEL_APPARAAT.search(tekst)
 
 

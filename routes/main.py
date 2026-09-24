@@ -2461,12 +2461,30 @@ def guides():
     return render_template('guides.html', guides=all_guides, video_ids=video_ids)
 
 
+def _gids_afbeelding(guide):
+    """Afbeelding voor een gids of blogbericht (24 sept 2026, audit): het
+    Article-schema miste "image" en og:image was overal het algemene
+    sitebeeld; Google vraagt een afbeelding van minstens 1200 px voor
+    Discover en nette rich results. Bron: de foto van het eerste leverbare
+    productkaartje in de tekst; zonder kaartje of foto None (dan blijft het
+    algemene beeld). Via wsrv op 1200 × 1200, zelfde route als alle andere
+    winkelfoto's."""
+    import re
+    from filter_helpers import foto_url
+    for ean in re.findall(r'productkaart\s+ean=["\']?(\d{8,14})', guide.content or ''):
+        product = Product.query.filter_by(ean=ean, is_available=True).first()
+        if product and (product.image_url or '').startswith('http'):
+            return foto_url(product.image_url, 1200)
+    return None
+
+
 @main_bp.route('/gidsen/<slug>')
 def guide_detail(slug):
     guide = Guide.query.filter_by(slug=slug).first_or_404()
     from guide_cards import render_guide_content
     return render_template('guide_detail.html', guide=guide,
-                           rendered_content=render_guide_content(guide.content))
+                           rendered_content=render_guide_content(guide.content),
+                           gids_afbeelding=_gids_afbeelding(guide))
 
 
 @main_bp.route('/blog')
@@ -2478,7 +2496,8 @@ def blog():
 @main_bp.route('/blog/<slug>')
 def blog_detail(slug):
     post = Guide.query.filter_by(slug=slug, post_type='blog').first_or_404()
-    return render_template('guide_detail.html', guide=post)
+    return render_template('guide_detail.html', guide=post,
+                           gids_afbeelding=_gids_afbeelding(post))
 
 
 def _vertrouwenscijfers():

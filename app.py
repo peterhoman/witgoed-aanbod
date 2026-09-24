@@ -472,7 +472,16 @@ def create_app(config_name=None):
         from flask import request
         from urllib.parse import quote
         basis = app.config['SITE_URL'].rstrip('/')
-        return {'canonical_url': basis + quote(request.path, safe='/-._~')}
+        canonical = basis + quote(request.path, safe='/-._~')
+        # Paginering (24 sept 2026, audit): pagina 2 en verder wees met zijn
+        # canonical naar pagina 1, met dezelfde titel. Google's richtlijn
+        # voor webwinkels: elke pagina een eigen canonical (?page=N), zodat
+        # de producten op pagina 2+ ook gevonden worden. Andere parameters
+        # (filters, sortering) blijven weg uit de canonical.
+        pagina = request.args.get('page', type=int)
+        if pagina and pagina > 1:
+            canonical += f'?page={pagina}'
+        return {'canonical_url': canonical}
 
     @app.template_filter('euro_kort')
     def euro_kort_filter(value):

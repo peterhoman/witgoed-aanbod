@@ -6,7 +6,7 @@ from flask import Blueprint, abort, render_template_string, current_app
 from models import Product, Category, Guide, utcnow
 from filter_helpers import (compute_brand_facet, compute_spec_facets,
                             compute_global_brand_index, energielabel_letter, slugify)
-from routes.main import (SUBCATEGORY_SPECS, _MIN_PER_FILTERPAGINA,
+from routes.main import (SUBCATEGORY_SPECS, _MIN_PER_FILTERPAGINA, _MIN_VOOR_INDEX,
                          _FILTERVELDEN, _eprel_waarde, _stap_voor)
 
 seo_bp = Blueprint('seo', __name__)
@@ -152,6 +152,10 @@ def _bouw_entries():
         'soort': 'overig'
     })
     for merk in compute_global_brand_index((p.brand, 1) for p in products):
+        # Dunne merkpagina's (24 sept): niet aanbieden, de route zet ze op
+        # noindex. Gemeten: 72 van 129 onder de vijf, 40 met één product.
+        if merk['aantal'] < _MIN_VOOR_INDEX:
+            continue
         sitemap_entries.append({
             'loc': f"{current_app.config['SITE_URL']}/merk/{merk['slug']}",
             'lastmod': _lastmod(per_merk_globaal.get(merk['slug'])),
@@ -204,6 +208,9 @@ def _bouw_entries():
                 # label E, met één pizzaoven erop.
                 letter = energielabel_letter(option['value'])
                 letter = letter.lower() if letter else None
+                # Onder de vijf producten: niet aanbieden (route: noindex).
+                if option.get('count', 0) < _MIN_VOOR_INDEX:
+                    continue
                 if letter and letter not in letters_gezien:
                     letters_gezien.add(letter)
                     sitemap_entries.append({
@@ -286,6 +293,8 @@ def _bouw_entries():
                 if facet['key'] != subtype_key:
                     continue
                 for option in facet['options']:
+                    if option.get('count', 0) < _MIN_VOOR_INDEX:
+                        continue
                     sitemap_entries.append({
                         'loc': f"{current_app.config['SITE_URL']}/category/{category.slug}/type/{slugify(option['value'])}",
                         'lastmod': _lastmod(moment_van(

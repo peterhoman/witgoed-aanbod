@@ -10,6 +10,9 @@
    houden "vergelijken - laagste prijs" (die zin wordt gezocht). #}
 {% block title %}{% if facet_paginatitel %}{{ facet_paginatitel }}{% elif facet_title %}{{ facet_title }}{{ paginasuffix }} | WitgoedAanbod.nl{% else %}{{ category.name }} vergelijken - laagste prijs{{ paginasuffix }} | WitgoedAanbod.nl{% endif %}{% endblock %}
 {% block meta_description %}{% if paginasuffix %}Pagina {{ pagination.page }} van {{ pagination.pages }}: {% endif %}{{ meta_description }}{% endblock %}
+{# Dunne facetpagina (< 5 producten, routes.main._MIN_VOOR_INDEX): wel
+   bereikbaar, niet indexeren. Categoriepagina's zelf krijgen dit nooit. #}
+{% block robots %}{% if noindex_dun %}noindex, follow{% else %}index, follow{% endif %}{% endblock %}
 
 {% block structured_data %}
 {% for blob in structured_data %}

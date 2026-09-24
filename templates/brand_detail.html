@@ -5,6 +5,9 @@
 {% block title %}{{ merk }} vergelijken - laagste prijs{{ paginasuffix }} | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}{% if paginasuffix %}Pagina {{ pagination.page }} van {{ pagination.pages }}: {% endif %}{{ meta_description }}{% endblock %}
 
+{# Dunne merkpagina (< 5 producten): wel bereikbaar, niet indexeren. #}
+{% block robots %}{% if noindex_dun %}noindex, follow{% else %}index, follow{% endif %}{% endblock %}
+
 {% block structured_data %}
 {% for blob in structured_data %}
 <script type="application/ld+json">{{ blob | tojson }}</script>

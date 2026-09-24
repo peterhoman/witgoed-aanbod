@@ -3174,6 +3174,11 @@ def brand_detail(merk_slug):
 
     q = Product.query.filter(Product.brand.ilike(merk), Product.is_available == True).order_by(Product.price.asc())
     products = q.paginate(page=page, per_page=24)
+    # De merkindex is een procescache (15 min); verdwijnt het laatste product
+    # van een merk, dan stond de pagina tot de verversing op index met nul
+    # producten (gezien 24 sept bij /merk/aeropress). Nul = weg.
+    if products.total == 0:
+        abort(404)
 
     categorie_rows = (db.session.query(Category.name)
                       .join(Product, Product.category_id == Category.id)
@@ -3199,7 +3204,8 @@ def brand_detail(merk_slug):
     }]
 
     return render_template('brand_detail.html', merk=merk, products=products.items,
-                           noindex_dun=match['aantal'] < _MIN_VOOR_INDEX,
+                           # Live telling, niet de gecachete uit de index.
+                           noindex_dun=products.total < _MIN_VOOR_INDEX,
                            pagination=products, categorieen=categorieen, intro=intro,
                            meta_description=meta_description, structured_data=structured_data,
                            verwante_merken=_verwante_merken(merk, index),

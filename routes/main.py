@@ -1473,6 +1473,13 @@ def _stap_voor(waarde, opzet):
 # heeft.
 _MIN_PER_FILTERPAGINA = 8
 
+# Dunne pagina's (24 sept 2026, audit): merk- en facetpagina's met minder dan
+# vijf producten blijven bestaan voor bezoekers, maar krijgen noindex,follow
+# en staan niet in de sitemap. Gemeten: 72 van de 129 merkpagina's (40 met
+# één product) en 10 van de 28 facetpagina's zaten eronder; Google zag ze
+# als dunne inhoud en besteedde er leestijd aan die productpagina's mist.
+_MIN_VOOR_INDEX = 5
+
 
 @main_bp.route('/api/filterkansen')
 def filterkansen():
@@ -2718,6 +2725,8 @@ def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_de
         kenmerk_video=kenmerk_video,
         facet_paginatitel=facet_paginatitel,
         pros_cons_by_ean=_pros_cons_by_ean(),
+        # Te weinig producten om te indexeren (zie _MIN_VOOR_INDEX).
+        noindex_dun=products.total < _MIN_VOOR_INDEX,
     )
 
 
@@ -3171,6 +3180,7 @@ def brand_detail(merk_slug):
     }]
 
     return render_template('brand_detail.html', merk=merk, products=products.items,
+                           noindex_dun=match['aantal'] < _MIN_VOOR_INDEX,
                            pagination=products, categorieen=categorieen, intro=intro,
                            meta_description=meta_description, structured_data=structured_data,
                            verwante_merken=_verwante_merken(merk, index),

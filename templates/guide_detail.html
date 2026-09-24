@@ -2,6 +2,13 @@
 
 {% block title %}{{ guide.title }} | WitgoedAanbod.nl{% endblock %}
 {% block meta_description %}{{ guide.excerpt }}{% endblock %}
+{# Eigen deelafbeelding per gids (24 sept): de foto van het eerste
+   productkaartje, 1200 × 1200 via wsrv; zonder foto blijft het sitebeeld. #}
+{# De voorwaarde staat ín het blok: een blok binnen een if wordt door Jinja
+   altijd gedefinieerd, en gaf zonder foto letterlijk "None". #}
+{% block og_image %}{% if gids_afbeelding %}{{ gids_afbeelding }}{% else %}{{ super() }}{% endif %}{% endblock %}
+{% block og_image_width %}{% if gids_afbeelding %}1200{% else %}{{ super() }}{% endif %}{% endblock %}
+{% block og_image_height %}{% if gids_afbeelding %}1200{% else %}{{ super() }}{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container legal-page">
@@ -46,6 +53,7 @@
     "datePublished": "{{ guide.created_at.strftime('%Y-%m-%d') if guide.created_at }}",
     "dateModified": "{{ (guide.updated_at or guide.created_at).strftime('%Y-%m-%d') if guide.created_at }}",
     "inLanguage": "nl-NL",
+    "image": {{ (gids_afbeelding or (config.SITE_URL ~ '/static/img/og-image.png'))|tojson }},
     "author": {"@type": "Person", "name": "Peter Homan", "jobTitle": "Oprichter",
                "url": "{{ config.SITE_URL }}/over-ons#peter",
                "worksFor": {"@type": "Organization", "name": "WitgoedAanbod.nl",
@@ -53,6 +61,24 @@
                             "parentOrganization": {"@type": "Organization", "name": "Avantius"}}},
     "publisher": {"@type": "Organization", "name": "WitgoedAanbod.nl", "url": "{{ config.SITE_URL }}/"},
     "mainEntityOfPage": "{{ request.url }}"
+}
+</script>
+{# Kruimelpad-schema (24 sept): Home > Koopgidsen/Blog > titel, zelfde
+   stappen als het zichtbare kruimelpad bovenaan. #}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "{{ config.SITE_URL }}/"},
+        {% if guide.post_type == 'blog' %}
+        {"@type": "ListItem", "position": 2, "name": {{ t('blog.title')|tojson }}, "item": "{{ config.SITE_URL }}/blog"},
+        {"@type": "ListItem", "position": 3, "name": {{ guide.title|tojson }}, "item": "{{ config.SITE_URL }}/blog/{{ guide.slug }}"}
+        {% else %}
+        {"@type": "ListItem", "position": 2, "name": {{ t('guides.title')|tojson }}, "item": "{{ config.SITE_URL }}/gidsen"},
+        {"@type": "ListItem", "position": 3, "name": {{ guide.title|tojson }}, "item": "{{ config.SITE_URL }}/gidsen/{{ guide.slug }}"}
+        {% endif %}
+    ]
 }
 </script>
 {% endblock %}

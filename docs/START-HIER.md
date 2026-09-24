@@ -1,7 +1,8 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **23 september 2026, 12:15** (het blok "Dagcontrole 23 september"
-hieronder is het nieuwste, dan "Dagcontrole 22 september (tweede sessie)" met
+Bijgewerkt **24 september 2026, 14:30** (het blok "Dagcontrole 24 september"
+hieronder is het nieuwste, met de vijf gebouwde audit-punten en het
+uitgestelde punt 2, dan "Dagcontrole 23 september", dan "Dagcontrole 22 september (tweede sessie)" met
 alles wat die dag 's middags en 's avonds is gebouwd, dan "Overdracht 22 september,
 slot", dan "Dagcontrole 22 september", "21 september (middag)", "Dagcontrole 21 september", "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
 "Dagcontrole 18 september", daaronder "Dagcontrole 17 september (middag)"
@@ -9,6 +10,79 @@ hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blo
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 24 september (donderdag) — gezond; IndexNow 200; audit-punten 1, 3, 4, 5, 6 gebouwd; punt 2 (slugs) uitgesteld
+
+- **`/api/gezondheid`: GEZOND**, 11 van 11. Prijssprongen 1, 0 terug.
+  Tekstwachtrij 0. Bol 365 / EP 630 oud (bekend). Sjabloonsporen 0.
+  EPREL: `tumbledriers` 2 (klaar). Railway 0 5xx; p99 2,1 s in het
+  ochtendvenster was mijn eigen aanroep van /api/prijssprongen (2.097 ms,
+  die pagina rekent 46K prijswijzigingen door), geen bezoekersverzoek.
+  Witgoedhuis-feed nog 6 september.
+- **IndexNow-ronde 07:30 UTC: 772 adressen, status 200.** Werkt.
+- **Bezoekersbron dag 2 (23 sept volledig):** direct 221, zonder-secfetch
+  665 (!), extern-onbekend 93, google 8, chatgpt 4, duckduckgo 3, bing 2;
+  eerste verwijzing: avantius.nl (1). De 665 zonder Sec-Fetch-koppen is een
+  scraper-golf, geen mensen; 'direct' grotendeels ook (zie 23 sept).
+- **Mail:** Awin Partner Success antwoordde op Peters Spotlight-case
+  (03172772): Spotlight wordt beoordeeld door een apart team; Peter moet het
+  "Awin Partner Submission Form" invullen (link in de mail van 24 sept,
+  09:56, aan info@witgoedaanbod.nl) en zijn publisherprofiel (ID 2969655)
+  in de Publisher Directory volledig invullen. Verder niets van SMEG,
+  De'Longhi, AEG of de winkels.
+- **Audit van de specialist-chat (23 sept), zes punten met Peters ja
+  (doorgegeven via die chat). Vijf gebouwd, elk op een eigen tak;
+  volgorde van mergen: 1 → 4 → 6 → 3 → 5 (6 bouwt op 4, 3 op 6).**
+  1. `fix/catalogus-niet-apparaten`: `_WEL_APPARAAT` telde "oven" ook in
+     "Ovenbestendig" (daardoor bleven drie hapjespannen staan als
+     "apparaat"), en Bol plakt zoektermen achter titels ("... - Koffie -
+     Koffiezetapparaat" achter Nivea-gezichtscrème). Nieuw
+     `_ZEKER_GEEN_APPARAAT` (cosmetica/verzorging, soeppan e.d.) dat altijd
+     wint; kaal "bestek"/"pannen" bewust niet (Bosch-vaatwasser "lade voor
+     bestek"). Proef over alle 2.899 live titels: 6 gaan weg (3 hapjespannen,
+     soeppan, Nivea, GreenPan), 0 apparaten ten onrechte. De uurroutine
+     verwijdert ze na de uitrol; de pagina's geven dan 404.
+     `python test_niet_apparaat.py` (15).
+  4. `feat/paginering-eigen-canonical`: pagina 2+ krijgt canonical
+     `?page=N` (app.py `_canonical_url`, andere parameters blijven weg) en
+     titel/omschrijving "- pagina 2 van 9" op categorie-, facet- en
+     merkpagina's. Pagina 1 en `?page=1` ongewijzigd.
+  6. `fix/titels-korter`: facet- en kenmerkpagina's (category.html) alleen
+     kern + " | WitgoedAanbod.nl" (was "vergelijken - laagste prijs", gem.
+     72-77 tekens); de twaalf zoekzin-kenmerkpagina's in zoekkenmerken.py
+     van 55-80 naar 39-60 tekens ("<kern> vergelijken | WitgoedAanbod.nl").
+     Categoriepagina's en /merk/ houden "vergelijken - laagste prijs".
+  3. `feat/dunne-paginas-noindex`: `_MIN_VOOR_INDEX = 5` (routes/main.py):
+     /merk/<x> en facetpagina's (energielabel, type, kenmerk) met minder
+     dan 5 producten krijgen noindex,follow (blok `robots` in
+     brand_detail.html en category.html via `noindex_dun`) en staan niet
+     in sitemap-merken/-facetten. Gemeten: 72 van 129 merkpagina's (40 met
+     1 product), 10 van 28 facetpagina's. Merk-per-categorie had al 8 als
+     grens. Niet gedaan: "Achaté" op /merk/achat is de spelling uit de
+     feed, geen datafout van ons.
+  5. `feat/gids-afbeelding-breadcrumb`: `_gids_afbeelding()` pakt de foto
+     van het eerste leverbare productkaartje (wsrv 1200×1200) voor
+     `Article.image` en og:image; zonder kaartje het sitebeeld (voorwaarde
+     in het blok zelf, anders schrijft Jinja "None"). BreadcrumbList Home >
+     Koopgidsen/Blog & Nieuws > titel. Lokaal 43 gidsen + blog gerenderd,
+     JSON-LD geldig; op productie hebben 30 gidsen kaartjes.
+  2. **NIET gebouwd, uitgesteld tot na de vakantie, met reden:** de
+     slug-opschoning raakt gemeten **582 van 2.899** productadressen (tekens:
+     punt 215, plus 113, haakjes 109/82, apostrof 69, gedachtestreep 38,
+     ï 27, komma 19, é 19, harde spatie 17, ® 16, | 7, ™ 6), plus 1.644 met
+     dubbele streepjes. Elk gewijzigd adres = 301 + herindexering door
+     Google, en dat de dag vóór acht dagen zonder toezicht. Bovendien is
+     `product_slug` de bron voor álle syncs én de EAN-301-route; dat vraagt
+     een eigen meting van botsingen (twee producten die na opschoning
+     dezelfde slug krijgen) en een test op de 301-keten. Voorstel: eerste
+     werkdag na 2 oktober, met Peter erbij.
+  **Na de merges op productie nakijken:** /product/bk-profiline-soeppan…
+  → 404 binnen een uur; /category/wasmachines?page=2 canonical en titel;
+  /category/wasmachines/energielabel/b → noindex; sitemap-merken.xml korter
+  (~57 i.p.v. 129); een gids met kaartje → og:image via wsrv en Article.image;
+  /category/drogers/kenmerk/… titel korter. Daarna de specialist-chat berichten.
 
 ---
 

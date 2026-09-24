@@ -33,7 +33,7 @@ KENMERKEN = {
             'kop': 'Droger met stoomfunctie: minder strijkwerk',
             'label': 'met stoomfunctie',
             'zin': '{n} drogers met stoomfunctie',
-            'paginatitel': 'Droger met stoomfunctie vergelijken - minder strijkwerk | WitgoedAanbod.nl',
+            'paginatitel': 'Droger met stoomfunctie vergelijken | WitgoedAanbod.nl',
             'patroon': _ONTKENNING + r'(stoomfunctie|stoomprogramma|steam|stoom)',
             'in_tekst': True,
             'uitleg': [
@@ -68,13 +68,13 @@ KENMERKEN = {
             ],
             'video': None,
             'meta': 'Amerikaanse koelkast vergelijken: side-by-side, 500 tot 700 liter, met of zonder dispenser. Alle modellen op prijs bij onze winkels.',
-            'paginatitel': 'Amerikaanse koelkast vergelijken - side-by-side | WitgoedAanbod.nl',
+            'paginatitel': 'Amerikaanse koelkast vergelijken | WitgoedAanbod.nl',
         },
         'no-frost': {
             'kop': 'No frost koelkast: nooit meer ontdooien',
             'label': 'no frost',
             'zin': '{n} no-frost koelkasten en koel-vriescombinaties',
-            'paginatitel': 'No frost koelkast vergelijken - nooit meer ontdooien | WitgoedAanbod.nl',
+            'paginatitel': 'No frost koelkast vergelijken | WitgoedAanbod.nl',
             'patroon': _ONTKENNING + r'(no[- ]?frost|nofrost)',
             'in_tekst': True,
             'uitleg': [
@@ -99,7 +99,7 @@ KENMERKEN = {
             'kop': 'Inbouw vaatwasser: past in je keuken',
             'label': 'inbouw',
             'zin': '{n} inbouw vaatwassers',
-            'paginatitel': 'Inbouw vaatwasser vergelijken - volledig en half geïntegreerd | WitgoedAanbod.nl',
+            'paginatitel': 'Inbouw vaatwasser vergelijken | WitgoedAanbod.nl',
             'patroon': _ONTKENNING + r'(\binbouw|volledig ge[ïi]ntegreerd|half ge[ïi]ntegreerd|onderbouw)',
             'in_tekst': False,  # "inbouw" in een winkeltekst zegt te vaak iets anders
             'uitleg': [
@@ -130,7 +130,7 @@ KENMERKEN = {
             ],
             'video': None,
             'meta': 'Wasmachine met stoomfunctie vergelijken: minder kreukels, opfrissen zonder wassen. Alle modellen met stoom op prijs bij onze winkels.',
-            'paginatitel': 'Wasmachine met stoomfunctie vergelijken - minder kreukels | WitgoedAanbod.nl',
+            'paginatitel': 'Wasmachine met stoomfunctie vergelijken | WitgoedAanbod.nl',
         },
     },
     'koffiemachines': {
@@ -146,7 +146,7 @@ KENMERKEN = {
             ],
             'video': None,
             'meta': 'Volautomatische koffiemachine vergelijken: verse bonen per kopje, melkschuim met één knop. Alle volautomaten op prijs bij onze winkels.',
-            'paginatitel': 'Volautomatische koffiemachine vergelijken - bonen, één knop | WitgoedAanbod.nl',
+            'paginatitel': 'Volautomatische koffiemachine vergelijken | WitgoedAanbod.nl',
         },
     },
     'stofzuigers': {
@@ -162,7 +162,7 @@ KENMERKEN = {
             ],
             'video': None,
             'meta': 'Stofzuiger met dweilfunctie vergelijken: robot- en steelstofzuigers die zuigen en dweilen. Alle modellen op prijs bij onze winkels.',
-            'paginatitel': 'Stofzuiger met dweilfunctie vergelijken - zuigen en dweilen | WitgoedAanbod.nl',
+            'paginatitel': 'Stofzuiger met dweilfunctie vergelijken | WitgoedAanbod.nl',
         },
         'steelstofzuiger': {
             'kop': 'Steelstofzuiger: snoerloos en licht',
@@ -176,7 +176,7 @@ KENMERKEN = {
             ],
             'video': None,
             'meta': 'Steelstofzuiger vergelijken: snoerloos, licht, met accuduur en gewicht. Alle steelstofzuigers op prijs bij onze winkels.',
-            'paginatitel': 'Steelstofzuiger vergelijken - snoerloos en licht | WitgoedAanbod.nl',
+            'paginatitel': 'Steelstofzuiger vergelijken | WitgoedAanbod.nl',
         },
         'robotstofzuiger': {
             'kop': 'Robotstofzuiger: zuigt terwijl jij iets anders doet',
@@ -190,7 +190,7 @@ KENMERKEN = {
             ],
             'video': None,
             'meta': 'Robotstofzuiger vergelijken: met of zonder leegstation, met of zonder dweil. Alle robotstofzuigers op prijs bij onze winkels.',
-            'paginatitel': 'Robotstofzuiger vergelijken - zuigt zelf | WitgoedAanbod.nl',
+            'paginatitel': 'Robotstofzuiger vergelijken | WitgoedAanbod.nl',
         },
     },
     'ovens': {
@@ -206,7 +206,7 @@ KENMERKEN = {
             ],
             'video': None,
             'meta': 'Airfryer vergelijken: inhoud, dubbele lade, vaatwasserbestendig. Alle airfryers op prijs bij onze winkels.',
-            'paginatitel': 'Airfryer vergelijken - krokant zonder olie | WitgoedAanbod.nl',
+            'paginatitel': 'Airfryer vergelijken | WitgoedAanbod.nl',
         },
         'inbouw': {
             'kop': 'Inbouwoven: in de kastenwand op ooghoogte',
@@ -220,7 +220,7 @@ KENMERKEN = {
             ],
             'video': None,
             'meta': 'Inbouwoven vergelijken: 60 en 45 cm hoog, hetelucht, stoom, pyrolyse. Alle inbouwovens op prijs bij onze winkels.',
-            'paginatitel': 'Inbouwoven vergelijken - 60 en 45 cm | WitgoedAanbod.nl',
+            'paginatitel': 'Inbouwoven vergelijken | WitgoedAanbod.nl',
         },
     },
     'magnetrons': {
@@ -236,7 +236,7 @@ KENMERKEN = {
             ],
             'video': None,
             'meta': 'Combimagnetron vergelijken: magnetron, hetelucht en grill in één. Alle combimagnetrons op prijs bij onze winkels.',
-            'paginatitel': 'Combimagnetron vergelijken - oven en grill in één | WitgoedAanbod.nl',
+            'paginatitel': 'Combimagnetron vergelijken | WitgoedAanbod.nl',
         },
     },
 }

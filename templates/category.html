@@ -4,7 +4,11 @@
 {# Paginering (24 sept): pagina 2+ krijgt een eigen titel en omschrijving
    ("pagina 2 van 10"), naast de eigen canonical uit app.py. #}
 {% set paginasuffix = ' - pagina ' ~ pagination.page ~ ' van ' ~ pagination.pages if pagination and pagination.page > 1 else '' %}
-{% block title %}{% if facet_paginatitel %}{{ facet_paginatitel }}{% else %}{{ facet_title or category.name }} vergelijken - laagste prijs{{ paginasuffix }} | WitgoedAanbod.nl{% endif %}{% endblock %}
+{# Titels korter (24 sept, audit): facet- en kenmerkpagina's hadden gemiddeld
+   72-77 tekens door de vaste staart "vergelijken - laagste prijs"; Google
+   toont er ~60. Daar nu alleen de kern plus de sitenaam. Categoriepagina's
+   houden "vergelijken - laagste prijs" (die zin wordt gezocht). #}
+{% block title %}{% if facet_paginatitel %}{{ facet_paginatitel }}{% elif facet_title %}{{ facet_title }}{{ paginasuffix }} | WitgoedAanbod.nl{% else %}{{ category.name }} vergelijken - laagste prijs{{ paginasuffix }} | WitgoedAanbod.nl{% endif %}{% endblock %}
 {% block meta_description %}{% if paginasuffix %}Pagina {{ pagination.page }} van {{ pagination.pages }}: {% endif %}{{ meta_description }}{% endblock %}
 
 {% block structured_data %}

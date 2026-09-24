@@ -2677,9 +2677,50 @@ section h2 {
     font-variant-numeric: tabular-nums;
 }
 
+/* Uitklapknop als oranje knop (Peter, 24 sept): de grijze tekstregel viel
+   onder de grafiek niet op. Oranje is de accentkleur van de site; het
+   driehoekje wordt een chevron die bij openklappen draait. */
 .price-history-table summary {
     cursor: pointer;
-    color: var(--gray);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 4px;
+    padding: 10px 18px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 8px;
+    list-style: none;
+    user-select: none;
+    transition: background 0.15s;
+}
+
+.price-history-table summary::-webkit-details-marker {
+    display: none;
+}
+
+.price-history-table summary::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(45deg);
+    margin-top: -3px;
+    transition: transform 0.15s;
+}
+
+.price-history-table[open] summary::before {
+    transform: rotate(-135deg);
+    margin-top: 3px;
+}
+
+.price-history-table summary:hover,
+.price-history-table summary:focus-visible {
+    background: var(--accent-dark);
+    outline: none;
 }
 
 .price-history-table table {

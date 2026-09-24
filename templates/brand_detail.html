@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% from '_macros.html' import product_card with context %}
 
-{% block title %}{{ merk }} vergelijken - laagste prijs | WitgoedAanbod.nl{% endblock %}
-{% block meta_description %}{{ meta_description }}{% endblock %}
+{% set paginasuffix = ' - pagina ' ~ pagination.page ~ ' van ' ~ pagination.pages if pagination and pagination.page > 1 else '' %}
+{% block title %}{{ merk }} vergelijken - laagste prijs{{ paginasuffix }} | WitgoedAanbod.nl{% endblock %}
+{% block meta_description %}{% if paginasuffix %}Pagina {{ pagination.page }} van {{ pagination.pages }}: {% endif %}{{ meta_description }}{% endblock %}
 
 {% block structured_data %}
 {% for blob in structured_data %}

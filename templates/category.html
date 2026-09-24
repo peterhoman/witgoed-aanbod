@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 {% from '_macros.html' import product_card, filter_opties, filter_groep, filter_hint with context %}
 
-{% block title %}{% if facet_paginatitel %}{{ facet_paginatitel }}{% else %}{{ facet_title or category.name }} vergelijken - laagste prijs | WitgoedAanbod.nl{% endif %}{% endblock %}
-{% block meta_description %}{{ meta_description }}{% endblock %}
+{# Paginering (24 sept): pagina 2+ krijgt een eigen titel en omschrijving
+   ("pagina 2 van 10"), naast de eigen canonical uit app.py. #}
+{% set paginasuffix = ' - pagina ' ~ pagination.page ~ ' van ' ~ pagination.pages if pagination and pagination.page > 1 else '' %}
+{% block title %}{% if facet_paginatitel %}{{ facet_paginatitel }}{% else %}{{ facet_title or category.name }} vergelijken - laagste prijs{{ paginasuffix }} | WitgoedAanbod.nl{% endif %}{% endblock %}
+{% block meta_description %}{% if paginasuffix %}Pagina {{ pagination.page }} van {{ pagination.pages }}: {% endif %}{{ meta_description }}{% endblock %}
 
 {% block structured_data %}
 {% for blob in structured_data %}

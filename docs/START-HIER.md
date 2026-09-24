@@ -78,11 +78,15 @@ leidend voor werkafspraken.
      een eigen meting van botsingen (twee producten die na opschoning
      dezelfde slug krijgen) en een test op de 301-keten. Voorstel: eerste
      werkdag na 2 oktober, met Peter erbij.
-  **Na de merges op productie nakijken:** /product/bk-profiline-soeppan…
-  → 404 binnen een uur; /category/wasmachines?page=2 canonical en titel;
-  /category/wasmachines/energielabel/b → noindex; sitemap-merken.xml korter
-  (~57 i.p.v. 129); een gids met kaartje → og:image via wsrv en Article.image;
-  /category/drogers/kenmerk/… titel korter. Daarna de specialist-chat berichten.
+  **Gemerged als PR #199-#204 en op productie gecontroleerd (24 sept,
+  ~15:30):** de zes niet-apparaten geven 404 (uurroutine, leverbaar 2.913 →
+  2.893); ?page=2 heeft canonical ?page=2 en titel "pagina 2 van 9" (sorteer-
+  parameter blijft weg); energielabel B wasmachines / G drogers noindex;
+  sitemap-merken 129 → 56, sitemap-facetten 28 → 18; 17 van 43 gidsen met
+  eigen og:image (die met een leverbaar kaartje), BreadcrumbList overal, JSON-LD
+  geldig; titels 35-54 tekens (EPREL-kenmerkpagina's ~65 door de lange kern).
+  /merk/aeropress geeft 404: product niet meer leverbaar, niet door deze
+  wijziging. GEZOND, Railway 0 5xx. Specialist-chat bericht.
 
 ---
 

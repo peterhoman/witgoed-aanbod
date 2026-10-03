@@ -556,6 +556,43 @@ class Bezoekersbron(db.Model):
         return f'<Bezoekersbron {self.datum} {self.bron} {self.domein} {self.aantal}>'
 
 
+class BezoekersbronPagina(db.Model):
+    """Op wat voor pagina een bezoeker van een bron binnenkomt, per dag.
+
+    Aanvulling op Bezoekersbron (3 oktober 2026): de vraag was op welke
+    pagina's ChatGPT-bezoekers landen (productpagina, gids, categorie). Zelfde
+    afspraak: alleen een teller per (dag, bron, paginasoort), niets over de
+    persoon. Eigen tabel, zodat de bestaande tabel niet gewijzigd hoeft.
+    """
+    __tablename__ = 'bezoekersbron_paginas'
+
+    id = db.Column(db.Integer, primary_key=True)
+    datum = db.Column(db.Date, nullable=False)
+    bron = db.Column(db.String(40), nullable=False)
+    soort = db.Column(db.String(30), nullable=False)
+    aantal = db.Column(db.Integer, nullable=False, default=0)
+
+    __table_args__ = (
+        db.UniqueConstraint('datum', 'bron', 'soort', name='uq_bronpagina_datum_bron_soort'),
+    )
+
+
+class IndexNowRonde(db.Model):
+    """Uitkomst van een IndexNow-melding aan Bing (indexnow.py).
+
+    De uitkomst stond alleen in het geheugen van het proces en was dus leeg
+    na elke uitrol (3 oktober 2026: vijf uitrollen op één dag). Nu bewaard,
+    zodat /api/sync-status altijd de laatste ronde toont.
+    """
+    __tablename__ = 'indexnow_rondes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    wanneer = db.Column(db.DateTime, nullable=False, default=utcnow)
+    adressen = db.Column(db.Integer, nullable=False, default=0)
+    statussen = db.Column(db.String(200), nullable=False, default='')   # "200" of "200,200"
+    fout = db.Column(db.String(200), nullable=True)
+
+
 class PageView(db.Model):
     """Aantal paginaweergaven per soort per dag. Geen bezoekersmeting.
 

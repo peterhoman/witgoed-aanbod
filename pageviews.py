@@ -23,6 +23,8 @@ from urllib.parse import urlsplit
 _buffer = {}
 # Zelfde idee voor de bezoekersbron: {(datum, bron, domein): aantal}.
 _bron_buffer = {}
+# En per bron de paginasoort: {(datum, bron, soort): aantal}.
+_bronpagina_buffer = {}
 _slot = threading.Lock()
 _DREMPEL = 25
 
@@ -328,23 +330,31 @@ def registreer(app):
 
             tellingen = None
             brontellingen = None
+            bronpaginatellingen = None
             with _slot:
                 for sleutel in sleutels:
                     _buffer[sleutel] = _buffer.get(sleutel, 0) + 1
                 if herkomst:
                     bsleutel = (vandaag,) + herkomst
                     _bron_buffer[bsleutel] = _bron_buffer.get(bsleutel, 0) + 1
+                    # Op wat voor pagina komt deze bron binnen (3 okt 2026)?
+                    psleutel = (vandaag, herkomst[0], soort)
+                    _bronpagina_buffer[psleutel] = _bronpagina_buffer.get(psleutel, 0) + 1
                 if sum(_buffer.values()) >= _DREMPEL:
                     tellingen = dict(_buffer)
                     _buffer.clear()
                     brontellingen = dict(_bron_buffer)
                     _bron_buffer.clear()
+                    bronpaginatellingen = dict(_bronpagina_buffer)
+                    _bronpagina_buffer.clear()
             # Buiten het slot wegschrijven: de database mag geen andere
             # verzoeken laten wachten.
             if tellingen:
                 _wegschrijven(tellingen)
             if brontellingen:
                 _wegschrijven_bronnen(brontellingen)
+            if bronpaginatellingen:
+                _wegschrijven_bronpaginas(bronpaginatellingen)
         except Exception:
             # Een teller mag nooit een pagina stukmaken.
             pass
@@ -379,6 +389,31 @@ def _wegschrijven_bronnen(tellingen):
         db.session.rollback()
 
 
+def _wegschrijven_bronpaginas(tellingen):
+    from models import db, BezoekersbronPagina
+    try:
+        for (datum, bron, soort), aantal in tellingen.items():
+            rij = BezoekersbronPagina.query.filter_by(datum=datum, bron=bron, soort=soort).first()
+            if rij:
+                rij.aantal += aantal
+            else:
+                db.session.add(BezoekersbronPagina(datum=datum, bron=bron, soort=soort, aantal=aantal))
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+
+
+def _paginasoort_per_bron(vanaf):
+    """{bron: {paginasoort: aantal}} sinds `vanaf`, grootste bron eerst."""
+    from models import BezoekersbronPagina
+    per = {}
+    for r in BezoekersbronPagina.query.filter(BezoekersbronPagina.datum >= vanaf).all():
+        per.setdefault(r.bron, {})
+        per[r.bron][r.soort] = per[r.bron].get(r.soort, 0) + r.aantal
+    return {b: dict(sorted(s.items(), key=lambda kv: -kv[1]))
+            for b, s in sorted(per.items(), key=lambda kv: -sum(kv[1].values()))}
+
+
 def overzicht_bronnen(dagen=14):
     """Bezoekersbronnen per dag (nieuwste eerst) plus de verwijzende sites
     over de hele periode. Voor /api/sync-status."""
@@ -409,6 +444,9 @@ def overzicht_bronnen(dagen=14):
         'per_dag': uit,
         'verwijzende_sites': [{'domein': d, 'aantal': n}
                               for d, n in sorted(sites.items(), key=lambda kv: -kv[1])[:40]],
+        # Per bron de paginasoort waarop bezoekers binnenkomen (product,
+        # categorie, gidsen, home, zoeken, vergelijken); geteld sinds 3 okt.
+        'paginasoort_per_bron': _paginasoort_per_bron(vanaf),
     }
 
 

@@ -36,6 +36,9 @@
            <title> "... vergelijken - laagste prijs". Facetpagina's houden
            hun eigen titel. #}
         <h1>{% if facet_title %}{{ facet_title }}{% elif kerncijfers and kerncijfers.aantal %}{{ category.name }} vergelijken: {{ kerncijfers.aantal }} modellen{% if kerncijfers.vanaf %} vanaf € {{ kerncijfers.vanaf }}{% endif %}{% else %}{{ category.name }}{% endif %}</h1>
+        {% if subtekst and subtekst.bijgewerkt %}
+        <p class="subpagina-bijgewerkt">Bijgewerkt op {{ subtekst.bijgewerkt }}</p>
+        {% endif %}
         {% if facet_intro %}
         {% for alinea in facet_uitleg %}
         <p>{{ alinea }}</p>
@@ -247,6 +250,41 @@
             {% endif %}
         </div>
     </div>
+
+    {# Geschreven tekst per subpagina (subpagina_teksten.py, 3 okt 2026):
+       uitleg met tussenkoppen, zichtbare vragen en links naar verwante
+       pagina's, onder de productlijst. Bewust geen FAQ-schema. #}
+    {% if subtekst %}
+    <section class="subpagina-uitleg">
+        {% for kop, alineas in subtekst.uitleg %}
+        <h2>{{ kop }}</h2>
+        {% for alinea in alineas %}
+        <p>{{ alinea }}</p>
+        {% endfor %}
+        {% endfor %}
+    </section>
+    {% if subtekst.vragen %}
+    <section class="category-faq">
+        <h2>Veelgestelde vragen over {{ subtekst.h1|lower }}</h2>
+        {% for vraag, antwoord in subtekst.vragen %}
+        <details class="category-faq-item"{% if loop.first %} open{% endif %}>
+            <summary>{{ vraag }}</summary>
+            <p>{{ antwoord }}</p>
+        </details>
+        {% endfor %}
+    </section>
+    {% endif %}
+    {% if subtekst.bekijk_ook %}
+    <nav class="subpagina-bekijk-ook" aria-label="Bekijk ook">
+        <h2>Bekijk ook</h2>
+        <ul>
+            {% for tekst, adres in subtekst.bekijk_ook %}
+            <li><a href="{{ adres }}">{{ tekst }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+    {% endif %}
 
     {% if faq %}
     <section class="category-faq">

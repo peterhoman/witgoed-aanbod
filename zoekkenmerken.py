@@ -29,6 +29,23 @@ _ONTKENNING = r'(?<!geen )(?<!zonder )(?<!niet )'
 
 KENMERKEN = {
     'drogers': {
+        # Droger zonder afvoer (3 okt 2026): alle condens- en warmtepompdrogers,
+        # dus alles behalve luchtafvoer. Staat er "luchtafvoer" in titel of
+        # specificaties, dan valt het apparaat af, ook als de titel elders
+        # "condens" zegt (de Klarstein Jet Set had beide). Titel, intro,
+        # uitleg en vragen staan in subpagina_teksten.py; 'uitleg' is hier
+        # daarom leeg.
+        'zonder-afvoer': {
+            'kop': 'Drogers zonder afvoer',
+            'label': 'zonder afvoer',
+            'zin': '{n} drogers zonder afvoer',
+            'paginatitel': 'Droger zonder afvoer vergelijken | WitgoedAanbod.nl',
+            'patroon': r'(?s)^(?!.*luchtafvoer).*(warmtepomp|condens)',
+            'in_tekst': False,
+            'uitleg': [],
+            'meta': 'Droger zonder afvoer: condens- en warmtepompdrogers met een '
+                    'waterreservoir, op prijs vergeleken bij onze winkels.',
+        },
         'stoomfunctie': {
             'kop': 'Droger met stoomfunctie: minder strijkwerk',
             'label': 'met stoomfunctie',

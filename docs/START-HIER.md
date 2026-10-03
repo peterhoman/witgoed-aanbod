@@ -1,7 +1,7 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **24 september 2026, 14:30** (het blok "Dagcontrole 24 september"
-hieronder is het nieuwste, met de vijf gebouwde audit-punten en het
+Bijgewerkt **3 oktober 2026, 09:30** (het blok "Dagcontrole 3 oktober" is het nieuwste; dan het korte blok "26 september —
+Witgoedhuis" is het nieuwste; daaronder "Dagcontrole 24 september", met de vijf gebouwde audit-punten en het
 uitgestelde punt 2, dan "Dagcontrole 23 september", dan "Dagcontrole 22 september (tweede sessie)" met
 alles wat die dag 's middags en 's avonds is gebouwd, dan "Overdracht 22 september,
 slot", dan "Dagcontrole 22 september", "21 september (middag)", "Dagcontrole 21 september", "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
@@ -10,6 +10,93 @@ hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blo
 niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
 (MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
 leidend voor werkafspraken.
+
+---
+
+## Dagcontrole 3 oktober (zaterdag, Peter terug) — botnet op de doorklik gerepareerd; serverfout /aanbiedingen; Witgoedhuis-feed beweegt
+
+**Nieuwste blok.** Eerste controle na de vakantie (25 sept t/m 2 okt).
+
+- **`/api/gezondheid`: GEZOND**, 11 van 11, leverbaar 2.962. Prijssprongen
+  0. Tekstwachtrij 3 (routine draaide vannacht). Bol 393 / EP 633 oud
+  (bekend). Sjabloonsporen 0. EPREL loopt, niets afgebroken. Geen uitrol
+  sinds 24 sept. IndexNow elke ochtend 200 (2 okt: 1.293 adressen).
+- **FOUT 1, gerepareerd (tak fix/doorklik-botnet): botnet op de doorklik.**
+  `klik-browser` normaal ~10 per dag; 30 sept 62, **1 okt 633, 2 okt 3.142,
+  3 okt 3.500 om 08:30**. Railway-logs (`railway logs --http --json`): 147
+  verzoeken op /uit/aanbieding/<id> in 15 minuten, **147 verschillende
+  IP-adressen**, allemaal Chinese mobiele netwerken (111.x, 117.x, 183.x,
+  223.x), binnen via knooppunt us-west2, browser-UA Chrome/Edge 144, en
+  geen van die adressen vroeg ooit een productpagina op. De koppen waren
+  vervalst (Sec-Fetch same-origin), dus `pageviews.bron` zag ze als mens en
+  elk verzoek ging met 302 naar het affiliate-netwerk = een klik daar.
+  Per-IP begrenzen helpt niet. **Oplossing (uitlink.py):** elke winkelknop
+  krijgt bij het renderen een kaartje `?k=<tijdstempel>.<HMAC>` (sleutel
+  SECRET_KEY, per aanbieding, 12 uur geldig; sjabloonfunctie
+  `uit_kaartje`). Zonder geldig kaartje: 302 naar de productpagina, bakje
+  `klik-zonder-kaartje`. Tweede slot: kop `X-Railway-Edge` aanwezig en niet
+  Europa → gewone winkellink zonder tracking, bakje `klik-buiten-europa`
+  (ontbreekt de kop, dan verandert er niets). `python test_uitlink.py`: 20
+  controles incl. de route. **Na de merge nakijken:** `klik-browser` moet
+  terug naar ~10/dag, `klik-zonder-kaartje` vangt de golf; op een echte
+  productpagina zelf op een winkelknop klikken mag NIET (affiliate-klik):
+  controleer het adres van de knop (bevat `?k=`) en vraag het kale adres
+  op met curl (moet 302 naar /product/ geven). **Peter: in Awin,
+  TradeTracker en Tradedoubler kijken hoeveel kliks er op 1-3 oktober
+  geteld zijn**; staat daar de golf, dan het netwerk kort inlichten
+  (botverkeer, sinds 3 okt geblokkeerd) vóór zij het zelf markeren.
+- **FOUT 2, gerepareerd (zelfde tak): /aanbiedingen gaf op 2 okt 3
+  serverfouten** (`DetachedInstanceError` in routes/prijsdalingen.py): de
+  cache in prijsdalingen.py bewaart Product-objecten van het verzoek dat
+  hem vulde; in een later verzoek horen die bij een gesloten sessie. Nu
+  bij elke lezing `db.session.merge(..., load=False)`.
+- **Bezoekersbron, vakantieweek:** google 5-11 per dag, chatgpt 1-8 per
+  dag (meer dan Bing en DuckDuckGo samen), verwijzende sites alleen
+  avantius.nl/.eu/.be (9) en ui.awin.com (1): **nog geen enkele bezoeker
+  via een redactie of linkpagina**. Scraper-golven: 24 sept 6.420 zonder
+  Sec-Fetch, 30 sept 3.099 'direct', 29 sept 1.304.
+- **Witgoedhuis-feed beweegt:** `Last-Modified` donderdag **1 oktober
+  03:00** (was 6 september), 3.793 records (was 3.776). Eén verversing is
+  nog geen dagelijks ritme: maandag en dinsdag opnieuw lezen; schuift de
+  datum dan elke dag op, dan is aan de voorwaarde voldaan en kan de
+  koppeling gebouwd worden (meting 21 sept: 807 overlap, 163 nieuwe
+  vergelijkingen).
+- **Mail:** TradeTracker: verkoop via Expert op 2 okt 22:48, commissie
+  **€ 21,45** (schermafdruk Peter). Search Console: 150 klikken in 28
+  dagen (was 120 op 17 sept). Welhof (Awin 44727, via bureau AMPC) biedt
+  een samenwerking aan: outlet/refurbished/tweedehands; **Peter: niet
+  doen**, niet te vergelijken met nieuw op EAN. Kassa/Radar bevestigden de
+  tip van 23 sept. Niets van SMEG, De'Longhi, AEG of de gemailde winkels.
+- **Open na de vakantie, in volgorde:** (1) merge fix/doorklik-botnet en
+  nakijken; (2) netwerken controleren op de klikgolf; (3) rankingmeting
+  dinsdag 6 okt; (4) slug-opschoning: eerst botsingen meten
+  ([[slug-opschoning-uitgesteld]]); (5) SC noindex-stand (was 282) en
+  kenmerkpagina's rond 11 okt; (6) herinnering aan de winkels van 17 sept
+  (week van 5 okt, één keer, als .txt); (7) Awin Partner Submission Form
+  (Peter zelf); (8) Witgoedhuis-feed ma/di opnieuw lezen.
+
+---
+
+## 26 september (zaterdag, Peter op vakantie) — Witgoedhuis: feed nog bevroren, ticket onbeantwoord
+
+- **Feed gemeten 26 sept 15:43 UTC** (`curl -sI` op de Daisycon-feed-URL,
+  zie blok 21 sept): 200 OK, **`Last-Modified` nog zondag 6 september
+  03:30**, `X-Total-Count` 3.776 (ongewijzigd sinds 21 sept). Niet bouwen.
+- **MyDaisycon → Berichtencentrum → Support** (schermafdruk Peter):
+  ticket **#104936** "Productfeed Witgoedhuis: graag dagelijks bijwerken"
+  (21 sept) staat **Openstaand, geen antwoord** van Witgoedhuis. Ticket
+  #104081 (aanmelding, 8 sept) staat ook nog Openstaand maar is achterhaald
+  (goedgekeurd 20 sept); mag Peter sluiten. #104721 (Daisycon, 17 sept) is
+  gesloten.
+- **Automatische Daisycon-mail** "Kunnen we nog iets voor je doen?" (aan
+  peter@avantius.nl, geen actief verkeer vorige maand) is een standaard
+  herinnering, geen reactie op het ticket. Geen actie.
+- **Afspraak:** rond **maandag 5 oktober** (tien werkdagen na het ticket):
+  opnieuw `Last-Modified` meten en in Support kijken. Staat de feed dan nog
+  op 6 sept en is er geen antwoord, dan stuurt Peter één korte herinnering
+  **onder hetzelfde ticket #104936** (niet een nieuw ticket). Gaat
+  `Last-Modified` eerder bewegen, dan eerst een paar dagen volgen of hij
+  dagelijks ververst, pas daarna bouwen.
 
 ---
 

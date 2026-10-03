@@ -53,6 +53,21 @@ leidend voor werkafspraken.
   23), Tradedoubler/MediaMarkt 3.026, bol.com 1.937, Awin/Coolblue 1.505.
   Meldtekst voor de netwerken staat op Peters bureaublad ("Bericht aan de
   netwerken - botverkeer 1-3 oktober.txt"); Peter verstuurt zelf.
+- **Wat de netwerken zelf telden (3 okt, gelezen in Peters accounts) en wat
+  er gemeld is:** TradeTracker 485 kliks over 1-3 okt (EP 402, Expert 82,
+  Voordeligwitgoed 1; wij telden 3.457): grotendeels zelf gefilterd, niet
+  gemeld. **Awin** 404 kliks op 1-2 okt tegen 22 in dezelfde dagen van
+  september, 0 verkopen: **gemeld** door Peter per mail aan
+  partnersuccess@awin.com vanaf peter@avantius.nl (~1.400 kliks Coolblue).
+  **Tradedoubler** 2.958 kliks in 30 dagen tegen 329 ervoor, 3 verkopen,
+  € 27,71 in afwachting: **gemeld** via Help center → Neem contact op.
+  **bol.com** 97 kliks over 1-3 okt (8/28/61; wij telden 1.937), bijna
+  alles zelf gefilterd, 1 order op 29 sept: niet gemeld. Antwoorden
+  afwachten; Awin antwoordt in de Avantius-mailbox. Het bol-account staat
+  in een ander Chrome-profiel (avantiusstats@gmail.com): niet uitleesbaar
+  voor deze chat; rapport via Rapportages → Promotiemiddel → Download
+  (xlsx, Peter geeft het pad). Bol heeft per 1 oktober een nieuw
+  commissiemodel: nog nalezen.
 - **FOUT 3, gerepareerd (PR #210): de uitrollen van 08:34 en 08:36 mislukten**
   met `ModuleNotFoundError: No module named 'psycopg'`. SQLAlchemy stond
   niet in requirements.txt (kwam mee via Flask-SQLAlchemy `>=1.4.18`); de

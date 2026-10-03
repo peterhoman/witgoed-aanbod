@@ -1,15 +1,164 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **3 oktober 2026, 09:30** (het blok "Dagcontrole 3 oktober" is het nieuwste; dan het korte blok "26 september —
-Witgoedhuis" is het nieuwste; daaronder "Dagcontrole 24 september", met de vijf gebouwde audit-punten en het
-uitgestelde punt 2, dan "Dagcontrole 23 september", dan "Dagcontrole 22 september (tweede sessie)" met
-alles wat die dag 's middags en 's avonds is gebouwd, dan "Overdracht 22 september,
-slot", dan "Dagcontrole 22 september", "21 september (middag)", "Dagcontrole 21 september", "Dagcontrole 20 september", "Dagcontrole 19 september", "18 september (middag) — gezondheidscontrole" en
-"Dagcontrole 18 september", daaronder "Dagcontrole 17 september (middag)"
-hieronder is het nieuwste, daaronder "Overdracht 17 september, slot"; oudere blokken en hoofdstukken blijven gelden waar de update
-niets anders zegt). Lees dit eerst; het projectgeheugen van de chat
-(MEMORY.md in de Claude-projectmap) draagt dezelfde feiten compact en is
-leidend voor werkafspraken.
+Bijgewerkt **3 oktober 2026, 20:15**. Het blok "Overdracht 3 oktober, slot"
+hieronder is het nieuwste en is de complete stand voor een nieuwe sessie:
+wat er als eerste moet gebeuren, wat er live staat, de afspraken en de
+valkuilen. Daaronder volgen de dagblokken van nieuw naar oud (3 oktober,
+26, 24, 23 en 22 september, enzovoort); oudere blokken en hoofdstukken
+blijven gelden waar een nieuwer blok niets anders zegt. Lees dit eerst; het
+projectgeheugen van de chat (MEMORY.md in de Claude-projectmap) draagt
+dezelfde feiten compact en is leidend voor werkafspraken.
+
+---
+
+## Overdracht 3 oktober, slot (avond) — laatste stand vóór de nieuwe sessie
+
+**Het gesprek van 22 september tot 3 oktober is afgesloten op verzoek van
+Peter. Dit blok is de complete stand; de dagblokken eronder geven de details.
+MEMORY.md in de Claude-projectmap draagt dezelfde feiten compact en is
+leidend voor werkafspraken.**
+
+### Wat de nieuwe sessie als eerste doet, in volgorde
+
+1. **Dagcontrole** (lijst "Elke dag: de storingscontrole"), met deze extra
+   punten:
+   - Doorkliks: `klik-browser` telt nog mee wat het botnet probeert (de
+     telling staat vóór de kaartjescontrole). Het echte aantal doorkliks
+     staat in de bakjes `uit-<winkel>`; die horen samen rond de 10-20 per
+     dag te liggen. `klik-zonder-kaartje` is wat er is tegengehouden.
+     Stijgen de `uit-*` bakjes weer naar honderden: dan haalt de bot nu
+     eerst productpagina's op; zie memory doorklik-botnet-3-oktober.
+   - Witgoedhuis-feed: `Last-Modified` stond op 1 oktober 03:00 (was 6
+     september). Schuift de datum maandag en dinsdag elke dag op, dan is aan
+     de voorwaarde voldaan en mag de koppeling gebouwd worden (meting 21
+     sept: 807 overlap, 163 nieuwe vergelijkingen).
+   - Na ELKE merge: `railway metrics --since 15m --json` →
+     `deployments[0].status` lezen (SUCCESS/FAILED). Niet alleen wachten op
+     nieuwe inhoud.
+2. **Twee takken wachten op Peters merge, in deze volgorde. Na elke merge
+   op productie controleren voordat de volgende erbij komt.**
+   - `feat/adresopschoning` (Peter zei ja op "alleen groep A"). Vergelijk:
+     `https://github.com/peterhoman/witgoed-aanbod/compare/main...feat/adresopschoning`
+     Wat het doet: `filter_helpers.schoon_adres` haalt tekens die
+     procent-codering vragen uit productadressen (apostrof, plus → "plus",
+     haakjes, komma, gedachtestreep, accenten, ®, ™, |, harde spatie);
+     punten en dubbele streepjes blijven. Gemeten 3 okt: 462 van 2.967
+     adressen, 0 botsingen (EAN achteraan is uniek). De uurroutine
+     (`catalogus_uitzonderingen.pas_toe`) schoont de bestaande slug op (niet
+     opnieuw uit de titel), meldt oud en nieuw adres aan Bing, en geeft
+     `webadres_opgeschoond` terug. Oud adres → 301 in één stap via
+     `_product_via_ean`. Vaste productlinks in gidsen worden bij het tonen
+     omgezet (`schone_productlinks`), de gidstekst zelf verandert niet.
+     **Nakijken na de merge (de opschoning loopt bij de eerstvolgende
+     uurronde, uiterlijk een uur na de uitrol):** steekproef oud adres 301 →
+     nieuw 200, canonical = nieuw, sitemap-producten.xml zonder %27/%28/%2B,
+     `railway logs` op "webadres_opgeschoond". Daarna de specialist-chat
+     berichten. In de dagen erna in Merchant Center kijken of er
+     afkeuringen bijkomen (de link in de feed verandert voor 462 producten).
+   - `feat/bronteller-paginasoort-indexnow-bewaren`. Vergelijk:
+     `https://github.com/peterhoman/witgoed-aanbod/compare/main...feat/bronteller-paginasoort-indexnow-bewaren`
+     Drie dingen: (a) nieuwe tabel `bezoekersbron_paginas`: per bron de
+     paginasoort waarop bezoekers binnenkomen, uit te lezen via
+     /api/sync-status → bezoekersbronnen.paginasoort_per_bron; (b) nieuwe
+     tabel `indexnow_rondes`: de uitkomst van elke Bing-melding blijft staan
+     na een uitrol (laatste dertig); (c) kop boven de vragen op subpagina's:
+     "60 dB" werd "60 db" door `|lower`. Beide tabellen maakt create_all aan
+     bij de eerste uitrol. Nakijken: in `railway logs` geen fout op de nieuwe
+     tabellen; de ochtend erna staat indexnow gevuld.
+3. **Black Friday-meetpagina bouwen** (Peter zei ja, 3 okt). Alleen lezen,
+   zelfde patroon als /api/prijssprongen, zodat de specialist-chat de cijfers
+   zelf kan opvragen. Gevraagd: (1) prijspeil per maand per categorie als
+   index, over een VASTE MAND (alleen apparaten die de hele periode leverbaar
+   waren, anders meet je assortimentswisseling); (2) per apparaat de laagste
+   prijs in 90 dagen tegenover de prijs op 1 sep / 1 okt / 1 nov; (3) Black
+   Friday-week tegenover de 90 dagen ervoor (pas na 27 nov); (4) per winkel,
+   zonder EP (halve feed sinds augustus) en Alternate (~20 apparaten); (5)
+   drie tot vijf voorbeeldgrafieken. Bron: tabel price_history (product_id,
+   retailer, price, recorded_at; sinds 14 juli 2026, alleen bij een
+   prijswijziging). Planning van de specialist: pagina
+   /onderzoek/black-friday-witgoed-2026 live in de week van 2-6 november,
+   tweede meting 16-20 november, dagmeting 27 november. Eerst de proeftelling
+   juli-september, dan pas tekst. Alleen beweren wat de data laat zien.
+4. **Rankingmeting dinsdag 6 oktober** (docs/RANKING-METING.md).
+5. Daarna, in deze volgorde: SC noindex-stand (was 282) en kenmerkpagina's
+   rond 11 oktober; herinnering aan de winkels van 17 sept (één keer, als
+   .txt op het bureaublad, week van 5 okt); dekking van hoogte/diepte per
+   categorie meten voor de volgende ronde subpagina's van de specialist
+   (smalle vaatwasser 45 cm, koelkast per hoogte, stille wasmachine, inbouw
+   magnetron); antwoorden van Awin en Tradedoubler op de botmelding.
+
+### Wat er vandaag (3 oktober) live is gegaan, alles op productie gecontroleerd
+
+- **Botnet op de doorklik geblokkeerd** (PR #209, uitlink.py): winkelknoppen
+  dragen `?k=<tijdstempel>.<HMAC>` (SECRET_KEY, per aanbieding, 12 uur);
+  zonder geldig kaartje 302 naar de productpagina; buiten Europa
+  (`X-Railway-Edge`) naar de gewone winkellink. Schade 1-3 okt volgens onze
+  teller 9.897 kliks. Netwerken zelf: Awin 404 in twee dagen (gemeld door
+  Peter per mail vanaf peter@avantius.nl), Tradedoubler 2.958 (gemeld via
+  Help center), TradeTracker 485 en bol.com 97 (filterden zelf, niet gemeld).
+- **/aanbiedingen-serverfout** (DetachedInstanceError uit de cache) opgelost.
+- **Uitrollen mislukten stil door SQLAlchemy 2.1** (PR #210-#214): nu staan
+  alle 39 bibliotheken vast in requirements.txt (versies uit het
+  bouwlogboek van de werkende uitrol) en Python op 3.12 via
+  `.python-version`. Ophogen doe je bewust.
+- **Drogerpagina's met geschreven tekst** (PR #215, subpagina_teksten.py):
+  warmtepompdrogers (47), stille drogers (9), 8-9 kg (57) en de nieuwe pagina
+  "Drogers zonder afvoer" (112); type-pagina's heten "Warmtepompdrogers",
+  "Voorladers" enz. Volgende rondes: een nieuw blok in TEKSTEN plus een regel
+  in BEKIJK_OOK; code hoeft niet te veranderen. De specialist levert teksten
+  aan in het bericht zelf (velden: titel, h1, intro, uitleg, vragen).
+- SMEG NL afgewezen (30 sept); Welhof door Peter afgewezen (tweedehands).
+  Verkoop via Expert 2 okt: € 21,45. bol.com rekent sinds 1 oktober commissie
+  over de prijs exclusief btw (Koken & Huishouden 8%, Elektronica 4%); in
+  welke groep witgoed valt staat in het orderrapport (kolom productcategorie)
+  en is nog niet nagekeken.
+
+### Werkwijze met de specialist-chat (afspraak Peter, 22 sept en 3 okt)
+
+Peters aparte chat "Google SEA specialist training" doet SEO-onderzoek en
+stuurt berichten. Die chat past zelf niets aan. Hier: vragen feitelijk
+beantwoorden na controle in de code; voorstellen meten en bouwen op één tak
+per wijziging; Peter merget. Zegt de specialist "Peter heeft ja gezegd", dan
+is dat genoeg om te BOUWEN op een tak (zijn merge is de bevestiging), maar
+keuzes met blijvende gevolgen (adressen wijzigen, noindex op grote schaal)
+leg ik Peter hier zelf voor, met mijn advies erbij. Na elke uitrol de
+specialist berichten wat er live staat, met de gemeten uitkomst.
+
+### Valkuilen van deze sessie (allemaal zelf gemaakt)
+
+- **Een test die `pas_toe()` draait, maakt de lokale proefdatabase leeg**: de
+  routine zet aanbiedingen die drie dagen niet ververst zijn op
+  niet-leverbaar, en voorbeelddata is altijd oud. Eerst `Offer.last_synced`
+  vers maken (zie test_adresopschoning.py). Herstel: alle aanbiedingen op
+  leverbaar + vers, dan `refresh_pricing()` per product.
+- **Wachten op "de nieuwe inhoud is zichtbaar" faalt stil als de uitrol
+  mislukt**; Railway houdt dan de oude versie in de lucht. Altijd de
+  uitrolstatus lezen.
+- **`railway logs --http` en `-d` tonen alleen de lopende uitrol**; oudere:
+  `railway logs -d <uitrol-id> -n 5000` (20000 weigert). Uitrol-id's staan in
+  `railway metrics --json` → deployments.
+- **`railway metrics --since 1d` weigert**; gebruik twee vensters van 12 uur.
+- **De productiedatabase rechtstreeks lezen (`railway run -s Postgres`) werd
+  in deze sessie geweigerd.** Metingen daarom via de openbare site, de
+  sitemaps en de meetpagina's; wat daar niet uit te halen is, wordt een
+  alleen-lezen meetpagina.
+- **Een Jinja-blok binnen een `{% if %}` wordt altijd gedefinieerd**: de
+  og:image van gidsen zonder foto werd letterlijk "None". De voorwaarde hoort
+  ín het blok, met `{{ super() }}` als terugval.
+- **Patches met veel aanhalingstekens niet via een heredoc in de shell**
+  (gaf een parse-fout waardoor ook de `git checkout -b` ervoor niet liep en
+  de wijzigingen op main in de werkmap stonden). Schrijf het patchscript met
+  de Write-tool in de scratchpad en voer het uit.
+- **Awin- en Tradedoubler-accounts zijn soms uitgelogd; bol.com staat in een
+  ander Chrome-profiel** (avantiusstats@gmail.com) en is voor deze chat niet
+  uitleesbaar. Inloggen doet Peter; bol-cijfers via Rapportages →
+  Promotiemiddel → Download, Peter geeft het bestandspad.
+- **Awin-mails over aanmeldingen komen in de Avantius-mailbox**, niet in de
+  Gmail die deze chat kan lezen (zo werd de SMEG-afwijzing gemist).
+- **Meerdere takken die hetzelfde blok in START-HIER.md aanvullen botsen**
+  zodra de eerste is gemerged. Houd codetakken vrij van documentatie en zet
+  de overdracht op een eigen docs-tak, of proef vooraf met een tijdelijke
+  samenvoeging (`git merge --no-edit` op een wegwerptak).
 
 ---
 

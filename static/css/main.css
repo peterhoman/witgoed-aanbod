@@ -255,6 +255,63 @@ body {
     max-width: 820px;
 }
 
+/* Geschreven tekst per subpagina (3 okt 2026): uitleg onder de lijst,
+   de datum onder de kop en de links naar verwante pagina's. */
+.subpagina-bijgewerkt {
+    font-size: 13px;
+    color: var(--tekst-tertiair);
+    margin: 0 0 8px;
+}
+
+.subpagina-uitleg {
+    margin: 40px 0 0;
+    max-width: 820px;
+}
+
+.subpagina-uitleg h2 {
+    font-size: 22px;
+    margin: 28px 0 10px;
+}
+
+.subpagina-uitleg p {
+    line-height: 1.6;
+    margin: 0 0 12px;
+}
+
+.subpagina-bekijk-ook {
+    margin: 32px 0 24px;
+    max-width: 820px;
+}
+
+.subpagina-bekijk-ook h2 {
+    font-size: 22px;
+    margin-bottom: 12px;
+}
+
+.subpagina-bekijk-ook ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.subpagina-bekijk-ook a {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.subpagina-bekijk-ook a:hover {
+    border-color: var(--primary);
+}
+
 .category-faq h2 {
     font-size: 22px;
     margin-bottom: 16px;

@@ -2684,7 +2684,8 @@ def category(slug):
 
 
 def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_description, intro,
-                       facet_uitleg=None, kenmerk_video=None, facet_paginatitel=None):
+                       facet_uitleg=None, kenmerk_video=None, facet_paginatitel=None,
+                       pad=None):
     """Gedeelde rendering voor merk-/energielabel-facetpagina's.
 
     In tegenstelling tot ?brand=/?spec= (client-side filters, alleen
@@ -2721,6 +2722,29 @@ def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_de
     brand_facet = compute_brand_facet(gefilterd)
     spec_facets = compute_spec_facets(gefilterd)
 
+    # Geschreven tekst voor deze subpagina (subpagina_teksten.py, 3 okt 2026):
+    # eigen titel, kop en intro, plus uitleg, vragen en "bekijk ook" onder de
+    # lijst. Aantal en vanaf-prijs komen uit de lijst die hier getoond wordt.
+    subtekst = None
+    if pad:
+        from models import Offer, RETAILER_LABELS, db
+        from subpagina_teksten import tekst_voor
+        prijzen = [p.lowest_price for p in gefilterd if p.lowest_price]
+        subtekst = tekst_voor(pad, products.total,
+                              int(min(prijzen)) if prijzen else None,
+                              len(RETAILER_LABELS))
+        if subtekst:
+            from routes.prijsdalingen import _datum_tekst
+            facet_title = subtekst['h1']
+            facet_paginatitel = subtekst['titel']
+            intro = subtekst['intro']
+            meta_description = _meta_kort(intro)
+            # "Bijgewerkt op": het moment van de laatste prijssync, niet de
+            # datum van vandaag; een datum die opschuift zonder dat er iets
+            # veranderde is precies wat Google afraadt.
+            subtekst['bijgewerkt'] = _datum_tekst(
+                db.session.query(db.func.max(Offer.last_synced)).scalar())
+
     return render_template(
         'category.html',
         category=category,
@@ -2746,6 +2770,7 @@ def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_de
         pros_cons_by_ean=_pros_cons_by_ean(),
         # Te weinig producten om te indexeren (zie _MIN_VOOR_INDEX).
         noindex_dun=products.total < _MIN_VOOR_INDEX,
+        subtekst=subtekst,
     )
 
 
@@ -2808,6 +2833,7 @@ def category_energielabel(slug, letter):
         category, Product.specs[energie_facet['key']].as_string().ilike(f"{letter}%"),
         f"Energielabel {letter}", f"Energielabel {letter} {category.name}",
         meta_description, intro,
+        pad=(slug, 'energielabel', letter.lower()),
     )
 
 
@@ -2846,9 +2872,13 @@ def category_subtype(slug, waarde_slug):
     meta_description = _meta_kort(f"{waarde} {naam_lower} vergelijken: {match['count']} modellen op prijs "
                         f"bij {winkel_opsomming()}.")
 
+    # Gewone naam als kop ("Warmtepompdrogers" i.p.v. "Warmtepompdroger
+    # Drogers"); onbekende typen houden de oude opbouw.
+    from subpagina_teksten import TYPE_NAMEN
     return _render_facet_page(
         category, Product.specs[spec_key].as_string() == waarde, waarde,
-        f"{waarde} {category.name}", meta_description, intro,
+        TYPE_NAMEN.get(waarde_slug) or f"{waarde} {category.name}", meta_description, intro,
+        pad=(slug, 'type', waarde_slug),
     )
 
 
@@ -3006,6 +3036,7 @@ def category_kenmerk(slug, veld, stap_slug):
     return _render_facet_page(
         category, Product.id.in_(info['ids']), stap['label'],
         kop, meta_description, intro,
+        pad=(slug, veld, stap_slug),
     )
 
 
@@ -3055,6 +3086,7 @@ def category_zoekkenmerk(slug, kenmerk_slug):
         definitie['kop'], _meta_kort(definitie['meta']), intro,
         facet_uitleg=definitie['uitleg'], kenmerk_video=definitie.get('video'),
         facet_paginatitel=definitie.get('paginatitel'),
+        pad=(slug, 'kenmerk', kenmerk_slug),
     )
 
 

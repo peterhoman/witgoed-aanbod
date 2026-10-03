@@ -1816,6 +1816,37 @@ def bol_aanbiedingen():
     })
 
 
+@main_bp.route('/api/black-friday')
+def black_friday_cijfers():
+    """Cijfers voor het Black Friday-prijsonderzoek (black_friday.py). Leest alleen.
+
+    ?start=JJJJ-MM-DD  begin van de vaste mand (standaard 2026-07-16)
+    ?bf=JJJJ-MM-DD     maandag van de week die als Black Friday-week telt;
+                       zonder deze vóór 24 november alleen een melding
+    ?apparaten=N       bij de Omnibus-vergelijking de N apparaten die het
+                       verst boven hun laagste prijs zitten (max 500)
+    """
+    from datetime import datetime
+
+    from flask import jsonify
+
+    import black_friday
+
+    def datum(naam, standaard):
+        waarde = request.args.get(naam)
+        if not waarde:
+            return standaard
+        try:
+            return datetime.strptime(waarde, '%Y-%m-%d')
+        except ValueError:
+            abort(400)
+
+    start = datum('start', black_friday.START)
+    bf = datum('bf', None)
+    details = min(max(request.args.get('apparaten', 0, type=int), 0), 500)
+    return jsonify(black_friday.cijfers(start=start, bf_week=bf, details=details))
+
+
 @main_bp.route('/api/prijssprongen')
 def prijssprongen():
     """Verdachte prijsbewegingen van de afgelopen dagen. Leest alleen.

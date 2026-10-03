@@ -432,13 +432,57 @@ def foto_url(url, breedte=400):
 URL_BREKERS = '%#?&'
 
 
+def schoon_adres(slug):
+    """Een productadres zonder tekens die procent-codering vragen.
+
+    Adresopschoning van 3 oktober 2026 (audit van de SEO-chat, Peters ja).
+    Gemeten: 462 van de 2.967 productadressen bevatten een apostrof, plus,
+    haakjes, komma, gedachtestreep, accent, ®, ™, | of harde spatie. Zulke
+    adressen bestaan in twee schrijfwijzen (de'longhi en de%27longhi), en
+    Google ziet die als twee adressen.
+
+    Bewust NIET opgeschoond: punten ("ecam350.15.b") en dubbele of
+    driedubbele streepjes. Dat zijn geldige adrestekens; ze opschonen levert
+    Google niets op maar zou 1.927 adressen wijzigen in plaats van 462, en
+    productpagina's zijn 92% van de klikken. Kan later alsnog.
+
+    Regels: een plus wordt "plus" (SpeedPerfect+ -> speedperfectplus, een
+    setje "a + b" -> a-plus-b), accenten verdwijnen (é -> e), al het andere
+    buiten a-z, 0-9, punt en streepje vervalt. Twee keer toepassen geeft
+    hetzelfde als één keer. Botsingen kunnen niet: de EAN achteraan is uniek
+    (gemeten: 0 op 2.967).
+    """
+    import unicodedata
+    tekst = (slug or '').lower().replace('+', 'plus')
+    tekst = unicodedata.normalize('NFKD', tekst).encode('ascii', 'ignore').decode()
+    return re.sub(r'[^a-z0-9.\-]', '', tekst)
+
+
 def product_slug(title, ean):
     """Webadres voor een productpagina, zoals de syncs hem altijd bouwden
     (eerste 50 tekens van de titel, kleine letters, spatie en / worden een
-    streepje) — maar zonder de tekens die een URL breken."""
+    streepje) — maar zonder de tekens die een URL breken, en sinds 3 oktober
+    2026 ook zonder tekens die procent-codering vragen (schoon_adres)."""
     kaal = (title or '')[:50].lower().replace(' ', '-').replace('/', '-')
     kaal = re.sub(f'[{re.escape(URL_BREKERS)}]', '-', kaal)
-    return f"{kaal}-{ean}"
+    return schoon_adres(f"{kaal}-{ean}")
+
+
+_PRODUCTLINK = re.compile(r'href="/product/([^"]+)"')
+
+
+def schone_productlinks(html):
+    """Vaste /product/-links in gids- en blogteksten naar het schone adres.
+
+    De gidsen bevatten dertig uitgeschreven productlinks; een deel daarvan
+    wijst na de adresopschoning naar een oud adres. Dat werkt (301 in één
+    stap), maar een interne link hoort niet via een doorverwijzing te lopen.
+    Bij het tonen omgezet, zodat de gidstekst zelf niet verandert en de
+    datum "laatst bijgewerkt" niet opschuift.
+    """
+    from urllib.parse import unquote
+    return _PRODUCTLINK.sub(lambda m: f'href="/product/{schoon_adres(unquote(m.group(1)))}"',
+                            html or '')
 
 
 def parse_spec_filters(raw_values):

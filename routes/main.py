@@ -2482,8 +2482,9 @@ def _gids_afbeelding(guide):
 def guide_detail(slug):
     guide = Guide.query.filter_by(slug=slug).first_or_404()
     from guide_cards import render_guide_content
+    from filter_helpers import schone_productlinks
     return render_template('guide_detail.html', guide=guide,
-                           rendered_content=render_guide_content(guide.content),
+                           rendered_content=schone_productlinks(render_guide_content(guide.content)),
                            gids_afbeelding=_gids_afbeelding(guide))
 
 
@@ -2496,7 +2497,9 @@ def blog():
 @main_bp.route('/blog/<slug>')
 def blog_detail(slug):
     post = Guide.query.filter_by(slug=slug, post_type='blog').first_or_404()
+    from filter_helpers import schone_productlinks
     return render_template('guide_detail.html', guide=post,
+                           rendered_content=schone_productlinks(post.content),
                            gids_afbeelding=_gids_afbeelding(post))
 
 

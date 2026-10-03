@@ -244,15 +244,44 @@ def pas_toe(app):
         # PFAS-vrij" in de titel). De syncs bouwen zulke adressen sindsdien
         # niet meer (filter_helpers.product_slug); dit herstelt wat er al
         # stond, en vangt op wat er ooit nog eens doorheen glipt.
-        from filter_helpers import URL_BREKERS, product_slug
+        from filter_helpers import URL_BREKERS, product_slug, schoon_adres
         hersteld = 0
         for product in Product.query.all():
             if any(teken in (product.slug or '') for teken in URL_BREKERS):
                 product.slug = product_slug(product.title, product.ean)
                 hersteld += 1
 
-        if verwijderd or verplaatst or hersteld:
+        # Adresopschoning (3 oktober 2026): tekens die procent-codering
+        # vragen uit bestaande adressen halen. Het bestaande adres wordt
+        # opgeschoond, niet opnieuw uit de titel gebouwd: winkels passen
+        # titels aan en dan zou het adres bij elke titelwijziging verspringen.
+        # Het oude adres blijft werken via de EAN achteraan
+        # (routes.products._product_via_ean: 301 in één stap).
+        opgeschoond = []
+        for product in Product.query.all():
+            nieuw = schoon_adres(product.slug)
+            if nieuw and nieuw != product.slug:
+                opgeschoond.append((product.slug, nieuw))
+                product.slug = nieuw
+
+        if verwijderd or verplaatst or hersteld or opgeschoond:
             db.session.commit()
+
+        # Bing meteen laten weten dat deze adressen verhuisd zijn (oud én
+        # nieuw, zodat de 301 gezien wordt). Google leest het uit de sitemap.
+        if opgeschoond:
+            try:
+                from urllib.parse import quote
+                import indexnow
+                site = app.config['SITE_URL']
+                sleutel = app.config.get('INDEXNOW_KEY')
+                if sleutel:
+                    adressen = [f"{site}/product/{quote(s, safe='/-._~')}"
+                                for paar in opgeschoond for s in paar]
+                    indexnow.verstuur(adressen, site.split('://', 1)[-1], sleutel,
+                                      f"{site}{indexnow.sleutelbestand(sleutel)}")
+            except Exception:
+                pass  # een mislukte melding mag de opschoning niet raken
 
         # Aanbiedingen die langer dan drie dagen niet zijn ververst niet
         # meer als leverbaar tonen; zie verouderde_aanbiedingen.py.
@@ -262,4 +291,5 @@ def pas_toe(app):
         return {'verwijderd': verwijderd, 'verplaatst': verplaatst,
                 'verouderd_verborgen': verborgen,
                 'webadres_hersteld': hersteld,
+                'webadres_opgeschoond': len(opgeschoond),
                 'ten_onrechte_in_setjes': [p.slug for p in terug]}

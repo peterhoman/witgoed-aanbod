@@ -90,11 +90,11 @@ def meld_gewijzigde_adressen(app):
         nu = datetime.now(timezone.utc).replace(tzinfo=None)
         _laatste.update({'wanneer': nu.isoformat(timespec='seconds'), 'adressen': 0,
                          'berichten': [], 'fout': None})
-        if not sleutel:
-            _laatste['fout'] = 'INDEXNOW_KEY ontbreekt'
-            logger.warning('indexnow: geen sleutel, niets gemeld')
-            return
         try:
+            if not sleutel:
+                _laatste['fout'] = 'INDEXNOW_KEY ontbreekt'
+                logger.warning('indexnow: geen sleutel, niets gemeld')
+                return
             adressen = gewijzigde_adressen(_bouw_entries(), date.today() - timedelta(days=1))
             _laatste['adressen'] = len(adressen)
             if not adressen:
@@ -107,8 +107,46 @@ def meld_gewijzigde_adressen(app):
         except Exception as e:  # een mislukte melding mag de planner niet raken
             _laatste['fout'] = str(e)[:200]
             logger.warning('indexnow: melden mislukt: %s', e)
+        finally:
+            _bewaar()
+
+
+def _bewaar():
+    """Schrijf de uitkomst van deze ronde weg (models.IndexNowRonde) en houd
+    de laatste dertig. Mislukt het bewaren, dan blijft de ronde zelf geslaagd."""
+    try:
+        from models import db, IndexNowRonde
+        db.session.add(IndexNowRonde(
+            adressen=_laatste['adressen'],
+            statussen=','.join(str(b['status']) for b in _laatste['berichten'])[:200],
+            fout=_laatste['fout']))
+        db.session.commit()
+        oud = IndexNowRonde.query.order_by(IndexNowRonde.wanneer.desc()).offset(30).all()
+        for rij in oud:
+            db.session.delete(rij)
+        if oud:
+            db.session.commit()
+    except Exception as e:
+        logger.warning('indexnow: uitkomst bewaren mislukt: %s', e)
 
 
 def status():
-    """Voor /api/sync-status."""
+    """Voor /api/sync-status: de laatste ronde uit de database (blijft staan
+    na een uitrol), anders wat dit proces nog in het geheugen heeft."""
+    try:
+        from models import IndexNowRonde
+        rijen = IndexNowRonde.query.order_by(IndexNowRonde.wanneer.desc()).limit(7).all()
+        if rijen:
+            r = rijen[0]
+            return {
+                'wanneer': r.wanneer.isoformat(timespec='seconds'),
+                'adressen': r.adressen,
+                'berichten': [{'status': int(s)} for s in r.statussen.split(',') if s.strip().isdigit()],
+                'fout': r.fout,
+                'laatste_rondes': [{'wanneer': x.wanneer.isoformat(timespec='seconds'),
+                                    'adressen': x.adressen, 'statussen': x.statussen,
+                                    'fout': x.fout} for x in rijen],
+            }
+    except Exception:
+        pass
     return dict(_laatste)

@@ -65,6 +65,11 @@ leidend voor werkafspraken.**
      "60 dB" werd "60 db" door `|lower`. Beide tabellen maakt create_all aan
      bij de eerste uitrol. Nakijken: in `railway logs` geen fout op de nieuwe
      tabellen; de ochtend erna staat indexnow gevuld.
+   - **Opruimen mag (Peters ja, 3 okt avond):** de tak
+     `docs/netwerken-gemeld-3-oktober` op GitHub zit volledig in main (PR
+     #212) en mag weg; ook takken van al doorgevoerde PR's die GitHub laat
+     staan. Eerst nakijken met `git branch -r --merged origin/main`, alleen
+     wat daarin staat verwijderen.
 3. **Black Friday-meetpagina bouwen** (Peter zei ja, 3 okt). Alleen lezen,
    zelfde patroon als /api/prijssprongen, zodat de specialist-chat de cijfers
    zelf kan opvragen. Gevraagd: (1) prijspeil per maand per categorie als

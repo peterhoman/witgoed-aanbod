@@ -82,7 +82,15 @@ def _alle_dalingen():
     nu = time.time()
     hit = _CACHE.get('alles')
     if hit and nu - hit[0] < _TTL:
-        return hit[1]
+        # De cache bewaart Product-objecten uit het verzoek dat hem vulde;
+        # in een later verzoek horen die bij een gesloten sessie. Zolang
+        # alles al geladen was ging dat goed, maar op 2 oktober 2026 gaf het
+        # drie serverfouten (DetachedInstanceError op /aanbiedingen). Daarom
+        # bij elke lezing opnieuw aan de lopende sessie hangen; load=False
+        # kost geen query.
+        return {cat: [{**d, 'product': db.session.merge(d['product'], load=False)}
+                      for d in lijst]
+                for cat, lijst in hit[1].items()}
 
     ruw = _ruwe_dalingen()
     if not ruw:

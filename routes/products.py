@@ -74,6 +74,25 @@ def naar_winkel(offer_id):
     if soort in (BRON_ROBOT, BRON_ANDERS, BRON_VOORUIT, BRON_LOS_ADRES):
         abort(403)
 
+    # Kaartje (3 oktober 2026, zie uitlink.py): een botnet vroeg dit adres
+    # duizenden keren per dag op, elk verzoek van een ander IP en met
+    # vervalste browserkoppen, zonder ooit een productpagina te laden. Wie
+    # geen geldig kaartje van een pas uitgegeven pagina heeft, gaat naar de
+    # productpagina (daar staat een verse knop) en niet naar het netwerk.
+    from flask import url_for
+    from uitlink import buiten_europa, kaartje_geldig
+    terug = url_for('products.product_detail', slug=offer.product.slug)
+    if not kaartje_geldig(request.args.get('k'), current_app.config['SECRET_KEY'],
+                          'a', offer.id):
+        tel('klik-zonder-kaartje')
+        return redirect(terug, code=302)
+    # Tweede slot: binnengekomen via een knooppunt buiten Europa. Een mens
+    # op reis komt nog bij de winkel (gewone winkellink, zonder tracking);
+    # het netwerk telt geen klik.
+    if buiten_europa(request.headers):
+        tel('klik-buiten-europa')
+        return redirect(offer.url or terug, code=302)
+
     tel(f"uit-{offer.retailer}")
 
     # 302 en niet 301: dit is geen verhuizing van een pagina maar een
@@ -106,6 +125,18 @@ def naar_winkel_product(product_id):
     tel(soort)
     if soort in (BRON_ROBOT, BRON_ANDERS, BRON_VOORUIT, BRON_LOS_ADRES):
         abort(403)
+
+    # Zelfde kaartje als bij naar_winkel (uitlink.py).
+    from flask import url_for
+    from uitlink import buiten_europa, kaartje_geldig
+    terug = url_for('products.product_detail', slug=product.slug)
+    if not kaartje_geldig(request.args.get('k'), current_app.config['SECRET_KEY'],
+                          'p', product.id):
+        tel('klik-zonder-kaartje')
+        return redirect(terug, code=302)
+    if buiten_europa(request.headers):
+        tel('klik-buiten-europa')
+        return redirect(product.bol_url or terug, code=302)
 
     tel('uit-terugval')
     return redirect(doel, code=302)

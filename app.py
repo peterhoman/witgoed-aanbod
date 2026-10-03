@@ -279,6 +279,15 @@ def create_app(config_name=None):
     registreer_assets(app)
 
     @app.context_processor
+    def inject_uit_kaartje():
+        # Kaartje voor de winkelknoppen (uitlink.py, 3 oktober 2026): de
+        # doorklikroute stuurt alleen door met een kaartje van een pas
+        # uitgegeven pagina. Sjablonen roepen uit_kaartje('a', offer.id) aan.
+        from uitlink import maak_kaartje
+        return {'uit_kaartje': lambda soort, nummer: maak_kaartje(
+            app.config['SECRET_KEY'], soort, nummer)}
+
+    @app.context_processor
     def inject_chat_enabled():
         # Babbelbot-widget alleen tonen als er echt geadviseerd kan worden
         # (OPENROUTER_API_KEY gezet, of lokale dev) — zelfde patroon als

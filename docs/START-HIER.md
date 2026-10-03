@@ -45,6 +45,28 @@ leidend voor werkafspraken.
   TradeTracker en Tradedoubler kijken hoeveel kliks er op 1-3 oktober
   geteld zijn**; staat daar de golf, dan het netwerk kort inlichten
   (botverkeer, sinds 3 okt geblokkeerd) vóór zij het zelf markeren.
+- **Live sinds 3 okt 11:05 (PR #209 + #210) en op productie gecontroleerd:**
+  winkelknoppen dragen `?k=`; een kaal of vals doorklikadres geeft 302 naar
+  de productpagina; /aanbiedingen 200; GEZOND; 0 5xx. Schade tot dat
+  moment (eigen teller, 1-3 okt): **9.897 kliks** naar de netwerken:
+  TradeTracker 3.457 (Expert 2.711, EP 499, Voordeligwitgoed 224, Alternate
+  23), Tradedoubler/MediaMarkt 3.026, bol.com 1.937, Awin/Coolblue 1.505.
+  Meldtekst voor de netwerken staat op Peters bureaublad ("Bericht aan de
+  netwerken - botverkeer 1-3 oktober.txt"); Peter verstuurt zelf.
+- **FOUT 3, gerepareerd (PR #210): de uitrollen van 08:34 en 08:36 mislukten**
+  met `ModuleNotFoundError: No module named 'psycopg'`. SQLAlchemy stond
+  niet in requirements.txt (kwam mee via Flask-SQLAlchemy `>=1.4.18`); de
+  uitrol van 24 sept kreeg 2.0.54, die van 3 okt 2.1.3, en 2.1 kiest voor
+  `postgresql://` standaard psycopg (3) in plaats van psycopg2. Railway
+  hield de oude versie in de lucht, dus geen storing, maar ook geen
+  reparatie live. Nu `SQLAlchemy==2.0.54` vastgezet. **Les: na elke merge
+  de uitrolstatus lezen (`railway metrics --json` → deployments), niet
+  alleen wachten op de nieuwe inhoud.** Nog open (voorstel aan Peter): ook
+  de indirecte bibliotheken (Werkzeug, Jinja2, e.d.) vastzetten met een
+  volledige lijst uit de werkende uitrol.
+- **SMEG NL afgewezen** (Awin-mail 30 sept aan peter@avantius.nl: "Site does
+  not complement advertiser brand"). Niet opnieuw aanvragen. Awin-mails over
+  aanmeldingen komen in de Avantius-mailbox, die deze chat niet kan lezen.
 - **FOUT 2, gerepareerd (zelfde tak): /aanbiedingen gaf op 2 okt 3
   serverfouten** (`DetachedInstanceError` in routes/prijsdalingen.py): de
   cache in prijsdalingen.py bewaart Product-objecten van het verzoek dat

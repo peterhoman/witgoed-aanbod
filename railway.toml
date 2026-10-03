@@ -1,4 +1,8 @@
 [build]
+# De Python-versie staat in het bestand .python-version (3.12, vastgezet op
+# 3 oktober 2026). Nixpacks leest dat bij elke bouw. Tot dan koos Railway
+# zelf de versie; een stille sprong naar een nieuwere Python kan de
+# vastgezette bibliotheken in requirements.txt onbruikbaar maken.
 builder = "nixpacks"
 
 [deploy]

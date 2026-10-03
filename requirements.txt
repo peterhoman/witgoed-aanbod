@@ -1,5 +1,11 @@
 Flask==2.3.3
 Flask-SQLAlchemy==3.0.5
+# Vastgezet op 3 oktober 2026: SQLAlchemy stond niet in deze lijst, dus elke
+# uitrol nam de nieuwste. Versie 2.1 (uitgekomen eind september) kiest voor
+# postgresql:// standaard de koppeling psycopg (3) in plaats van psycopg2,
+# en daarmee startte de site niet meer (ModuleNotFoundError: psycopg; twee
+# mislukte uitrollen). 2.0.54 is de versie van de laatste geslaagde uitrol.
+SQLAlchemy==2.0.54
 python-dotenv==1.0.0
 requests==2.31.0
 APScheduler==3.10.4

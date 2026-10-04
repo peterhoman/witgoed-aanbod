@@ -43,6 +43,7 @@ TEKSTEN = {
     ('drogers', 'type', 'warmtepompdroger'): {
         'titel': 'Warmtepompdrogers vergelijken: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
         'h1': 'Warmtepompdrogers vergelijken',
+        'naam': 'warmtepompdrogers',  # voor de vragenkop
         'intro': ('Een warmtepompdroger is de zuinigste soort wasdroger. Hij hergebruikt de '
                   'warme lucht in plaats van die weg te blazen en verbruikt daardoor ruwweg de '
                   'helft van de stroom van een gewone condensdroger. Wij volgen {n} '
@@ -94,6 +95,7 @@ TEKSTEN = {
     ('drogers', 'geluid', 'stil'): {
         'titel': 'Stille drogers: {n} modellen onder 60 dB vanaf € {vanaf} | WitgoedAanbod.nl',
         'h1': 'Stille drogers (onder 60 dB)',
+        'naam': 'stille drogers',  # voor de vragenkop
         'intro': ('Een stille droger maakt minder dan 60 decibel, ongeveer het geluid van een '
                   'gesprek. Dat scheelt als de droger in de badkamer, de keuken of naast een '
                   'slaapkamer staat. Wij volgen {n} stille drogers. Het geluidsniveau komt uit '
@@ -128,6 +130,7 @@ TEKSTEN = {
     ('drogers', 'vulgewicht', '8-9-kg'): {
         'titel': 'Droger 8 kg en 9 kg: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
         'h1': 'Drogers van 8 en 9 kg',
+        'naam': 'drogers van 8 en 9 kg',  # voor de vragenkop
         'intro': ('Een droger van 8 of 9 kg is de maat voor een gezin: er past een volle '
                   'wasmachinetrommel in, inclusief dekbedovertrek of handdoeken. Wij volgen '
                   '{n} drogers met dit vulgewicht en tonen per model de laagste prijs van '
@@ -158,6 +161,7 @@ TEKSTEN = {
     ('drogers', 'kenmerk', 'zonder-afvoer'): {
         'titel': 'Droger zonder afvoer: {n} modellen met waterreservoir | WitgoedAanbod.nl',
         'h1': 'Drogers zonder afvoer',
+        'naam': 'drogers zonder afvoer',  # voor de vragenkop
         'intro': ('Geen afvoer of raam in de buurt? Dan heb je een condensdroger of '
                   'warmtepompdroger nodig. Die vangen het vocht op in een reservoir dat je na '
                   'het drogen leegt, en hoeven dus niet op een afvoer of naar buiten te worden '
@@ -228,6 +232,10 @@ def tekst_voor(pad, n, vanaf, winkels):
     return {
         'titel': titel.format(**waarden),
         'h1': ruw['h1'],
+        # Korte naam voor 'Veelgestelde vragen over ...'; de hele h1 las daar
+        # stroef ('... over warmtepompdrogers vergelijken'). Zonder naam: de h1
+        # met een kleine eerste letter.
+        'naam': ruw.get('naam') or ruw['h1'][:1].lower() + ruw['h1'][1:],
         'intro': ruw['intro'].format(**waarden),
         'uitleg': ruw['uitleg'],
         'vragen': ruw['vragen'],

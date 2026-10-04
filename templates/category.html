@@ -265,8 +265,7 @@
     </section>
     {% if subtekst.vragen %}
     <section class="category-faq">
-        {# Alleen de eerste letter klein: "|lower" maakte van "60 dB" "60 db". #}
-        <h2>Veelgestelde vragen over {{ subtekst.h1[0]|lower }}{{ subtekst.h1[1:] }}</h2>
+        <h2>Veelgestelde vragen over {{ subtekst.naam }}</h2>
         {% for vraag, antwoord in subtekst.vragen %}
         <details class="category-faq-item"{% if loop.first %} open{% endif %}>
             <summary>{{ vraag }}</summary>

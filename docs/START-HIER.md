@@ -11,6 +11,39 @@ dezelfde feiten compact en is leidend voor werkafspraken.
 
 ---
 
+## 4 oktober, middag — alles live; Claude merget zelf; 60 subpagina's met tekst
+
+**Werkwijze sinds vandaag:** Claude bouwt, test, merget en rolt zelf uit
+(werkstand "Accept edits"). Uitzonderingen waarvoor eerst Peters ja nodig is:
+pagina's weghalen of adressen veranderen; winkels toevoegen/weghalen en de
+verdienende winkellinks; uiterlijk en homepage; privacy, cookies en
+meetcodes; grote technische verbouwingen; alles wat veel pagina's uit Google
+kan halen. Een regelwijziging die een pagina kan laten verdwijnen vooraf
+melden. Geen `cd ... &&`, geen `timeout`, geen heredocs in opdrachten (dat
+geeft Peter toestemmingsvragen); scripts via de Write-tool in `scripts/`.
+
+**Live gezet en op productie gecontroleerd (na elke uitrol SUCCESS, 0 5xx):**
+- Koelkasten per hoogte (nieuw filterveld `hoogte`, alleen koelkasten:
+  `_VELD_ALLEEN_IN`), zes pagina's tot-90 t/m vanaf-190 cm.
+- Afronden vóór het indelen (`_AFRONDEN`, `_stap_van`): breedte op hele cm
+  (59,5 = 60), toerental op honderdtallen (1351 = 1400). Alleen voor het
+  indelen; de productpagina toont de echte maat. Koelkasten eigen
+  geluidsstappen (`_STAPPEN_PER_CATEGORIE`): zeer-stil < 36 dB, stil 36-60.
+- Tekstronde 3b (D1-D36, behalve D15): nu 60 pagina's met eigen titel,
+  kop, vragen en "bekijk ook". Linknaam in het filterblok volgt de
+  geschreven kop. Controle: `python scripts/controle_teksten_live.py`.
+- Filterstap onder 8 modellen: 301 naar de dichtstbijzijnde bestaande stap,
+  anders de categorie (`_dichtstbijzijnde_stap`); onbekende slug 404.
+- Zoekzin-pagina's aangescherpt (#228): volautomaat, combimagnetron,
+  steelstofzuiger, no frost; specificatie "Nee" telt niet.
+- Alle tests in één keer: `python scripts/alle_tests.py` (17 bestanden).
+
+**Open:** combimagnetrons met alleen grill (SEO-chat beoordeelt);
+wasmachines 7 kg staat op precies 8 modellen; rankingmeting dinsdag 6 okt;
+Welhof wacht op Awin "Lid geworden"; Witgoedhuis-feed ma/di lezen.
+
+---
+
 ## 4 oktober (zondag) — Black Friday-meting live; ronde 2 en twee reparaties wachten op merge
 
 - **Live en gecontroleerd vandaag:** #219/#221 Black Friday-meetpagina

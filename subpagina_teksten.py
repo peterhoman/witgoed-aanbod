@@ -657,6 +657,238 @@ TEKSTEN = {
             ('Airfryers', '/category/ovens/kenmerk/airfryer'),
         ],
     },
+
+    # ------------------------------------------------------------------
+    # Ronde 3a (specialist-chat, 4 okt 2026): koelkasten per hoogte, het
+    # nieuwe filterveld 'hoogte' (routes.main._FILTERVELDEN, alleen
+    # koelkasten). Apparaathoogte uit EPREL; inbouwmodellen tellen mee.
+    # ------------------------------------------------------------------
+    ('koelkasten', 'hoogte', 'tot-90-cm'): {
+        'titel': 'Lage koelkast tot 90 cm: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Lage koelkasten (tot 90 cm hoog)',
+        'naam': 'lage koelkasten tot 90 cm',
+        'intro': ('Een koelkast tot 90 cm hoog is een tafelmodel of onderbouwmodel. Hij past onder '
+                  'een werkblad van 85 tot 90 cm, of staat los in een bijkeuken, studentenkamer of '
+                  'kantoor. Wij volgen {n} koelkasten in deze hoogte. De maten komen uit het '
+                  'officiële Europese energielabelregister en bij elk model staat de laagste prijs '
+                  'van {winkels} winkels.'),
+        'uitleg': [
+            ('Tafelmodel of onderbouw?', [
+                'Een tafelmodel is een vrijstaande koelkast met een eigen bovenblad. Een '
+                'onderbouwmodel schuif je onder het aanrecht; die heeft meestal geen bovenblad en '
+                'een rooster aan de voorkant voor de luchtafvoer. Zet een tafelmodel niet zomaar '
+                'onder een werkblad: zonder ruimte voor ventilatie wordt hij warm en verbruikt hij '
+                'meer.']),
+            ('Met of zonder vriesvak?', [
+                'Veel lage koelkasten hebben een klein vriesvak voor ijsblokjes en een paar '
+                'diepvriesproducten. Wil je meer vriesruimte, kijk dan naar een hogere '
+                'koel-vriescombinatie of een losse vriezer.']),
+        ],
+        'vragen': [
+            ('Past een tafelmodel koelkast onder het aanrecht?',
+             'Alleen als er boven en achter genoeg ruimte overblijft voor de luchtafvoer. Een '
+             'onderbouwmodel is daarvoor gemaakt; de benodigde ruimte staat in de handleiding.'),
+            ('Hoeveel liter heeft een lage koelkast?',
+             'Meestal 80 tot 140 liter. Genoeg voor een of twee personen of als tweede koelkast.'),
+            ('Hoe hoog is een standaard aanrecht?',
+             'In Nederland meestal 85 tot 92 cm, inclusief werkblad. Meet je eigen keuken op '
+             'voordat je kiest.'),
+        ],
+        'bekijk_ook': [
+            ('Kleine koelkasten tot 100 liter', '/category/koelkasten/inhoud/tot-100-liter'),
+            ('Smalle koelkasten', '/category/koelkasten/breedte/smal'),
+            ('Koelkasten van 90 tot 130 cm', '/category/koelkasten/hoogte/90-130-cm'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'hoogte', '90-130-cm'): {
+        'titel': 'Koelkast 90 tot 130 cm hoog: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Koelkasten van 90 tot 130 cm hoog',
+        'naam': 'koelkasten van 90 tot 130 cm',
+        'intro': ('Een koelkast van 90 tot 130 cm hoog zit tussen een tafelmodel en een hoge kast in. '
+                  'Hij past onder een hangkast of schuin dak, en heeft meer ruimte dan een '
+                  'tafelmodel. Wij volgen {n} koelkasten in deze hoogte, met per model de laagste '
+                  'prijs van {winkels} winkels. De maten komen uit het officiële Europese '
+                  'energielabelregister.'),
+        'uitleg': [
+            ('Voor wie is deze maat?', [
+                'Voor een of twee personen die meer willen dan een tafelmodel, voor een kleine '
+                'keuken met hangkasten, of voor een zolder of bijkeuken met een lage wand. Veel '
+                'modellen in deze hoogte zijn koel-vriescombinaties met een kleine vriezer onderin '
+                'of bovenin.']),
+            ('Meten', [
+                'Meet de hoogte tot de onderkant van de hangkast of het laagste punt van het dak. '
+                'Houd boven de koelkast een paar centimeter vrij voor de luchtafvoer, tenzij de '
+                'handleiding iets anders zegt.']),
+        ],
+        'vragen': [
+            ('Is een koelkast van 120 cm groot genoeg voor twee personen?',
+             'Meestal wel. Met 150 tot 200 liter inhoud heb je voor twee personen genoeg '
+             'koelruimte.'),
+            ('Bestaan er inbouwkoelkasten in deze hoogte?',
+             'Ja, voor nissen van ongeveer 102 en 122 cm. Bij inbouw telt de nismaat; die staat in '
+             'de specificaties of de handleiding van het model.'),
+            ('Heeft een koelkast van deze hoogte een vriezer?',
+             'Dat verschilt. Er zijn kasten met alleen een vriesvak en combinaties met een aparte '
+             'vriezer. Kijk bij het model naar de inhoud van het vriesdeel.'),
+        ],
+        'bekijk_ook': [
+            ('Lage koelkasten tot 90 cm', '/category/koelkasten/hoogte/tot-90-cm'),
+            ('Koelkasten van 130 tot 170 cm', '/category/koelkasten/hoogte/130-170-cm'),
+            ('Koelkasten 100-250 liter', '/category/koelkasten/inhoud/100-250-liter'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'hoogte', '130-170-cm'): {
+        'titel': 'Koelkast 130 tot 170 cm hoog: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Koelkasten van 130 tot 170 cm hoog',
+        'naam': 'koelkasten van 130 tot 170 cm',
+        'intro': ('Een koelkast van 130 tot 170 cm hoog is ruim genoeg voor een klein huishouden en '
+                  'past onder veel hangkasten en schuine daken waar een kast van 1,80 m te hoog is. '
+                  'Wij volgen {n} koelkasten in deze hoogte, met per model de laagste prijs van '
+                  '{winkels} winkels. De maten komen uit het officiële Europese '
+                  'energielabelregister.'),
+        'uitleg': [
+            ('Koelkast of koel-vriescombinatie?', [
+                'In deze hoogte vind je zowel koelkasten zonder vriezer, met veel koelruimte, als '
+                'koel-vriescombinaties met een kleinere vriezer. Vries je weinig in, dan geeft een '
+                'kast zonder vriezer meer ruimte voor verse producten.']),
+            ('Inbouw', [
+                'Inbouwkoelkasten in deze maat passen in nissen van ongeveer 140 of 158 cm. Bij '
+                'inbouw is de nismaat bepalend, niet de buitenmaat. Die staat in de specificaties '
+                'of de handleiding.']),
+        ],
+        'vragen': [
+            ('Welke koelkast past onder een hangkast?',
+             'Meet de vrije hoogte tot de hangkast en trek er een paar centimeter af voor de '
+             'luchtafvoer. Kies een model dat daaronder blijft.'),
+            ('Hoeveel liter heeft een koelkast van 150 cm?',
+             'Meestal 200 tot 270 liter, afhankelijk van de breedte en of er een vriezer in zit.'),
+            ('Is een koelkast van 140 cm genoeg voor een gezin?',
+             'Voor twee tot drie personen vaak wel. Voor een groter gezin is een kast van 1,75 m '
+             'of hoger handiger.'),
+        ],
+        'bekijk_ook': [
+            ('Koelkasten van 90 tot 130 cm', '/category/koelkasten/hoogte/90-130-cm'),
+            ('Koelkasten van 170 tot 180 cm', '/category/koelkasten/hoogte/170-180-cm'),
+            ('Koelkasten 250-350 liter', '/category/koelkasten/inhoud/250-350-liter'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'hoogte', '170-180-cm'): {
+        'titel': 'Koelkast 170 tot 180 cm hoog: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Koelkasten van 170 tot 180 cm hoog',
+        'naam': 'koelkasten van 170 tot 180 cm',
+        'intro': ('Koelkasten van 170 tot 180 cm hoog zijn de meest voorkomende maat voor een gezin. '
+                  'Hieronder vallen de meeste koel-vriescombinaties en veel inbouwkoelkasten voor '
+                  'de standaardnis van 178 cm. Wij volgen {n} koelkasten in deze hoogte, met per '
+                  'model de laagste prijs van {winkels} winkels. De maten komen uit het officiële '
+                  'Europese energielabelregister.'),
+        'uitleg': [
+            ('Inbouw: de nis van 178 cm', [
+                'De meeste inbouwkoelkasten zijn gemaakt voor een nis van 178 cm hoog. Het '
+                'apparaat zelf is dan iets lager, zodat het erin past. Vervang je een '
+                'inbouwkoelkast, meet dan de nis, niet het oude apparaat, en kijk ook hoe de deur '
+                'vastzit: met sleepdeur of met vaste deur.']),
+            ('Vrijstaand', [
+                'Een vrijstaande kast van deze hoogte heeft meestal 250 tot 350 liter inhoud. Let '
+                'bij het kiezen ook op het geluid, de no frost-vriezer en het energielabel; de '
+                'stroomkosten per jaar staan bij elk model.']),
+        ],
+        'vragen': [
+            ('Wat is een standaard inbouwmaat voor een koelkast?',
+             'De meest gebruikte nis is 178 cm hoog en 56 tot 57 cm breed. Daarnaast bestaan '
+             'nissen van onder meer 88, 102, 122, 140 en 158 cm.'),
+            ('Wat is het verschil tussen een sleepdeur en een vaste deur?',
+             'Bij een sleepdeur glijdt de keukendeur mee langs een rail. Bij een vaste deur zit het '
+             'keukenfront vast aan de deur van de koelkast. Een vervangend model moet hetzelfde '
+             'systeem hebben, of je moet het front aanpassen.'),
+            ('Hoeveel liter heeft een koelkast van 1,75 m?',
+             'Meestal 250 tot 320 liter, verdeeld over koel- en vriesdeel.'),
+        ],
+        'bekijk_ook': [
+            ('Koelkasten van 180 tot 190 cm', '/category/koelkasten/hoogte/180-190-cm'),
+            ('Koelkasten van 130 tot 170 cm', '/category/koelkasten/hoogte/130-170-cm'),
+            ('No frost koelkasten', '/category/koelkasten/kenmerk/no-frost'),
+            ('Koelkasten 250-350 liter', '/category/koelkasten/inhoud/250-350-liter'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'hoogte', '180-190-cm'): {
+        'titel': 'Koelkast 180 tot 190 cm hoog: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Koelkasten van 180 tot 190 cm hoog',
+        'naam': 'koelkasten van 180 tot 190 cm',
+        'intro': ('Een koelkast van 180 tot 190 cm hoog geeft een gezin veel ruimte op een gewone '
+                  'breedte van ongeveer 60 cm. Het zijn vooral vrijstaande koel-vriescombinaties en '
+                  'hoge koelkasten zonder vriezer. Wij volgen {n} koelkasten in deze hoogte, met '
+                  'per model de laagste prijs van {winkels} winkels. De maten komen uit het '
+                  'officiële Europese energielabelregister.'),
+        'uitleg': [
+            ('Past hij?', [
+                'Meet de hoogte van de plek en houd boven de kast ruimte vrij voor de luchtafvoer, '
+                'tenzij de handleiding iets anders zegt. Let ook op de diepte met de deur open, en '
+                'of er naast de kast genoeg ruimte is om de deur ver genoeg te openen voor de '
+                'lades.']),
+            ('Twee kasten naast elkaar', [
+                'Veel merken hebben een hoge koelkast en een hoge vriezer van dezelfde maat. Naast '
+                'elkaar gezet heb je de ruimte van een Amerikaanse koelkast, maar dan met twee '
+                'losse apparaten.']),
+        ],
+        'vragen': [
+            ('Hoeveel liter heeft een koelkast van 1,85 m?',
+             'Meestal 300 tot 370 liter op een breedte van 60 cm.'),
+            ('Kan een hoge koelkast in een keuken met hangkasten?',
+             'Alleen als de hangkasten hoger hangen dan de kast plus de vrije ruimte voor de '
+             'luchtafvoer. Meet dat vooraf.'),
+            ('Is een hogere koelkast duurder in gebruik?',
+             'Een grotere kast verbruikt iets meer, maar het energielabel zegt meer dan de maat. '
+             'Vergelijk de stroomkosten per jaar bij elk model.'),
+        ],
+        'bekijk_ook': [
+            ('Koelkasten van 170 tot 180 cm', '/category/koelkasten/hoogte/170-180-cm'),
+            ('Hoge koelkasten vanaf 190 cm', '/category/koelkasten/hoogte/vanaf-190-cm'),
+            ('Amerikaanse koelkasten', '/category/koelkasten/kenmerk/amerikaans'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'hoogte', 'vanaf-190-cm'): {
+        'titel': 'Hoge koelkast vanaf 190 cm: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Hoge koelkasten (vanaf 190 cm)',
+        'naam': 'hoge koelkasten vanaf 190 cm',
+        'intro': ('Een koelkast vanaf 190 cm hoog haalt de meeste ruimte uit een gewone breedte. '
+                  'Hieronder vallen hoge koel-vriescombinaties tot ruim 2 meter en veel kasten '
+                  'zonder vriezer. Wij volgen {n} koelkasten in deze hoogte, met per model de '
+                  'laagste prijs van {winkels} winkels. De maten komen uit het officiële Europese '
+                  'energielabelregister.'),
+        'uitleg': [
+            ('Waar let je op?', [
+                'Op de plafondhoogte en op deuren of balken onderweg: een kast van 2 meter moet ook '
+                'door de gang en de keukendeur. Kijk verder naar de hoogte van de bovenste plank; '
+                'in een hoge kast is die voor niet iedereen goed bereikbaar.']),
+            ('Hoog of breed?', [
+                'Wil je nog meer ruimte, dan is een Amerikaanse koelkast van ongeveer 90 cm breed '
+                'het alternatief. Die is meestal lager, rond 1,78 m, maar veel breder en '
+                'dieper.']),
+        ],
+        'vragen': [
+            # Aangeleverd: "filter de lijst op hoogte"; de lijst sorteert alleen op prijs.
+            ('Hoe hoog is de hoogste koelkast?',
+             'Er zijn vrijstaande modellen van ruim 2 meter. De hoogte staat bij elk model op de '
+             'productpagina, bij de gegevens van het energielabel.'),
+            ('Past een koelkast van 2 meter in een gewone keuken?',
+             'In de meeste nieuwbouwwoningen is het plafond 2,60 m of hoger, dus in hoogte wel. '
+             'Meet wel de doorgang onderweg en de plek met de deur open.'),
+            ('Is een hoge koelkast handiger dan een Amerikaanse?',
+             'Een hoge kast neemt minder vloer in en past in een gewone opstelling van 60 cm. Een '
+             'Amerikaanse koelkast heeft meer inhoud en vaak een ijs- of waterdispenser.'),
+        ],
+        'bekijk_ook': [
+            ('Koelkasten van 180 tot 190 cm', '/category/koelkasten/hoogte/180-190-cm'),
+            ('Amerikaanse koelkasten', '/category/koelkasten/kenmerk/amerikaans'),
+            ('Koelkasten vanaf 450 liter', '/category/koelkasten/inhoud/vanaf-450-liter'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
 }
 
 # "Bekijk ook" per categorie: (linktekst, pad). De pagina zelf valt bij het

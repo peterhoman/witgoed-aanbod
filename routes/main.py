@@ -1445,6 +1445,28 @@ _FILTERVELDEN = {
              'label': 'breed (vanaf 70 cm)', 'kop': 'Brede {cat} (vanaf 70 cm)'},
         ],
     },
+    # Hoogte (4 okt 2026, tekstronde 3a van de specialist-chat): alleen voor
+    # koelkasten (_VELD_ALLEEN_IN). De apparaathoogte uit EPREL, ook bij
+    # inbouwmodellen (die zijn iets lager dan hun nis). Grenzen uit de
+    # telling van 4 okt: 190-200 cm had maar 9 modellen, daarom 'vanaf 190'.
+    'dimensionHeight': {
+        'naam': 'hoogte',
+        'eenheid': 'cm',
+        'stappen': [
+            {'van': None, 'tot': 90, 'slug': 'tot-90-cm',
+             'label': 'tot 90 cm', 'kop': 'Lage {cat} (tot 90 cm hoog)'},
+            {'van': 90, 'tot': 130, 'slug': '90-130-cm',
+             'label': '90 tot 130 cm', 'kop': '{cat} van 90 tot 130 cm hoog'},
+            {'van': 130, 'tot': 170, 'slug': '130-170-cm',
+             'label': '130 tot 170 cm', 'kop': '{cat} van 130 tot 170 cm hoog'},
+            {'van': 170, 'tot': 180, 'slug': '170-180-cm',
+             'label': '170 tot 180 cm', 'kop': '{cat} van 170 tot 180 cm hoog'},
+            {'van': 180, 'tot': 190, 'slug': '180-190-cm',
+             'label': '180 tot 190 cm', 'kop': '{cat} van 180 tot 190 cm hoog'},
+            {'van': 190, 'tot': None, 'slug': 'vanaf-190-cm',
+             'label': 'vanaf 190 cm', 'kop': 'Hoge {cat} (vanaf 190 cm)'},
+        ],
+    },
 }
 
 
@@ -1469,10 +1491,16 @@ def _eprel_waarde(gegevens, veld):
 # meer" (160 apparaten) uit voort, gelinkt vanaf de categoriepagina en in de
 # sitemap. Dat oude adres stuurt door naar de categorie (category_kenmerk).
 _VELD_NIET_IN = {'ratedCapacity': {'vaatwassers'}}
+# Omgekeerd: velden die alleen in deze categorieën een filterpagina geven.
+# Hoogte zegt bij een koelkast veel (onder het aanrecht, onder een
+# hangkast); bij wasmachines (allemaal 85 cm) niets.
+_VELD_ALLEEN_IN = {'dimensionHeight': {'koelkasten'}}
 
 
 def _veld_telt(veld, categorie_slug):
     """Hoort dit EPREL-veld als filterpagina bij deze categorie?"""
+    if veld in _VELD_ALLEEN_IN and categorie_slug not in _VELD_ALLEEN_IN[veld]:
+        return False
     return categorie_slug not in _VELD_NIET_IN.get(veld, ())
 
 
@@ -3099,7 +3127,7 @@ def _kenmerk_links(category):
 
 
 @main_bp.route('/category/<slug>'
-               '/<any(breedte,geluid,inhoud,toerental,vulgewicht,waterverbruik):veld>'
+               '/<any(breedte,geluid,hoogte,inhoud,toerental,vulgewicht,waterverbruik):veld>'
                '/<stap_slug>')
 def category_kenmerk(slug, veld, stap_slug):
     category = Category.query.filter_by(slug=slug).first_or_404()

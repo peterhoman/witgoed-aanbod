@@ -1556,6 +1556,37 @@ def filterkansen():
                     _FILTERVELDEN[veld]['naam'], 0)
                 dekking[cat][_FILTERVELDEN[veld]['naam']] += 1
 
+    # Hoogte en diepte (4 okt 2026): voorwerk voor tekstronde 3 van de
+    # specialist-chat ("smalle vaatwasser 45 cm", "koelkast per hoogte",
+    # "wasmachine diepte"). Nog geen filterveld; hier alleen hoeveel
+    # apparaten per categorie een maat hebben en hoe die verdeeld is, in
+    # hele centimeters (hoogte per 10 cm, diepte per 5 cm).
+    afmetingen = {}
+    for rij in rijen:
+        product = producten.get(rij.product_id)
+        if product is None:
+            continue
+        cat = categorienaam.get(product.category_id, 'onbekend')
+        for veld, naam, stap in (('dimensionHeight', 'hoogte', 10),
+                                 ('dimensionDepth', 'diepte', 5),
+                                 ('dimensionWidth', 'breedte', 5)):
+            waarde = _eprel_waarde(rij.gegevens, veld)
+            if waarde is None or waarde <= 0:
+                continue
+            onder = int(waarde // stap * stap)
+            vak = afmetingen.setdefault(cat, {}).setdefault(
+                naam, {'gevuld': 0, 'verdeling_cm': {}})
+            vak['gevuld'] += 1
+            sleutel = f'{onder}-{onder + stap}'
+            vak['verdeling_cm'][sleutel] = vak['verdeling_cm'].get(sleutel, 0) + 1
+    # Als lijst [vak, aantal]: jsonify sorteert de sleutels van een dict
+    # alfabetisch, en dan komt "80-90" na "200-210".
+    for velden in afmetingen.values():
+        for vak in velden.values():
+            vak['verdeling_cm'] = sorted(
+                ([k, v] for k, v in vak['verdeling_cm'].items()),
+                key=lambda kv: int(kv[0].split('-')[0]))
+
     # Filterpagina's per winkel per categorie. Die hebben GEEN EPREL nodig --
     # we weten al welke winkel welk apparaat voert. Gemeten op 01-08:
     # Slimster heeft voor wasmachines alleen al 57 filterpagina's, waaronder
@@ -1592,6 +1623,7 @@ def filterkansen():
         'eprel_gekoppeld_en_leverbaar': len(producten),
         'per_categorie': per_categorie_totaal,
         'velden_gevuld_per_categorie': dekking,
+        'afmetingen_per_categorie': afmetingen,
         'kansrijk': kansen,
         'te_dun': te_dun[:40],
         'aantal_kansrijk': len(kansen),

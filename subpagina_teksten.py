@@ -1338,9 +1338,34 @@ TEKSTEN = {
              'wassen plus drogen.'),
         ],
         'bekijk_ook': [
+            ('Wasdroogcombinaties vanaf 1600 toeren', '/category/wasdroogcombinaties/toerental/vanaf-1600-toeren'),
             ('Wasdroogcombinaties van 60 tot 70 cm breed', '/category/wasdroogcombinaties/breedte/60-70-cm'),
             ('Wasmachines met 1400 tot 1600 toeren', '/category/wasmachines/toerental/1400-1600-toeren'),
             ('Warmtepompdrogers', '/category/drogers/type/warmtepompdroger'),
+            ('Alle wasdroogcombinaties', '/category/wasdroogcombinaties'),
+        ],
+    },
+    # D36 (4 okt 2026): pagina ontstaan door het afronden van het toerental.
+    ('wasdroogcombinaties', 'toerental', 'vanaf-1600-toeren'): {
+        'titel': 'Wasdroogcombinatie 1600 toeren: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasdroogcombinaties vanaf 1600 toeren',
+        'naam': 'wasdroogcombinaties met 1600 toeren',
+        'intro': ('Bij een wasdroogcombinatie loont een hoog toerental dubbel: hoe droger de was uit '
+                  'het centrifugeren komt, hoe korter het droogdeel daarna hoeft te draaien. Dat '
+                  'scheelt tijd en stroom. Op deze pagina staan combinaties met een toerental vanaf '
+                  '1600 per minuut. Let ook op het vulgewicht voor drogen, want dat is lager dan voor '
+                  'wassen. Wij volgen {n} modellen, met per model de laagste prijs van {winkels} '
+                  'winkels. Het toerental komt uit het officiële Europese energielabelregister.'),
+        'vragen': [
+            ('Is 1600 toeren beter dan 1400 bij een wasdroogcombinatie?',
+             'Er blijft minder vocht in de was, dus het drogen gaat sneller en kost minder stroom. '
+             'Hang je de was meestal op, dan is het verschil kleiner.'),
+            ('Maakt een wasdroogcombinatie met 1600 toeren meer lawaai?',
+             'Bij het centrifugeren vaak wat meer. Het geluid in decibel staat bij elk model.'),
+        ],
+        'bekijk_ook': [
+            ('Wasdroogcombinaties met 1400 tot 1600 toeren', '/category/wasdroogcombinaties/toerental/1400-1600-toeren'),
+            ('Wasmachines vanaf 1600 toeren', '/category/wasmachines/toerental/vanaf-1600-toeren'),
             ('Alle wasdroogcombinaties', '/category/wasdroogcombinaties'),
         ],
     },

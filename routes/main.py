@@ -3146,6 +3146,27 @@ def _kenmerk_facet(category):
     return uit
 
 
+def _dichtstbijzijnde_stap(category, veld, stap_slug, facet):
+    """Adres van de dichtstbijzijnde bestaande stap van dit veld, of de
+    categorie als er geen is; None als stap_slug geen stap van dit veld is.
+    Bij gelijke afstand wint de stap met de meeste modellen."""
+    for sleutel, opzet in _FILTERVELDEN.items():
+        if opzet['naam'] != veld:
+            continue
+        slugs = [s['slug'] for s in _stappen(sleutel, opzet, category.slug)]
+        if stap_slug not in slugs:
+            return None
+        i = slugs.index(stap_slug)
+        for afstand in range(1, len(slugs)):
+            kandidaten = [slugs[j] for j in (i - afstand, i + afstand)
+                          if 0 <= j < len(slugs) and (veld, slugs[j]) in facet]
+            if kandidaten:
+                beste = max(kandidaten, key=lambda s: len(facet[(veld, s)]['ids']))
+                return f'/category/{category.slug}/{veld}/{beste}'
+        return f'/category/{category.slug}'
+    return None
+
+
 def _kenmerk_kop(stap, category):
     """'Zeer stille {cat}' + 'Wasmachines' -> 'Zeer stille wasmachines'."""
     kop = stap['kop'].format(cat=category.name.lower())
@@ -3184,9 +3205,19 @@ def category_kenmerk(slug, veld, stap_slug):
     if any(opzet['naam'] == veld and not _veld_telt(sleutel, category.slug)
            for sleutel, opzet in _FILTERVELDEN.items()):
         return redirect(f'/category/{category.slug}', code=301)
-    info = _kenmerk_facet(category).get((veld, stap_slug))
+    facet = _kenmerk_facet(category)
+    info = facet.get((veld, stap_slug))
     if not info:
-        abort(404)
+        # Een echte stap die onder de ondergrens zakte (4 okt 2026, Peters ja):
+        # niet 404 maar 301 naar de dichtstbijzijnde stap van hetzelfde veld
+        # die wel bestaat, anders naar de categorie. Wat Google van de pagina
+        # kende gaat zo niet verloren, en komt de stap later weer boven de
+        # ondergrens, dan is hij vanzelf weer een gewone pagina. Een slug die
+        # geen stap is, blijft 404.
+        doel = _dichtstbijzijnde_stap(category, veld, stap_slug, facet)
+        if doel is None:
+            abort(404)
+        return redirect(doel, code=301)
     stap, opzet, aantal = info['stap'], info['opzet'], len(info['ids'])
     kop = _kenmerk_kop(stap, category)
 

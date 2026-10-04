@@ -111,15 +111,40 @@ def meld_gewijzigde_adressen(app):
             _bewaar()
 
 
-def _bewaar():
+def meld_verhuisde_adressen(adressen, site, sleutel):
+    """Meld oude en nieuwe adressen na een adresopschoning en bewaar de uitkomst.
+
+    Tot 4 oktober 2026 werd deze melding (catalogus_uitzonderingen) verstuurd
+    zonder dat het antwoord van Bing ergens bleef; of de 462 verhuizingen van
+    3 oktober zijn aangekomen, was daardoor niet na te gaan. Nu komt de
+    uitkomst als ronde met soort 'adresopschoning' in indexnow_rondes, naast
+    de dagelijkse. Geeft [(aantal, statuscode)] terug; gooit niets.
+    """
+    uitkomst = {'adressen': len(adressen), 'berichten': [], 'fout': None}
+    try:
+        host = site.split('://', 1)[-1].rstrip('/')
+        stukken = verstuur(adressen, host, sleutel, f"{site}{sleutelbestand(sleutel)}")
+        uitkomst['berichten'] = [{'adressen': n, 'status': s} for n, s in stukken]
+        logger.info('indexnow: %d verhuisde adressen gemeld: %s',
+                    len(adressen), [s for _, s in stukken])
+    except Exception as e:
+        uitkomst['fout'] = str(e)[:200]
+        logger.warning('indexnow: verhuisde adressen melden mislukt: %s', e)
+    _bewaar(uitkomst, soort='adresopschoning')
+    return uitkomst
+
+
+def _bewaar(uitkomst=None, soort='dagelijks'):
     """Schrijf de uitkomst van deze ronde weg (models.IndexNowRonde) en houd
-    de laatste dertig. Mislukt het bewaren, dan blijft de ronde zelf geslaagd."""
+    de laatste dertig. Mislukt het bewaren, dan blijft de ronde zelf geslaagd.
+    Zonder `uitkomst`: de dagelijkse ronde uit _laatste."""
+    uitkomst = uitkomst or _laatste
     try:
         from models import db, IndexNowRonde
         db.session.add(IndexNowRonde(
-            adressen=_laatste['adressen'],
-            statussen=','.join(str(b['status']) for b in _laatste['berichten'])[:200],
-            fout=_laatste['fout']))
+            adressen=uitkomst['adressen'],
+            statussen=','.join(str(b['status']) for b in uitkomst['berichten'])[:200],
+            fout=uitkomst['fout'], soort=soort))
         db.session.commit()
         oud = IndexNowRonde.query.order_by(IndexNowRonde.wanneer.desc()).offset(30).all()
         for rij in oud:
@@ -143,7 +168,9 @@ def status():
                 'adressen': r.adressen,
                 'berichten': [{'status': int(s)} for s in r.statussen.split(',') if s.strip().isdigit()],
                 'fout': r.fout,
+                'soort': r.soort or 'dagelijks',
                 'laatste_rondes': [{'wanneer': x.wanneer.isoformat(timespec='seconds'),
+                                    'soort': x.soort or 'dagelijks',
                                     'adressen': x.adressen, 'statussen': x.statussen,
                                     'fout': x.fout} for x in rijen],
             }

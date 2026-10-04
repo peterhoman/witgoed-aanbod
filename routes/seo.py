@@ -7,7 +7,7 @@ from models import Product, Category, Guide, utcnow
 from filter_helpers import (compute_brand_facet, compute_spec_facets,
                             compute_global_brand_index, energielabel_letter, slugify)
 from routes.main import (SUBCATEGORY_SPECS, _MIN_PER_FILTERPAGINA, _MIN_VOOR_INDEX,
-                         _FILTERVELDEN, _eprel_waarde, _stap_voor, _veld_telt)
+                         _FILTERVELDEN, _eprel_waarde, _stap_voor, _stap_van, _veld_telt)
 
 seo_bp = Blueprint('seo', __name__)
 
@@ -256,10 +256,7 @@ def _bouw_entries():
             for veld, opzet in _FILTERVELDEN.items():
                 if not _veld_telt(veld, category.slug):
                     continue
-                waarde = _eprel_waarde(gegevens, veld)
-                if waarde is None:
-                    continue
-                stap = _stap_voor(waarde, opzet)
+                stap = _stap_van(gegevens, veld, opzet, category.slug)
                 if stap is not None:
                     per_kenmerk.setdefault(
                         (opzet['naam'], stap['slug']), []).append(p)

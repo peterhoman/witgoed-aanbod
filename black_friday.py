@@ -50,6 +50,7 @@ NIET_PER_WINKEL = ('ep', 'alternate')
 VERS_DAGEN = 3
 MIN_MAND = 10  # kleinere categorieën staan erbij, maar met een waarschuwing
 GELIJK = 0.005  # binnen een halve procent = dezelfde prijs (afronding)
+RUIS_DAGEN = 3  # vaker dan eens per drie dagen een andere prijs = ruis, zie voorbeelden()
 
 
 # ---------------------------------------------------------------------------
@@ -248,12 +249,24 @@ def voorbeelden(mand, info, start, aantal=5):
     Voor de voorbeeldgrafieken: de volledige reeks per winkel vanaf de start.
     Alleen apparaten met minstens twee winkels in de mand, anders valt er
     niets te vergelijken.
+
+    Reeksen die vaker dan eens per RUIS_DAGEN wijzigen vallen af. Eerste
+    meting 4 okt: de "meest bewegende" apparaten hadden 185 en 155
+    wijzigingen in elf weken, allemaal bij Bol -- dat is de wisselende
+    verkoper achter offers[0] (zie /api/bol-aanbiedingen), geen
+    prijsbeleid. Zo'n grafiek laat ruis zien en geen Black Friday.
     """
+    nu = max((m for r in (x for rs in mand.values() for x in rs.values()) for m, _ in r),
+             default=start)
+    grens = max((nu - start).days, 1) / RUIS_DAGEN
     kandidaten = []
     for pid, reeksen in mand.items():
         if len(reeksen) < 2:
             continue
-        wijzigingen = sum(1 for r in reeksen.values() for m, _ in r if m > start)
+        per_reeks = [sum(1 for m, _ in r if m > start) for r in reeksen.values()]
+        if max(per_reeks) > grens:
+            continue
+        wijzigingen = sum(per_reeks)
         kandidaten.append((wijzigingen, pid))
     kandidaten.sort(reverse=True)
     gekozen, gezien = [], set()
@@ -275,17 +288,33 @@ def voorbeelden(mand, info, start, aantal=5):
     return gekozen
 
 
-def maak_mand(reeksen, leverbaar, start):
+def is_ruis(reeks, start, nu):
+    """Wijzigt deze reeks vaker dan eens per RUIS_DAGEN sinds de start?"""
+    wijzigingen = sum(1 for m, _ in reeks if m > start)
+    return wijzigingen > max((nu - start).days, 1) / RUIS_DAGEN
+
+
+def maak_mand(reeksen, leverbaar, start, nu=None, weggelaten=None):
     """Vaste mand: reeksen met een prijs op de start, die nu nog leverbaar zijn.
 
-    reeksen   = {(product_id, winkel): [(tijdstip, prijs), ...]}
-    leverbaar = set van (product_id, winkel) die nu leverbaar en vers zijn
+    reeksen    = {(product_id, winkel): [(tijdstip, prijs), ...]}
+    leverbaar  = set van (product_id, winkel) die nu leverbaar en vers zijn
+    nu         = als gegeven: ruisreeksen (is_ruis) vallen af. Eerste meting
+                 4 okt: Bol-reeksen met 150+ wijzigingen in elf weken, door
+                 de wisselende verkoper achter offers[0]. Eén zo'n tijdelijk
+                 lage verkoper drukt "de laagste prijs in 90 dagen" en laat
+                 de rest van het jaar duurder lijken dan hij is.
+    weggelaten = als gegeven (een dict): telt per winkel de ruisreeksen
     """
     mand = {}
     for (pid, winkel), reeks in reeksen.items():
         if (pid, winkel) not in leverbaar:
             continue
         if prijs_op(reeks, start) is None:
+            continue
+        if nu is not None and is_ruis(reeks, start, nu):
+            if weggelaten is not None:
+                weggelaten[winkel] = weggelaten.get(winkel, 0) + 1
             continue
         mand.setdefault(pid, {})[winkel] = reeks
     return mand
@@ -327,7 +356,8 @@ def cijfers(start=START, bf_week=None, details=0, nu=None):
                  .filter(Offer.is_available.is_(True), Offer.price > 0,
                          Offer.last_synced >= vers).all()}
 
-    mand = maak_mand(reeksen, leverbaar, start)
+    ruis = {}
+    mand = maak_mand(reeksen, leverbaar, start, nu=nu, weggelaten=ruis)
     categorieen = {c.id: c.name for c in Category.query.all()}
     info = {}
     producten = (Product.query.with_entities(Product.id, Product.category_id,
@@ -354,6 +384,8 @@ def cijfers(start=START, bf_week=None, details=0, nu=None):
             'apparaten': len(mand),
             'reeksen': sum(len(r) for r in mand.values()),
             'apparaten_met_2_of_meer_winkels': sum(1 for r in mand.values() if len(r) >= 2),
+            'ruisreeksen_weggelaten': ruis,
+            'ruis_betekent': f'vaker dan eens per {RUIS_DAGEN} dagen een andere prijs',
         },
         '1_index_totaal': index_totaal(mand, momenten),
         '1_index_per_categorie': index_per_categorie(mand, info, momenten),

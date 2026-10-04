@@ -28,8 +28,15 @@ check('onbekend pad geeft None', st.tekst_voor(('drogers', 'type', 'bestaat-niet
 
 # 2. Elke tekst is compleet en bevat geen vaste bedragen.
 for pad, ruw in st.TEKSTEN.items():
-    alles = ' '.join([ruw['intro']] + [a for _, al in ruw['uitleg'] for a in al] + [a for _, a in ruw['vragen']])
-    check(f'{"/".join(pad)}: velden compleet', all(ruw.get(k) for k in ('titel', 'h1', 'intro', 'uitleg', 'vragen')))
+    alles = ' '.join([ruw.get('intro') or ''] + [a for _, al in ruw.get('uitleg', []) for a in al]
+                     + [a for _, a in ruw['vragen']])
+    # Volledige tekst (met eigen kop) of aanvulling op een zoekzin-pagina
+    # (ronde 2, deel B: alleen titel, vragen en bekijk ook).
+    velden = ('titel', 'h1', 'intro', 'uitleg', 'vragen') if ruw.get('h1') else ('titel', 'naam', 'vragen')
+    check(f'{"/".join(pad)}: velden compleet', all(ruw.get(k) for k in velden))
+    check(f'{"/".join(pad)}: geen "zeven winkels" vast in de tekst', 'zeven winkels' not in alles)
+    check(f'{"/".join(pad)}: bekijk ook wijst naar /category of /gidsen',
+          all(p.startswith(('/category/', '/gidsen/')) for _, p in ruw.get('bekijk_ook', [])))
     check(f'{"/".join(pad)}: geen vast bedrag in de tekst', not re.search(r'€\s*\d', alles))
     check(f'{"/".join(pad)}: titel eindigt op de sitenaam', ruw['titel'].endswith(' | WitgoedAanbod.nl'))
 
@@ -62,6 +69,20 @@ if m:
     check('vragen zichtbaar, geen FAQ-schema', 'Heeft een warmtepompdroger een afvoer nodig?' in p and 'FAQPage' not in p)
     check('bekijk ook zonder de eigen pagina', 'Alle wasmachines' in p and 'Deze pagina' not in p)
     check('precies één h1, geen kopsprong', koppen.count(1) == 1 and all(b <= a + 1 for a, b in zip(koppen, koppen[1:])))
+    # Aanvulling (ronde 2, deel B): eigen kop en intro blijven staan.
+    oude_h1 = None
+    del st.TEKSTEN[('wasmachines', soort, waarde)]
+    p0 = c.get(adres).get_data(as_text=True)
+    oude_h1 = re.search(r'<h1>([^<]*)</h1>', p0).group(1)
+    st.TEKSTEN[('wasmachines', soort, waarde)] = dict(st.TEKSTEN[('koelkasten', 'kenmerk', 'no-frost')])
+    r = c.get(adres); p = r.get_data(as_text=True)
+    check('aanvulling: rendert (200)', r.status_code == 200)
+    check('aanvulling: eigen kop blijft', re.search(r'<h1>([^<]*)</h1>', p).group(1) == oude_h1, oude_h1)
+    check('aanvulling: titel uit de tekst', 'No frost koelkast vergelijken:' in re.search(r'<title>([^<]*)', p).group(1))
+    check('aanvulling: vragen met korte naam', '<h2>Veelgestelde vragen over no frost koelkasten</h2>' in p)
+    check('aanvulling: geen leeg uitlegblok', 'subpagina-uitleg' not in p)
+    check('aanvulling: eigen bekijk ook gaat voor de categorielijst',
+          'Amerikaanse koelkasten' in p and 'Deze pagina' not in p)
     del st.TEKSTEN[('wasmachines', soort, waarde)]; del st.BEKIJK_OOK['wasmachines']
     r = c.get(adres); p = r.get_data(as_text=True)
     check('zonder tekst: gewone naam of oude opbouw, geen uitlegblok',

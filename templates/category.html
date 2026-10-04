@@ -255,6 +255,7 @@
        uitleg met tussenkoppen, zichtbare vragen en links naar verwante
        pagina's, onder de productlijst. Bewust geen FAQ-schema. #}
     {% if subtekst %}
+    {% if subtekst.uitleg %}
     <section class="subpagina-uitleg">
         {% for kop, alineas in subtekst.uitleg %}
         <h2>{{ kop }}</h2>
@@ -263,6 +264,7 @@
         {% endfor %}
         {% endfor %}
     </section>
+    {% endif %}
     {% if subtekst.vragen %}
     <section class="category-faq">
         <h2>Veelgestelde vragen over {{ subtekst.naam }}</h2>

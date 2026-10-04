@@ -2769,10 +2769,14 @@ def _render_facet_page(category, extra_filter, facet_label, facet_title, meta_de
                               len(RETAILER_LABELS))
         if subtekst:
             from routes.prijsdalingen import _datum_tekst
-            facet_title = subtekst['h1']
             facet_paginatitel = subtekst['titel']
-            intro = subtekst['intro']
-            meta_description = _meta_kort(intro)
+            # Zoekzin-pagina's (ronde 2, deel B) houden hun eigen kop en
+            # intro uit zoekkenmerken.py; dan staan die hier op None.
+            if subtekst['h1']:
+                facet_title = subtekst['h1']
+            if subtekst['intro']:
+                intro = subtekst['intro']
+                meta_description = _meta_kort(intro)
             # "Bijgewerkt op": het moment van de laatste prijssync, niet de
             # datum van vandaag; een datum die opschuift zonder dat er iets
             # veranderde is precies wat Google afraadt.

@@ -93,6 +93,8 @@ KENMERKEN = {
             'zin': '{n} no-frost koelkasten en koel-vriescombinaties',
             'paginatitel': 'No frost koelkast vergelijken | WitgoedAanbod.nl',
             'patroon': _ONTKENNING + r'(no[- ]?frost|nofrost)',
+            # 4 okt 2026: Low Frost-koelkasten kwamen erdoor via de winkeltekst.
+            'niet_in_titel': r'low[- ]?frost',
             'in_tekst': True,
             'uitleg': [
                 'Een no-frost koelkast heeft een ventilator die koude, droge lucht '
@@ -155,7 +157,19 @@ KENMERKEN = {
             'kop': 'Volautomatische koffiemachine: verse bonen, één knop',
             'label': 'volautomaat',
             'zin': '{n} volautomatische koffiemachines',
-            'patroon': _ONTKENNING + r'(volautomat|bonen)',
+            # Tot 4 okt 2026 ook op "bonen" in de winkeltekst: daardoor
+            # stonden filterkoffiezetapparaten ("gemalen koffie of bonen") en
+            # pistonmachines op deze pagina, en zei de titel "vanaf € 39"
+            # (melding specialist-chat). Nu alleen het woord volautomaat zelf,
+            # en wat in de titel een ander soort machine is, valt af (behalve als
+            # de titel zelf volautomaat zegt).
+            'patroon': _ONTKENNING + r'(volautomat|bean[- ]to[- ]cup)',
+            # Alleen als de titel zelf geen volautomaat noemt: echte volautomaten
+            # heten soms 'volautomatisch koffiezetapparaat' of hebben 'AquaClean
+            # Filter' of 'handmatig stoompijpje' in de titel.
+            'niet_in_titel': (r'filterkoffie|filter-koffie|koffiezet|piston|capsule|\bcups?\b|\bpads?\b|'
+                              r'senseo|nespresso|dolce ?gusto|tassimo|percolator|moka|'
+                              r'halfautomat|melkopschuimer|ontkalk|reinigingstablet'),
             'in_tekst': True,
             'uitleg': [
                 'Een volautomaat maalt per kopje verse bonen, zet de koffie en reinigt zichzelf tussendoor. Je drukt op een knop en krijgt espresso, lungo of cappuccino; de meeste modellen hebben een melkopschuimer of een melksysteem dat het schuim zelf maakt.',
@@ -186,6 +200,11 @@ KENMERKEN = {
             'label': 'steelstofzuiger',
             'zin': '{n} steelstofzuigers',
             'patroon': _ONTKENNING + r'(steelstofzuiger|steelzuiger|snoerloos|draadloos)',
+            # 4 okt 2026: "draadloos" ving ook kruimeldiefjes en robots. Die
+            # vallen af, tenzij de titel echt steelstofzuiger zegt ("2-in-1
+            # steelstofzuiger met kruimelzuiger").
+            'niet_in_titel': r'kruimel|robot|handstofzuiger|autostofzuiger',
+            'kern': r'steelstofzuiger|steelzuiger',
             'in_tekst': False,
             'uitleg': [
                 'Een steelstofzuiger werkt op een accu en hangt aan een haak of oplaadstation, klaar voor een snelle ronde. Geen snoer, geen zak, en licht genoeg om mee de trap op te gaan. De meeste modellen zijn ook los te gebruiken als kruimeldief voor de bank of de auto.',
@@ -245,7 +264,10 @@ KENMERKEN = {
             'kop': 'Combimagnetron: magnetron, oven en grill in één',
             'label': 'combi',
             'zin': '{n} combimagnetrons',
-            'patroon': _ONTKENNING + r'(combi)',
+            # 4 okt 2026: "combi" ving ook solo-magnetrons (vanaf € 59 in de
+            # titel); "combinatie" telt niet, en "solo" in de titel valt af.
+            'patroon': _ONTKENNING + r'(combi(?!natie|neer))',
+            'niet_in_titel': r'\bsolo\b',
             'in_tekst': False,
             'uitleg': [
                 'Een combimagnetron verwarmt met microgolven, maar heeft ook hetelucht en een grill. Daarmee bak je een pizza of een kleine cake en gratineer je een ovenschotel, terwijl opwarmen en ontdooien gewoon met de magnetron gaat. Voor een kleine keuken of een studentenkamer vervangt hij de oven.',
@@ -267,13 +289,38 @@ def kenmerken_voor(category_slug):
     return KENMERKEN.get(category_slug, {})
 
 
+# Specificaties met een nee-waarde ("Dweilfunctie: Nee") zeggen juist dat
+# het kenmerk ontbreekt; zonder deze regel telde het woord in de naam mee.
+_NEE = {'nee', 'no', 'false', 'geen', 'niet aanwezig', '0', '-', ''}
+
+
 def _tekst_van(product, in_tekst):
     specs = product.specs or {}
     delen = [product.title or '',
-             ' '.join(f'{k} {v}' for k, v in specs.items())]
+             ' '.join(f'{k} {v}' for k, v in specs.items()
+                      if str(v).strip().lower() not in _NEE)]
     if in_tekst:
         delen.append(product.description or '')
     return ' '.join(delen)
+
+
+def telt_mee(definitie, titel, tekst):
+    """Heeft dit apparaat het kenmerk? `tekst` is wat _tekst_van teruggeeft.
+
+    Optioneel 'niet_in_titel': wat in de titel een ander soort apparaat
+    aanwijst, telt niet mee, ook niet als de winkeltekst het kenmerk noemt --
+    behalve als de titel het kenmerk zelf noemt ("Volautomatisch
+    koffiezetapparaat").
+    """
+    patroon = re.compile(definitie['patroon'], re.I)
+    # 'kern': het woord dat in de titel de uitsluiting opheft. Standaard het
+    # patroon zelf; bij steelstofzuigers smaller, want ook een robot is
+    # "draadloos".
+    kern = re.compile(definitie.get('kern') or definitie['patroon'], re.I)
+    niet = definitie.get('niet_in_titel')
+    if niet and re.search(niet, titel or '', re.I) and not kern.search(titel or ''):
+        return False
+    return bool(patroon.search(tekst or ''))
 
 
 def producten_met_kenmerk(category, kenmerk_slug):
@@ -293,13 +340,12 @@ def producten_met_kenmerk(category, kenmerk_slug):
     if hit and nu - hit[0] < _TTL:
         return hit[1]
 
-    patroon = re.compile(definitie['patroon'], re.I)
     ids = []
     for product in (Product.query
                     .filter_by(category_id=category.id, is_available=True)
                     .with_entities(Product.id, Product.title, Product.description, Product.specs)
                     .all()):
-        if patroon.search(_tekst_van(product, definitie['in_tekst'])):
+        if telt_mee(definitie, product.title, _tekst_van(product, definitie['in_tekst'])):
             ids.append(product.id)
     _CACHE[sleutel] = (nu, ids)
     return ids

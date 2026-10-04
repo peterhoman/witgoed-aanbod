@@ -3155,14 +3155,20 @@ def _kenmerk_kop(stap, category):
 def _kenmerk_links(category):
     """Linklijst voor de categoriepagina, in de vaste volgorde van
     _FILTERVELDEN zodat de stappen van een veld bij elkaar staan."""
+    from subpagina_teksten import TEKSTEN
     facet = _kenmerk_facet(category)
     links = []
     for veld, opzet in _FILTERVELDEN.items():
         for stap in _stappen(veld, opzet, category.slug):
             info = facet.get((opzet['naam'], stap['slug']))
             if info:
+                # Heeft de pagina een geschreven kop (subpagina_teksten.py),
+                # dan heet de link ook zo: anders staan er twee namen voor
+                # dezelfde pagina ("Zeer stille koelkasten" tegenover "Stille
+                # koelkasten (onder 36 dB)").
+                eigen = TEKSTEN.get((category.slug, opzet['naam'], stap['slug']), {}).get('h1')
                 links.append({'veld': opzet['naam'], 'slug': stap['slug'],
-                              'kop': _kenmerk_kop(stap, category),
+                              'kop': eigen or _kenmerk_kop(stap, category),
                               'aantal': len(info['ids'])})
     return links
 

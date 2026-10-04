@@ -1,3 +1,4 @@
+import math
 import time
 from collections import Counter, defaultdict
 
@@ -1504,6 +1505,50 @@ def _veld_telt(veld, categorie_slug):
     return categorie_slug not in _VELD_NIET_IN.get(veld, ())
 
 
+# Afronden vóór het indelen (4 okt 2026, Peters ja via de specialist-chat).
+# EPREL geeft maten en toerentallen die net onder het ronde getal liggen dat
+# winkels noemen: een "60 cm"-koelkast is 59,5 cm (82 koelkasten stonden bij
+# 50-60 cm), een "1400 toeren"-machine draait in het eco-programma 1351
+# (~46 machines stonden bij 1200-1400). Alleen voor het indelen; de
+# productpagina blijft de echte maat tonen (eprel_specs gebruikt
+# _eprel_waarde zelf).
+_AFRONDEN = {'dimensionWidth': 1, 'spinSpeedRated': 100}
+
+# Andere stappen voor één categorie. Koelkasten (4 okt 2026): 397 van de 398
+# zaten onder 45 dB, dus "zeer stil (tot 45 dB)" zei niets; de grens wordt
+# 36 dB (181 modellen), de rest van 36 tot 60 dB heet "stil". Adressen gelijk.
+_STAPPEN_PER_CATEGORIE = {
+    ('koelkasten', 'noise'): [
+        {'van': None, 'tot': 36, 'slug': 'zeer-stil',
+         'label': 'zeer stil (onder 36 dB)', 'kop': 'Zeer stille {cat} (onder 36 dB)'},
+        {'van': 36, 'tot': 60, 'slug': 'stil',
+         'label': 'stil (36-60 dB)', 'kop': 'Stille {cat} (36-60 dB)'},
+        {'van': 60, 'tot': 72, 'slug': 'gemiddeld-geluid',
+         'label': 'gemiddeld (60-72 dB)', 'kop': '{cat} met gemiddeld geluidsniveau (60-72 dB)'},
+        {'van': 72, 'tot': None, 'slug': 'vanaf-72-db',
+         'label': 'luid (vanaf 72 dB)', 'kop': '{cat} vanaf 72 dB'},
+    ],
+}
+
+
+def _stappen(veld, opzet, categorie_slug):
+    """De stappen van dit veld voor deze categorie (meestal de standaard)."""
+    return _STAPPEN_PER_CATEGORIE.get((categorie_slug, veld), opzet['stappen'])
+
+
+def _stap_van(gegevens, veld, opzet, categorie_slug):
+    """In welke stap valt dit apparaat voor dit veld, of None. Dé plek waar
+    ingedeeld wordt: facet, links, sitemap, badges en meetpagina gebruiken
+    hem allemaal, zodat ze het nooit oneens zijn."""
+    waarde = _eprel_waarde(gegevens, veld)
+    if waarde is None:
+        return None
+    stap = _AFRONDEN.get(veld)
+    if stap:
+        waarde = math.floor(waarde / stap + 0.5) * stap
+    return _stap_voor(waarde, {'stappen': _stappen(veld, opzet, categorie_slug)})
+
+
 def _stap_voor(waarde, opzet):
     """De stap waar deze waarde in valt, of None."""
     for stap in opzet['stappen']:
@@ -1559,6 +1604,7 @@ def filterkansen():
         Product.id.in_([r.product_id for r in rijen]),
         Product.is_available.is_(True)).all()}
     categorienaam = {c.id: c.name for c in Category.query.all()}
+    categorieslug = {c.id: c.slug for c in Category.query.all()}
 
     # Per categorie per veld per stap tellen.
     tellingen = {}
@@ -1571,10 +1617,8 @@ def filterkansen():
         per_categorie_totaal[cat] = per_categorie_totaal.get(cat, 0) + 1
         gegevens = rij.gegevens or {}
         for veld, opzet in _FILTERVELDEN.items():
-            waarde = _eprel_waarde(gegevens, veld)
-            if waarde is None:
-                continue
-            stap = _stap_voor(waarde, opzet)
+            stap = _stap_van(gegevens, veld, opzet,
+                             categorieslug.get(product.category_id))
             if stap is not None:
                 sleutel = (cat, opzet['naam'], stap['label'])
                 tellingen[sleutel] = tellingen.get(sleutel, 0) + 1
@@ -3090,10 +3134,7 @@ def _kenmerk_facet(category):
         for veld, opzet in _FILTERVELDEN.items():
             if not _veld_telt(veld, category.slug):
                 continue
-            waarde = _eprel_waarde(gegevens, veld)
-            if waarde is None:
-                continue
-            stap = _stap_voor(waarde, opzet)
+            stap = _stap_van(gegevens, veld, opzet, category.slug)
             if stap is not None:
                 per_stap.setdefault(
                     (opzet['naam'], stap['slug']),
@@ -3116,8 +3157,8 @@ def _kenmerk_links(category):
     _FILTERVELDEN zodat de stappen van een veld bij elkaar staan."""
     facet = _kenmerk_facet(category)
     links = []
-    for opzet in _FILTERVELDEN.values():
-        for stap in opzet['stappen']:
+    for veld, opzet in _FILTERVELDEN.items():
+        for stap in _stappen(veld, opzet, category.slug):
             info = facet.get((opzet['naam'], stap['slug']))
             if info:
                 links.append({'veld': opzet['naam'], 'slug': stap['slug'],

@@ -133,18 +133,14 @@ def _badges(product, gegevens):
     (routes.main._kenmerk_facet): een badge kan dus nooit naar een 404
     wijzen, en verdwijnt vanzelf als de pagina erachter verdwijnt.
     """
-    from routes.main import (_FILTERVELDEN, _eprel_waarde, _kenmerk_facet,
-                             _stap_voor)
+    from routes.main import _FILTERVELDEN, _kenmerk_facet, _stap_van
     categorie = product.category
     if categorie is None:
         return []
     facet = _kenmerk_facet(categorie)
     uit = []
     for veld, opzet in _FILTERVELDEN.items():
-        waarde = _eprel_waarde(gegevens, veld)
-        if waarde is None:
-            continue
-        stap = _stap_voor(waarde, opzet)
+        stap = _stap_van(gegevens, veld, opzet, categorie.slug)
         if stap and (opzet['naam'], stap['slug']) in facet:
             uit.append({
                 'naam': opzet['naam'],

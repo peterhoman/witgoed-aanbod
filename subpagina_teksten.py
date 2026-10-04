@@ -317,13 +317,24 @@ TEKSTEN = {
     # Stap 45 <= x < 60 dB; "stil" hoort bij /zeer-stil (onder 45 dB), dus
     # hier een neutrale naam.
     ('vaatwassers', 'geluid', 'stil'): {
-        'titel': 'Vaatwassers 45-60 dB: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        # Ronde 3b (D30, 4 okt 2026): nieuwe titel, intro en vragen.
+        'titel': 'Vaatwasser 45 tot 60 dB: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
         'h1': 'Vaatwassers van 45 tot 60 dB',
         'naam': 'vaatwassers van 45 tot 60 dB',
-        'intro': ('De meeste vaatwassers maken 45 tot 50 decibel: goed hoorbaar in een open '
-                  'keuken, maar geen probleem achter een dichte deur. Wij volgen {n} vaatwassers in '
-                  'deze klasse. Zoek je een model dat je nauwelijks hoort, kijk dan bij de stille '
-                  'vaatwassers onder 45 dB.'),
+        'intro': ('Op deze pagina staan vaatwassers met een geluidsniveau vanaf 45 en onder 60 '
+                  'decibel, volgens het energielabel. De meeste vaatwassers in ons aanbod blijven '
+                  'onder de 45 decibel; deze modellen zijn dus iets luider dan gemiddeld. In een '
+                  'dichte keuken is dat zelden een bezwaar. Heb je een open woonkeuken, kijk dan ook '
+                  'bij de vaatwassers onder 45 decibel. Wij volgen {n} modellen. Het geluid komt uit '
+                  'het officiële Europese energielabelregister.'),
+        'vragen': [
+            ('Is 46 dB stil voor een vaatwasser?',
+             'Het is iets luider dan de meeste nieuwe vaatwassers. In een dichte keuken hoor je hem '
+             'nauwelijks; in een open woonkeuken op een rustige avond soms wel.'),
+            ('Maakt de plek verschil voor het geluid?',
+             'Ja. Een inbouwmodel achter een keukenfront klinkt stiller dan een vrijstaand model. '
+             'Zet de vaatwasser waterpas en laat hem niet tegen de kastwanden trillen.'),
+        ],
         'bekijk_ook': [
             ('Stille vaatwassers onder 45 dB', '/category/vaatwassers/geluid/zeer-stil'),
             ('Inbouw vaatwassers', '/category/vaatwassers/kenmerk/inbouw'),
@@ -1281,6 +1292,672 @@ TEKSTEN = {
             ('Stille drogers onder 60 dB', '/category/drogers/geluid/stil'),
             ('Warmtepompdrogers', '/category/drogers/type/warmtepompdroger'),
             ('Alle drogers', '/category/drogers'),
+        ],
+    },
+
+    # ------------------------------------------------------------------
+    # Ronde 3b, deel 2 en 3 (specialist-chat, 4 okt 2026). D15
+    # (wasdroogcombinaties 1200-1400 toeren) niet gebouwd: na het afronden
+    # van het toerental zitten daar minder dan 8 modellen in, dus de pagina
+    # bestaat niet; de links ernaar uit D14 en D17 zijn weggelaten.
+    # ------------------------------------------------------------------
+    ('wasdroogcombinaties', 'toerental', '1400-1600-toeren'): {
+        'titel': 'Wasdroogcombinatie 1400 toeren: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasdroogcombinaties met 1400 tot 1600 toeren',
+        'naam': 'wasdroogcombinaties met 1400 toeren',
+        'intro': ('Een wasdroogcombinatie wast en droogt in één apparaat. Het toerental is hier extra '
+                  'belangrijk: hoe droger de was uit het centrifugeren komt, hoe korter de machine '
+                  'daarna hoeft te drogen. Op deze pagina staan combinaties met een toerental vanaf '
+                  '1400 en onder 1600 per minuut. Machines met precies 1600 toeren vallen erbuiten. '
+                  'Let bij een combinatie ook op het vulgewicht voor drogen, want dat is lager dan '
+                  'voor wassen. Wij volgen {n} modellen, met per model de laagste prijs van '
+                  '{winkels} winkels. Het toerental komt uit het officiële Europese '
+                  'energielabelregister, opgegeven door de fabrikant.'),
+        'uitleg': [
+            ('Let op twee vulgewichten', [
+                'Een wasdroogcombinatie heeft een vulgewicht voor wassen en een lager vulgewicht '
+                'voor drogen, bijvoorbeeld 10 kg wassen en 6 kg drogen. Wil je een was in één beurt '
+                'wassen én drogen, dan telt vooral het droogvulgewicht. Beide staan bij de '
+                'specificaties van elk model.']),
+            ('Wanneer is een combinatie handig?', [
+                'Als er geen ruimte is voor een losse wasmachine en droger, bijvoorbeeld in een '
+                'appartement of een kleine badkamer. Je kunt wel niet tegelijk wassen en drogen, en '
+                'het drogen duurt langer dan in een losse droger. Een losse warmtepompdroger is in '
+                'het drogen meestal zuiniger.']),
+        ],
+        'vragen': [
+            ('Is 1400 toeren genoeg voor een wasdroogcombinatie?',
+             'Ja, voor de meeste huishoudens. Bij een hoger toerental blijft er iets minder vocht '
+             'achter, waardoor het drogen daarna wat korter duurt.'),
+            ('Hoe lang duurt wassen en drogen samen?',
+             'Dat verschilt sterk per programma en lading. Reken op meerdere uren voor wassen en '
+             'drogen achter elkaar; de duur per programma staat in de handleiding.'),
+            ('Gebruikt een wasdroogcombinatie water bij het drogen?',
+             'Veel modellen gebruiken bij het drogen water om het vocht uit de lucht te laten '
+             'condenseren. Het energielabel noemt het waterverbruik voor wassen alleen en voor '
+             'wassen plus drogen.'),
+        ],
+        'bekijk_ook': [
+            ('Wasdroogcombinaties van 60 tot 70 cm breed', '/category/wasdroogcombinaties/breedte/60-70-cm'),
+            ('Wasmachines met 1400 tot 1600 toeren', '/category/wasmachines/toerental/1400-1600-toeren'),
+            ('Warmtepompdrogers', '/category/drogers/type/warmtepompdroger'),
+            ('Alle wasdroogcombinaties', '/category/wasdroogcombinaties'),
+        ],
+    },
+    ('wasdroogcombinaties', 'breedte', '60-70-cm'): {
+        'titel': 'Wasdroogcombinatie 60 cm breed: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasdroogcombinaties van 60 tot 70 cm breed',
+        'naam': 'wasdroogcombinaties van 60 cm breed',
+        'intro': ('Een wasdroogcombinatie heeft vrijwel dezelfde buitenmaat als een gewone '
+                  'wasmachine: ongeveer 60 cm breed. Daardoor past hij meestal op de plek van je oude '
+                  'wasmachine. Op deze pagina staan combinaties met een breedte vanaf 60 cm en onder '
+                  '70 cm. Wij volgen {n} modellen, met per model de laagste prijs van {winkels} '
+                  'winkels. De breedte komt uit het officiële Europese energielabelregister.'),
+        'vragen': [
+            ('Is een wasdroogcombinatie dieper dan een wasmachine?',
+             'Soms een paar centimeter. Meet de plek op en vergelijk die met de diepte bij het '
+             'model.'),
+            ('Kan een wasdroogcombinatie onder het aanrecht?',
+             'Er bestaan modellen voor onderbouw of inbouw, maar een vrijstaand model heeft ruimte '
+             'nodig voor lucht en warmte. Kijk in de handleiding of onderbouw is toegestaan.'),
+        ],
+        'bekijk_ook': [
+            ('Wasdroogcombinaties met 1400 tot 1600 toeren', '/category/wasdroogcombinaties/toerental/1400-1600-toeren'),
+            ('Wasmachines van 60 tot 70 cm breed', '/category/wasmachines/breedte/60-70-cm'),
+            ('Alle wasdroogcombinaties', '/category/wasdroogcombinaties'),
+        ],
+    },
+    ('wasdroogcombinaties', 'geluid', 'gemiddeld-geluid'): {
+        'titel': 'Wasdroogcombinatie onder 72 dB: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasdroogcombinaties met 60 tot 72 dB bij het centrifugeren',
+        'naam': 'wasdroogcombinaties van 60 tot 72 dB',
+        'intro': ('Het geluid op het energielabel van een wasdroogcombinatie is gemeten tijdens het '
+                  'centrifugeren van het wasprogramma. Het label noemt geen apart geluid voor het '
+                  'drogen. Op deze pagina staan combinaties vanaf 60 en onder 72 decibel. Omdat een '
+                  'combinatie vaak lang doordraait, soms tot in de avond, telt het geluid in een '
+                  'appartement extra. Wij volgen {n} modellen. Het geluid komt uit het officiële '
+                  'Europese energielabelregister.'),
+        'vragen': [
+            ('Kan ik een wasdroogcombinatie \'s nachts laten draaien?',
+             'Dat kan, maar in een appartement hoor je het centrifugeren door vloer en muren. Stel '
+             'de starttijd zo in dat het centrifugeren niet midden in de nacht valt, of zet het '
+             'toerental lager.'),
+            ('Wat staat er over geluid op het energielabel?',
+             'Het geluid in decibel bij het centrifugeren, en een geluidsklasse van A tot D.'),
+        ],
+        'bekijk_ook': [
+            ('Wasdroogcombinaties vanaf 72 dB', '/category/wasdroogcombinaties/geluid/vanaf-72-db'),
+            ('Wasdroogcombinaties met 1400 tot 1600 toeren', '/category/wasdroogcombinaties/toerental/1400-1600-toeren'),
+            ('Alle wasdroogcombinaties', '/category/wasdroogcombinaties'),
+        ],
+    },
+    ('wasdroogcombinaties', 'geluid', 'vanaf-72-db'): {
+        'titel': 'Wasdroogcombinatie vanaf 72 dB: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasdroogcombinaties vanaf 72 dB bij het centrifugeren',
+        'naam': 'wasdroogcombinaties vanaf 72 dB',
+        'intro': ('Op deze pagina staan wasdroogcombinaties die bij het centrifugeren 72 decibel of '
+                  'meer maken, volgens het energielabel. Staat het apparaat in een bijkeuken, '
+                  'berging of badkamer met de deur dicht, dan is dat meestal geen probleem. In een '
+                  'open keuken of naast een slaapkamer kun je beter eerst naar rustigere modellen '
+                  'kijken. Wij volgen {n} modellen. Het geluid komt uit het officiële Europese '
+                  'energielabelregister.'),
+        'vragen': [
+            ('Waarom klinkt een wasdroogcombinatie op het label luider dan een droger?',
+             'Het labelgeluid van een combinatie is gemeten bij het centrifugeren, het luidste '
+             'deel van het wassen. Bij een losse droger is het geluid gemeten tijdens het '
+             'drogen.'),
+            ('Waar let ik op bij een luidere combinatie?',
+             'Een stevige, vlakke vloer en een machine die waterpas staat. Verwijder voor het '
+             'eerste gebruik de transportbouten. En plan het programma zo dat het centrifugeren '
+             'niet midden in de nacht valt.'),
+        ],
+        'bekijk_ook': [
+            ('Wasdroogcombinaties onder 72 dB', '/category/wasdroogcombinaties/geluid/gemiddeld-geluid'),
+            ('Wasdroogcombinaties van 60 tot 70 cm breed', '/category/wasdroogcombinaties/breedte/60-70-cm'),
+            ('Alle wasdroogcombinaties', '/category/wasdroogcombinaties'),
+        ],
+    },
+    ('koelkasten', 'breedte', 'breed'): {
+        'titel': 'Brede koelkast vanaf 70 cm: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Brede koelkasten (vanaf 70 cm)',
+        'naam': 'brede koelkasten',
+        'intro': ('Een brede koelkast is 70 cm of breder. Daaronder vallen koel-vriescombinaties van '
+                  'ongeveer 70 cm, kasten met dubbele deuren en Amerikaanse koelkasten. Je krijgt '
+                  'meer ruimte zonder dat de kast hoger wordt dan je keuken toelaat, en brede '
+                  'schappen voor schalen en pizzadozen. Meet wel vooraf de plek én de weg naar '
+                  'binnen, want een brede kast moet ook door de deuren. Wij volgen {n} koelkasten '
+                  'vanaf 70 cm breed, met per model de laagste prijs van {winkels} winkels. De '
+                  'breedte komt uit het officiële Europese energielabelregister, opgegeven door de '
+                  'fabrikant.'),
+        'uitleg': [
+            ('70 cm of Amerikaans?', [
+                'Een koel-vriescombinatie van 70 cm past vaak nog in een gewone keukenopstelling en '
+                'heeft deuren zoals een gewone koelkast. Een Amerikaanse koelkast is veel breder en '
+                'dieper, en heeft twee deuren naast elkaar, vaak met een ijs- of waterdispenser. Die '
+                'heeft echt een eigen plek nodig.']),
+            ('Meet de weg naar binnen', [
+                'Een brede koelkast moet door de voordeur, de gang en de keukendeur. Meet de '
+                'smalste doorgang en vergelijk die met de maten van de kast; soms kunnen de deuren '
+                'eraf. Houd in de keuken ook rekening met de ruimte die de deuren nodig hebben om '
+                'ver genoeg open te gaan voor de lades.']),
+        ],
+        'vragen': [
+            ('Hoe breed is een brede koelkast?',
+             'Op deze pagina 70 cm of meer. Veel brede koel-vriescombinaties zijn ongeveer 70 cm; '
+             'Amerikaanse koelkasten zijn meestal 83 tot 92 cm.'),
+            # Aangeleverd verwees naar "50 tot 60 cm"; sinds het afronden van 4 okt
+            # staan de kasten van 59,5 cm bij 60 tot 70 cm.
+            ('Past een brede koelkast in een opening van 60 cm?',
+             'Nee. Voor een opening van 60 cm kijk je bij de koelkasten van 60 tot 70 cm breed; '
+             'daar staan ook de kasten van 59,5 cm. Die passen alleen als de handleiding zo weinig '
+             'ruimte eromheen toestaat. Anders kijk je bij de koelkasten van 50 tot 60 cm breed.'),
+            ('Verbruikt een brede koelkast veel meer stroom?',
+             'Meer inhoud kost meestal meer stroom in totaal, maar het energielabel zegt meer dan '
+             'de maat. Het jaarverbruik en de stroomkosten staan bij elk model.'),
+        ],
+        'bekijk_ook': [
+            ('Amerikaanse koelkasten', '/category/koelkasten/kenmerk/amerikaans'),
+            ('Grote koelkasten vanaf 450 liter', '/category/koelkasten/inhoud/vanaf-450-liter'),
+            ('Koelkasten van 60 tot 70 cm breed', '/category/koelkasten/breedte/60-70-cm'),
+            ('No frost koelkasten', '/category/koelkasten/kenmerk/no-frost'),
+            ('Gids: beste koelkast 2026', '/gidsen/beste-koelkast-2026'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'geluid', 'zeer-stil'): {
+        'titel': 'Stille koelkast: {n} modellen onder 36 dB vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Stille koelkasten (onder 36 dB)',
+        'naam': 'stille koelkasten',
+        'intro': ('Een koelkast draait dag en nacht. In een open keuken, studio of slaapkamer hoor je '
+                  'het zoemen van de compressor dan snel. Op deze pagina staan de stilste '
+                  'koelkasten: met een geluidsniveau onder 36 decibel. Ongeveer de helft van de '
+                  'koelkasten die wij volgen haalt dat. Kijk ook naar het precieze getal bij elk '
+                  'model: hoe lager, hoe minder je hem hoort. Wij volgen {n} koelkasten in deze '
+                  'groep, met per model de laagste prijs van {winkels} winkels. Het geluid komt uit '
+                  'het officiële Europese energielabelregister, opgegeven door de fabrikant.'),
+        'uitleg': [
+            ('Hoeveel decibel is stil voor een koelkast?', [
+                'Het energielabel geeft het geluid in decibel en een geluidsklasse van A tot D. '
+                'Onder de 36 decibel is een koelkast erg stil. Rond de 40 decibel hoor je hem in een '
+                'stille kamer nog wel. Elke 3 decibel minder halveert de geluidsenergie, dus een '
+                'paar decibel verschil is te merken.']),
+            ('Wat maakt een koelkast stiller?', [
+                'Een compressor die rustig doorloopt in plaats van steeds aan en uit te slaan, en '
+                'goede isolatie. Ook de plek telt: een koelkast die waterpas staat en niet tegen een '
+                'kast of muur trilt, klinkt rustiger. Een no frost-model heeft een ventilator, die '
+                'je soms zacht hoort.']),
+        ],
+        'vragen': [
+            ('Wat is de stilste koelkast?',
+             'Dat wisselt met het aanbod. Het geluid staat bij elk model op de productpagina, bij '
+             'de gegevens van het energielabel.'),
+            ('Kan een koelkast in de slaapkamer staan?',
+             'Dat kan. Kies dan een model met zo weinig mogelijk decibel, liefst onder de 36, en '
+             'zet hem niet vlak naast het bed.'),
+            ('Waarom maakt mijn koelkast soms meer geluid?',
+             'Na het openen van de deur of het inladen van boodschappen draait de compressor '
+             'harder. Tikken en zacht borrelen van het koelmiddel is normaal. Blijft het lawaai, '
+             'kijk dan of de kast waterpas staat en nergens tegenaan raakt.'),
+        ],
+        'bekijk_ook': [
+            ('Koelkasten van 36 tot 60 dB', '/category/koelkasten/geluid/stil'),
+            ('Kleine koelkasten tot 100 liter', '/category/koelkasten/inhoud/tot-100-liter'),
+            ('Lage koelkasten tot 90 cm', '/category/koelkasten/hoogte/tot-90-cm'),
+            ('No frost koelkasten', '/category/koelkasten/kenmerk/no-frost'),
+            ('Gids: beste koelkast 2026', '/gidsen/beste-koelkast-2026'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'geluid', 'stil'): {
+        'titel': 'Koelkast 36 tot 60 dB: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Koelkasten van 36 tot 60 dB',
+        'naam': 'koelkasten van 36 tot 60 dB',
+        'intro': ('Op deze pagina staan koelkasten met een geluidsniveau vanaf 36 en onder 60 '
+                  'decibel, volgens het energielabel. Bijna alle koelkasten in deze groep zitten '
+                  'tussen 36 en 42 decibel. In een dichte keuken hoor je dat nauwelijks; in een open '
+                  'keuken, studio of slaapkamer soms wel, vooral \'s nachts. Zoek je een koelkast die '
+                  'je zo min mogelijk hoort, kijk dan bij de stille koelkasten onder 36 decibel. Wij '
+                  'volgen {n} modellen, met per model de laagste prijs van {winkels} winkels. Het '
+                  'geluid komt uit het officiële Europese energielabelregister.'),
+        'vragen': [
+            ('Is 40 dB hard voor een koelkast?',
+             'Nee, dat is gangbaar. In een stille kamer hoor je hem wel zacht zoemen, vooral als de '
+             'compressor aanslaat.'),
+            ('Hoeveel scheelt een paar decibel?',
+             'Elke 3 decibel minder halveert de geluidsenergie. Een koelkast van 34 dB is dus '
+             'merkbaar stiller dan een van 40 dB.'),
+        ],
+        'bekijk_ook': [
+            ('Stille koelkasten onder 36 dB', '/category/koelkasten/geluid/zeer-stil'),
+            ('No frost koelkasten', '/category/koelkasten/kenmerk/no-frost'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'inhoud', '100-250-liter'): {
+        'titel': 'Koelkast 100 tot 250 liter: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Koelkasten van 100-250 liter',
+        'naam': 'koelkasten van 100 tot 250 liter',
+        'intro': ('Een koelkast van 100 tot 250 liter is de maat voor een of twee personen. Ze zijn er '
+                  'in veel vormen: een tafelmodel met wat meer ruimte, een halfhoge kast onder een '
+                  'hangkast, een smalle hoge kast of een kleine koel-vriescombinatie. Op deze pagina '
+                  'staan koelkasten met een inhoud vanaf 100 en onder 250 liter. Voor wie alleen '
+                  'woont of een tweede koelkast zoekt, is dit vaak de handigste maat. Wij volgen {n} '
+                  'modellen, met per model de laagste prijs van {winkels} winkels. De inhoud komt '
+                  'uit het officiële Europese energielabelregister, opgegeven door de fabrikant.'),
+        'uitleg': [
+            ('Hoeveel liter heb je nodig?', [
+                'Reken op ongeveer 50 tot 70 liter koelruimte per persoon. Voor een of twee '
+                'personen is 100 tot 150 liter koelruimte dan genoeg. Kook je veel vers of doe je '
+                'één keer per week boodschappen, neem dan wat meer. Kijk bij een '
+                'koel-vriescombinatie apart naar de liters van het koeldeel en het vriesdeel; die '
+                'staan bij de specificaties.']),
+            ('Klein, maar niet altijd zuinig', [
+                'Een kleine koelkast verbruikt in totaal weinig stroom, maar heeft niet altijd een '
+                'goed energielabel. Vergelijk daarom de stroomkosten per jaar bij elk model, en niet '
+                'alleen de prijs. Zet je een tafelmodel onder een werkblad, houd dan ruimte vrij '
+                'voor de luchtafvoer; hoeveel staat in de handleiding.']),
+        ],
+        'vragen': [
+            ('Hoeveel liter koelkast heb ik nodig voor 2 personen?',
+             'Meestal 150 tot 250 liter in totaal. Het hangt af van hoe vaak je boodschappen doet '
+             'en of je ook een vriezer nodig hebt.'),
+            ('Is 100 liter genoeg voor één persoon?',
+             'Voor de meeste alleenwonenden wel, zeker als je vaak boodschappen doet. Wil je ook '
+             'invriezen, kijk dan naar een model met vriesvak of een aparte vriezer.'),
+            ('Telt het vriesvak mee in de inhoud?',
+             'Ja. De liters op deze pagina zijn de totale inhoud, koel- en vriesdeel samen. Bij de '
+             'specificaties van elk model staan het koeldeel en het vriesdeel apart.'),
+        ],
+        'bekijk_ook': [
+            ('Kleine koelkasten tot 100 liter', '/category/koelkasten/inhoud/tot-100-liter'),
+            ('Koelkasten van 250-350 liter', '/category/koelkasten/inhoud/250-350-liter'),
+            ('Smalle koelkasten', '/category/koelkasten/breedte/smal'),
+            ('Koelkasten van 90 tot 130 cm hoog', '/category/koelkasten/hoogte/90-130-cm'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'inhoud', '250-350-liter'): {
+        'titel': 'Koelkast 250 tot 350 liter: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Koelkasten van 250-350 liter',
+        'naam': 'koelkasten van 250 tot 350 liter',
+        'intro': ('Koelkasten van 250 tot 350 liter zijn de gangbare maat voor een gezin van twee tot '
+                  'vier personen. Het zijn vooral koel-vriescombinaties van ongeveer 60 cm breed en '
+                  '1,70 tot 1,90 m hoog, en hoge koelkasten zonder vriezer. Op deze pagina staan '
+                  'koelkasten met een inhoud vanaf 250 en onder 350 liter. Kies je tussen twee maten, '
+                  'let dan ook op de verdeling tussen koeldeel en vriesdeel. Wij volgen {n} modellen, '
+                  'met per model de laagste prijs van {winkels} winkels. De inhoud komt uit het '
+                  'officiële Europese energielabelregister, opgegeven door de fabrikant.'),
+        'uitleg': [
+            ('Met of zonder vriezer?', [
+                'In deze maat kies je tussen een koel-vriescombinatie en een koelkast zonder '
+                'vriezer. Een combinatie heeft meestal onderin een vriezer met laden. Een kast '
+                'zonder vriezer geeft al die liters aan koelruimte, maar dan heb je een aparte '
+                'vriezer nodig als je veel invriest.']),
+            ('Inbouw of vrijstaand?', [
+                'Ook veel inbouwkoelkasten voor de standaardnis van 178 cm vallen in deze maat. Bij '
+                'inbouw is de nismaat bepalend, niet de buitenmaat. Vervang je een inbouwkoelkast, '
+                'meet dan de nis en kijk of de deur met een sleepdeur of een vaste deur vastzit.']),
+        ],
+        'vragen': [
+            ('Hoeveel liter koelkast heb ik nodig voor 4 personen?',
+             'Meestal 250 tot 350 liter, verdeeld over koel- en vriesdeel. Vries je veel in of doe '
+             'je één keer per week boodschappen, kijk dan ook bij 350 tot 450 liter.'),
+            ('Hoe groot is de vriezer in een koel-vriescombinatie van 300 liter?',
+             'Dat verschilt sterk per model. Bij de specificaties staan de liters van het koeldeel '
+             'en het vriesdeel apart.'),
+            ('No frost of niet?',
+             'Met no frost hoef je de vriezer niet te ontdooien. Bewaar onverpakt eten wel '
+             'afgedekt, want de lucht in een no frost-kast is droog.'),
+        ],
+        'bekijk_ook': [
+            ('Koelkasten van 100-250 liter', '/category/koelkasten/inhoud/100-250-liter'),
+            ('Koelkasten van 350-450 liter', '/category/koelkasten/inhoud/350-450-liter'),
+            ('No frost koelkasten', '/category/koelkasten/kenmerk/no-frost'),
+            ('Koelkasten van 170 tot 180 cm hoog', '/category/koelkasten/hoogte/170-180-cm'),
+            ('Gids: beste koelkast 2026', '/gidsen/beste-koelkast-2026'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'inhoud', '350-450-liter'): {
+        'titel': 'Koelkast 350 tot 450 liter: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Koelkasten van 350-450 liter',
+        'naam': 'koelkasten van 350 tot 450 liter',
+        'intro': ('Een koelkast van 350 tot 450 liter is ruim voor een groot gezin, of voor wie één '
+                  'keer per week grote boodschappen doet. In deze maat vind je hoge '
+                  'koel-vriescombinaties van 60 cm breed, brede kasten van ongeveer 70 cm en hoge '
+                  'koelkasten zonder vriezer. Op deze pagina staan koelkasten met een inhoud vanaf '
+                  '350 en onder 450 liter. Meet je keuken goed op, want zoveel inhoud vraagt een hoge '
+                  'of brede kast. Wij volgen {n} modellen, met per model de laagste prijs van '
+                  '{winkels} winkels. De inhoud komt uit het officiële Europese '
+                  'energielabelregister.'),
+        'uitleg': [
+            ('Hoog of breed?', [
+                'Op 60 cm breed haal je deze inhoud meestal alleen met een hoge kast van ongeveer '
+                '1,85 m of meer. Is je keuken daar te laag voor, dan geeft een kast van 70 cm breed '
+                'dezelfde liters op een lagere hoogte. Kijk bij elk model naar de hoogte en de '
+                'breedte, en meet je plek.']),
+            ('Twee losse kasten', [
+                'Wil je veel koelruimte én veel vriesruimte, dan kun je ook een hoge koelkast zonder '
+                'vriezer naast een hoge vriezer van dezelfde maat zetten. Samen geeft dat meer '
+                'ruimte dan de meeste combinaties, maar het kost wel twee plekken van 60 cm.']),
+        ],
+        'vragen': [
+            ('Voor hoeveel personen is een koelkast van 400 liter?',
+             'Voor vier tot zes personen, of voor een kleiner huishouden dat veel vers kookt of '
+             'weinig vaak boodschappen doet.'),
+            ('Is een grote koelkast duurder in gebruik?',
+             'Meestal iets, maar het energielabel zegt meer dan de inhoud. Een grote kast met een '
+             'goed label kan zuiniger zijn dan een kleinere met een slecht label. Vergelijk de '
+             'stroomkosten per jaar.'),
+            ('Hoeveel ruimte heeft een grote koelkast nodig?',
+             'Naast de breedte en hoogte ook de diepte met de deur open, en ruimte rondom voor de '
+             'luchtafvoer. De maten staan bij het model, de vrije ruimte in de handleiding.'),
+        ],
+        'bekijk_ook': [
+            ('Koelkasten van 250-350 liter', '/category/koelkasten/inhoud/250-350-liter'),
+            ('Grote koelkasten vanaf 450 liter', '/category/koelkasten/inhoud/vanaf-450-liter'),
+            ('Brede koelkasten', '/category/koelkasten/breedte/breed'),
+            ('Koelkasten van 180 tot 190 cm hoog', '/category/koelkasten/hoogte/180-190-cm'),
+            ('Hoge koelkasten vanaf 190 cm', '/category/koelkasten/hoogte/vanaf-190-cm'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'inhoud', 'vanaf-450-liter'): {
+        'titel': 'Grote koelkast vanaf 450 liter: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Grote koelkasten (vanaf 450 liter)',
+        'naam': 'grote koelkasten',
+        'intro': ('Een koelkast vanaf 450 liter is de grootste maat die je voor thuis kunt kopen. '
+                  'Meestal gaat het om brede modellen: Amerikaanse koelkasten met twee deuren naast '
+                  'elkaar, kasten met vier deuren en brede koel-vriescombinaties. Ze passen bij grote '
+                  'gezinnen en bij wie veel ruimte wil voor schalen, drankjes en diepvries. Zo\'n kast '
+                  'heeft wel een eigen plek nodig en moet ook door de deuren naar binnen kunnen. Wij '
+                  'volgen {n} koelkasten vanaf 450 liter, met per model de laagste prijs van '
+                  '{winkels} winkels. De inhoud komt uit het officiële Europese '
+                  'energielabelregister, opgegeven door de fabrikant.'),
+        'uitleg': [
+            ('Wat past waar?', [
+                'Veel koelkasten van deze maat zijn 80 tot ruim 90 cm breed en dieper dan een '
+                'gewone koelkast. Meet niet alleen de plek in de keuken, maar ook de deuren en '
+                'gangen onderweg. Houd ruimte vrij om de deuren ver genoeg te openen voor de '
+                'lades.']),
+            ('Dispenser en wateraansluiting', [
+                'Veel grote modellen hebben een ijs- of waterdispenser. Sommige hebben daarvoor een '
+                'vaste wateraansluiting nodig, andere een watertank die je zelf bijvult. Kijk bij '
+                'het model welke het is voordat je bestelt.']),
+        ],
+        'vragen': [
+            ('Hoeveel liter heeft een Amerikaanse koelkast?',
+             'Vaak 500 liter of meer, maar er zijn ook kleinere. De inhoud staat bij elk model.'),
+            ('Verbruikt een grote koelkast veel stroom?',
+             'In totaal meer dan een gewone koelkast. Per liter kan het meevallen. Vergelijk het '
+             'jaarverbruik en de stroomkosten bij elk model.'),
+            ('Past een grote koelkast door een gewone binnendeur?',
+             'Meet de smalste deuropening onderweg en vergelijk die met de diepte van de koelkast. '
+             'Soms kunnen de deuren van de koelkast eraf om hem naar binnen te krijgen; dat staat '
+             'in de handleiding.'),
+        ],
+        'bekijk_ook': [
+            ('Amerikaanse koelkasten', '/category/koelkasten/kenmerk/amerikaans'),
+            ('Brede koelkasten', '/category/koelkasten/breedte/breed'),
+            ('Koelkasten van 350-450 liter', '/category/koelkasten/inhoud/350-450-liter'),
+            ('No frost koelkasten', '/category/koelkasten/kenmerk/no-frost'),
+            ('Gids: beste koelkast 2026', '/gidsen/beste-koelkast-2026'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'breedte', '50-60-cm'): {
+        'titel': 'Koelkast 50 tot 60 cm breed: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Koelkasten van 50 tot 60 cm breed',
+        'naam': 'koelkasten van 50 tot 60 cm breed',
+        'intro': ('Op deze pagina staan koelkasten met een breedte vanaf 50 cm en onder 60 cm. '
+                  'Hieronder vallen vooral inbouwkoelkasten, die ongeveer 54 tot 56 cm breed zijn. '
+                  'Koelkasten van 59,5 cm, die winkels als 60 cm breed verkopen, staan bij de '
+                  'koelkasten van 60 tot 70 cm. Wij volgen {n} modellen, met per model de laagste '
+                  'prijs van {winkels} winkels. De breedte komt uit het officiële Europese '
+                  'energielabelregister.'),
+        'vragen': [
+            ('Hoe breed is een inbouwkoelkast?',
+             'Het apparaat zelf is meestal ongeveer 54 tot 56 cm breed, voor een nis van 56 tot '
+             '57 cm. Bij inbouw telt de nismaat; die staat bij het model.'),
+            ('Past een koelkast van 59,5 cm in een opening van 60 cm?',
+             'Dat is krap. Een vrijstaande koelkast heeft rondom wat ruimte nodig om warmte af te '
+             'voeren. Hoeveel staat in de handleiding.'),
+        ],
+        'bekijk_ook': [
+            ('Smalle koelkasten', '/category/koelkasten/breedte/smal'),
+            ('Koelkasten van 60 tot 70 cm breed', '/category/koelkasten/breedte/60-70-cm'),
+            ('Koelkasten van 170 tot 180 cm hoog', '/category/koelkasten/hoogte/170-180-cm'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('koelkasten', 'breedte', '60-70-cm'): {
+        'titel': 'Koelkast 60 cm breed: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Koelkasten van 60 tot 70 cm breed',
+        'naam': 'koelkasten van 60 cm breed',
+        'intro': ('Een breedte van ongeveer 60 cm is de standaard voor een vrijstaande koelkast of '
+                  'koel-vriescombinatie. Op deze pagina staan koelkasten van 60 cm tot onder 70 cm '
+                  'breed, ook de vele modellen die de fabrikant als 59,5 cm opgeeft. De brede '
+                  'modellen van 70 cm en meer hebben een eigen pagina. Wij volgen {n} modellen, met '
+                  'per model de laagste prijs van {winkels} winkels. De breedte komt uit het '
+                  'officiële Europese energielabelregister.'),
+        'vragen': [
+            ('Hoe breed is een standaard koelkast?',
+             'Ongeveer 60 cm. Sommige fabrikanten geven 59,5 cm op, andere 60 cm. Meet je plek en '
+             'houd ruimte vrij voor de luchtafvoer en het openen van de deur.'),
+            ('Hoeveel ruimte moet er naast een koelkast zijn?',
+             'Dat verschilt per model. Vooral aan de kant van de scharnieren heb je ruimte nodig om '
+             'de deur ver genoeg te openen voor de lades. De maten staan in de handleiding.'),
+        ],
+        'bekijk_ook': [
+            ('Koelkasten van 50 tot 60 cm breed', '/category/koelkasten/breedte/50-60-cm'),
+            ('Brede koelkasten', '/category/koelkasten/breedte/breed'),
+            ('Koelkasten van 250-350 liter', '/category/koelkasten/inhoud/250-350-liter'),
+            ('Alle koelkasten', '/category/koelkasten'),
+        ],
+    },
+    ('vaatwassers', 'waterverbruik', 'tot-10-liter'): {
+        'titel': 'Zuinige vaatwasser: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Zuinige vaatwassers (onder 10 liter water)',
+        'naam': 'zuinige vaatwassers',
+        'intro': ('Een moderne vaatwasser gebruikt weinig water. In het eco-programma blijven de '
+                  'meeste vaatwassers onder de 10 liter per wasbeurt, vaak rond de 9 liter. Op deze '
+                  'pagina staan de vaatwassers die minder dan 10 liter gebruiken in het '
+                  'eco-programma. Het waterverbruik komt uit het officiële Europese '
+                  'energielabelregister: het is het verbruik in het eco-programma, opgegeven door de '
+                  'fabrikant. Wij volgen {n} zuinige vaatwassers, met per model de laagste prijs van '
+                  '{winkels} winkels. Kijk naast het water ook naar het energielabel, want dat '
+                  'bepaalt voor het grootste deel wat je per jaar betaalt.'),
+        'uitleg': [
+            ('Water of stroom?', [
+                'Water is bij een vaatwasser meestal een kleine kostenpost. Het meeste geld gaat '
+                'naar stroom, vooral om het water op te warmen. Minder water betekent wel minder '
+                'water opwarmen, maar het energielabel van A tot G zegt meer over je '
+                'stroomrekening. Kijk daarom naar allebei; de stroomkosten per jaar staan bij elk '
+                'model.']),
+            ('Het eco-programma duurt lang', [
+                'De waarde op het label geldt voor het eco-programma. Dat werkt met weinig water en '
+                'een lagere temperatuur, en duurt daardoor vaak drie uur of langer. Kies je een '
+                'snel- of intensiefprogramma, dan gebruikt dezelfde machine meer water. Het '
+                'verbruik per programma staat in de handleiding.']),
+        ],
+        'vragen': [
+            ('Hoeveel water verbruikt een vaatwasser?',
+             'In het eco-programma meestal ongeveer 9 tot 10 liter per wasbeurt. Andere '
+             'programma\'s gebruiken vaak meer.'),
+            ('Is een vaatwasser zuiniger met water dan afwassen met de hand?',
+             'Meestal wel, zeker met een volle machine in het eco-programma. Hoeveel je bespaart, '
+             'hangt af van hoe je met de hand afwast.'),
+            ('Gebruikt een smalle vaatwasser minder water?',
+             'Per wasbeurt vaak iets minder, maar er past ook minder in. Vergelijk het '
+             'waterverbruik met het aantal couverts bij elk model.'),
+        ],
+        'bekijk_ook': [
+            ('Vaatwassers vanaf 10 liter water', '/category/vaatwassers/waterverbruik/10-45-liter'),
+            ('Stille vaatwassers', '/category/vaatwassers/geluid/zeer-stil'),
+            ('Inbouw vaatwassers', '/category/vaatwassers/kenmerk/inbouw'),
+            ('Vaatwassers energielabel A', '/category/vaatwassers/energielabel/a'),
+            ('Alle vaatwassers', '/category/vaatwassers'),
+        ],
+    },
+    ('vaatwassers', 'waterverbruik', '10-45-liter'): {
+        'titel': 'Vaatwasser vanaf 10 liter water: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Vaatwassers vanaf 10 liter water',
+        'naam': 'vaatwassers vanaf 10 liter water',
+        'intro': ('Op deze pagina staan vaatwassers die in het eco-programma 10 liter water of meer '
+                  'per wasbeurt gebruiken, en minder dan 45 liter. Die bovengrens is ruim; '
+                  'vaatwassers zitten er ver onder. Wil je zo weinig mogelijk water gebruiken, kijk '
+                  'dan bij de vaatwassers onder 10 liter. Wij volgen {n} modellen, met per model de '
+                  'laagste prijs van {winkels} winkels. De waarde komt uit het officiële Europese '
+                  'energielabelregister.'),
+        'vragen': [
+            ('Is 11 liter per wasbeurt veel voor een vaatwasser?',
+             'Nee, dat is gewoon. Een liter of twee meer per wasbeurt is bij dagelijks gebruik een '
+             'paar honderd liter water per jaar. Dat kost weinig; het stroomverbruik weegt '
+             'zwaarder.'),
+            ('Waarom gebruikt mijn vaatwasser meer water dan op het label?',
+             'Het label geldt voor het eco-programma. Snel-, intensief- en hygiëneprogramma\'s '
+             'gebruiken meestal meer water.'),
+        ],
+        'bekijk_ook': [
+            ('Zuinige vaatwassers onder 10 liter', '/category/vaatwassers/waterverbruik/tot-10-liter'),
+            ('Vaatwassers van 60 tot 70 cm breed', '/category/vaatwassers/breedte/60-70-cm'),
+            ('Alle vaatwassers', '/category/vaatwassers'),
+        ],
+    },
+    ('vaatwassers', 'breedte', '60-70-cm'): {
+        'titel': 'Vaatwasser 60 cm breed: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Vaatwassers van 60 tot 70 cm breed',
+        'naam': 'vaatwassers van 60 cm breed',
+        'intro': ('De meeste vaatwassers zijn ongeveer 60 cm breed, voor de standaardnis in een '
+                  'keuken. Er zijn ook smalle modellen van ongeveer 45 cm; die staan niet op deze '
+                  'pagina. Hier staan vaatwassers met een breedte vanaf 60 cm en onder 70 cm. Wij '
+                  'volgen {n} modellen, met per model de laagste prijs van {winkels} winkels. De '
+                  'breedte komt uit het officiële Europese energielabelregister.'),
+        'vragen': [
+            ('Hoeveel couverts passen er in een vaatwasser van 60 cm?',
+             'Meestal 12 tot 16 couverts. Een smalle vaatwasser van 45 cm heeft er ongeveer 9 tot '
+             '11. Het aantal staat bij elk model.'),
+            ('Past een vrijstaande vaatwasser in een nis van 60 cm?',
+             'Alleen als de handleiding dat toestaat; anders kies je een inbouw- of '
+             'onderbouwmodel. Let ook op de hoogte onder het werkblad.'),
+        ],
+        'bekijk_ook': [
+            ('Inbouw vaatwassers', '/category/vaatwassers/kenmerk/inbouw'),
+            ('Stille vaatwassers', '/category/vaatwassers/geluid/zeer-stil'),
+            ('Zuinige vaatwassers onder 10 liter', '/category/vaatwassers/waterverbruik/tot-10-liter'),
+            ('Alle vaatwassers', '/category/vaatwassers'),
+        ],
+    },
+    ('stofzuigers', 'kenmerk', 'dweilfunctie'): {
+        'titel': 'Stofzuiger met dweilfunctie: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'naam': 'stofzuigers met dweilfunctie',
+        'vragen': [
+            ('Welke soorten stofzuigers met dweilfunctie zijn er?',
+             'Vooral robotstofzuigers met een dweildoek of draaiende dweilpads, en '
+             'nat-droogstofzuigers die tegelijk zuigen en met een natte rol reinigen. Een robot '
+             'werkt zelf; een nat-droogstofzuiger stuur je met de hand.'),
+            ('Kan ik er houten vloeren mee dweilen?',
+             'Dat hangt af van de vloer. Volg het onderhoudsadvies van de vloer zelf en gebruik bij '
+             'hout zo weinig mogelijk water. Bij veel apparaten kun je de hoeveelheid water '
+             'instellen.'),
+            ('Vervangt een dweilfunctie de gewone dweil?',
+             'Voor het dagelijks bijhouden van harde vloeren grotendeels. Ingedroogde vlekken en '
+             'hoeken vragen soms nog handwerk.'),
+        ],
+        'bekijk_ook': [
+            ('Robotstofzuigers', '/category/stofzuigers/kenmerk/robotstofzuiger'),
+            ('Steelstofzuigers', '/category/stofzuigers/kenmerk/steelstofzuiger'),
+            ('Alle stofzuigers', '/category/stofzuigers'),
+        ],
+    },
+    ('ovens', 'kenmerk', 'inbouw'): {
+        'titel': 'Inbouwoven vergelijken: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'naam': 'inbouwovens',
+        'vragen': [
+            ('Welke nismaat heeft een inbouwoven?',
+             'Een standaard inbouwoven past in een nis van ongeveer 60 cm hoog en 56 tot 57 cm '
+             'breed. Compacte ovens zijn ongeveer 45 cm hoog. De precieze nismaat staat bij het '
+             'model.'),
+            ('Inbouwoven hoog in de kast of onder het aanrecht?',
+             'Op ooghoogte zie je het gerecht zonder te bukken. Onder het aanrecht heb je geen hoge '
+             'kast nodig. Onder een kookplaat moet de combinatie volgens de handleidingen van beide '
+             'apparaten zijn toegestaan.'),
+            ('Heeft een inbouwoven een eigen groep nodig?',
+             'Dat hangt af van het vermogen van de oven en de rest van je installatie. Een oven met '
+             'een hoog vermogen hoort vaak op een eigen groep. Laat dat bij twijfel nakijken door '
+             'een installateur.'),
+        ],
+        'bekijk_ook': [
+            ('Combimagnetrons', '/category/magnetrons/kenmerk/combimagnetron'),
+            ('Airfryers', '/category/ovens/kenmerk/airfryer'),
+            ('Gids: beste oven 2026', '/gidsen/beste-oven-2026'),
+            ('Alle ovens', '/category/ovens'),
+        ],
+    },
+    ('afzuigkappen', 'geluid', 'stil'): {
+        'titel': 'Stille afzuigkap: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Stille afzuigkappen (45 tot 60 dB)',
+        'naam': 'stille afzuigkappen',
+        'intro': ('Een afzuigkap zet je aan op het moment dat je in de keuken staat en praat. Dan merk '
+                  'je elke decibel. In een open keuken, waar anderen aan tafel zitten terwijl jij '
+                  'kookt, is een stille kap een groot verschil. Op deze pagina staan afzuigkappen met '
+                  'een geluidsniveau vanaf 45 en onder 60 decibel op de hoogste normale stand, zonder '
+                  'de extra krachtige stand. Wij volgen {n} stille afzuigkappen, met per model de '
+                  'laagste prijs van {winkels} winkels. Het geluid komt uit het officiële Europese '
+                  'energielabelregister, opgegeven door de fabrikant.'),
+        'uitleg': [
+            ('Wat maakt een afzuigkap stil?', [
+                'Een motor die op een lage stand al genoeg afzuigt, goede isolatie en een ruime '
+                'afvoer. Een kap die naar buiten afvoert via een smalle of lange buis met veel '
+                'bochten, maakt meer lawaai dan nodig. Hang je een nieuwe kap op, gebruik dan de '
+                'diameter die de fabrikant voorschrijft.']),
+            ('Let ook op de afzuigcapaciteit', [
+                'Een stille kap helpt weinig als hij te weinig afzuigt en je hem steeds op de '
+                'hoogste stand zet. De afzuigcapaciteit staat in kubieke meter per uur bij elk '
+                'model. Kies een kap die bij de grootte van je keuken past, zodat je meestal op een '
+                'lage stand kunt koken.']),
+        ],
+        'vragen': [
+            ('Hoeveel decibel is stil voor een afzuigkap?',
+             'Onder de 60 decibel op de hoogste normale stand is rustig. Op een lagere stand is '
+             'dezelfde kap stiller dan het label aangeeft.'),
+            ('Is een recirculatiekap stiller dan een kap met afvoer naar buiten?',
+             'Niet per se. Het geluid hangt vooral af van de motor, de stand en de afvoer. '
+             'Vergelijk het aantal decibel bij elk model.'),
+            ('Waarom is mijn afzuigkap luider dan op het label?',
+             'Het label is gemeten in een testopstelling. Een smalle of lange afvoerbuis, veel '
+             'bochten of vuile filters maken een kap thuis vaak luider.'),
+        ],
+        'bekijk_ook': [
+            ('Afzuigkappen van 60 tot 72 dB', '/category/afzuigkappen/geluid/gemiddeld-geluid'),
+            ('Stille vaatwassers', '/category/vaatwassers/geluid/zeer-stil'),
+            ('Inbouwovens', '/category/ovens/kenmerk/inbouw'),
+            ('Gids: beste oven 2026', '/gidsen/beste-oven-2026'),
+            ('Alle afzuigkappen', '/category/afzuigkappen'),
+        ],
+    },
+    ('afzuigkappen', 'geluid', 'gemiddeld-geluid'): {
+        'titel': 'Afzuigkap 60 tot 72 dB: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Afzuigkappen van 60 tot 72 dB',
+        'naam': 'afzuigkappen van 60 tot 72 dB',
+        'intro': ('Op deze pagina staan afzuigkappen met een geluidsniveau vanaf 60 en onder 72 '
+                  'decibel op de hoogste normale stand, volgens het energielabel. Op die stand hoor je '
+                  'de kap duidelijk; op een lagere stand is hij stiller. Kook je in een aparte keuken, '
+                  'of gebruik je de hoogste stand zelden, dan is dat vaak geen bezwaar. Wij volgen '
+                  '{n} modellen. Het geluid komt uit het officiële Europese energielabelregister.'),
+        'vragen': [
+            ('Is 65 dB veel voor een afzuigkap?',
+             'Het is gangbaar op de hoogste normale stand. In een open keuken merk je het verschil '
+             'met een kap onder de 60 dB wel.'),
+            ('Hoe maak ik mijn afzuigkap stiller?',
+             'Maak de vetfilters regelmatig schoon en zet de kap op tijd aan, zodat hij niet op de '
+             'hoogste stand hoeft. Bij afvoer naar buiten helpt een ruime buis met weinig '
+             'bochten.'),
+        ],
+        'bekijk_ook': [
+            ('Stille afzuigkappen', '/category/afzuigkappen/geluid/stil'),
+            ('Inbouwovens', '/category/ovens/kenmerk/inbouw'),
+            ('Alle afzuigkappen', '/category/afzuigkappen'),
         ],
     },
 }

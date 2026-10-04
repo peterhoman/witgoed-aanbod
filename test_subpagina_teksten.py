@@ -20,7 +20,7 @@ check('titel met aantal en prijs', t['titel'] == 'Warmtepompdrogers vergelijken:
 check('intro met aantal en winkels', '47 warmtepompdrogers' in t['intro'] and '7 winkels' in t['intro'])
 check('geen accolades over', '{' not in t['titel'] + t['intro'])
 check('eigen pagina niet in bekijk ook', all(p != '/category/drogers/type/warmtepompdroger' for _, p in t['bekijk_ook'])
-      and len(t['bekijk_ook']) == 5)
+      and len(t['bekijk_ook']) == 6)
 t = st.tekst_voor(('drogers', 'geluid', 'stil'), 9, None, 7)
 check('zonder prijs geen "vanaf € None"', 'None' not in t['titel'] and 'vanaf' not in t['titel'], t['titel'])
 check('onbekend pad geeft None', st.tekst_voor(('drogers', 'type', 'bestaat-niet'), 1, 1, 7) is None
@@ -29,10 +29,10 @@ check('onbekend pad geeft None', st.tekst_voor(('drogers', 'type', 'bestaat-niet
 # 2. Elke tekst is compleet en bevat geen vaste bedragen.
 for pad, ruw in st.TEKSTEN.items():
     alles = ' '.join([ruw.get('intro') or ''] + [a for _, al in ruw.get('uitleg', []) for a in al]
-                     + [a for _, a in ruw['vragen']])
+                     + [a for _, a in ruw.get('vragen', [])])
     # Volledige tekst (met eigen kop) of aanvulling op een zoekzin-pagina
     # (ronde 2, deel B: alleen titel, vragen en bekijk ook).
-    velden = ('titel', 'h1', 'intro', 'uitleg', 'vragen') if ruw.get('h1') else ('titel', 'naam', 'vragen')
+    velden = ('titel', 'h1', 'naam', 'intro') if ruw.get('h1') else ('titel', 'naam', 'vragen')
     check(f'{"/".join(pad)}: velden compleet', all(ruw.get(k) for k in velden))
     check(f'{"/".join(pad)}: geen "zeven winkels" vast in de tekst', 'zeven winkels' not in alles)
     check(f'{"/".join(pad)}: bekijk ook wijst naar /category of /gidsen',

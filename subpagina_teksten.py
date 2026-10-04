@@ -132,20 +132,22 @@ TEKSTEN = {
         ],
     },
     ('drogers', 'vulgewicht', '8-9-kg'): {
-        'titel': 'Droger 8 kg en 9 kg: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
-        'h1': 'Drogers van 8 en 9 kg',
-        'naam': 'drogers van 8 en 9 kg',  # voor de vragenkop
-        'intro': ('Een droger van 8 of 9 kg is de maat voor een gezin: er past een volle '
-                  'wasmachinetrommel in, inclusief dekbedovertrek of handdoeken. Wij volgen '
-                  '{n} drogers met dit vulgewicht en tonen per model de laagste prijs van '
-                  '{winkels} winkels. Het vulgewicht komt uit het officiële Europese '
-                  'energielabelregister (EPREL).'),
+        # Tot 4 okt 2026 "Drogers van 8 en 9 kg", maar de stap is 8 <= x < 9
+        # (routes.main._FILTERVELDEN): 9 kg staat op /9-11-kg. Het adres blijft.
+        'titel': 'Droger 8 kg: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Drogers van 8 kg',
+        'naam': 'drogers van 8 kg',  # voor de vragenkop
+        'intro': ('Een droger van 8 kg is de maat voor de meeste gezinnen: er past een volle '
+                  'trommel uit een wasmachine van 8 kg in, inclusief handdoeken of een '
+                  'dekbedovertrek. Wij volgen {n} drogers van 8 kg en tonen per model de '
+                  'laagste prijs van {winkels} winkels.'),
         'uitleg': [
-            ('8 kg of 9 kg?', [
+            ('8 kg of toch 9 kg?', [
                 'Kies een droger die minstens evenveel aankan als je wasmachine, anders moet '
                 'je een was in tweeën drogen. Bij een wasmachine van 8 kg past een droger van '
-                '8 kg; was je met 9 of 10 kg, neem dan 9 kg. Een grotere trommel droogt ook '
-                'gelijkmatiger en kreukt minder, omdat de was meer ruimte heeft.']),
+                '8 kg; was je met 9 of 10 kg, kijk dan bij de drogers van 9 en 10 kg. Een '
+                'grotere trommel droogt ook gelijkmatiger en kreukt minder, omdat de was meer '
+                'ruimte heeft.']),
             ('Verbruikt een grotere droger meer?', [
                 'Per beurt iets, maar per kilo was juist minder als je de trommel goed vult. '
                 'Het energielabel rekent met een standaardprogramma; de stroomkosten per jaar '
@@ -155,11 +157,36 @@ TEKSTEN = {
             ('Hoeveel kg droger heb ik nodig voor 4 personen?',
              '8 kg is voor de meeste gezinnen van vier genoeg; 9 kg als je vaak beddengoed en '
              'handdoeken droogt.'),
-            ('Past een droger van 9 kg op een wasmachine?',
-             'Ja, de buitenmaten zijn vrijwel gelijk aan die van kleinere modellen (60 cm '
-             'breed). Gebruik een tussenstuk van hetzelfde merk.'),
+            ('Past een droger van 8 kg op een wasmachine?',
+             'Ja, drogers en wasmachines zijn vrijwel altijd 60 cm breed. Gebruik een '
+             'tussenstuk van hetzelfde merk.'),
             ('Is 9 kg veel duurder dan 8 kg?',
-             'Meestal een paar tientjes. In de lijst zie je beide maten naast elkaar op prijs.'),
+             'Meestal een paar tientjes. Vergelijk de prijzen met de pagina voor drogers van 9 '
+             'en 10 kg.'),
+        ],
+    },
+    # Stap 9 <= x < 11: 9 en 10 kg.
+    ('drogers', 'vulgewicht', '9-11-kg'): {
+        'titel': 'Droger 9 kg en 10 kg: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Drogers van 9 en 10 kg',
+        'naam': 'drogers van 9 en 10 kg',
+        'intro': ('Een droger van 9 of 10 kg past bij een wasmachine van dezelfde maat en bij '
+                  'gezinnen die veel beddengoed, handdoeken of grote wassen drogen. De was heeft '
+                  'meer ruimte, droogt gelijkmatiger en kreukt minder. Wij volgen {n} drogers van '
+                  '9 en 10 kg, met per model de laagste prijs van {winkels} winkels.'),
+        'vragen': [
+            ('Past een droger van 9 kg op een wasmachine?',
+             'Ja, de breedte is gelijk aan die van kleinere modellen (60 cm). Gebruik een '
+             'tussenstuk van hetzelfde merk en let op de diepte.'),
+            ('Is een droger van 10 kg zuinig als ik hem niet vol doe?',
+             'Per kilo was is een volle trommel het zuinigst. Droog je meestal kleine wassen, '
+             'dan is 8 kg een betere maat.'),
+        ],
+        'bekijk_ook': [
+            ('Drogers van 8 kg', '/category/drogers/vulgewicht/8-9-kg'),
+            ('Warmtepompdrogers', '/category/drogers/type/warmtepompdroger'),
+            ('Drogers zonder afvoer', '/category/drogers/kenmerk/zonder-afvoer'),
+            ('Alle drogers', '/category/drogers'),
         ],
     },
     ('drogers', 'kenmerk', 'zonder-afvoer'): {
@@ -207,6 +234,102 @@ TEKSTEN = {
     # kenmerkpagina's in fases). Deel A: maatpagina's met volledige tekst.
     # "zeven winkels" uit de aanlevering is {winkels} geworden.
     # ------------------------------------------------------------------
+    # Vulgewicht-stappen zijn van <= x < tot: /8-9-kg is 8 kg, /9-11-kg is 9 en 10 kg.
+    ('wasmachines', 'vulgewicht', '8-9-kg'): {
+        'titel': 'Wasmachine 8 kg: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasmachines van 8 kg',
+        'naam': 'wasmachines van 8 kg',
+        'intro': ('Een wasmachine van 8 kg is de meest gekozen maat voor een gezin. Er past een '
+                  'dekbedovertrek met lakens in, of de was van drie tot vier personen in een paar '
+                  'beurten per week. Wij volgen {n} wasmachines van 8 kg; het vulgewicht komt uit '
+                  'het officiële Europese energielabelregister en bij elk model staat de laagste '
+                  'prijs van {winkels} winkels.'),
+        'uitleg': [
+            ('8 kg of toch 9 kg?', [
+                'Voor twee tot vier personen is 8 kg ruim genoeg. Was je vaak beddengoed, '
+                'handdoeken of sportkleding van een groter gezin, dan scheelt 9 kg je al snel een '
+                'wasbeurt per week; die staan op de pagina voor wasmachines van 9 en 10 kg. De '
+                'buitenmaten zijn gelijk: vrijwel elke wasmachine is 60 cm breed en 85 cm hoog. '
+                'Een grotere trommel is wel vaak een paar centimeter dieper.']),
+            ('Verbruikt een grotere wasmachine meer?', [
+                'Per wasbeurt iets meer stroom en water, maar per kilo was minder, mits je de '
+                'trommel vult. Moderne machines wegen de was en passen het waterverbruik aan. Het '
+                'energielabel rekent per honderd wasbeurten; op elke productpagina staan de '
+                'stroomkosten per jaar.']),
+        ],
+        'vragen': [
+            ('Hoeveel kg wasmachine heb ik nodig voor 4 personen?',
+             '8 kg is voor de meeste gezinnen van vier genoeg. Kies 9 kg als je vaak grote stukken '
+             'wast of minder vaak wilt draaien.'),
+            ('Past een dekbed in een wasmachine van 8 kg?',
+             'Een eenpersoons synthetisch dekbed meestal wel. Voor een tweepersoons dekbed is 9 kg '
+             'of meer veiliger; kijk ook naar het wasvoorschrift van het dekbed.'),
+            ('Is een wasmachine van 9 kg groter dan een van 8 kg?',
+             'In breedte en hoogte niet. De diepte kan enkele centimeters verschillen; die staat '
+             'bij de specificaties van elk model.'),
+        ],
+        'bekijk_ook': [
+            ('Wasmachines van 9 en 10 kg', '/category/wasmachines/vulgewicht/9-11-kg'),
+            ('Wasmachines van 7 kg', '/category/wasmachines/vulgewicht/7-8-kg'),
+            ('Wasmachines 1400-1600 toeren', '/category/wasmachines/toerental/1400-1600-toeren'),
+            ('Wasmachine met stoomfunctie', '/category/wasmachines/kenmerk/stoomfunctie'),
+            ('Gids: wasmachine 8 of 9 kg', '/gidsen/wasmachine-8-of-9-kg'),
+            ('Alle wasmachines', '/category/wasmachines'),
+        ],
+    },
+    ('wasmachines', 'vulgewicht', '9-11-kg'): {
+        'titel': 'Wasmachine 9 kg en 10 kg: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasmachines van 9 en 10 kg',
+        'naam': 'wasmachines van 9 en 10 kg',
+        'intro': ('Een wasmachine van 9 of 10 kg is bedoeld voor grotere gezinnen en voor wie zelf '
+                  'dekbedden, gordijnen of werkkleding wast. Je draait minder beurten per week, en '
+                  'dat scheelt tijd. Wij volgen {n} wasmachines van 9 en 10 kg, met per model de '
+                  'laagste prijs van {winkels} winkels en de gegevens van het energielabel.'),
+        'uitleg': [
+            ('Voor wie is 9 of 10 kg zinvol?', [
+                'Voor huishoudens van vier of meer personen, of als je grote stukken in één keer '
+                'wilt wassen. Voor een of twee personen is zo\'n trommel meestal te groot: '
+                'halfvolle beurten zijn per kilo was minder zuinig, ook al past de machine het '
+                'water aan.']),
+            ('Waar let je op bij een grote wasmachine?', [
+                'Op de diepte: grote trommels maken de machine dieper, soms meer dan 60 cm. Meet '
+                'de plek op, inclusief ruimte voor de slangen. Kijk ook naar het toerental en het '
+                'geluid bij centrifugeren, want een volle trommel van 10 kg is zwaar.']),
+        ],
+        'vragen': [
+            ('Kan een tweepersoons dekbed in een wasmachine van 10 kg?',
+             'Een synthetisch tweepersoons dekbed past doorgaans in 10 kg. Voor dons en extra '
+             'dikke dekbedden blijft een wasserette met een grotere trommel de veiligste keuze.'),
+            ('Is een wasmachine van 10 kg duurder in gebruik?',
+             'Alleen als je hem halfleeg laat draaien. Goed gevuld is het verbruik per kilo was '
+             'lager dan bij een kleinere machine.'),
+            ('Past een wasmachine van 10 kg onder een aanrecht?',
+             'De hoogte is meestal 85 cm, net als bij kleinere modellen, maar de diepte kan het '
+             'probleem zijn. Controleer de maten bij het model.'),
+        ],
+        'bekijk_ook': [
+            ('Wasmachines van 8 kg', '/category/wasmachines/vulgewicht/8-9-kg'),
+            ('Wasmachines vanaf 11 kg', '/category/wasmachines/vulgewicht/vanaf-11-kg'),
+            ('Drogers van 9 en 10 kg', '/category/drogers/vulgewicht/9-11-kg'),
+            ('Alle wasmachines', '/category/wasmachines'),
+        ],
+    },
+    # Stap 45 <= x < 60 dB; "stil" hoort bij /zeer-stil (onder 45 dB), dus
+    # hier een neutrale naam.
+    ('vaatwassers', 'geluid', 'stil'): {
+        'titel': 'Vaatwassers 45-60 dB: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Vaatwassers van 45 tot 60 dB',
+        'naam': 'vaatwassers van 45 tot 60 dB',
+        'intro': ('De meeste vaatwassers maken 45 tot 50 decibel: goed hoorbaar in een open '
+                  'keuken, maar geen probleem achter een dichte deur. Wij volgen {n} vaatwassers in '
+                  'deze klasse. Zoek je een model dat je nauwelijks hoort, kijk dan bij de stille '
+                  'vaatwassers onder 45 dB.'),
+        'bekijk_ook': [
+            ('Stille vaatwassers onder 45 dB', '/category/vaatwassers/geluid/zeer-stil'),
+            ('Inbouw vaatwassers', '/category/vaatwassers/kenmerk/inbouw'),
+            ('Alle vaatwassers', '/category/vaatwassers'),
+        ],
+    },
     ('wasmachines', 'toerental', '1400-1600-toeren'): {
         'titel': 'Wasmachine 1400 toeren: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
         'h1': 'Wasmachines met 1400 tot 1600 toeren',
@@ -239,6 +362,7 @@ TEKSTEN = {
         'bekijk_ook': [
             ('Wasmachines vanaf 1600 toeren', '/category/wasmachines/toerental/vanaf-1600-toeren'),
             ('Wasmachines 1200-1400 toeren', '/category/wasmachines/toerental/1200-1400-toeren'),
+            ('Wasmachines van 8 kg', '/category/wasmachines/vulgewicht/8-9-kg'),
             ('Warmtepompdrogers', '/category/drogers/type/warmtepompdroger'),
             ('Alle wasmachines', '/category/wasmachines'),
         ],
@@ -543,7 +667,8 @@ BEKIJK_OOK = {
     'drogers': [
         ('Warmtepompdrogers', '/category/drogers/type/warmtepompdroger'),
         ('Stille drogers', '/category/drogers/geluid/stil'),
-        ('Drogers van 8 en 9 kg', '/category/drogers/vulgewicht/8-9-kg'),
+        ('Drogers van 8 kg', '/category/drogers/vulgewicht/8-9-kg'),
+        ('Drogers van 9 en 10 kg', '/category/drogers/vulgewicht/9-11-kg'),
         ('Drogers zonder afvoer', '/category/drogers/kenmerk/zonder-afvoer'),
         ('Gids: warmtepompdroger of condensdroger', '/gidsen/warmtepompdroger-of-condensdroger'),
         ('Alle drogers', '/category/drogers'),

@@ -1373,12 +1373,16 @@ _FILTERVELDEN = {
         'stappen': [
             {'van': None, 'tot': 7, 'slug': 'tot-7-kg',
              'label': 'tot 7 kg', 'kop': '{cat} tot 7 kg'},
+            # Label en kop zeggen wat er echt op staat: de bovengrens telt
+            # niet mee, dus /8-9-kg is 8 kg en /9-11-kg is 9 en 10 kg (4 okt
+            # 2026; stond als "8-9 kg", terwijl 9 kg op /9-11-kg stond). De
+            # slugs blijven, die zijn geïndexeerd.
             {'van': 7, 'tot': 8, 'slug': '7-8-kg',
-             'label': '7-8 kg', 'kop': '{cat} 7-8 kg'},
+             'label': '7 kg', 'kop': '{cat} van 7 kg'},
             {'van': 8, 'tot': 9, 'slug': '8-9-kg',
-             'label': '8-9 kg', 'kop': '{cat} 8-9 kg'},
+             'label': '8 kg', 'kop': '{cat} van 8 kg'},
             {'van': 9, 'tot': 11, 'slug': '9-11-kg',
-             'label': '9-11 kg', 'kop': '{cat} 9-11 kg'},
+             'label': '9 en 10 kg', 'kop': '{cat} van 9 en 10 kg'},
             {'van': 11, 'tot': None, 'slug': 'vanaf-11-kg',
              'label': '11 kg en meer', 'kop': '{cat} van 11 kg en meer'},
         ],

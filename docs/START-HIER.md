@@ -43,9 +43,19 @@ dezelfde feiten compact en is leidend voor werkafspraken.
   als het onder "Lid geworden" staat; alleen nieuwe apparaten.
 - **Specialist-chat:** de oude sessie is vol; de nieuwe heet nu "Google SEA
   specialist training-nieuw" (meldt zich als "Handover witgoedaanbod site").
-  Afspraak blijft: zij meet en levert tekst, ik bouw, Peter merget.
-- **Mergen blijft bij Peter** (4 okt opnieuw besproken): gh is niet
-  ingelogd en zijn klik is de enige menselijke controle voor live.
+  Afspraak: zij meet en levert tekst, ik bouw en zet live (zie hieronder).
+- **Claude merget sinds 4 okt zelf** (Peters besluit, na 16 merges op één
+  dag): tak maken en testen, dan `git merge --no-ff <tak>` op main en
+  `git push origin main`; daarna uitrolstatus lezen, de wijziging op de site
+  nakijken en Peter de uitkomst melden. Werkt alleen in werkstand "Accept
+  edits": in "Auto" blokkeert de veiligheidscontrole het pushen naar main.
+  Geen force push, geen takken verwijderen zonder te vragen.
+- **Zoekzin-pagina's aangescherpt (#228, live):** volautomaat 227 → 135
+  modellen (vanaf € 244 i.p.v. € 39), combimagnetron vanaf € 74 zonder
+  solo-magnetrons, steelstofzuiger zonder kruimeldief, no frost zonder Low
+  Frost, specificatie "Nee" telt niet. Open: combimagnetrons met alleen grill
+  en dweilfunctie-pagina (steelstofzuigers zonder "dweil" in de titel) laten
+  beoordelen door de specialist-chat.
 
 ---
 

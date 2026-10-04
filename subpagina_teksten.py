@@ -889,6 +889,400 @@ TEKSTEN = {
             ('Alle koelkasten', '/category/koelkasten'),
         ],
     },
+
+    # ------------------------------------------------------------------
+    # Ronde 3b, deel 1 (specialist-chat, 4 okt 2026): wasmachines en
+    # drogers. Grenzen na het afronden van 4 okt (toerental op honderdtallen).
+    # ------------------------------------------------------------------
+    ('wasmachines', 'vulgewicht', '7-8-kg'): {
+        'titel': 'Wasmachine 7 kg: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasmachines van 7 kg',
+        'naam': 'wasmachines van 7 kg',
+        'intro': ('Een wasmachine van 7 kg is een goede maat voor een of twee personen. Er past de '
+                  'gewone was van een paar dagen in, of een dekbedovertrek met een laken. Met een '
+                  'gezin moet je er vaker mee draaien. Op deze pagina staan wasmachines met een '
+                  'vulgewicht vanaf 7 kg en onder 8 kg; machines van 8 kg hebben een eigen pagina. '
+                  'Wij volgen {n} wasmachines van 7 kg, met per model de laagste prijs van {winkels} '
+                  'winkels. Het vulgewicht komt uit het officiële Europese energielabelregister, '
+                  'opgegeven door de fabrikant.'),
+        'uitleg': [
+            ('Is 7 kg genoeg?', [
+                'Voor een of twee personen meestal wel. Was je veel handdoeken, beddengoed of '
+                'sportkleding, of wordt het huishouden groter, dan ben je met 8 kg minder vaak '
+                'bezig. Het vulgewicht geldt voor katoen. Voor fijne was en synthetische stoffen '
+                'mag de trommel vaak minder vol; per programma staat in de handleiding hoeveel.']),
+            ('Is een wasmachine van 7 kg kleiner?', [
+                'Van buiten meestal niet. De meeste wasmachines van 7 kg zijn even breed en hoog '
+                'als grotere modellen: ongeveer 60 cm breed en 85 cm hoog. Soms is de machine wat '
+                'minder diep. Zoek je een machine voor een krappe plek, kijk dan bij elk model naar '
+                'de diepte in de specificaties.']),
+        ],
+        'vragen': [
+            ('Voor hoeveel personen is een wasmachine van 7 kg?',
+             'Voor een of twee personen. Met drie of meer personen draai je al snel elke dag; dan '
+             'is 8 kg of meer handiger.'),
+            ('Past een dekbed in een wasmachine van 7 kg?',
+             'Een dekbedovertrek wel. Voor een dekbed zelf is 7 kg krap: een dun eenpersoons '
+             'dekbed past soms, een tweepersoons dekbed niet. Volg altijd het wasvoorschrift van '
+             'het dekbed.'),
+            ('Is een wasmachine van 7 kg zuiniger dan een van 8 kg?',
+             'Per wasbeurt vaak iets, per kilo was niet per se. Het belangrijkste is dat je de '
+             'trommel goed vult. Het jaarverbruik en de stroomkosten staan bij elk model.'),
+        ],
+        'bekijk_ook': [
+            ('Wasmachines van 8 kg', '/category/wasmachines/vulgewicht/8-9-kg'),
+            ('Wasmachines met 1200 tot 1400 toeren', '/category/wasmachines/toerental/1200-1400-toeren'),
+            ('Wasmachines met waterverbruik 10-45 liter', '/category/wasmachines/waterverbruik/10-45-liter'),
+            ('Gids: wasmachine 8 of 9 kg', '/gidsen/wasmachine-8-of-9-kg'),
+            ('Alle wasmachines', '/category/wasmachines'),
+        ],
+    },
+    ('wasmachines', 'vulgewicht', 'vanaf-11-kg'): {
+        'titel': 'Wasmachine 11 kg en groter: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasmachines van 11 kg en meer',
+        'naam': 'wasmachines van 11 kg en meer',
+        'intro': ('Een wasmachine van 11 kg of meer heeft de grootste trommel die je voor thuis kunt '
+                  'kopen. Hij is bedoeld voor grote gezinnen, voor wie veel beddengoed of '
+                  'werkkleding wast, en voor wie liever een paar grote wassen draait dan elke dag '
+                  'een kleine. Op deze pagina staan alle wasmachines met een vulgewicht vanaf 11 kg. '
+                  'Kijk naast de prijs ook naar de diepte en het verbruik, want een grote machine is '
+                  'niet voor elke plek of elk huishouden geschikt. Wij volgen {n} modellen, met per '
+                  'model de laagste prijs van {winkels} winkels. Het vulgewicht komt uit het '
+                  'officiële Europese energielabelregister.'),
+        'uitleg': [
+            ('Past hij bij jou thuis?', [
+                'Een grote trommel maakt de machine soms dieper dan de gangbare 60 cm, en zwaarder. '
+                'Meet de plek op, ook de ruimte achter de machine voor de slangen en de stekker, en '
+                'de deuren onderweg. Staat de machine op zolder of op een houten vloer, dan merk je '
+                'een volle trommel bij het centrifugeren eerder.']),
+            ('Alleen zinvol als je hem vult', [
+                'Een halfvolle trommel kost per kilo was meer water en stroom dan een volle trommel '
+                'in een kleinere machine. Veel grote machines wegen de was en passen het water aan, '
+                'maar dat maakt een halflege beurt niet even zuinig. Was je meestal kleine '
+                'hoeveelheden, dan is 8 kg of 9 kg handiger.']),
+        ],
+        'vragen': [
+            ('Past een tweepersoons dekbed in een wasmachine van 11 kg?',
+             'Een synthetisch tweepersoons dekbed meestal wel. Volg bij dons en dikke '
+             'winterdekbedden het wasvoorschrift; soms is een wasserette met een grotere trommel '
+             'nog de veiligste keuze.'),
+            ('Heb ik bij 11 kg ook een grotere droger nodig?',
+             'Het liefst wel. Een droger die minder aankan dan je wasmachine dwingt je de was in '
+             'tweeën te drogen. Kijk bij de drogers naar het vulgewicht.'),
+            ('Is een wasmachine van 11 kg breder dan een gewone?',
+             'Meestal niet: de breedte blijft rond 60 cm. Het verschil zit in de diepte en het '
+             'gewicht; beide staan bij de specificaties van het model.'),
+        ],
+        'bekijk_ook': [
+            ('Wasmachines van 9 en 10 kg', '/category/wasmachines/vulgewicht/9-11-kg'),
+            ('Wasmachines vanaf 1600 toeren', '/category/wasmachines/toerental/vanaf-1600-toeren'),
+            ('Drogers van 9 en 10 kg', '/category/drogers/vulgewicht/9-11-kg'),
+            ('Gids: beste wasmachine 2026', '/gidsen/beste-wasmachine-2026'),
+            ('Alle wasmachines', '/category/wasmachines'),
+        ],
+    },
+    ('wasmachines', 'toerental', '1200-1400-toeren'): {
+        'titel': 'Wasmachine 1200 toeren: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasmachines met 1200 tot 1400 toeren',
+        'naam': 'wasmachines met 1200 toeren',
+        'intro': ('Met 1200 toeren per minuut komt de was goed uitgewrongen uit de machine, maar wel '
+                  'wat vochtiger dan bij 1400 toeren. Hang je de was meestal op een rek of aan de '
+                  'lijn, dan is dat zelden een probleem. Op deze pagina staan wasmachines met een '
+                  'toerental vanaf 1200 en onder 1400 per minuut. Machines met precies 1400 toeren '
+                  'staan op de pagina met 1400 tot 1600 toeren. Je kunt het toerental per programma '
+                  'altijd lager zetten, maar niet hoger dan het maximum. Wij volgen {n} modellen, met '
+                  'per model de laagste prijs van {winkels} winkels. Het toerental komt uit het '
+                  'officiële Europese energielabelregister.'),
+        'uitleg': [
+            ('Wanneer is 1200 toeren genoeg?', [
+                'Als je weinig of geen droger gebruikt. Aan de lijn droogt de was iets langzamer '
+                'dan na 1400 toeren, maar het verschil is klein. Gebruik je wel een droger, dan moet '
+                'die na 1200 toeren wat langer draaien, en dat kost stroom.']),
+            ('Kijk ook naar de centrifugeerklasse', [
+                'Op het energielabel staat een centrifugeerklasse van A tot G. Die zegt hoeveel '
+                'vocht er na het centrifugeren in de was achterblijft. Machines met 1200 toeren '
+                'hebben vaak een lagere klasse dan machines met 1400 of 1600 toeren. Het toerental '
+                'alleen zegt dus niet alles; bij twijfel geeft die klasse de doorslag.']),
+        ],
+        'vragen': [
+            ('Is 1200 toeren genoeg voor een wasmachine?',
+             'Voor wie de was ophangt wel. Gebruik je vaak een droger, dan is 1400 toeren of meer '
+             'zuiniger, omdat de droger minder vocht hoeft weg te halen.'),
+            ('Is een wasmachine met 1200 toeren stiller?',
+             'Bij het centrifugeren vaak iets, omdat de trommel minder snel draait. Het geluid in '
+             'decibel staat bij elk model; vergelijk dat in plaats van alleen het toerental.'),
+            ('Kreukt de was minder bij 1200 toeren?',
+             'Iets minder dan bij een hoger toerental. Bij vrijwel elke machine kun je het '
+             'toerental per programma ook zelf lager zetten.'),
+        ],
+        'bekijk_ook': [
+            ('Wasmachines met 1400 tot 1600 toeren', '/category/wasmachines/toerental/1400-1600-toeren'),
+            ('Wasmachines vanaf 1600 toeren', '/category/wasmachines/toerental/vanaf-1600-toeren'),
+            ('Wasmachines van 7 kg', '/category/wasmachines/vulgewicht/7-8-kg'),
+            ('Wasmachines onder 72 dB', '/category/wasmachines/geluid/gemiddeld-geluid'),
+            ('Alle wasmachines', '/category/wasmachines'),
+        ],
+    },
+    ('wasmachines', 'toerental', 'vanaf-1600-toeren'): {
+        'titel': 'Wasmachine 1600 toeren: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasmachines vanaf 1600 toeren',
+        'naam': 'wasmachines met 1600 toeren',
+        'intro': ('Een wasmachine met 1600 toeren of meer centrifugeert de was het droogst. Dat is '
+                  'vooral handig als je daarna een droger gebruikt: die is sneller klaar en '
+                  'verbruikt minder. Ook aan de lijn of op een rek droogt de was vlotter. Op deze '
+                  'pagina staan alle wasmachines met een toerental vanaf 1600 per minuut. Hang je de '
+                  'was altijd buiten op, dan heb je aan zo\'n hoog toerental minder; dan is 1400 '
+                  'toeren vaak genoeg. Wij volgen {n} modellen, met per model de laagste prijs van '
+                  '{winkels} winkels. Het toerental komt uit het officiële Europese '
+                  'energielabelregister, opgegeven door de fabrikant.'),
+        'uitleg': [
+            ('Heb je 1600 toeren nodig?', [
+                'Niet altijd. Hang je de was altijd buiten op, dan is het verschil met 1400 toeren '
+                'klein. De winst zit vooral in de droger. Droog je vaak, of droog je binnen op een '
+                'rek in een kleine ruimte, dan helpt minder vocht in de was wel.']),
+            ('Let op geluid en vloer', [
+                'Bij een hoog toerental trilt en klinkt de machine meer, vooral op een houten vloer '
+                'of zolder. Kijk naar het geluid in decibel bij het centrifugeren; dat staat op het '
+                'energielabel en bij elk model. Zet de machine waterpas op een stevige ondergrond, '
+                'dan loopt hij rustiger.']),
+        ],
+        'vragen': [
+            ('Is 1600 toeren beter dan 1400?',
+             'De was komt droger uit de machine. Of dat de meerprijs waard is, hangt af van hoe '
+             'vaak je de droger gebruikt.'),
+            ('Gaat mijn kleding sneller kapot bij 1600 toeren?',
+             'Katoen en handdoeken kunnen het goed hebben. Voor fijne stoffen en wol kies je een '
+             'programma met een lager toerental; dat kan bij vrijwel elke machine.'),
+            ('Draait de machine altijd op 1600 toeren?',
+             'Nee. Het hoogste toerental gebruik je meestal alleen bij katoen. Veel programma\'s '
+             'centrifugeren standaard lager, en je kunt het toerental zelf aanpassen.'),
+        ],
+        'bekijk_ook': [
+            ('Wasmachines met 1400 tot 1600 toeren', '/category/wasmachines/toerental/1400-1600-toeren'),
+            ('Wasmachines met 1200 tot 1400 toeren', '/category/wasmachines/toerental/1200-1400-toeren'),
+            ('Wasmachines van 11 kg en meer', '/category/wasmachines/vulgewicht/vanaf-11-kg'),
+            ('Warmtepompdrogers', '/category/drogers/type/warmtepompdroger'),
+            ('Alle wasmachines', '/category/wasmachines'),
+        ],
+    },
+    ('wasmachines', 'kenmerk', 'stoomfunctie'): {
+        'titel': 'Wasmachine met stoomfunctie: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'naam': 'wasmachines met stoomfunctie',
+        'vragen': [
+            ('Wat doet de stoomfunctie in een wasmachine?',
+             'De machine brengt aan het eind van een programma, of in een apart programma, stoom '
+             'in de trommel. Dat ontspant de vezels, zodat er minder kreukels in de was zitten. Ook '
+             'kleding die je één keer hebt gedragen, kun je ermee opfrissen.'),
+            ('Vervangt een stoomprogramma een gewone wasbeurt?',
+             'Nee. Stoom frist op en vermindert kreukels, maar vlekken en vuil haal je er niet mee '
+             'weg. Daarvoor blijft een gewoon wasprogramma nodig.'),
+            ('Mogen alle stoffen in een stoomprogramma?',
+             'Niet altijd. Kijk op het waslabel van de kleding en in de handleiding van de machine '
+             'welke stoffen geschikt zijn. Wees vooral voorzichtig met wol en zijde.'),
+        ],
+        'bekijk_ook': [
+            ('Droger met stoomfunctie', '/category/drogers/kenmerk/stoomfunctie'),
+            ('Wasmachines van 8 kg', '/category/wasmachines/vulgewicht/8-9-kg'),
+            ('Wasmachines met 1400 tot 1600 toeren', '/category/wasmachines/toerental/1400-1600-toeren'),
+            ('Gids: beste wasmachine 2026', '/gidsen/beste-wasmachine-2026'),
+            ('Alle wasmachines', '/category/wasmachines'),
+        ],
+    },
+    ('wasmachines', 'breedte', '60-70-cm'): {
+        'titel': 'Wasmachine 60 cm breed: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasmachines van 60 tot 70 cm breed',
+        'naam': 'wasmachines van 60 cm breed',
+        'intro': ('Vrijwel elke voorlader is ongeveer 60 cm breed, zodat hij onder een aanrecht of '
+                  'naast een droger past. Op deze pagina staan wasmachines met een breedte vanaf '
+                  '60 cm en onder 70 cm. Wij volgen {n} modellen, met per model de laagste prijs van '
+                  '{winkels} winkels. De breedte komt uit het officiële Europese '
+                  'energielabelregister. Meet naast de breedte ook de diepte en hoogte van je '
+                  'plek.'),
+        'vragen': [
+            ('Hoe breed is een standaard wasmachine?',
+             'Ongeveer 60 cm, bij een hoogte van ongeveer 85 cm. De diepte verschilt meer per '
+             'model; die staat bij de specificaties.'),
+            ('Past een wasmachine van 60 cm in een nis van 60 cm?',
+             'Dat is krap. Houd een paar centimeter extra ruimte aan, zodat je de machine erin en '
+             'eruit kunt schuiven en hij bij het centrifugeren niet tegen de wanden stoot.'),
+        ],
+        'bekijk_ook': [
+            ('Wasmachines van 7 kg', '/category/wasmachines/vulgewicht/7-8-kg'),
+            ('Wasmachines van 8 kg', '/category/wasmachines/vulgewicht/8-9-kg'),
+            ('Alle wasmachines', '/category/wasmachines'),
+        ],
+    },
+    ('wasmachines', 'geluid', 'gemiddeld-geluid'): {
+        'titel': 'Wasmachine onder 72 dB: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasmachines met 60 tot 72 dB bij het centrifugeren',
+        'naam': 'wasmachines van 60 tot 72 dB',
+        'intro': ('Het geluid op het energielabel van een wasmachine is gemeten tijdens het '
+                  'centrifugeren, het luidste deel van het programma. Tijdens het wassen zelf is een '
+                  'machine veel stiller. Op deze pagina staan wasmachines met een waarde vanaf 60 en '
+                  'onder 72 decibel. Wij volgen {n} modellen, met per model de laagste prijs van '
+                  '{winkels} winkels. Het geluid komt uit het officiële Europese '
+                  'energielabelregister.'),
+        'vragen': [
+            ('Is 72 dB hard voor een wasmachine?',
+             'Voor het centrifugeren is het niet uitzonderlijk: de meeste wasmachines maken 72 dB '
+             'of meer. Machines onder 72 dB horen bij de rustigere.'),
+            ('Hoe maak ik mijn wasmachine stiller?',
+             'Zet hem waterpas op een stevige vloer en verwijder bij een nieuwe machine altijd '
+             'eerst de transportbouten. Een lager toerental maakt het centrifugeren ook '
+             'rustiger.'),
+        ],
+        'bekijk_ook': [
+            ('Wasmachines vanaf 72 dB', '/category/wasmachines/geluid/vanaf-72-db'),
+            ('Wasmachines met 1200 tot 1400 toeren', '/category/wasmachines/toerental/1200-1400-toeren'),
+            ('Alle wasmachines', '/category/wasmachines'),
+        ],
+    },
+    ('wasmachines', 'geluid', 'vanaf-72-db'): {
+        'titel': 'Wasmachine vanaf 72 dB: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasmachines vanaf 72 dB bij het centrifugeren',
+        'naam': 'wasmachines vanaf 72 dB',
+        'intro': ('Op deze pagina staan wasmachines die bij het centrifugeren 72 decibel of meer '
+                  'maken, volgens het energielabel. Een hoog toerental geeft meestal ook meer '
+                  'geluid. Staat de machine in een bijkeuken, garage of berging, ver van de '
+                  'slaapkamers, dan is dat zelden een bezwaar. Wij volgen {n} modellen, met per '
+                  'model de laagste prijs van {winkels} winkels. Het geluid komt uit het officiële '
+                  'Europese energielabelregister.'),
+        'vragen': [
+            ('Hoor ik 72 dB door het hele huis?',
+             'Dat hangt af van de plek, de vloer en de deuren. Het centrifugeren is maar een deel '
+             'van het programma; het wassen zelf is veel stiller.'),
+            ('Kan dezelfde machine stiller centrifugeren?',
+             'Ja. Zet je het toerental lager, dan maakt de machine minder geluid, maar blijft er '
+             'meer vocht in de was. Wil je een machine die van zichzelf rustiger is, kijk dan bij '
+             'de wasmachines onder 72 dB.'),
+        ],
+        'bekijk_ook': [
+            ('Wasmachines onder 72 dB', '/category/wasmachines/geluid/gemiddeld-geluid'),
+            ('Wasmachines vanaf 1600 toeren', '/category/wasmachines/toerental/vanaf-1600-toeren'),
+            ('Alle wasmachines', '/category/wasmachines'),
+        ],
+    },
+    ('wasmachines', 'waterverbruik', '10-45-liter'): {
+        'titel': 'Wasmachine laag waterverbruik: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasmachines met waterverbruik 10-45 liter',
+        'naam': 'wasmachines met laag waterverbruik',
+        'intro': ('Het waterverbruik op het energielabel van een wasmachine geldt per wasbeurt in het '
+                  'eco 40-60-programma, gemiddeld over volle en gedeeltelijk gevulde trommels. Op '
+                  'deze pagina staan wasmachines met een waarde vanaf 10 en onder 45 liter. Wij '
+                  'volgen {n} modellen, met per model de laagste prijs van {winkels} winkels. De '
+                  'waarde komt uit het officiële Europese energielabelregister, opgegeven door de '
+                  'fabrikant.'),
+        'vragen': [
+            ('Hoeveel water verbruikt een wasmachine per wasbeurt?',
+             'Op het energielabel staat het verbruik in liters in het eco 40-60-programma. Andere '
+             'programma\'s, zoals katoen op 60 graden of een snelprogramma, kunnen meer of minder '
+             'gebruiken.'),
+            ('Is een kleine wasmachine zuiniger met water?',
+             'Niet per se. Een grote trommel die je goed vult, gebruikt per kilo was vaak minder '
+             'water. Vergelijk het verbruik per wasbeurt daarom met het vulgewicht.'),
+        ],
+        'bekijk_ook': [
+            ('Wasmachines met waterverbruik 45-55 liter', '/category/wasmachines/waterverbruik/45-55-liter'),
+            ('Wasmachines van 7 kg', '/category/wasmachines/vulgewicht/7-8-kg'),
+            ('Alle wasmachines', '/category/wasmachines'),
+        ],
+    },
+    ('wasmachines', 'waterverbruik', '45-55-liter'): {
+        'titel': 'Wasmachine 45 tot 55 liter water: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Wasmachines met waterverbruik 45-55 liter',
+        'naam': 'wasmachines met waterverbruik 45-55 liter',
+        'intro': ('Op deze pagina staan wasmachines die volgens het energielabel vanaf 45 en onder '
+                  '55 liter water per wasbeurt gebruiken, in het eco 40-60-programma. Of dat veel is, '
+                  'hangt af van het vulgewicht. Een machine van 9 kg die 50 liter gebruikt, wast per '
+                  'kilo zuiniger dan een machine van 7 kg met hetzelfde verbruik. Wij volgen {n} '
+                  'modellen. De waarde komt uit het officiële Europese energielabelregister.'),
+        'vragen': [
+            ('Kost 50 liter per wasbeurt veel geld?',
+             'Water is bij een wasmachine meestal een kleinere kostenpost dan stroom. Voor de '
+             'jaarkosten kijk je vooral naar het stroomverbruik; de stroomkosten per jaar staan bij '
+             'elk model.'),
+            ('Waarom gebruikt mijn wasmachine meer water dan op het label?',
+             'Het label geldt voor het eco 40-60-programma. Andere programma\'s en extra spoelen '
+             'gebruiken vaak meer water.'),
+        ],
+        'bekijk_ook': [
+            ('Wasmachines met waterverbruik 10-45 liter', '/category/wasmachines/waterverbruik/10-45-liter'),
+            ('Wasmachines van 9 en 10 kg', '/category/wasmachines/vulgewicht/9-11-kg'),
+            ('Alle wasmachines', '/category/wasmachines'),
+        ],
+    },
+    ('drogers', 'kenmerk', 'stoomfunctie'): {
+        'titel': 'Droger met stoomfunctie: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'naam': 'drogers met stoomfunctie',
+        'vragen': [
+            ('Wat doet een stoomfunctie in een droger?',
+             'De droger brengt aan het eind van het programma, of in een apart programma, stoom in '
+             'de trommel. Dat maakt kreukels zachter, zodat je minder hoeft te strijken. Ook droge '
+             'kleding die een tijd in de kast lag, kun je ermee opfrissen.'),
+            ('Hoef ik met een stoomdroger niet meer te strijken?',
+             'Minder, maar niet altijd helemaal niet. Overhemden en katoenen kleding hebben soms '
+             'nog een korte strijkbeurt nodig. Haal de was direct na het programma uit de trommel, '
+             'anders ontstaan er nieuwe kreukels.'),
+            ('Waar haalt de droger het water voor de stoom vandaan?',
+             'Dat verschilt per model. Hoe het bij een model werkt en of je zelf water moet '
+             'bijvullen, staat in de handleiding.'),
+        ],
+        'bekijk_ook': [
+            ('Wasmachine met stoomfunctie', '/category/wasmachines/kenmerk/stoomfunctie'),
+            ('Warmtepompdrogers', '/category/drogers/type/warmtepompdroger'),
+            ('Drogers zonder afvoer', '/category/drogers/kenmerk/zonder-afvoer'),
+            ('Gids: warmtepompdroger of condensdroger', '/gidsen/warmtepompdroger-of-condensdroger'),
+            ('Alle drogers', '/category/drogers'),
+        ],
+    },
+    ('drogers', 'breedte', '60-70-cm'): {
+        'titel': 'Droger 60 cm breed: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Drogers van 60 tot 70 cm breed',
+        'naam': 'drogers van 60 cm breed',
+        'intro': ('Een droger is net als een wasmachine bijna altijd ongeveer 60 cm breed. Daardoor '
+                  'kun je hem naast de wasmachine zetten, of er met een tussenstuk bovenop. Op deze '
+                  'pagina staan drogers met een breedte vanaf 60 cm en onder 70 cm. Wij volgen {n} '
+                  'modellen, met per model de laagste prijs van {winkels} winkels. De breedte komt '
+                  'uit het officiële Europese energielabelregister.'),
+        'vragen': [
+            ('Kan een droger op elke wasmachine?',
+             'Als beide ongeveer 60 cm breed zijn, meestal wel, met een tussenstuk dat bij de '
+             'combinatie past. Let ook op de diepte: de droger mag niet veel dieper zijn dan de '
+             'wasmachine eronder. De handleiding noemt welk tussenstuk past.'),
+            ('Hoeveel ruimte heeft een droger nodig?',
+             'Naast de breedte ook ruimte achter de droger voor de luchtstroom en eventueel de '
+             'waterafvoer, en voor de deur. De maten staan bij het model, de vrije ruimte in de '
+             'handleiding.'),
+        ],
+        'bekijk_ook': [
+            ('Drogers zonder afvoer', '/category/drogers/kenmerk/zonder-afvoer'),
+            ('Drogers van 8 kg', '/category/drogers/vulgewicht/8-9-kg'),
+            ('Alle drogers', '/category/drogers'),
+        ],
+    },
+    ('drogers', 'geluid', 'gemiddeld-geluid'): {
+        'titel': 'Droger 60 tot 72 dB: {n} modellen vanaf € {vanaf} | WitgoedAanbod.nl',
+        'h1': 'Drogers van 60 tot 72 dB',
+        'naam': 'drogers van 60 tot 72 dB',
+        'intro': ('Een droger draait al gauw een paar uur, dus je hoort hem langer dan een '
+                  'wasmachine. Op deze pagina staan drogers met een geluidsniveau vanaf 60 en onder '
+                  '72 decibel, gemeten tijdens het drogen. Hierin vallen de meeste gangbare drogers. '
+                  'De stillere drogers, onder 60 dB, hebben een eigen pagina. Wij volgen {n} '
+                  'modellen. Het geluid komt uit het officiële Europese energielabelregister.'),
+        'vragen': [
+            ('Is 65 dB hard voor een droger?',
+             'Het is gangbaar. In dezelfde ruimte hoor je de droger duidelijk; achter een dichte '
+             'deur valt het meestal mee.'),
+            ('Waar zet ik een droger van 65 dB het best neer?',
+             'Op een stevige, vlakke vloer, liefst in een bijkeuken, badkamer of op zolder met de '
+             'deur dicht. Op een houten zoldervloer klinkt een droger luider door trillingen.'),
+        ],
+        'bekijk_ook': [
+            ('Stille drogers onder 60 dB', '/category/drogers/geluid/stil'),
+            ('Warmtepompdrogers', '/category/drogers/type/warmtepompdroger'),
+            ('Alle drogers', '/category/drogers'),
+        ],
+    },
 }
 
 # "Bekijk ook" per categorie: (linktekst, pad). De pagina zelf valt bij het

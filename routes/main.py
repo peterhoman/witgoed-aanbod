@@ -1459,6 +1459,19 @@ def _eprel_waarde(gegevens, veld):
     return waarde
 
 
+# Velden die in een categorie iets anders betekenen dan de stappen zeggen.
+# Vaatwassers (4 okt 2026): EPREL zet daar het aantal couverts in
+# ratedCapacity, niet kilo's. Daar kwam de pagina "Vaatwassers van 11 kg en
+# meer" (160 apparaten) uit voort, gelinkt vanaf de categoriepagina en in de
+# sitemap. Dat oude adres stuurt door naar de categorie (category_kenmerk).
+_VELD_NIET_IN = {'ratedCapacity': {'vaatwassers'}}
+
+
+def _veld_telt(veld, categorie_slug):
+    """Hoort dit EPREL-veld als filterpagina bij deze categorie?"""
+    return categorie_slug not in _VELD_NIET_IN.get(veld, ())
+
+
 def _stap_voor(waarde, opzet):
     """De stap waar deze waarde in valt, of None."""
     for stap in opzet['stappen']:
@@ -3007,6 +3020,8 @@ def _kenmerk_facet(category):
     per_stap = {}
     for gegevens, product_id in rijen:
         for veld, opzet in _FILTERVELDEN.items():
+            if not _veld_telt(veld, category.slug):
+                continue
             waarde = _eprel_waarde(gegevens, veld)
             if waarde is None:
                 continue
@@ -3048,6 +3063,12 @@ def _kenmerk_links(category):
                '/<stap_slug>')
 def category_kenmerk(slug, veld, stap_slug):
     category = Category.query.filter_by(slug=slug).first_or_404()
+    # Een veld dat in deze categorie niet bestaat (vaatwassers en
+    # vulgewicht, zie _VELD_NIET_IN): het oude adres stond in de sitemap,
+    # dus doorsturen naar de categorie in plaats van een 404.
+    if any(opzet['naam'] == veld and not _veld_telt(sleutel, category.slug)
+           for sleutel, opzet in _FILTERVELDEN.items()):
+        return redirect(f'/category/{category.slug}', code=301)
     info = _kenmerk_facet(category).get((veld, stap_slug))
     if not info:
         abort(404)

@@ -1,6 +1,6 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **3 oktober 2026, 20:15**. Het blok "Overdracht 3 oktober, slot"
+Bijgewerkt **3 oktober 2026, 20:30**. Het blok "3 oktober, laat" vult aan; het blok "Overdracht 3 oktober, slot"
 hieronder is het nieuwste en is de complete stand voor een nieuwe sessie:
 wat er als eerste moet gebeuren, wat er live staat, de afspraken en de
 valkuilen. Daaronder volgen de dagblokken van nieuw naar oud (3 oktober,
@@ -8,6 +8,59 @@ valkuilen. Daaronder volgen de dagblokken van nieuw naar oud (3 oktober,
 blijven gelden waar een nieuwer blok niets anders zegt. Lees dit eerst; het
 projectgeheugen van de chat (MEMORY.md in de Claude-projectmap) draagt
 dezelfde feiten compact en is leidend voor werkafspraken.
+
+---
+
+## 3 oktober, laat (nieuwe sessie) — beide takken live en gecontroleerd; Black Friday-tak klaar; Welhof toch ja
+
+Dit blok gaat vóór het overdrachtsblok hieronder; wat hier staat vervangt
+punt 2 en 3 van "Wat de nieuwe sessie als eerste doet".
+
+- **#216 adresopschoning en #217 bronteller/IndexNow zijn gemerged** (door
+  Peter, vóór de start van deze sessie). Uitrol 18:08 UTC: SUCCESS.
+  Nagekeken om 18:17 UTC, na de uurronde van 18:11: sitemap-producten.xml
+  had 453 adressen met procentcodes, nu 0. Steekproef van 6 oude adressen
+  (+, ï, komma, gedachtestreep): allemaal 301 in één stap → 200, canonical =
+  nieuw adres. Geen Traceback in de logs. **Nog open:** de Bing-melding van
+  de opgeschoonde adressen wordt niet vastgelegd
+  (catalogus_uitzonderingen.py, `except Exception: pass`, uitkomst niet
+  bewaard), dus of Bing hem accepteerde is niet na te gaan; /api/sync-status
+  → indexnow toont alleen de ochtendronde van 07:30 UTC. Merchant Center de
+  komende dagen nakijken op afkeuringen (462 links in de feed veranderd).
+- **Doorklikteller:** de `uit-*` bakjes van 3 okt staan op ~6.100, maar dat
+  telt de uren vóór de kaartjesreparatie mee. Tussen 18:09 en 18:18 UTC
+  bewoog geen enkele teller (tellingen worden per 25 weggeschreven, zie
+  pageviews.py `_DREMPEL`), dus er komt geen botverkeer meer door. 4 okt
+  is de eerste hele dag: daar moeten de `uit-*` samen rond 10-20 liggen.
+- **Black Friday-meetpagina gebouwd** op `feat/black-friday-meetpagina`
+  (black_friday.py, route /api/black-friday in routes/main.py,
+  test_black_friday.py: 20 controles goed; rookproef met nepdata in een
+  tijdelijke sqlite-database). Vergelijk:
+  `https://github.com/peterhoman/witgoed-aanbod/compare/main...feat/black-friday-meetpagina`
+  Keuzes en waarom staan bovenin black_friday.py (vaste mand, laagste prijs
+  over de winkels, Jevons-index, EP/Alternate niet per winkel). Lokale
+  database heeft geen prijshistorie, dus de echte proeftelling juli-sept
+  kan pas na de merge: `/api/black-friday` en `/api/black-friday?bf=2026-09-14&apparaten=20`.
+  De uitkomst daarna aan de specialist-chat sturen.
+- **Welhof: Peter zei op 3 okt avond alsnog ja**, alleen nieuwe apparaten
+  ("dit kan een aanvulling zijn"). Volgorde: na de Black Friday-pagina.
+  Eerst de Awin-feed meten: conditieveld (nieuw/outlet/refurbished), EAN,
+  dagelijkse verversing. Fabio (AMPC) is gevraagd naar conditieveld en EAN;
+  antwoord komt bij Peter. Voorwaarde specialist-chat: outlet/refurbished
+  alleen in een apart gelabeld blok, nooit in laagste prijs, prijsonderzoek
+  of AggregateOffer.lowPrice.
+- **MediaMarkt-sync 18:12 UTC: vier prijssprongen omhoog** (twee
+  inductiekookplaten ~€700 → ~€1.470, Ninja airfryer €191 → €300, Bosch
+  espresso €379 → €569, die laatste "teruggesprongen" = actie voorbij).
+  Lijkt het einde van acties; 4 okt in /api/prijssprongen nakijken of ze
+  blijven staan.
+- **Takken opruimen** werd in deze sessie door de beveiliging geweigerd.
+  `docs/netwerken-gemeld-3-oktober` staat nog op GitHub; Peter kan hem via
+  de website weggooien (Branches → prullenbak).
+- **Search Console: alleen Nederland meten** (melding specialist-chat):
+  eind september kwam bijna de helft van de vertoningen van geautomatiseerde
+  buitenlandse zoekopdrachten. Nulmeting NL, 28 dagen: 149 klikken, 9.281
+  vertoningen, positie 5,3.
 
 ---
 

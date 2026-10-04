@@ -1,6 +1,6 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **3 oktober 2026, 20:30**. Het blok "3 oktober, laat" vult aan; het blok "Overdracht 3 oktober, slot"
+Bijgewerkt **4 oktober 2026**. De blokken "4 oktober" en "3 oktober, laat" vullen aan; het blok "Overdracht 3 oktober, slot"
 hieronder is het nieuwste en is de complete stand voor een nieuwe sessie:
 wat er als eerste moet gebeuren, wat er live staat, de afspraken en de
 valkuilen. Daaronder volgen de dagblokken van nieuw naar oud (3 oktober,
@@ -8,6 +8,44 @@ valkuilen. Daaronder volgen de dagblokken van nieuw naar oud (3 oktober,
 blijven gelden waar een nieuwer blok niets anders zegt. Lees dit eerst; het
 projectgeheugen van de chat (MEMORY.md in de Claude-projectmap) draagt
 dezelfde feiten compact en is leidend voor werkafspraken.
+
+---
+
+## 4 oktober (zondag) — Black Friday-meting live; ronde 2 en twee reparaties wachten op merge
+
+- **Live en gecontroleerd vandaag:** #219/#221 Black Friday-meetpagina
+  (/api/black-friday; ruisreeksen eruit: Bol 143, Coolblue 67, MediaMarkt 54
+  reeksen die vaker dan eens per 3 dagen wisselen), #222 korte vragenkop,
+  #223 Bing-melding na adresopschoning bewaard (indexnow_rondes.soort).
+  Tak docs/netwerken-gemeld-3-oktober is door Peter weggegooid.
+- **Eerste proeftelling Black Friday** (4 okt 07:28 UTC): mand 1.764
+  apparaten; index 16 juli=100 → 98,2 op 4 okt; groot witgoed 2-4% lager,
+  kookplaten/ovens/koffie iets hoger; op 1 okt 46% op laagste prijs sinds
+  juli, 38% >5% erboven (mediaan 1,8%). Uitschieters bovenaan de lijst zijn
+  vaak feedfouten: eerst nakijken. Bol-winkellijn niet publiceren.
+- **Wachten op Peters merge (proef-samengevoegd: geen conflict, tests goed):**
+  1. `feat/subpaginas-ronde-2` — 14 subpagina's (teksten specialist-chat),
+     plus reparatie: de stap is `van <= x < tot`, dus /vulgewicht/8-9-kg is
+     8 kg en /9-11-kg is 9 en 10 kg. Live stond "Drogers van 8 en 9 kg" met
+     alleen 8 kg-drogers. Algemene labels worden "7 kg", "8 kg", "9 en 10 kg".
+     Blokken in subpagina_teksten.py mogen nu ook alleen titel/vragen/eigen
+     bekijk_ook hebben (zoekzin-pagina's houden kop en intro).
+  2. `fix/vaatwassers-geen-kilopagina` — EPREL ratedCapacity is bij
+     vaatwassers het aantal couverts; "Vaatwassers van 11 kg en meer" (160)
+     stond live. Uitgezonderd via `_VELD_NIET_IN`; oud adres 301 naar
+     /category/vaatwassers.
+  3. `feat/meting-hoogte-diepte` — /api/filterkansen →
+     afmetingen_per_categorie (hoogte/diepte/breedte, verdeling in cm) voor
+     tekstronde 3. Na de merge uitlezen en naar de specialist-chat sturen.
+- **MediaMarkt-kookplaten** (€ 1.469 / € 1.479): op mediamarkt.nl zelf
+  nagekeken, de prijs klopt. Geen fout bij ons.
+- **Welhof:** Peter heeft zich 4 okt in Awin aangemeld (44727). Feed pas meten
+  als het onder "Lid geworden" staat; alleen nieuwe apparaten.
+- **Specialist-chat:** de oude sessie is vol; de nieuwe heet nu "Google SEA
+  specialist training-nieuw" (meldt zich als "Handover witgoedaanbod site").
+  Afspraak blijft: zij meet en levert tekst, ik bouw, Peter merget.
+- **Mergen blijft bij Peter** (4 okt opnieuw besproken): gh is niet
+  ingelogd en zijn klik is de enige menselijke controle voor live.
 
 ---
 

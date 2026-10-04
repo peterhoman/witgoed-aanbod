@@ -130,6 +130,20 @@ def _ensure_ai_content_bron_column(db):
             conn.commit()
 
 
+def _ensure_indexnow_soort_column(db):
+    """indexnow_rondes.soort (4 oktober 2026): welke melding het was, de
+    dagelijkse of die van de adresopschoning. db.create_all() wijzigt geen
+    bestaande tabellen, en deze tabel bestaat sinds 3 oktober."""
+    inspector = inspect(db.engine)
+    if 'indexnow_rondes' not in inspector.get_table_names():
+        return
+    columns = [c['name'] for c in inspector.get_columns('indexnow_rondes')]
+    if 'soort' not in columns:
+        with db.engine.connect() as conn:
+            conn.execute(text("ALTER TABLE indexnow_rondes ADD COLUMN soort VARCHAR(30)"))
+            conn.commit()
+
+
 def _backfill_offers_from_products(db):
     """Fase 1 (multi-winkel): tot nu toe stond prijs/link/voorraad rechtstreeks
     op elke products-rij (alleen Bol). Zet die één-op-één om naar een rij in de
@@ -232,6 +246,7 @@ def create_app(config_name=None):
         _ensure_offers_delivery_columns(db)
         _ensure_ai_content_bron_column(db)
         _ensure_eprel_gezocht_column(db)
+        _ensure_indexnow_soort_column(db)
         _ensure_categories(db)
         # De categorie Apparaatsets moet bestaan voordat er producten in gezet
         # kunnen worden; het opruimen zelf gebeurt in de uurlijkse job.

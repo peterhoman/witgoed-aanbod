@@ -591,6 +591,9 @@ class IndexNowRonde(db.Model):
     adressen = db.Column(db.Integer, nullable=False, default=0)
     statussen = db.Column(db.String(200), nullable=False, default='')   # "200" of "200,200"
     fout = db.Column(db.String(200), nullable=True)
+    # 'dagelijks' of 'adresopschoning' (4 okt 2026); leeg = dagelijks, van
+    # vóór deze kolom.
+    soort = db.Column(db.String(30), nullable=True)
 
 
 class PageView(db.Model):

@@ -269,6 +269,8 @@ def pas_toe(app):
 
         # Bing meteen laten weten dat deze adressen verhuisd zijn (oud én
         # nieuw, zodat de 301 gezien wordt). Google leest het uit de sitemap.
+        # Het antwoord van Bing komt in indexnow_rondes (soort
+        # 'adresopschoning'), zichtbaar in /api/sync-status.
         if opgeschoond:
             try:
                 from urllib.parse import quote
@@ -278,8 +280,7 @@ def pas_toe(app):
                 if sleutel:
                     adressen = [f"{site}/product/{quote(s, safe='/-._~')}"
                                 for paar in opgeschoond for s in paar]
-                    indexnow.verstuur(adressen, site.split('://', 1)[-1], sleutel,
-                                      f"{site}{indexnow.sleutelbestand(sleutel)}")
+                    indexnow.meld_verhuisde_adressen(adressen, site, sleutel)
             except Exception:
                 pass  # een mislukte melding mag de opschoning niet raken
 

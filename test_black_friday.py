@@ -82,6 +82,22 @@ v = bf.voorbeelden({1: {'coolblue': r, 'bol': r2}, 2: {'coolblue': r, 'bol': r},
 check('voorbeelden: één per categorie, minstens twee winkels',
       [x['ean'] for x in v] == ['2'], [x['ean'] for x in v])
 
+# 12. Voorbeelden: een reeks die bijna elke dag wijzigt (Bol-ruis) valt af.
+from datetime import timedelta
+ruis = [(D(2026, 7, 14) + timedelta(days=d), 400.0 + (d % 2) * 50) for d in range(80)]
+v2 = bf.voorbeelden({1: {'coolblue': r, 'bol': ruis}, 2: {'coolblue': r, 'mediamarkt': r2}},
+                    {1: ('Wasmachines', 'A', '1'), 2: ('Drogers', 'B', '2')}, D(2026, 7, 16))
+check('voorbeelden: ruisreeks valt af', [x['ean'] for x in v2] == ['2'], [x['ean'] for x in v2])
+
+# 13. Mand zonder ruis: de ruisreeks valt af en wordt per winkel geteld.
+weg = {}
+m2 = bf.maak_mand({(1, 'coolblue'): r, (1, 'bol'): ruis}, {(1, 'coolblue'), (1, 'bol')},
+                  D(2026, 7, 16), nu=D(2026, 10, 3), weggelaten=weg)
+check('mand: ruisreeks weg, telling per winkel', list(m2[1]) == ['coolblue'] and weg == {'bol': 1},
+      (list(m2[1]), weg))
+check('mand zonder nu: alles blijft (oud gedrag)',
+      len(bf.maak_mand({(1, 'bol'): ruis}, {(1, 'bol')}, D(2026, 7, 16))[1]) == 1)
+
 print()
 print('ALLES GOED' if not fouten else f'{fouten} FOUT(EN)')
 sys.exit(1 if fouten else 0)

@@ -80,18 +80,18 @@ def naar_winkel(offer_id):
     # geen geldig kaartje van een pas uitgegeven pagina heeft, gaat naar de
     # productpagina (daar staat een verse knop) en niet naar het netwerk.
     from flask import url_for
-    from uitlink import buiten_europa, kaartje_geldig
+    from uitlink import kaartje_geldig
     terug = url_for('products.product_detail', slug=offer.product.slug)
     if not kaartje_geldig(request.args.get('k'), current_app.config['SECRET_KEY'],
                           'a', offer.id):
         tel('klik-zonder-kaartje')
         return redirect(terug, code=302)
-    # Tweede slot: binnengekomen via een knooppunt buiten Europa. Een mens
-    # op reis komt nog bij de winkel (gewone winkellink, zonder tracking);
-    # het netwerk telt geen klik.
-    if buiten_europa(request.headers):
-        tel('klik-buiten-europa')
-        return redirect(offer.url or terug, code=302)
+    # Het tweede slot ("buiten Europa" via de kop X-Railway-Edge) is op
+    # 5 oktober 2026 weggehaald, met Peters ja. Railway gaf die kop sinds
+    # 3 okt niet meer als "europe-..." door, waardoor ook Nederlandse
+    # bezoekers als "buiten Europa" telden en de gewone winkellink kregen,
+    # zonder vergoeding: van 3 t/m 5 okt nul doorkliks met tracking. Het
+    # kaartje alleen hield het botnet al tegen (het laadt geen productpagina).
 
     tel(f"uit-{offer.retailer}")
 
@@ -128,15 +128,12 @@ def naar_winkel_product(product_id):
 
     # Zelfde kaartje als bij naar_winkel (uitlink.py).
     from flask import url_for
-    from uitlink import buiten_europa, kaartje_geldig
+    from uitlink import kaartje_geldig
     terug = url_for('products.product_detail', slug=product.slug)
     if not kaartje_geldig(request.args.get('k'), current_app.config['SECRET_KEY'],
                           'p', product.id):
         tel('klik-zonder-kaartje')
         return redirect(terug, code=302)
-    if buiten_europa(request.headers):
-        tel('klik-buiten-europa')
-        return redirect(product.bol_url or terug, code=302)
 
     tel('uit-terugval')
     return redirect(doel, code=302)

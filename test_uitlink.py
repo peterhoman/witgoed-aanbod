@@ -5,7 +5,7 @@ Draaien: python test_uitlink.py
 import sys
 sys.path.insert(0, '.')
 
-from uitlink import buiten_europa, kaartje_geldig, maak_kaartje
+from uitlink import kaartje_geldig, maak_kaartje
 
 fouten = 0
 def check(naam, ok):
@@ -30,9 +30,6 @@ check('tijdstempel uit de toekomst ongeldig', not kaartje_geldig(
 check('vervalste tijdstempel ongeldig', not kaartje_geldig(
     f"{nu + 100}.{k.split('.')[1]}", S, 'a', 123, nu=nu + 100))
 
-check('europa is niet buiten europa', not buiten_europa({'X-Railway-Edge': 'europe-west4-drams3a'}))
-check('us-west2 is buiten europa', buiten_europa({'X-Railway-Edge': 'us-west2'}))
-check('zonder kop: niet tegenhouden', not buiten_europa({}))
 
 # De route zelf, tegen de lokale demodatabase.
 import re
@@ -58,13 +55,17 @@ if links:
     r = c.get(kaal + '?k=1.abc', headers=B)
     check('vals kaartje: terug naar de productpagina', r.status_code == 302
           and '/product/' in r.headers['Location'])
-    r = c.get(link, headers={**B, 'X-Railway-Edge': 'us-west2'})
-    check('buiten Europa: niet via het netwerk', r.status_code == 302
-          and 'awin' not in r.headers['Location'] and 'tradetracker' not in r.headers['Location']
-          and 'partner.bol' not in r.headers['Location'] and 'tradedoubler' not in r.headers['Location'])
-    r = c.get(link, headers={**B, 'X-Railway-Edge': 'europe-west4-drams3a'})
-    check('binnen Europa met kaartje: naar de winkel', r.status_code == 302
-          and '/product/' not in r.headers['Location'])
+    # 5 okt 2026: elke klik met een geldig kaartje krijgt de link mét
+    # vergoeding (offer.link), welk Railway-knooppunt er ook in de kop staat.
+    from models import Offer
+    with app.app_context():
+        aanbieding = Offer.query.get(int(re.search(r'/uit/aanbieding/(\d+)', link).group(1)))
+        vergoedingslink = aanbieding.link
+    for knooppunt in (None, 'ams1', 'us-west2', 'europe-west4-drams3a'):
+        koppen = dict(B, **({'X-Railway-Edge': knooppunt} if knooppunt else {}))
+        r = c.get(link, headers=koppen)
+        check(f'met kaartje via {knooppunt or "geen kop"}: link met vergoeding',
+              r.status_code == 302 and r.headers['Location'] == vergoedingslink)
     r = c.get(link, headers={'User-Agent': 'python-requests/2'})
     check('robot blijft 403', r.status_code == 403)
 

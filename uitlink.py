@@ -58,14 +58,8 @@ def kaartje_geldig(kaartje, sleutel, soort, nummer, nu=None):
     return hmac.compare_digest(verwacht, handtekening)
 
 
-def buiten_europa(headers):
-    """Kwam dit verzoek binnen via een Railway-knooppunt buiten Europa?
-
-    Tweede slot naast het kaartje. Railway zet het knooppunt in de kop
-    X-Railway-Edge ("europe-west4-drams3a"); Nederlandse bezoekers komen
-    altijd via Europa binnen, het botnet van 3 oktober via us-west2.
-    Ontbreekt de kop, dan is het antwoord False: liever een robot te veel
-    door dan een klant tegengehouden.
-    """
-    knooppunt = (headers.get('X-Railway-Edge') or '').lower()
-    return bool(knooppunt) and 'europe' not in knooppunt
+# Een tweede slot "buiten Europa" (op de kop X-Railway-Edge) heeft hier van
+# 3 tot 5 oktober 2026 gestaan en is weggehaald: Railway gaf het knooppunt
+# niet meer als "europe-..." door, waardoor ook Nederlandse bezoekers de
+# winkellink zonder vergoeding kregen. Niet terugzetten op die kop; een
+# land of knooppunt is achter Railway niet betrouwbaar te bepalen.

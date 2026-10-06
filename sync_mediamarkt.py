@@ -448,7 +448,8 @@ def sync_mediamarkt():
 def _cleanup(seen_product_ids, sync_log=None):
     """Aanbiedingen weghalen die niet meer in de feed staan, en producten die
     daardoor bij geen enkele winkel meer te koop zijn."""
-    bestaand = Offer.query.filter_by(retailer=RETAILER).count()
+    from verouderde_aanbiedingen import recent_bekend
+    bestaand = recent_bekend(RETAILER)  # alleen recent geleverde rijen (verouderde_aanbiedingen.recent_bekend)
 
     # Veiligheidsklep. Komt de feed door een storing leeg of half terug, dan zou
     # blind opruimen het hele MediaMarkt-aanbod van de site vegen. Bij een

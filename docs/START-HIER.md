@@ -1,6 +1,6 @@
 # Start hier — overdracht aan een nieuwe sessie
 
-Bijgewerkt **4 oktober 2026**. De blokken "4 oktober" en "3 oktober, laat" vullen aan; het blok "Overdracht 3 oktober, slot"
+Bijgewerkt **6 oktober 2026** (blok "5-6 oktober" bovenaan). De blokken "4 oktober" en "3 oktober, laat" vullen aan; het blok "Overdracht 3 oktober, slot"
 hieronder is het nieuwste en is de complete stand voor een nieuwe sessie:
 wat er als eerste moet gebeuren, wat er live staat, de afspraken en de
 valkuilen. Daaronder volgen de dagblokken van nieuw naar oud (3 oktober,
@@ -8,6 +8,33 @@ valkuilen. Daaronder volgen de dagblokken van nieuw naar oud (3 oktober,
 blijven gelden waar een nieuwer blok niets anders zegt. Lees dit eerst; het
 projectgeheugen van de chat (MEMORY.md in de Claude-projectmap) draagt
 dezelfde feiten compact en is leidend voor werkafspraken.
+
+---
+
+## 5-6 oktober — Witgoedhuis live, catalogusproef van 100, tweede slot op de doorklik weg
+
+Alles hieronder staat op main en is op productie gecontroleerd (laatste merge 3d62a7f).
+
+- **Doorklik:** de controle "buiten Europa" in uitlink.py rekende iedere bezoeker
+  als buitenlands (3-5 okt nul affiliate-klikken). Met Peters ja weggehaald; het
+  kaartje (HMAC) blijft het enige slot. Niet terugzetten.
+- **Witgoedhuis (Daisycon) live:** sync_witgoedhuis.py, elke 12 uur, alleen nieuw +
+  op voorraad, logo in de winkelbalk op de homepage. 124 aanbiedingen op 6 okt.
+- **Klep:** alle zeven syncs tellen alleen aanbiedingen van de laatste 3 dagen
+  (recent_bekend in verouderde_aanbiedingen.py).
+- **EPREL** zoekt ook typenummers met spaties (Miele "KFN 4397 CD"); gevonden vóór: 1.387.
+- **Catalogusaanvulling (proef):** catalogus_aanvulling.py maakt producten aan voor
+  witgoed dat bij 2+ kleinere winkels te koop is. PROEF_MAXIMUM = 100, alleen
+  verhogen na een nieuw ja van Peter. Lijst: scripts/aanvulling_100.txt. Drie dubbele
+  Miele-kleurvarianten zijn weggehaald (WEGGEHAALD), hun adressen geven 301 naar de
+  andere kleur; 3 vervangers aangemaakt, 26 dubbelen tegengehouden.
+- **Storing Daisycon 6 okt vanaf 15:10 UTC:** feed én hun inlogpagina gaven
+  "Interne serverfout". Ligt bij Daisycon, niet bij ons; geen mail nodig.
+
+**Open voor 7 oktober:** Witgoedhuis-sync weer gelukt? IndexNow-ronde met de 100
+proefproducten bevestigen; EPREL-aantal naast 1.387 leggen; EP-klepmelding weg?
+Rankingmeting (was di 6 okt) nog niet gedaan. Bij de specialist-chat open:
+combimagnetrons met alleen grill, dweilfunctie-pagina. Welhof wacht op Awin.
 
 ---
 

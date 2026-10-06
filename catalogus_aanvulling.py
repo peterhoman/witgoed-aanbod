@@ -39,6 +39,17 @@ from ean_match import ean_sleutel
 logger = logging.getLogger(__name__)
 
 PROEF_MAXIMUM = 100   # niet verhogen zonder Peters ja (zie docstring)
+
+# Kleurvarianten die in de eerste ronde (6 okt 2026) dubbel binnenkwamen,
+# vóór de dubbelcheck binnen de ronde bestond. Peter gaf ja op weghalen
+# (6 okt). Ze worden verwijderd en nooit opnieuw aangemaakt; het zustermodel
+# blijft staan, en het oude adres stuurt met een 301 door naar dat
+# zustermodel (routes.products). Weggehaalde EAN -> EAN van het zustermodel.
+WEGGEHAALD = {
+    '4002516741725': '4002516741596',   # Miele FNS 4382 D
+    '4002516742104': '4002516742111',   # Miele KFN 4795 AD (blijft: edt/cs)
+    '4002516711698': '4002516711742',   # Miele KFN 4799 AD (blijft: edt/cs)
+}
 VERDELING = {'koelkasten': 45, 'wasmachines': 18, 'vaatwassers': 15, 'drogers': 10,
              'ovens': 4, 'kookplaten': 4, 'stofzuigers': 4}
 MIN_WINKELS = 2
@@ -179,6 +190,17 @@ def vul_catalogus_aan(app):
         from models import CatalogusAanvulling, Category, EprelData, Product, db, utcnow
         from sync_products import guess_brand
 
+        from models import AIContent, PriceAlert
+        weg = Product.query.filter(Product.ean.in_(list(WEGGEHAALD))).all()
+        for p in weg:
+            # Rijen zonder 'ondelete' eerst zelf weg, anders weigert Postgres.
+            for model in (CatalogusAanvulling, EprelData, AIContent, PriceAlert):
+                model.query.filter_by(product_id=p.id).delete()
+            db.session.delete(p)
+        if weg:
+            db.session.commit()
+            logger.info(f"aanvulling: {len(weg)} dubbele kleurvarianten weggehaald")
+
         al = CatalogusAanvulling.query.count()
         ruimte = PROEF_MAXIMUM - al
         if ruimte <= 0:
@@ -187,6 +209,7 @@ def vul_catalogus_aan(app):
 
         kand = kandidaten(_feeds())
         bekend = {ean_sleutel(p.ean) for p in Product.query.with_entities(Product.ean)}
+        bekend |= {ean_sleutel(e) for e in WEGGEHAALD}
         kand = {k: v for k, v in kand.items() if k not in bekend}
 
         # Dubbelcheck: merk + typenummer tegen alle bestaande producten.

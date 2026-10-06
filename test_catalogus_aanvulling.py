@@ -114,6 +114,33 @@ with app.app_context():
 
 uit2 = ca.vul_catalogus_aan(app)
 check('tweede ronde: niets meer bij deze categorieën', uit2['aangemaakt'] == 0, uit2)
+# Weggehaalde dubbelen: product met tekst en EPREL-rij wordt verwijderd en
+# komt niet terug.
+with app.app_context():
+    from models import AIContent, Product as P2, db as db2
+    cat = Category.query.filter_by(slug='koelkasten').first()
+    p = P2(ean='4002516741725', title='Miele FNS 4382 D dubbel', brand='Miele', price=1,
+           bol_url='', category_id=cat.id, slug='dubbel-weg')
+    db2.session.add(p)
+    db2.session.flush()
+    db2.session.add(AIContent(product_id=p.id, content_type='beschrijving', content='x'))
+    db2.session.add(CatalogusAanvulling(product_id=p.id, ean=p.ean, categorie='koelkasten'))
+    db2.session.commit()
+ca.vul_catalogus_aan(app)
+with app.app_context():
+    check('dubbele kleurvariant weggehaald, met tekst en al',
+          P2.query.filter_by(ean='4002516741725').count() == 0
+          and AIContent.query.count() == 0)
+    cat = Category.query.filter_by(slug='koelkasten').first()
+    zus = P2(ean='4002516741596', title='Miele FNS 4382 D zuster', brand='Miele', price=1,
+             bol_url='', category_id=cat.id, slug='miele-fns-4382-d-zuster-4002516741596')
+    db2.session.add(zus)
+    db2.session.commit()
+r = app.test_client().get('/product/miele-fns-4382-d-vrijstaande-diepvries-4002516741725')
+check('oud adres stuurt met 301 door naar het zustermodel',
+      r.status_code == 301 and r.headers.get('Location', '').endswith('/product/miele-fns-4382-d-zuster-4002516741596'),
+      (r.status_code, r.headers.get('Location')))
+
 ca.PROEF_MAXIMUM = 58
 uit3 = ca.vul_catalogus_aan(app)
 check('proefmaximum bereikt: doet niets', uit3.get('reden') == 'proefmaximum bereikt', uit3)

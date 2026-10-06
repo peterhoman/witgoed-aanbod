@@ -2,7 +2,10 @@
 {% from '_macros.html' import product_card, video_facade with context %}
 
 {% block title %}Witgoed prijsvergelijker: vind de laagste prijs | WitgoedAanbod.nl{% endblock %}
-{% block meta_description %}Onafhankelijke witgoed prijsvergelijker: vergelijk de prijzen van {{ winkel_opsomming }} in één overzicht. Wasmachines, drogers, koelkasten en meer: actuele prijzen, prijshistorie en de laagste prijs per apparaat.{% endblock %}
+{# 6 okt 2026 (specialist-chat): kort genoeg voor Google (~142 tekens, ook bij
+   10+ winkels); de volledige opsomming van acht winkels kwam op ~260 tekens en
+   werd midden in de opsomming afgekapt. #}
+{% block meta_description %}Vergelijk witgoedprijzen bij {{ aantal_winkels }} winkels, onder meer Bol.com, Coolblue en MediaMarkt. Laagste prijs, prijshistorie en energielabel per apparaat.{% endblock %}
 
 {% block structured_data %}
 <script type="application/ld+json">

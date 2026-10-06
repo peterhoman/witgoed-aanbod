@@ -597,6 +597,25 @@ class IndexNowRonde(db.Model):
     soort = db.Column(db.String(30), nullable=True)
 
 
+class CatalogusAanvulling(db.Model):
+    """Product dat de catalogusaanvulling heeft aangemaakt (catalogus_aanvulling.py).
+
+    Proef van 100 (6 oktober 2026, Peters ja): deze tabel is de teller voor
+    PROEF_MAXIMUM en de lijst van adressen die de specialist-chat in Search
+    Console volgt.
+    """
+    __tablename__ = 'catalogus_aanvullingen'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id', ondelete='CASCADE'),
+                           nullable=False, index=True)
+    ean = db.Column(db.String(20), nullable=False)
+    categorie = db.Column(db.String(50), nullable=False)
+    winkels = db.Column(db.String(200), nullable=False, default='')
+    eprel = db.Column(db.Boolean, nullable=False, default=False)
+    aangemaakt_at = db.Column(db.DateTime, nullable=False, default=utcnow)
+
+
 class PageView(db.Model):
     """Aantal paginaweergaven per soort per dag. Geen bezoekersmeting.
 

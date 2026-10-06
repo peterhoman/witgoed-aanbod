@@ -147,6 +147,23 @@ def start_scheduler(app=None):
                                  voordeligwitgoed_interval, 95),
     )
 
+    # Catalogusaanvulling, PROEF van 100 (6 okt 2026, Peters ja): witgoed dat
+    # bij 2+ offers-only-winkels te koop is maar niet op de site staat. Eén
+    # keer per dag; na 100 doet hij niets meer (catalogus_aanvulling.py).
+    # Eerste ronde tien minuten na de start.
+    if app is not None:
+        from catalogus_aanvulling import vul_catalogus_aan
+        scheduler.add_job(
+            vul_catalogus_aan,
+            'interval',
+            hours=24,
+            id='catalogus_aanvulling_job',
+            name='Catalogusaanvulling (proef)',
+            replace_existing=True,
+            args=[app],
+            next_run_time=datetime.now(timezone.utc) + timedelta(minutes=10),
+        )
+
     # Witgoedhuis via de Daisycon-feed (6 okt 2026, Peters ja): de achtste
     # winkel. De feed wordt rond 05:30 ververst; om de 12 uur ophalen is ruim.
     witgoedhuis_interval = int(os.getenv('WITGOEDHUIS_SYNC_INTERVAL', 12))

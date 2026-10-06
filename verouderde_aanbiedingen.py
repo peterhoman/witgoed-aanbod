@@ -30,6 +30,26 @@ logger = logging.getLogger(__name__)
 DREMPEL_DAGEN = 3
 
 
+def recent_bekend(retailer, dagen=DREMPEL_DAGEN):
+    """Aantal aanbiedingen van deze winkel die de afgelopen `dagen` nog door
+    de feed zijn geleverd. Dit is het ijkpunt voor de veiligheidsklep in de
+    syncs ("minder dan de helft terug = niets opruimen").
+
+    Tot 6 oktober 2026 telde de klep álle bekende aanbiedingen, ook rijen die
+    al weken niet meer in de feed zaten. Bij EP waren dat er 646: de feed
+    leverde elke dag ~354 van de 1.014 "bekende", de klep sloeg elke dag
+    aan, er werd nooit opgeruimd en de dagcontrole zag elke dag een
+    storingsmelding die er geen was -- waardoor een echte halflege feed niet
+    meer zou opvallen. Een rij die langer dan `dagen` niet is ververst staat
+    al op niet-leverbaar (verberg_verouderde) en hoort niet mee te tellen.
+    """
+    from models import Offer, utcnow
+    grens = utcnow() - timedelta(days=dagen)
+    return (Offer.query
+            .filter(Offer.retailer == retailer, Offer.last_synced >= grens)
+            .count())
+
+
 def verberg_verouderde(db, dagen=DREMPEL_DAGEN):
     """Zet aanbiedingen die langer dan `dagen` niet zijn ververst op
     niet-leverbaar en werk de prijs van de betrokken producten bij.

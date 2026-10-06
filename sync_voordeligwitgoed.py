@@ -170,7 +170,8 @@ def sync_voordeligwitgoed():
         db.session.commit()
 
         removed = 0
-        bestaand = Offer.query.filter_by(retailer=RETAILER).count()
+        from verouderde_aanbiedingen import recent_bekend
+        bestaand = recent_bekend(RETAILER)  # alleen recent geleverde rijen (verouderde_aanbiedingen.recent_bekend)
         if bestaand and len(seen_product_ids) < bestaand * MIN_FEED_RATIO:
             # Ook in het synclogboek, niet alleen in de serverlogs: op 10
             # september 2026 bleek EP deze melding al zes weken te geven

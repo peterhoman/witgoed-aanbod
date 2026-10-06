@@ -162,7 +162,8 @@ def sync_witgoedhuis():
         db.session.commit()
 
         removed = 0
-        bestaand = Offer.query.filter_by(retailer=RETAILER).count()
+        from verouderde_aanbiedingen import recent_bekend
+        bestaand = recent_bekend(RETAILER)  # alleen recent geleverde rijen (verouderde_aanbiedingen.recent_bekend)
         if bestaand and len(seen_product_ids) < bestaand * MIN_FEED_RATIO:
             melding = (f"Feed leverde maar {len(seen_product_ids)} van de "
                        f"{bestaand} bekende aanbiedingen; opruimen overgeslagen")

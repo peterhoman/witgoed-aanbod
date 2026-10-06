@@ -50,10 +50,19 @@ check('zelfde merk en typenummer = dubbel', ca.is_dubbel('Miele', 'Miele KFN 439
 check('ander merk = geen dubbel', not ca.is_dubbel('Liebherr', 'Liebherr KFN 4397 CD', bestaande))
 check('ander typenummer = geen dubbel', not ca.is_dubbel('Miele', 'Miele KFN 4398 CD', bestaande))
 
+check('WCS en WPS zijn verschillende machines',
+      not ca.is_dubbel('Miele', 'Miele WEA 135 WPS Excellence', {'miele': [ca._typecodes('Miele WEA 135 WCS Excellence')]}))
+check('AEG-serie is geen typenummer',
+      not ca.is_dubbel('AEG', 'AEG 6000 ProSense wasmachine LR6KOLN',
+                       {'aeg': [ca._typecodes('AEG 6000 SatelliteClean vaatwasser FFB64627ZM')]}))
+check('kleurvariant (edt/cs) is dubbel',
+      ca.is_dubbel('Miele', 'Miele KFN 4795 AD edt/cs Koel-vriescombinatie',
+                   {'miele': [ca._typecodes('Miele KFN 4795 AD Koel-vriescombinatie')]}))
+
 # 3. De hele ronde op een tijdelijke database, met nagebootste feeds en EPREL.
 app = create_app('development')
 nep_rijen = []
-for i in range(60):
+for i in range(40):
     ean = f'40025161{i:05d}'
     nep_rijen += [rij(ean, f'Miele KFN {4000 + i} CD Koel-vriescombinatie', 999, 'expert'),
                   rij(ean, f'Miele KFN {4000 + i} CD Koel-vriescombinatie', 989, 'ep')]
@@ -61,6 +70,10 @@ for i in range(30):
     ean = f'40025162{i:05d}'
     nep_rijen += [rij(ean, f'Miele WWD {300 + i} WPS Wasmachine', 899, 'expert'),
                   rij(ean, f'Miele WWD {300 + i} WPS Wasmachine', 899, 'ep')]
+# Twee kleurvarianten van één nieuw model in dezelfde ronde: één mag erin.
+for ean in ('4002516999001', '4002516999002'):
+    nep_rijen += [rij(ean, 'Miele FNS 4382 D Vrijstaande diepvries', 1399, 'expert'),
+                  rij(ean, 'Miele FNS 4382 D Vrijstaande diepvries', 1399, 'ep')]
 ca._feeds = lambda: list(nep_rijen)
 import eprel  # noqa: E402
 eprel.zoek = lambda cat, titel, pauze=0: ({'gezocht': True, 'gevonden': True, 'gezocht_op': 'x',
@@ -88,17 +101,20 @@ with app.app_context():
     per_cat = {}
     for r in CatalogusAanvulling.query.all():
         per_cat[r.categorie] = per_cat.get(r.categorie, 0) + 1
-check('koelkasten tot hun quotum (45)', per_cat.get('koelkasten') == 45, per_cat)
+check('koelkasten: 39 KFN + 1 FNS (quotum 45 niet vol)', per_cat.get('koelkasten') == 40, per_cat)
 check('wasmachines tot hun quotum (18)', per_cat.get('wasmachines') == 18, per_cat)
-check('dubbel (KFN 4005 CD bestaat al) tegengehouden', uit['dubbel'] == 1, uit)
-check('adressen terug', len(uit['adressen']) == 63 and all(a.endswith(tuple('0123456789')) for a in uit['adressen']))
+check('dubbelen tegengehouden: bestaande KFN 4005 CD en de tweede FNS 4382 D', uit['dubbel'] == 2, uit)
+with app.app_context():
+    from models import Product as P
+    check('FNS 4382 D maar één keer aangemaakt', P.query.filter(P.title.like('%FNS 4382 D%')).count() == 1)
+check('adressen terug', len(uit['adressen']) == 58 and all(a.endswith(tuple('0123456789')) for a in uit['adressen']))
 with app.app_context():
     from models import EprelData
     check('EPREL-uitkomst bewaard bij de nieuwe producten', EprelData.query.count() >= 45, EprelData.query.count())
 
 uit2 = ca.vul_catalogus_aan(app)
 check('tweede ronde: niets meer bij deze categorieën', uit2['aangemaakt'] == 0, uit2)
-ca.PROEF_MAXIMUM = 63
+ca.PROEF_MAXIMUM = 58
 uit3 = ca.vul_catalogus_aan(app)
 check('proefmaximum bereikt: doet niets', uit3.get('reden') == 'proefmaximum bereikt', uit3)
 

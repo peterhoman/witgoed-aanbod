@@ -464,7 +464,12 @@ def _product_via_ean(slug):
     m = re.search(r'(\d{8,14})$', slug or '')
     if not m:
         return None
-    return Product.query.filter_by(ean=m.group(1)).first()
+    ean = m.group(1)
+    # Weggehaalde dubbele kleurvarianten (catalogus_aanvulling.WEGGEHAALD,
+    # 6 okt 2026): door naar het zustermodel in plaats van een 404.
+    from catalogus_aanvulling import WEGGEHAALD
+    ean = WEGGEHAALD.get(ean, ean)
+    return Product.query.filter_by(ean=ean).first()
 
 
 @products_bp.route('/product/<slug>')

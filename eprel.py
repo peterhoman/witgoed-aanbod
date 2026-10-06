@@ -84,6 +84,9 @@ _TIMEOUT = 25
 # verkeerde match is erger dan geen match.
 _TYPENUMMER = re.compile(r'^[a-z]{1,5}[0-9][a-z0-9./-]{2,}$', re.IGNORECASE)
 _MIN_LENGTE = 5
+# "KFN 4397 CD", "IRBc 4120-22", "G 7110 SCi": letters, spatie, 3-5 cijfers,
+# eventueel een achtervoegsel na spatie of streepje.
+_GESPATIEERD = re.compile(r'\b([A-Za-z]{1,5})\s+(\d{3,5})(?:([\s-])([A-Za-z0-9]{1,4})\b)?')
 _MAX_KANDIDATEN = 3
 
 # Onze categorie of titel -> de EPREL-productgroep(en). Volgorde telt: de
@@ -180,6 +183,23 @@ def codes_uit_titel(titel):
     """
     gevonden = []
     gezien = set()
+    # Typenummers met spaties (6 okt 2026): Miele en Liebherr schrijven
+    # "KFN 4397 CD" en "IRBc 4120-22"; geen van de losse woorden is een
+    # typenummer, dus die apparaten werden nooit gezocht. EPREL zoekt op
+    # "begint met" en kent ze mét spaties ("KFN 4397 CD"), Liebherr zonder
+    # het achtervoegsel ("IRBc 4120" -> 'IRBc 4120_994878551'). Dus: het hele
+    # nummer en de kortere vorm, vóór de losse woorden. Het eerste deel moet
+    # minstens twee hoofdletters hebben, zodat "inhoud 330" geen typenummer wordt.
+    for m in _GESPATIEERD.finditer(str(titel or '')):
+        letters, cijfers, scheiding, rest = m.group(1), m.group(2), m.group(3), m.group(4)
+        if sum(c.isupper() for c in letters) < 2:
+            continue
+        vormen = ([f'{letters} {cijfers}{scheiding}{rest}'] if rest else []) + [f'{letters} {cijfers}']
+        for vorm in vormen:
+            if vorm.upper() not in gezien:
+                gezien.add(vorm.upper())
+                gevonden.append(vorm)
+    gespatieerd = list(gevonden)
     for woord in re.split(r'[\s,]+', str(titel or '')):
         kaal = woord.strip('.,;:()[]/')
         if len(kaal) < _MIN_LENGTE or not _TYPENUMMER.match(kaal):
@@ -188,8 +208,8 @@ def codes_uit_titel(titel):
             continue
         gezien.add(kaal.upper())
         gevonden.append(kaal)
-    gevonden.sort(key=len, reverse=True)
-    return gevonden[:_MAX_KANDIDATEN]
+    losse = sorted(gevonden[len(gespatieerd):], key=len, reverse=True)
+    return (gespatieerd + losse)[:_MAX_KANDIDATEN]
 
 
 def _kaal(tekst):

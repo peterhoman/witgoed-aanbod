@@ -86,6 +86,7 @@ _TYPENUMMER = re.compile(r'^[a-z]{1,5}[0-9][a-z0-9./-]{2,}$', re.IGNORECASE)
 _MIN_LENGTE = 5
 # "KFN 4397 CD", "IRBc 4120-22", "G 7110 SCi": letters, spatie, 3-5 cijfers,
 # eventueel een achtervoegsel na spatie of streepje.
+_GEEN_TYPENUMMER_WOORD = {'AEG', 'SERIE', 'SERIES', 'LG', 'HP', 'KG', 'DB', 'CM', 'RPM', 'TPM'}
 _GESPATIEERD = re.compile(r'\b([A-Za-z]{1,5})\s+(\d{3,5})(?:([\s-])([A-Za-z0-9]{1,4})\b)?')
 _MAX_KANDIDATEN = 3
 
@@ -193,6 +194,11 @@ def codes_uit_titel(titel):
     for m in _GESPATIEERD.finditer(str(titel or '')):
         letters, cijfers, scheiding, rest = m.group(1), m.group(2), m.group(3), m.group(4)
         if sum(c.isupper() for c in letters) < 2:
+            continue
+        # Merk- en seriewoorden: "AEG 6000 ProSense" is een serie, geen
+        # typenummer (gemeten 6 okt: alle AEG 5000/6000/7000-apparaten
+        # leken anders hetzelfde model).
+        if letters.upper() in _GEEN_TYPENUMMER_WOORD:
             continue
         vormen = ([f'{letters} {cijfers}{scheiding}{rest}'] if rest else []) + [f'{letters} {cijfers}']
         for vorm in vormen:

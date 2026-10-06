@@ -148,7 +148,11 @@ def kandidaten(rijen):
 def _typecodes(titel):
     """Typenummers zonder opmaak, voor de dubbelcheck ('KFN 4397 CD' -> 'kfn4397cd')."""
     from eprel import _kaal, codes_uit_titel
-    return {_kaal(c) for c in codes_uit_titel(titel) if len(_kaal(c)) >= 5}
+    codes = codes_uit_titel(titel)
+    # Alleen het volledige nummer: de ingekorte zoekvorm ("WEA 135" uit
+    # "WEA 135 WCS") zou WCS en WPS -- twee machines -- gelijk maken.
+    vol = [c for c in codes if not any(o != c and o.startswith(c) for o in codes)]
+    return {_kaal(c) for c in vol if len(_kaal(c)) >= 5}
 
 
 def is_dubbel(merk, titel, bestaande):
@@ -228,7 +232,18 @@ def vul_catalogus_aan(app):
                         met.append(v)
                         continue
                 zonder.append(v)
-            gekozen += (met + zonder)[:plekken]
+            # Dubbelcheck ook binnen deze ronde (6 okt: drie Miele-apparaten
+            # kwamen twee keer binnen, als kleurvariant met een eigen EAN).
+            deze = []
+            for v in met + zonder:
+                if len(deze) >= plekken:
+                    break
+                if is_dubbel(v['merk'], v['titel'], bestaande):
+                    dubbel += 1
+                    continue
+                bestaande.setdefault((v['merk'] or '').lower(), []).append(_typecodes(v['titel']))
+                deze.append(v)
+            gekozen += deze
 
         nieuw = []
         for v in gekozen:

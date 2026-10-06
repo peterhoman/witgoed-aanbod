@@ -13,6 +13,7 @@ from sync_expert import sync_expert
 from sync_alternate import sync_alternate
 from sync_ep import sync_ep
 from sync_voordeligwitgoed import sync_voordeligwitgoed
+from sync_witgoedhuis import sync_witgoedhuis
 import os
 
 scheduler = BackgroundScheduler()
@@ -144,6 +145,19 @@ def start_scheduler(app=None):
         replace_existing=True,
         next_run_time=eerste_run('voordeligwitgoed',
                                  voordeligwitgoed_interval, 95),
+    )
+
+    # Witgoedhuis via de Daisycon-feed (6 okt 2026, Peters ja): de achtste
+    # winkel. De feed wordt rond 05:30 ververst; om de 12 uur ophalen is ruim.
+    witgoedhuis_interval = int(os.getenv('WITGOEDHUIS_SYNC_INTERVAL', 12))
+    scheduler.add_job(
+        sync_witgoedhuis,
+        'interval',
+        hours=witgoedhuis_interval,
+        id='witgoedhuis_sync_job',
+        name='Witgoedhuis Product Sync',
+        replace_existing=True,
+        next_run_time=eerste_run('witgoedhuis', witgoedhuis_interval, 5),
     )
 
     # Nieuwe producten van een eigen beschrijving voorzien. Draait na de syncs

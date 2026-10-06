@@ -73,12 +73,13 @@ BEWEGENDE_WINKELS = ('bol', 'coolblue', 'mediamarkt')
 MAX_UREN_ZONDER_PRIJSWIJZIGING = 60
 
 WINKELS = ('bol', 'mediamarkt', 'coolblue', 'expert', 'alternate', 'ep',
-           'voordeligwitgoed')
+           'voordeligwitgoed', 'witgoedhuis')
 
 VERWACHTE_ROUTINES = (
     'Bol.com Product Sync', 'MediaMarkt Product Sync', 'Coolblue Product Sync',
     'Expert Product Sync', 'Alternate Product Sync', 'EP Product Sync',
-    'Voordeligwitgoed Product Sync', 'Eigen productteksten bijwerken',
+    'Voordeligwitgoed Product Sync', 'Witgoedhuis Product Sync',
+    'Eigen productteksten bijwerken',
     'EPREL-gegevens bijwerken', 'Catalogusuitzonderingen toepassen',
     'IndexNow: gewijzigde adressen melden',
 )

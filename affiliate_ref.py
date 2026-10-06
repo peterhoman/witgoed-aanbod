@@ -51,6 +51,9 @@ def voeg_clickref_toe(url, netwerk, ean):
             # Klassieke redirect-links via het TradeTracker-domein zelf.
             if 'tradetracker' in delen.netloc:
                 return _zet_query_param(url, 'r', str(ean))
+        # Daisycon (Witgoedhuis, 6 okt 2026): ds1.nl-links, kenmerk in ws=.
+        if netwerk == 'daisycon' and 'ds1.nl' in url:
+            return _zet_query_param(url, 'ws', str(ean))
         if netwerk == 'tradedoubler' and 'tradedoubler.com' in url:
             if 'click?p=' in url or 'click?a=' in url:
                 return _zet_query_param(url, 'epi', str(ean))

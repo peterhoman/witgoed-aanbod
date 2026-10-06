@@ -432,7 +432,7 @@ def sync_status():
         r: str(db.session.query(db.func.max(Offer.last_synced))
                .filter(Offer.retailer == r).scalar())
         for r in ('bol', 'mediamarkt', 'coolblue', 'expert', 'alternate', 'ep',
-                  'voordeligwitgoed')
+                  'voordeligwitgoed', 'witgoedhuis')
     }
     import os
     return jsonify({

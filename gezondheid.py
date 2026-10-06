@@ -81,7 +81,7 @@ VERWACHTE_ROUTINES = (
     'Voordeligwitgoed Product Sync', 'Witgoedhuis Product Sync',
     'Eigen productteksten bijwerken',
     'EPREL-gegevens bijwerken', 'Catalogusuitzonderingen toepassen',
-    'IndexNow: gewijzigde adressen melden',
+    'IndexNow: gewijzigde adressen melden', 'Catalogusaanvulling (proef)',
 )
 
 

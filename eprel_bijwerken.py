@@ -188,12 +188,42 @@ def _afwijkend_typenummer(limiet):
     return uit
 
 
+# Typenummers met spaties (eprel.codes_uit_titel, 6 okt 2026): rijen van
+# daarvoor met "geen typenummer" of "niet gevonden" één keer opnieuw zoeken.
+_SPATIES_HERZIEN_VOOR = datetime(2026, 10, 6, 14, 0)
+
+
+def _met_spaties_opnieuw(limiet):
+    """Niet-gevonden rijen van vóór de peildatum waarvan de titel nu een
+    typenummer met spaties oplevert (Miele "KFN 4397 CD", Liebherr
+    "IRBc 4120-22"). Wie gevonden is, blijft met rust."""
+    from eprel import _GESPATIEERD, codes_uit_titel
+    from models import EprelData, Product
+
+    uit = []
+    rijen = (EprelData.query.filter(EprelData.gevonden.is_(False),
+                                    EprelData.opgehaald_at < _SPATIES_HERZIEN_VOOR)
+             .order_by(EprelData.opgehaald_at).all())
+    titels = {p.id: p.title for p in Product.query.filter(
+        Product.id.in_([r.product_id for r in rijen])).all()} if rijen else {}
+    for rij in rijen:
+        titel = titels.get(rij.product_id) or ''
+        if _GESPATIEERD.search(titel) and any(' ' in c for c in codes_uit_titel(titel)):
+            uit.append(rij)
+            if len(uit) >= limiet:
+                break
+    return uit
+
+
 def _inhaalslag(limiet):
     """Eerst de drogers (daar staat een fout label), dan de rest."""
     rijen = _drogers_in_te_halen(limiet)
     if len(rijen) < limiet:
         al = {r.id for r in rijen}
         rijen += [r for r in _afwijkend_typenummer(limiet) if r.id not in al]
+    if len(rijen) < limiet:
+        al = {r.id for r in rijen}
+        rijen += [r for r in _met_spaties_opnieuw(limiet) if r.id not in al]
     return rijen[:limiet]
 
 

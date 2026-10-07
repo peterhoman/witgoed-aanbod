@@ -89,3 +89,26 @@ Kroon (2x), Correct, De Schouw, Electro World, plus wasdame.nl en welhof.com.
 Google vindt een winkel die het apparaat verkoopt relevanter dan een
 vergelijker met één of twee prijzen. De vier reparaties aan de energielabels
 en de sitemap-datum van 18-21 sept kunnen hier nog niet in zitten.
+
+### Week 41 — woensdag 7 oktober 2026 (week 40 overgeslagen: vakantie; dinsdag 6 okt niet gelukt)
+
+| # | Zoekwoord | Onze plek | Module | Eerste drie |
+|---|---|---|---|---|
+| 1 | aeg lr7386ud4 | – | ja | aeg.nl, mediamarkt, consumentenbond |
+| 2 | dyson v12 detect slim absolute | – | ja | coolblue, bol, mediamarkt |
+| 3 | inventum vki6010zil | – | nee | inventum.eu, keukenloods, youtube |
+| 4 | koenic kfz 621 d nf | – | nee | mediamarkt, bol, tpwitgoed |
+| 5 | lg gbbsj10dpy | – | nee | lg.com, mediamarkt, youtube |
+| 6 | bosch smv4emx01n | **15** (pagina 2, was 17) | ja | bosch-home, mediamarkt, supersales |
+| 7 | ok otd 8346 d | – | nee | mediamarkt, kieskeurig, timcovoordeelmarkt |
+| 8 | koenic kwm 9116 a inv | – | nee | mediamarkt, consumentenbond, test-aankoop |
+| 9 | samsung dv90dg52a0ahen | – | ja | samsung, mediamarkt, coolblue |
+| 10 | miele wck 370 wcs | – | ja | miele.nl, mediamarkt, kieskeurig |
+| 11 | witgoed prijsvergelijkers | – (niet in top 20) | nee | witgoedvergelijker.nl, tweakers, witgoedland.net |
+
+**Stand: 1 van 10 in de top 18, onveranderd; de Bosch klom van 17 naar 15.**
+Bij "witgoed prijsvergelijkers" staat Witgoedwijzer.nl weer op plek 4 (was 9)
+en staat **avantius.nl** (Peters bedrijfssite) op plek 15, witgoedaanbod.nl
+niet. Keukenloods en Bemmel & Kroon staan weer op pagina 1 of 2. De
+catalogusproef (6 okt) en de EPREL-labels kunnen hier nog niet in zitten.
+Volgende meting: dinsdag 13 oktober.

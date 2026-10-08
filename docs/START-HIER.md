@@ -31,6 +31,14 @@ Alles hieronder staat op main en is op productie gecontroleerd (laatste merge 3d
 - **Storing Daisycon 6 okt vanaf 15:10 UTC:** feed én hun inlogpagina gaven
   "Interne serverfout". Ligt bij Daisycon, niet bij ons; geen mail nodig.
 
+**7-8 oktober:** rankingmeting week 41 gedaan (1 van 10, Bosch 15). Netwerkcijfers
+per dag gelezen (Awin/TradeTracker: botnet 2-5 okt, sinds 6 okt gelijk aan onze
+teller). Welhof-voorbeeldfeed: 30 van 337 echt nieuw, 0 overlap; drie vragen aan
+Fabio verstuurd 7 okt. **8 okt gerepareerd (71ec790):** _backfill_offers_from_products
+in app.py zette bij elke create_app() (dus bij elke offers-only sync) ~407 lege
+Bol-rijen met julidatum terug voor niet-leverbare producten; vals "bol niet
+ververst"-alarm. Na de Bol-sync van 8 okt ~14:00 UTC moet bol in de dagcontrole op 0 staan.
+
 **Open voor 7 oktober:** Witgoedhuis-sync weer gelukt? IndexNow-ronde met de 100
 proefproducten bevestigen; EPREL-aantal naast 1.387 leggen; EP-klepmelding weg?
 Rankingmeting (was di 6 okt) nog niet gedaan. Bij de specialist-chat open:

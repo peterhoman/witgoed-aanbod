@@ -177,6 +177,16 @@ def _backfill_offers_from_products(db):
         # winkel niet meer verkoopt; daar hoort geen aanbieding bij.
         if (product.retailer or 'bol') != 'bol' or not product.bol_url:
             continue
+        # Op 8 oktober 2026 bleek hetzelfde bij Bol: de Bol-sync haalt de
+        # aanbieding weg van een apparaat dat Bol niet meer levert en zet het
+        # product op niet-leverbaar; elke offers-only sync roept create_app()
+        # aan, en dan zette deze routine er een Bol-rij met een datum uit juli
+        # terug (407 stuks). Onzichtbaar op de site, maar een vals
+        # "niet ververst"-alarm in de dagcontrole en elke dag weggooien en
+        # opnieuw aanmaken. Een niet-leverbaar product zonder aanbieding is
+        # geen migratiegeval.
+        if not product.is_available:
+            continue
         db.session.add(Offer(
             product_id=product.id,
             retailer=product.retailer or 'bol',

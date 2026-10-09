@@ -39,6 +39,15 @@ in app.py zette bij elke create_app() (dus bij elke offers-only sync) ~407 lege
 Bol-rijen met julidatum terug voor niet-leverbare producten; vals "bol niet
 ververst"-alarm. Na de Bol-sync van 8 okt ~14:00 UTC moet bol in de dagcontrole op 0 staan.
 
+**8-9 oktober, vervolg:** Welhof definitief niet (new-only feed = fietsen/klein,
+afwijzing verstuurd). LG (Awin) aangevraagd. Linkcontrole: alle 4.895 aanbiedingen
+juist getrackt, ~17 echte doorkliks/dag. **Correct.nl goedgekeurd 9 okt** (Daisycon
+17400, links via jdt8.net): 127 gekoppeld, 63 goedkoopst, 30 nieuwe vergelijkingen;
+Koopjeskelder (opendoos/demo, alleen afhalen) = feedveld model eindigt op 'B',
+uitsluiten. Feedprijs liep bij 6 van 18 niet gelijk met de site: **10 en 11 okt
+`python scripts/meting_correct_vers.py` draaien** (vaste steekproef) en uitkomst naar
+de SEO-chat; niet bouwen zonder Peters ja. Homepagevideo scherp (maxresdefault, 6ba86cc).
+
 **Open voor 7 oktober:** Witgoedhuis-sync weer gelukt? IndexNow-ronde met de 100
 proefproducten bevestigen; EPREL-aantal naast 1.387 leggen; EP-klepmelding weg?
 Rankingmeting (was di 6 okt) nog niet gedaan. Bij de specialist-chat open:

@@ -1,0 +1,229 @@
+{
+ "feed": 27168,
+ "witgoed": 363,
+ "gekoppeld": 127,
+ "leverbaar": 112,
+ "goedkoopst": 63,
+ "nieuwe_vergelijking": 30,
+ "herleefd": 15,
+ "ontbreekt": 236,
+ "ontbreekt_met_ander": 82,
+ "voorbeelden_goedkoopst": [
+  [
+   "4242005525805",
+   "Bosch BCRDW3BX Robot Stofzuiger, kan ook Dweilen met Camera detectie",
+   799.0,
+   829.0
+  ],
+  [
+   "8712876172423",
+   "Inventum VFI6042WIT met multi functionele oven",
+   639.0,
+   849.0
+  ],
+  [
+   "8712876104547",
+   "Inventum ST154RZA sledestofzuiger",
+   54.99,
+   79.95
+  ],
+  [
+   "7333394013206",
+   "AEG LR6ALPHEN Wasmachine met groot display, Aquacontrol",
+   599.0,
+   699.0
+  ],
+  [
+   "4242005525775",
+   "Bosch BCRD2W robot stofzuiger, kan ook dweilen",
+   399.0,
+   469.0
+  ],
+  [
+   "8712876171228",
+   "Inventum VFG6034WGRVS gasfornuis en elektra oven",
+   459.0,
+   463.0
+  ],
+  [
+   "8712876130065",
+   "Inventum VWM8010W Wasmachine",
+   395.0,
+   399.0
+  ],
+  [
+   "7333394036779",
+   "AEG TR738AT4B warmtepompdroger",
+   645.0,
+   749.0
+  ],
+  [
+   "4008146029264",
+   "Severin MW7752 3 in 1 magnetron",
+   110.0,
+   179.99
+  ],
+  [
+   "8712876105094",
+   "Inventum ST306ZZA Stofzuiger",
+   64.99,
+   69.99
+  ],
+  [
+   "4242005424788",
+   "Bosch KTR15NWEB Tafelmodel Koelkast",
+   329.0,
+   369.0
+  ],
+  [
+   "5035048458389",
+   "Black&Decker PV1820L-QW kruimeldief Pivot met snelle oplader",
+   72.99,
+   80.99
+  ],
+  [
+   "4242005076277",
+   "Bosch BGS05A220 stofzuiger",
+   110.0,
+   119.0
+  ],
+  [
+   "8712876130133",
+   "Inventum VDW9030B zwart warmtepompdroger",
+   549.0,
+   629.0
+  ],
+  [
+   "8712876150438",
+   "Inventum VVW6008AB vaatwassers",
+   349.0,
+   379.0
+  ]
+ ],
+ "voorbeelden_met_ander": [
+  [
+   "4242005535651",
+   "Bosch MAFS2671B Grote Airfryer met verlicht Venster",
+   119.0,
+   [
+    "expert"
+   ]
+  ],
+  [
+   "8712876160277",
+   "Inventum VR550 vriezer, 55cm",
+   235.0,
+   [
+    "expert",
+    "witgoedhuis"
+   ]
+  ],
+  [
+   "4242003982020",
+   "Siemens TP727EF6 Espresso Volautomaat EQ-700 iAroma classic serie",
+   1199.0,
+   [
+    "ep",
+    "expert"
+   ]
+  ],
+  [
+   "4008146041242",
+   "Severin MW7777 combi magnetron met ceramic bodem en 2 lagen tegelijk mogelijk",
+   189.0,
+   [
+    "expert"
+   ]
+  ],
+  [
+   "5035048715598",
+   "Black&Decker BHFEV362DP-QW 4 in 1 PET steelstofzuiger met verwisselbare accu",
+   249.0,
+   [
+    "alternate"
+   ]
+  ],
+  [
+   "4242005278466",
+   "Bosch BCH3K2851 Flexxo kruimelzuiger met steel",
+   249.0,
+   [
+    "expert"
+   ]
+  ],
+  [
+   "8712876094299",
+   "Inventum GF800HLD dubbele Airfryer",
+   74.99,
+   [
+    "expert"
+   ]
+  ],
+  [
+   "4008146037580",
+   "Severin MW7761 magnetron met ceramic bodem",
+   99.0,
+   [
+    "expert"
+   ]
+  ],
+  [
+   "4242005278435",
+   "Bosch BCH3K2301 Steelstofzuiger",
+   159.0,
+   [
+    "expert"
+   ]
+  ],
+  [
+   "4242003968642",
+   "Siemens HL1P00020U Inductie Fornuis",
+   839.0,
+   [
+    "expert"
+   ]
+  ],
+  [
+   "4008146048777",
+   "Severin MW7580 magnetron met inverter techniek",
+   69.99,
+   [
+    "expert"
+   ]
+  ],
+  [
+   "4242003989104",
+   "Siemens WG44J209NL Wasmachine",
+   949.0,
+   [
+    "ep",
+    "expert"
+   ]
+  ],
+  [
+   "5035048458624",
+   "Black&Decker PD1820L-QW 18V lithium kruimeldief Flexi",
+   110.0,
+   [
+    "expert"
+   ]
+  ],
+  [
+   "4242003982570",
+   "Siemens TQ927EF5 Espresso Volautomaat EQ-900 iAroma classic serie",
+   2249.0,
+   [
+    "ep"
+   ]
+  ],
+  [
+   "8712876094442",
+   "Inventum GF801HLDB Airfryer",
+   74.95,
+   [
+    "ep",
+    "expert"
+   ]
+  ]
+ ]
+}

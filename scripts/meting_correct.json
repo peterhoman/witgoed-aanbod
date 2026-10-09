@@ -1,12 +1,12 @@
 {
  "feed": 27168,
- "witgoed": 363,
+ "witgoed": 343,
  "gekoppeld": 127,
  "leverbaar": 112,
  "goedkoopst": 63,
  "nieuwe_vergelijking": 30,
  "herleefd": 15,
- "ontbreekt": 236,
+ "ontbreekt": 216,
  "ontbreekt_met_ander": 82,
  "voorbeelden_goedkoopst": [
   [
@@ -160,14 +160,6 @@
    ]
   ],
   [
-   "4008146037580",
-   "Severin MW7761 magnetron met ceramic bodem",
-   99.0,
-   [
-    "expert"
-   ]
-  ],
-  [
    "4242005278435",
    "Bosch BCH3K2301 Steelstofzuiger",
    159.0,
@@ -223,6 +215,14 @@
    [
     "ep",
     "expert"
+   ]
+  ],
+  [
+   "4242003994573",
+   "Siemens WQ43G1DENL warmtepompdroger",
+   899.0,
+   [
+    "ep"
    ]
   ]
  ]

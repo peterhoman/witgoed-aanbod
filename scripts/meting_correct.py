@@ -75,6 +75,11 @@ for r in rijen:
         continue
     if r['condition'] not in ('', 'new'):
         continue
+    # Koopjeskelder (opendoos/demo, alleen afhalen): Correct's eigen
+    # modelnummer eindigt dan op 'B' (getoetst 9 okt tegen de sitetag, zie
+    # scripts/meting_correct_koopjes.py).
+    if r['model'].upper().endswith('B'):
+        continue
     cat = classify(r['title'])
     laag = r['title'].lower()
     try:

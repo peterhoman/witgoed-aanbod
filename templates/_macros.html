@@ -215,10 +215,15 @@
             data-embed="https://www.youtube-nocookie.com/embed/{{ video_id }}?autoplay=1"
             data-titel="{{ titel }}"
             aria-label="{{ t('video.play') }}: {{ titel }}">
-        {# hqdefault bestaat voor elke video (maxresdefault niet); de
-           zwarte 4:3-randen worden door object-fit: cover afgesneden. #}
-        <img src="https://i.ytimg.com/vi/{{ video_id }}/hqdefault.jpg"
-             width="480" height="360" alt="" loading="lazy">
+        {# maxresdefault (1280x720): hqdefault is maar 480 breed met zwarte
+           4:3-randen, dus feitelijk 480x270 opgerekt tot 800 -- op de
+           homepage zichtbaar wazig (Peter, 9 okt 2026). maxresdefault
+           bestaat niet voor elke video; dan valt main.js terug op
+           hqdefault (data-terugval), waarvan object-fit: cover de randen
+           afsnijdt. #}
+        <img src="https://i.ytimg.com/vi/{{ video_id }}/maxresdefault.jpg"
+             data-terugval="https://i.ytimg.com/vi/{{ video_id }}/hqdefault.jpg"
+             width="1280" height="720" alt="" loading="lazy">
         <span class="guide-video-play" aria-hidden="true">&#9654;</span>
     </button>
 </div>

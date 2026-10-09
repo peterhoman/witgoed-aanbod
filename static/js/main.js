@@ -463,6 +463,18 @@ document.querySelectorAll('.filter-meer').forEach(function (knop) {
 // pas gebouwd na de eerste tik, met autoplay zodat die ene tik ook
 // meteen afspeelt. Geen 'web-share' in allow: dat kende de browser niet
 // en was de enige melding in de console.
+// Scherp voorbeeldplaatje (maxresdefault) met terugval op hqdefault als
+// YouTube die grote versie voor deze video niet heeft (404, of het kleine
+// grijze 120x90-plaatje).
+document.querySelectorAll('.video-facade img[data-terugval]').forEach(function (img) {
+    function terugval() {
+        if (img.src !== img.dataset.terugval) img.src = img.dataset.terugval;
+    }
+    img.addEventListener('error', terugval);
+    img.addEventListener('load', function () { if (img.naturalWidth <= 120) terugval(); });
+    if (img.complete && img.naturalWidth > 0 && img.naturalWidth <= 120) terugval();
+});
+
 document.querySelectorAll('.video-facade').forEach(function (knop) {
     knop.addEventListener('click', function () {
         const iframe = document.createElement('iframe');

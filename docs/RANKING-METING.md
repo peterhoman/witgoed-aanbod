@@ -112,3 +112,26 @@ en staat **avantius.nl** (Peters bedrijfssite) op plek 15, witgoedaanbod.nl
 niet. Keukenloods en Bemmel & Kroon staan weer op pagina 1 of 2. De
 catalogusproef (6 okt) en de EPREL-labels kunnen hier nog niet in zitten.
 Volgende meting: dinsdag 13 oktober.
+
+### Week 42 — dinsdag 13 oktober 2026
+
+| # | Zoekwoord | Onze plek | Module | Eerste drie |
+|---|---|---|---|---|
+| 1 | aeg lr7386ud4 | – | ja | aeg.nl, mediamarkt, consumentenbond |
+| 2 | dyson v12 detect slim absolute | – | ja | coolblue, bol, dyson.nl |
+| 3 | inventum vki6010zil | – | nee | inventum.eu, correct.nl, inventum.eu |
+| 4 | koenic kfz 621 d nf | – | ja (was nee) | mediamarkt, bol, tpwitgoed |
+| 5 | lg gbbsj10dpy | – | ja (was nee) | lg.com, mediamarkt, youtube |
+| 6 | bosch smv4emx01n | – (was 15) | ja | bosch-home, mediamarkt, supersales |
+| 7 | ok otd 8346 d | – | nee | mediamarkt, kieskeurig, timcovoordeelmarkt |
+| 8 | koenic kwm 9116 a inv | – | nee | mediamarkt, consumentenbond, test-aankoop |
+| 9 | samsung dv90dg52a0ahen | – | ja | samsung, mediamarkt, coolblue |
+| 10 | miele wck 370 wcs | – | ja | miele.nl, mediamarkt, kieskeurig |
+| 11 | witgoed prijsvergelijkers | – (niet in top 20) | nee | witgoedvergelijker.nl, witgoedland.net, witgoed-vergelijking.nl |
+
+**Stand: 0 van 10 in de top 18.** De Bosch smv4emx01n viel weg (was 15). Onze
+pagina is in orde (200, index, 1 winkel nu, EUR 699); dit is gewone
+schommeling rond plek 15-20. avantius.nl steeg bij "witgoed prijsvergelijkers"
+van 15 naar 6. Correct.nl staat bij de Inventum op 2. Het blok
+Vergelijkingssites stond deze week bij 7 van 10 (was 5).
+Volgende meting: dinsdag 20 oktober.

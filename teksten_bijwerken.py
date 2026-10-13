@@ -79,24 +79,41 @@ def _zonder_tekst(limiet):
 # alleen als er nu EPREL-gegevens zijn. Zelfbeperkend: een herschreven tekst
 # is van ná dit moment en komt niet meer in aanmerking. Hoogstens ~100 stuks,
 # per tekst langs de noodrem, in porties van _PER_RONDE.
+#
+# Uitgebreid op 13 okt 2026 (tweede ja van Peter): ook de ~475 andere
+# producten met een EPREL-treffer waarvan de tekst "niet bekend" of "geen
+# specificaties" zegt (193 noemden het energielabel onbekend terwijl de pagina
+# het toont; scripts/meting_teksten_zonder_eprel.py). Zelfde grenzen: alleen
+# teksten van vóór _PROEF_HERZIEN_VOOR, alleen met EPREL, per tekst langs de
+# noodrem. Herzien gaat in porties van _HERZIEN_PER_RONDE (~575 stuks, ca.
+# EUR 3 in totaal, binnen twee dagen klaar bij vier rondes per dag).
 _PROEF_HERZIEN_VOOR = __import__('datetime').datetime(2026, 10, 13, 0, 0)
+_HERZIEN_PER_RONDE = 100
+_ZEGT_ONBEKEND = ('%niet bekend%', '%geen specificaties%')
 
 
 def _proefteksten_om_te_herzien(limiet):
-    """[(product, tekstrij)] voor proefproducten met een tekst van vóór de
-    EPREL-reparatie en met EPREL-gegevens die nu wel in de prompt gaan."""
+    """[(product, tekstrij)] voor proefproducten, en voor producten waarvan de
+    tekst "niet bekend"/"geen specificaties" zegt, met een tekst van vóór de
+    EPREL-reparatie en met EPREL-gegevens die nu wel in de prompt gaan.
+    Proefproducten eerst."""
     from ai_content import _eprel_regels
-    from models import AIContent, CatalogusAanvulling, Product
+    from models import AIContent, CatalogusAanvulling, Product, db
 
-    ids = [r.product_id for r in CatalogusAanvulling.query.all() if r.product_id]
+    proef = [r.product_id for r in CatalogusAanvulling.query.all() if r.product_id]
+    onbekend = [p.id for p in Product.query.with_entities(Product.id).filter(
+        Product.is_available.is_(True),
+        db.or_(*[Product.ai_description.ilike(w) for w in _ZEGT_ONBEKEND])).all()]
+    volgorde = {pid: i for i, pid in enumerate(proef + [p for p in onbekend if p not in set(proef)])}
+    ids = list(volgorde)
     if not ids:
         return []
     uit = []
-    for rij in (AIContent.query
-                .filter(AIContent.content_type == _SOORT,
-                        AIContent.product_id.in_(ids),
-                        AIContent.generated_at < _PROEF_HERZIEN_VOOR)
-                .order_by(AIContent.product_id)):
+    rijen = (AIContent.query
+             .filter(AIContent.content_type == _SOORT,
+                     AIContent.product_id.in_(ids),
+                     AIContent.generated_at < _PROEF_HERZIEN_VOOR).all())
+    for rij in sorted(rijen, key=lambda r: volgorde[r.product_id]):
         product = Product.query.get(rij.product_id)
         if product is None or not product.is_available or not _eprel_regels(product):
             continue
@@ -249,7 +266,7 @@ def _draai_ronde(app):
     # Ontbrekende teksten gaan voor; met de ruimte die overblijft de
     # proefteksten herzien (zie _PROEF_HERZIEN_VOOR).
     if len(producten) < _PER_RONDE:
-        producten += _proefteksten_om_te_herzien(_PER_RONDE - len(producten))
+        producten += _proefteksten_om_te_herzien(_HERZIEN_PER_RONDE)
     if not producten:
         logger.info("teksten bijwerken: elk leverbaar product heeft al een tekst")
         return

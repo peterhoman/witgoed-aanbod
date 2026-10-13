@@ -67,6 +67,8 @@ with app.app_context():
     b = maak('2', 'Miele KFN 4397 CD andere proef zonder EPREL', proef=True, eprel=False)
     c = maak('3', 'Miele KFN 4397 CD geen proefproduct', proef=False, eprel=True)
     d = maak('4', 'Miele KFN 4397 CD proef met nieuwe tekst', proef=True, eprel=True, oud=False)
+    e = maak('5', 'Miele KFN 4397 CD geen proef, tekst zonder niet-bekend', proef=False, eprel=True)
+    e.ai_description = 'Een degelijke koel-vriescombinatie met energieklasse C.'
     db.session.commit()
 
     prompt = ai_content.bouw_prompt(a)
@@ -75,17 +77,19 @@ with app.app_context():
           'geen enkele bekend' not in prompt, prompt)
 
     tb._draai_ronde(app)
-    check('alleen de proeftekst met EPREL en oude datum herschreven', len(aanroepen) == 1, len(aanroepen))
+    check('proeftekst en niet-bekend-tekst met EPREL herschreven, proef eerst',
+          len(aanroepen) == 2 and 'koel-vriescombinatie' in aanroepen[0], len(aanroepen))
     a2 = Product.query.get(a.id)
     check('nieuwe tekst zichtbaar', a2.ai_description.startswith('Nieuwe tekst'), a2.ai_description)
     check('precies één tekstrij per product',
           AIContent.query.filter_by(product_id=a.id, content_type='beschrijving').count() == 1)
     check('proef zonder EPREL ongemoeid', Product.query.get(b.id).ai_description.startswith('Oude'))
-    check('geen proefproduct ongemoeid', Product.query.get(c.id).ai_description.startswith('Oude'))
+    check('ander product met "niet bekend" en EPREL herschreven', Product.query.get(c.id).ai_description.startswith('Nieuwe'))
+    check('ander product zonder "niet bekend" ongemoeid', Product.query.get(e.id).ai_description.startswith('Een degelijke'))
     check('proef met tekst van na de reparatie ongemoeid', Product.query.get(d.id).ai_description.startswith('Oude'))
 
     tb._draai_ronde(app)
-    check('tweede ronde: niets meer te herzien', len(aanroepen) == 1, len(aanroepen))
+    check('tweede ronde: niets meer te herzien', len(aanroepen) == 2, len(aanroepen))
 
 print(f'\n{fouten} fout')
 sys.exit(1 if fouten else 0)

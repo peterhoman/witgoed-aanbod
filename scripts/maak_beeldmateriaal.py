@@ -22,7 +22,7 @@ dat is precies wat deze site nergens doet.
 """
 from PIL import Image, ImageDraw, ImageFont
 
-AANTAL_WINKELS = 7
+AANTAL_WINKELS = 8
 
 PRIMARY = (0, 144, 218)      # --primary  #0090DA
 DONKER = (0, 114, 173)       # --primary-dark #0072AD

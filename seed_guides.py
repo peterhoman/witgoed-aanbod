@@ -17,6 +17,45 @@ is alleen nog nodig om een gids volledig opnieuw op te bouwen.
 """
 
 BLOG_POSTS = [
+    # Kwartaalrapport juli-september 2026 (Peters ja 13 okt via de specialist-
+    # chat). Cijfers vastgezet op peildatum 1 okt, gecontroleerd tegen
+    # /api/black-friday op 13 okt 12:00 (mand 1.747 apparaten). Tussenmeting
+    # 13 okt: totaal 101,0; wasmachines 97,6 -> 101,2 (+3,7%), drogers
+    # 98,0 -> 101,9 (+4,0%), stofzuigers 97,8 -> 103,9 (+6,2%), vandaar
+    # "bijna 4 tot ruim 6 procent". Grafiek: scripts/maak_grafiek_kwartaal_q3.py.
+    {
+        'slug': 'witgoedprijzen-zomer-2026',
+        'title': 'Witgoed werd deze zomer iets goedkoper: de prijzen van juli tot oktober',
+        'excerpt': 'Tussen 16 juli en 1 oktober werd witgoed gemiddeld 1,3 procent goedkoper, vooral wasmachines, vaatwassers en drogers. Sinds 1 oktober lopen de prijzen weer op.',
+        'category_slug': None,
+        'content': """
+<p>Hoe veranderden de prijzen van witgoed deze zomer? WitgoedAanbod.nl volgt elke dag de prijzen van ruim 3.000 apparaten bij de grote Nederlandse winkels. Voor dit rapport keken we naar een vaste groep van 1.747 apparaten die al sinds half juli te koop zijn, en we volgden per apparaat de laagste prijs.</p>
+
+<h2>Vooral het grote witgoed werd goedkoper</h2>
+<p>Het beeld: witgoed werd tussen 16 juli en 1 oktober gemiddeld 1,3 procent goedkoper. Vooral het grote witgoed daalde. <a href="/category/wasmachines">Wasmachines</a> werden 2,4 procent goedkoper, vaatwassers 2,3 procent, wasdroogcombinaties en stofzuigers 2,2 procent, <a href="/category/drogers">drogers</a> 2,0 procent en koelkasten 1,9 procent. Koffiemachines werden juist iets duurder (plus 1,0 procent). Kookplaten en afzuigkappen bleven vrijwel gelijk.</p>
+
+<figure class="pers-figuur">
+    <a href="/static/img/pers/witgoedprijzen-zomer-2026.png" download>
+        <img src="/static/img/pers/witgoedprijzen-zomer-2026.png" width="1600" height="900"
+             alt="Staafdiagram: prijsverandering per categorie van 16 juli tot 1 oktober 2026, van wasmachines (min 2,4 procent) tot koffiemachines (plus 1,0 procent)" loading="lazy">
+    </a>
+    <figcaption>
+        Vrij te gebruiken met bronvermelding "WitgoedAanbod.nl". Downloaden:
+        <a href="/static/img/pers/witgoedprijzen-zomer-2026.png" download>PNG (1600 × 900)</a> ·
+        <a href="/static/img/pers/witgoedprijzen-zomer-2026.svg" download>SVG (schaalbaar)</a>
+    </figcaption>
+</figure>
+
+<h2>Let op het moment waarop je koopt</h2>
+<p>Wie nu een apparaat zoekt, moet wel opletten. Op 1 oktober stond minder dan de helft van de apparaten (787 van de 1.747) op de laagste prijs die het sinds half juli had. Bij 411 apparaten, bijna een op de vier, was de prijs meer dan 10 procent hoger dan die laagste prijs. Wie op het verkeerde moment koopt, betaalt dus soms flink meer dan een paar weken eerder.</p>
+
+<h2>Op weg naar Black Friday</h2>
+<p>Sinds 1 oktober lopen de prijzen weer op. Op 13 oktober lag het prijspeil 1,0 procent boven dat van half juli. Wasmachines, drogers en stofzuigers werden in twee weken bijna 4 tot ruim 6 procent duurder, onder meer omdat veel zomeracties afliepen. Dat maakt het des te belangrijker om bij Black Friday te kijken wat een apparaat dit najaar al heeft gekost: een korting op een net verhoogde prijs is geen echte korting. Op WitgoedAanbod.nl zie je bij elk apparaat het <a href="/product/samsung-ww11dg5b25ab---superspeed---wasmachine---5-8806095539393">prijsverloop</a>, zodat je dat zelf kunt nagaan. Begin december publiceren we hoeveel Black Friday-aanbiedingen echt goedkoper waren.</p>
+
+<h2>Zo hebben we gemeten</h2>
+<p>Per apparaat de laagste prijs over de winkels die we volgen. De index is het meetkundig gemiddelde van de prijsveranderingen, met 16 juli als startpunt (100). We volgen prijzen sinds 14 juli 2026, dus over een periode van een kwartaal. Leverbaarheid zit niet in de meting. De kwartaalcijfers lopen tot 1 oktober; de stand van 13 oktober is een tussenmeting. Journalisten en bloggers mogen de cijfers en de grafiek vrij gebruiken met vermelding van WitgoedAanbod.nl. Voor vragen of cijfers per merk: <a href="mailto:info@witgoedaanbod.nl">info@witgoedaanbod.nl</a>.</p>
+""",
+    },
     # 13 okt 2026, Peters ja via de specialist-chat. Aantallen nagemeten:
     # Witgoedhuis 846 leverbare aanbiedingen (13 okt), proef precies 100
     # producten (catalogus_aanvullingen), daarvan 79 Miele/Liebherr/AEG.

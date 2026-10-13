@@ -17,6 +17,31 @@ is alleen nog nodig om een gids volledig opnieuw op te bouwen.
 """
 
 BLOG_POSTS = [
+    # 13 okt 2026, Peters ja via de specialist-chat. Aantallen nagemeten:
+    # Witgoedhuis 846 leverbare aanbiedingen (13 okt), proef precies 100
+    # producten (catalogus_aanvullingen), daarvan 79 Miele/Liebherr/AEG.
+    # "inbouwkoelkasten" bewust zonder link: er is geen inbouwpagina, en de
+    # hoogtepagina 170-180 cm gaat over iets anders.
+    {
+        'slug': 'witgoedaanbod-vergelijkt-nu-8-winkels',
+        'title': 'Nu 8 winkels: Witgoedhuis erbij, en 100 apparaten van Miele, Liebherr en AEG',
+        'excerpt': 'WitgoedAanbod.nl vergelijkt nu de prijzen van acht winkels: Witgoedhuis is erbij gekomen. En 100 apparaten die we eerder niet konden vergelijken, vooral van Miele, Liebherr en AEG.',
+        'category_slug': None,
+        'content': """
+<p>WitgoedAanbod.nl vergelijkt sinds deze maand de prijzen van acht winkels. Nieuw is <strong>Witgoedhuis</strong>, een Nederlandse webwinkel in witgoed. Daarmee vergelijken we nu Bol.com, Coolblue, MediaMarkt, Expert, EP, Alternate, Voordeligwitgoed en Witgoedhuis.</p>
+
+<h2>Wat levert dat op?</h2>
+<p>Witgoedhuis staat inmiddels bij zo'n 850 apparaten in onze vergelijking en is bij een deel daarvan de goedkoopste. Hoe meer winkels we volgen, hoe groter de kans dat je de laagste prijs vindt. En hoe beter je ziet of een aanbieding echt een aanbieding is.</p>
+
+<h2>100 apparaten die we eerder niet konden vergelijken</h2>
+<p>Ook nieuw: 100 apparaten die we eerder niet konden vergelijken, vooral van <a href="/merk/miele">Miele</a>, Liebherr en AEG. Denk aan inbouwkoelkasten, <a href="/category/drogers/type/warmtepompdroger">warmtepompdrogers</a> en wasmachines uit het duurdere segment. Die kwamen niet via Bol.com, Coolblue of MediaMarkt bij ons binnen, maar worden wel verkocht door minstens twee van de andere winkels die we volgen. Nu zie je ook daar per apparaat waar het het goedkoopst is.</p>
+
+<h2>Zoals altijd</h2>
+<p>We verkopen zelf niets. De volgorde op onze pagina's is altijd op prijs, en geen winkel betaalt voor een betere plek. Als je via ons doorklikt en iets koopt, krijgen we een kleine vergoeding van de winkel. Je betaalt daardoor niet meer. Meer over hoe we werken lees je op onze <a href="/over-ons">over-ons-pagina</a>.</p>
+
+<p>Mis je een winkel? Laat het ons weten via <a href="mailto:info@witgoedaanbod.nl">info@witgoedaanbod.nl</a>.</p>
+""",
+    },
     {
         'slug': 'recht-op-reparatie-31-juli-2026',
         'title': 'Vanaf 31 juli: recht op reparatie voor wasmachines en ander witgoed',

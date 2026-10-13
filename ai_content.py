@@ -232,6 +232,22 @@ def _specregels(product):
     return regels
 
 
+def _eprel_regels(product):
+    """De EPREL-gegevens van dit product als 'Naam: waarde'-regels, of [].
+
+    Dezelfde bron en dezelfde controle (koppeling_klopt) als het blok op de
+    productpagina, zodat de tekst nooit iets anders zegt dan de pagina.
+    """
+    try:
+        from eprel_specs import eprel_blok
+        blok = eprel_blok(product)
+    except Exception:  # een tekst mag nooit stranden op het labelblok
+        return []
+    if not blok:
+        return []
+    return [f"- {naam}: {waarde}" for naam, waarde in blok['regels']]
+
+
 def bouw_prompt(product):
     """De gegevens van een product, als platte tekst voor het model.
 
@@ -249,8 +265,20 @@ def bouw_prompt(product):
         delen.append(f"Soort: {product.subcategory}")
 
     specs = _specregels(product)
+    # Gegevens uit het Europese energielabelregister (EPREL), zoals ze ook in
+    # het blok "Gegevens van het energielabel" op de pagina staan. Op 13 okt
+    # 2026 bleek dat de teksten van de 100 proefproducten (catalogus_
+    # aanvulling.py, zonder winkelspecs) "energielabel niet bekend" schreven
+    # terwijl de pagina het label wél toonde: het model kreeg EPREL nooit mee.
+    eprel = _eprel_regels(product)
+    if eprel:
+        delen.append("\nGegevens uit het Europese energielabelregister (EPREL):\n"
+                     + "\n".join(eprel))
     if specs:
         delen.append("\nSpecificaties uit de winkelfeed:\n" + "\n".join(specs))
+    elif eprel:
+        delen.append("\nVerdere specificaties uit de winkelfeed: geen. Er is over "
+                     "dit apparaat niets meer bekend dan hierboven staat.")
     else:
         # Expliciet benoemen, anders vult het model het gat zelf op. Dit
         # geldt voor 65% van de catalogus.

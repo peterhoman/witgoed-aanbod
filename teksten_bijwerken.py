@@ -71,6 +71,41 @@ def _zonder_tekst(limiet):
     return uit
 
 
+# Eenmalige uitzondering op "deze routine herschrijft nooit" (13 okt 2026,
+# Peters ja via de specialist-chat): de teksten van de proefproducten uit
+# catalogus_aanvulling.py zijn geschreven zonder EPREL-gegevens in de prompt
+# en zeggen daardoor "energielabel niet bekend" terwijl de pagina het label
+# wél toont. Alleen die producten, alleen teksten van vóór dit moment, en
+# alleen als er nu EPREL-gegevens zijn. Zelfbeperkend: een herschreven tekst
+# is van ná dit moment en komt niet meer in aanmerking. Hoogstens ~100 stuks,
+# per tekst langs de noodrem, in porties van _PER_RONDE.
+_PROEF_HERZIEN_VOOR = __import__('datetime').datetime(2026, 10, 13, 0, 0)
+
+
+def _proefteksten_om_te_herzien(limiet):
+    """[(product, tekstrij)] voor proefproducten met een tekst van vóór de
+    EPREL-reparatie en met EPREL-gegevens die nu wel in de prompt gaan."""
+    from ai_content import _eprel_regels
+    from models import AIContent, CatalogusAanvulling, Product
+
+    ids = [r.product_id for r in CatalogusAanvulling.query.all() if r.product_id]
+    if not ids:
+        return []
+    uit = []
+    for rij in (AIContent.query
+                .filter(AIContent.content_type == _SOORT,
+                        AIContent.product_id.in_(ids),
+                        AIContent.generated_at < _PROEF_HERZIEN_VOOR)
+                .order_by(AIContent.product_id)):
+        product = Product.query.get(rij.product_id)
+        if product is None or not product.is_available or not _eprel_regels(product):
+            continue
+        uit.append((product, rij))
+        if len(uit) >= limiet:
+            break
+    return uit
+
+
 def _publiceer_wat_schoon_werd():
     """Opgeslagen teksten die de controle nu wel doorkomen alsnog zichtbaar maken.
 
@@ -210,13 +245,17 @@ def _draai_ronde(app):
         logger.info("teksten bijwerken: geen ANTHROPIC_API_KEY, overgeslagen")
         return
 
-    producten = _zonder_tekst(_PER_RONDE)
+    producten = [(p, None) for p in _zonder_tekst(_PER_RONDE)]
+    # Ontbrekende teksten gaan voor; met de ruimte die overblijft de
+    # proefteksten herzien (zie _PROEF_HERZIEN_VOOR).
+    if len(producten) < _PER_RONDE:
+        producten += _proefteksten_om_te_herzien(_PER_RONDE - len(producten))
     if not producten:
         logger.info("teksten bijwerken: elk leverbaar product heeft al een tekst")
         return
 
     geschreven, gepubliceerd, gevlagd, mislukt, euro = 0, 0, 0, 0, 0.0
-    for product in producten:
+    for product, oude_rij in producten:
         try:
             # Voor elke tekst opnieuw toetsen, niet een keer vooraf: anders
             # merkt een ronde die uit de hand loopt het plafond pas als het
@@ -239,6 +278,11 @@ def _draai_ronde(app):
             continue
 
         k = uitkomst['kosten']
+        # Herziening: de oude rij gaat weg, er hoort er per product precies
+        # een te zijn. Wordt de nieuwe aangestreept, dan blijft de oude tekst
+        # tot die tijd zichtbaar staan (ai_description wordt dan niet gewist).
+        if oude_rij is not None:
+            db.session.delete(oude_rij)
         db.session.add(AIContent(
             product_id=product.id, content_type=_SOORT,
             content=uitkomst['tekst'],

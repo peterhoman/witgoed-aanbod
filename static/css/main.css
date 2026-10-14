@@ -2780,6 +2780,30 @@ section h2 {
     outline: none;
 }
 
+/* Alle prijswijzigingen als lijst in kolommen (14 okt 2026): 1 kolom op een
+   telefoon, 2 op een tablet, 4 op een breed scherm. Een regel breekt nooit
+   over twee kolommen. */
+.prijswijzigingen {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    columns: 1;
+    column-gap: 28px;
+    font-variant-numeric: tabular-nums;
+}
+.prijswijzigingen li {
+    display: grid;
+    grid-template-columns: 52px 1fr auto;
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    break-inside: avoid;
+}
+.prijswijzigingen .pw-datum { color: var(--gray); }
+.prijswijzigingen .pw-prijs { text-align: right; font-weight: 600; }
+@media (min-width: 640px) { .prijswijzigingen { columns: 2; } }
+@media (min-width: 1024px) { .prijswijzigingen { columns: 4; } }
+
 .price-history-table table {
     margin-top: 8px;
     border-collapse: collapse;

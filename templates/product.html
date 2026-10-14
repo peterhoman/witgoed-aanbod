@@ -373,14 +373,14 @@
                 {% set rij = price_history.tabel[0] %}
                 <p class="price-history-enkel">{{ rij.datum }} &middot; {{ rij.winkel }} &middot; &euro; {{ rij.prijs }}</p>
                 {% else %}
-                <table>
-                    <thead><tr><th>Datum</th><th>Winkel</th><th>Prijs</th></tr></thead>
-                    <tbody>
-                        {% for rij in price_history.tabel %}
-                        <tr><td>{{ rij.datum }}</td><td>{{ rij.winkel }}</td><td>&euro; {{ rij.prijs }}</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                {# Een lijst in kolommen i.p.v. een tabel onder elkaar (Peter, 14 okt
+                   2026): de historie groeit elke week en werd een lange sliert.
+                   Op een breed scherm vier kolommen, op een telefoon één. #}
+                <ul class="prijswijzigingen">
+                    {% for rij in price_history.tabel %}
+                    <li><span class="pw-datum">{{ rij.datum }}</span><span class="pw-winkel">{{ rij.winkel }}</span><span class="pw-prijs">&euro; {{ rij.prijs }}</span></li>
+                    {% endfor %}
+                </ul>
                 {% endif %}
             </details>
         </div>

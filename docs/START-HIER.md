@@ -48,6 +48,16 @@ uitsluiten. Feedprijs liep bij 6 van 18 niet gelijk met de site: **10 en 11 okt
 `python scripts/meting_correct_vers.py` draaien** (vaste steekproef) en uitkomst naar
 de SEO-chat; niet bouwen zonder Peters ja. Homepagevideo scherp (maxresdefault, 6ba86cc).
 
+**13-14 oktober:** rankingmeting week 42 (0 van 10). Live: blog "Nu 8 winkels",
+kwartaalrapport Q3 (/blog/witgoedprijzen-zomer-2026, grafiek in static/img/pers,
+link vanaf /pers), deelplaatje 8 winkels, taalknop weg (site altijd NL),
+prijswijzigingen in 4 kolommen. EPREL gaat nu mee in de tekstprompt; herziening van
+~564 teksten loopt (teksten_bijwerken._PROEF_HERZIEN_VOOR, 100 per ronde; 14 okt
+307 klaar, label-onbekend in herschreven = 0) -> eindstand naar de SEO-chat via
+scripts/teksten_herzien_voor_na.py na. Correct: feed liep 9-13 okt niet mee (13/19),
+niet koppelen; Peter wacht mail van Correct (komt in peter@avantius.nl). Awin:
+Partner Development-formulier ingevuld 14 okt. Maandbericht SEO-chat begint 2-3 nov.
+
 **Open voor 7 oktober:** Witgoedhuis-sync weer gelukt? IndexNow-ronde met de 100
 proefproducten bevestigen; EPREL-aantal naast 1.387 leggen; EP-klepmelding weg?
 Rankingmeting (was di 6 okt) nog niet gedaan. Bij de specialist-chat open:

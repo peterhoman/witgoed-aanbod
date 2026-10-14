@@ -59,7 +59,7 @@ TRANSLATIONS = {
         'cookie.intro_kort': 'Wij plaatsen zelf alleen noodzakelijke cookies. Klik je door naar een winkel, dan kan die je bezoek volgen om onze commissie te bepalen. Lees meer in ons',
         'cookie.policy_link': 'cookiebeleid',
         'cookie.essential_title': 'Noodzakelijke cookies',
-        'cookie.essential_desc': 'Nodig om de site te laten werken: onthoudt je taalkeuze en deze cookiekeuze. Deze kun je niet uitzetten.',
+        'cookie.essential_desc': 'Nodig om de site te laten werken: onthoudt deze cookiekeuze. Deze kun je niet uitzetten.',
         'cookie.analytics_title': 'Analytische cookies',
         'cookie.analytics_desc': 'Meten hoe bezoekers de site gebruiken. Wij gebruiken deze op dit moment niet; zetten we ze later aan, dan alleen met jouw toestemming.',
         'cookie.marketing_title': 'Marketingcookies',

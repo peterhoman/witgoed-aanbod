@@ -2589,9 +2589,14 @@ def teksten_nalezen():
 
 @main_bp.route('/set-language/<lang>')
 def set_language(lang):
+    """Bestaat nog voor oude links en bladwijzers; er linkt niets meer naartoe.
+
+    Sinds 14 okt 2026 is de site alleen Nederlands (zie app.set_language).
+    Deze route zet geen taalcookie meer, maar ruimt een oud cookie op en
+    stuurt terug naar waar de bezoeker vandaan kwam.
+    """
     response = redirect(request.referrer or '/')
-    if lang in ('nl', 'en'):
-        response.set_cookie('lang', lang, max_age=60 * 60 * 24 * 365)
+    response.delete_cookie('lang')
     return response
 
 

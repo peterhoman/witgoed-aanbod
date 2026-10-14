@@ -85,10 +85,10 @@
                 <a href="/verlanglijst" id="wishlist-nav-link" class="wishlist-nav-link" title="{{ t('wishlist.title') }}">
                     &#9825; <span id="wishlist-nav-count">0</span>
                 </a>
-                <div class="lang-switcher">
-                    <a href="/set-language/nl" class="{{ 'active' if current_lang == 'nl' }}">NL</a>
-                    <a href="/set-language/en" class="{{ 'active' if current_lang == 'en' }}">EN</a>
-                </div>
+                {# De NL/EN-knop is op 14 okt 2026 weggehaald (Peters besluit via de
+                   specialist-chat): /set-language/en zette alleen een cookie,
+                   de site bleef grotendeels Nederlands en /en gaf een 404.
+                   Niet terugzetten zonder echte Engelse pagina's. #}
                 <nav class="nav-secondary">
                     <a href="/gidsen" class="nav-cta">{{ t('nav.guides') }}</a>
                     <a href="/blog">{{ t('blog.title') }}</a>
@@ -177,14 +177,6 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                {# Dezelfde taalkeuze als bovenaan. Op een telefoon staat
-                   alleen deze; op een groot scherm alleen die in de kop.
-                   Zo verdwijnt de keuze nergens, maar kost hij bovenaan
-                   geen 55 beeldpunten meer. #}
-                <div class="lang-switcher lang-switcher-voet">
-                    <a href="/set-language/nl" class="{{ 'active' if current_lang == 'nl' }}">NL</a>
-                    <a href="/set-language/en" class="{{ 'active' if current_lang == 'en' }}">EN</a>
-                </div>
                 <p>{{ t('footer.copyright') }}</p>
             </div>
         </div>

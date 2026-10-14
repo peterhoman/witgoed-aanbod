@@ -370,8 +370,10 @@ def create_app(config_name=None):
 
     @app.before_request
     def set_language():
-        lang = request.cookies.get('lang', 'nl')
-        g.lang = lang if lang in ('nl', 'en') else 'nl'
+        # Altijd Nederlands sinds 14 okt 2026: de taalknop is weg, en wie nog
+        # een oud 'en'-cookie heeft, krijgt geen half-Engelse site meer.
+        # De Engelse vertalingen blijven in translations.py staan.
+        g.lang = 'nl'
 
     @app.context_processor
     def _kaart_tags():

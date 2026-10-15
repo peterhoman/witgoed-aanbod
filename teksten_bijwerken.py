@@ -56,18 +56,35 @@ _SOORT = 'beschrijving'
 _MARKERING = 'routine-laatst-gedraaid'
 
 
+# Een nieuw product wacht op de EPREL-zoekronde voordat het een tekst krijgt.
+# Gemeten 15 okt 2026: de Wisberg WBKVC200A20NFZ kreeg om 18:39 een tekst
+# ("energielabel niet bekend") en een kwartier later vond EPREL het label,
+# dat de pagina sindsdien toont. Elke rij in eprel_data (ook een misser)
+# betekent "is opgezocht"; na _EPREL_WACHT_UREN schrijven we hoe dan ook.
+_EPREL_WACHT_UREN = 48
+
+
 def _zonder_tekst(limiet):
     """Leverbare producten zonder eigen beschrijving, op id."""
-    from models import AIContent, Product
+    from datetime import timedelta
+
+    from models import AIContent, EprelData, Product, utcnow
 
     klaar = {r.product_id for r in
              AIContent.query.filter_by(content_type=_SOORT).all()}
+    opgezocht = {r.product_id for r in
+                 EprelData.query.with_entities(EprelData.product_id).all()}
+    wacht_tot = utcnow() - timedelta(hours=_EPREL_WACHT_UREN)
     uit = []
     for product in Product.query.filter_by(is_available=True).order_by(Product.id):
-        if product.id not in klaar:
-            uit.append(product)
-            if len(uit) >= limiet:
-                break
+        if product.id in klaar:
+            continue
+        if (product.id not in opgezocht and product.created_at
+                and product.created_at > wacht_tot):
+            continue
+        uit.append(product)
+        if len(uit) >= limiet:
+            break
     return uit
 
 
@@ -89,7 +106,14 @@ def _zonder_tekst(limiet):
 # EUR 3 in totaal, binnen twee dagen klaar bij vier rondes per dag).
 _PROEF_HERZIEN_VOOR = __import__('datetime').datetime(2026, 10, 13, 0, 0)
 _HERZIEN_PER_RONDE = 100
-_ZEGT_ONBEKEND = ('%niet bekend%', '%geen specificaties%')
+# 15 okt 2026: ook "ontbreekt" ("Een energielabel ontbreekt in de gegevens"),
+# 60 oude teksten met een EPREL-treffer.
+_ZEGT_ONBEKEND = ('%niet bekend%', '%geen specificaties%', '%ontbreekt%')
+# Teksten (van elke datum) die het label onbekend noemen terwijl EPREL nu een
+# energieklasse heeft: herschrijven. Geen lus: de nieuwe tekst krijgt de
+# klasse mee en noemt hem dus niet meer onbekend.
+_LABEL_ONBEKEND = __import__('re').compile(
+    r'energie(label|klasse)[^.]{0,60}(niet bekend|onbekend|ontbreekt)', __import__('re').I)
 
 
 def _proefteksten_om_te_herzien(limiet):
@@ -116,6 +140,24 @@ def _proefteksten_om_te_herzien(limiet):
     for rij in sorted(rijen, key=lambda r: volgorde[r.product_id]):
         product = Product.query.get(rij.product_id)
         if product is None or not product.is_available or not _eprel_regels(product):
+            continue
+        uit.append((product, rij))
+        if len(uit) >= limiet:
+            return uit
+
+    # Daarna: teksten van elke datum die het label onbekend noemen terwijl
+    # EPREL nu een energieklasse levert.
+    al = {p.id for p, _ in uit}
+    for product in Product.query.filter(
+            Product.is_available.is_(True),
+            db.or_(Product.ai_description.ilike('%energielabel%'),
+                   Product.ai_description.ilike('%energieklasse%'))).order_by(Product.id):
+        if product.id in al or not _LABEL_ONBEKEND.search(product.ai_description or ''):
+            continue
+        if not any(r.startswith('- Energieklasse:') for r in _eprel_regels(product)):
+            continue
+        rij = AIContent.query.filter_by(product_id=product.id, content_type=_SOORT).first()
+        if rij is None:
             continue
         uit.append((product, rij))
         if len(uit) >= limiet:

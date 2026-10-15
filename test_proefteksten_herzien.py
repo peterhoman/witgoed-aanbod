@@ -78,7 +78,7 @@ with app.app_context():
 
     tb._draai_ronde(app)
     check('proeftekst en niet-bekend-tekst met EPREL herschreven, proef eerst',
-          len(aanroepen) == 2 and 'koel-vriescombinatie' in aanroepen[0], len(aanroepen))
+          len(aanroepen) == 3 and 'koel-vriescombinatie' in aanroepen[0], len(aanroepen))
     a2 = Product.query.get(a.id)
     check('nieuwe tekst zichtbaar', a2.ai_description.startswith('Nieuwe tekst'), a2.ai_description)
     check('precies één tekstrij per product',
@@ -86,10 +86,24 @@ with app.app_context():
     check('proef zonder EPREL ongemoeid', Product.query.get(b.id).ai_description.startswith('Oude'))
     check('ander product met "niet bekend" en EPREL herschreven', Product.query.get(c.id).ai_description.startswith('Nieuwe'))
     check('ander product zonder "niet bekend" ongemoeid', Product.query.get(e.id).ai_description.startswith('Een degelijke'))
-    check('proef met tekst van na de reparatie ongemoeid', Product.query.get(d.id).ai_description.startswith('Oude'))
+    check('tekst van na 13 okt die het label onbekend noemt bij EPREL-klasse: toch herzien',
+          Product.query.get(d.id).ai_description.startswith('Nieuwe'))
 
     tb._draai_ronde(app)
-    check('tweede ronde: niets meer te herzien', len(aanroepen) == 2, len(aanroepen))
+    check('tweede ronde: niets meer te herzien', len(aanroepen) == 3, len(aanroepen))
+
+# 15 okt: een nieuw product wacht op de EPREL-zoekronde; "ontbreekt" telt mee.
+with app.app_context():
+    cat = Category.query.filter_by(slug='koelkasten').first()
+    nieuw = Product(ean='9', title='Nieuw apparaat zonder EPREL-rij', brand='X', price=1, bol_url='',
+                    category_id=cat.id, slug='p-9', is_available=True)
+    db.session.add(nieuw)
+    o = maak('11', 'Miele KFN 4397 CD ontbreekt-geval', proef=False, eprel=True)
+    o.ai_description = 'Een degelijk apparaat; de bediening ontbreekt in de gegevens.'
+    db.session.commit()
+    check('nieuw product zonder EPREL-rij wacht', all(p.id != nieuw.id for p in tb._zonder_tekst(50)))
+    kandidaten = {p.id for p, _ in tb._proefteksten_om_te_herzien(50)}
+    check('"ontbreekt" telt mee', o.id in kandidaten, kandidaten)
 
 print(f'\n{fouten} fout')
 sys.exit(1 if fouten else 0)

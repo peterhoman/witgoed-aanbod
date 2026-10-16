@@ -108,7 +108,13 @@ _PROEF_HERZIEN_VOOR = __import__('datetime').datetime(2026, 10, 13, 0, 0)
 _HERZIEN_PER_RONDE = 100
 # 15 okt 2026: ook "ontbreekt" ("Een energielabel ontbreekt in de gegevens"),
 # 60 oude teksten met een EPREL-treffer.
-_ZEGT_ONBEKEND = ('%niet bekend%', '%geen specificaties%', '%ontbreekt%')
+# 16 okt 2026 (steekproef SEO-chat, Siemens WG64F7ACNL): ook "geen technische
+# gegevens vastgelegd", "geen verdere specificaties", "onbekend" e.d. --
+# 120 oude teksten met een EPREL-treffer. Alleen teksten van voor 13 okt.
+_ZEGT_ONBEKEND = ('%niet bekend%', '%geen specificaties%', '%ontbreekt%',
+                  '%geen technische gegevens%', '%geen verdere specificaties%',
+                  '%geen gegevens%', '%niet vastgelegd%', '%onbekend%',
+                  '%geen nadere%', '%niet opgenomen%', '%niet beschikbaar%')
 # Teksten (van elke datum) die het label onbekend noemen terwijl EPREL nu een
 # energieklasse heeft: herschrijven. Geen lus: de nieuwe tekst krijgt de
 # klasse mee en noemt hem dus niet meer onbekend.

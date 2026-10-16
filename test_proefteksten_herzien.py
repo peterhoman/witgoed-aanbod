@@ -39,6 +39,7 @@ def nep_schrijf(product, model=None, api_key=None):
 
 ai_content.schrijf_beschrijving = nep_schrijf
 ai_content.bewaak_budget = lambda limiet: None
+tb._herzien_via_batch = lambda app, sleutel: None  # batchroute: zie test_herzien_batch.py
 
 with app.app_context():
     from models import AIContent, CatalogusAanvulling, Category, EprelData, Product, db

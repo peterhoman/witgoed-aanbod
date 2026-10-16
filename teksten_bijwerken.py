@@ -130,7 +130,11 @@ def _proefteksten_om_te_herzien(limiet):
     from ai_content import _eprel_regels
     from models import AIContent, CatalogusAanvulling, Product, db
 
-    proef = [r.product_id for r in CatalogusAanvulling.query.all() if r.product_id]
+    # Loopt er een herzieningsbatch (half tarief), dan hier niets dubbel doen.
+    if AIContent.query.filter_by(content_type=_HERZIEN_BATCH_SOORT).first():
+        return []
+
+    proef =[r.product_id for r in CatalogusAanvulling.query.all() if r.product_id]
     onbekend = [p.id for p in Product.query.with_entities(Product.id).filter(
         Product.is_available.is_(True),
         db.or_(*[Product.ai_description.ilike(w) for w in _ZEGT_ONBEKEND])).all()]
@@ -290,6 +294,104 @@ def vul_ontbrekende_teksten(app):
             _noteer_run()
 
 
+# Herziening van ALLE oude teksten (van voor _PROEF_HERZIEN_VOOR) bij een
+# EPREL-treffer, via de Batch API tegen half tarief (Peters ja 16 okt 2026,
+# met als voorwaarde: alleen via batch, ~EUR 4). Eén batch tegelijk; de
+# administratierij (content_type _HERZIEN_BATCH_SOORT, content = batch-id)
+# bestaat zolang hij loopt. Zolang er een loopt, doet de herziening tegen vol
+# tarief (_proefteksten_om_te_herzien) niets, zodat niets dubbel betaald wordt.
+# Zelfbeperkend: een verwerkte tekst is van na de afkapdatum en komt nooit
+# meer in aanmerking.
+_HERZIEN_BATCH_SOORT = 'herzien-batch'
+_HERZIEN_BATCH_MAX = 800
+
+
+def _batch_kandidaten(limiet=_HERZIEN_BATCH_MAX):
+    """Leverbare producten met een tekst van voor de afkapdatum en EPREL-gegevens."""
+    from ai_content import _eprel_regels
+    from models import AIContent, EprelData, Product
+
+    met_eprel = {r.product_id for r in EprelData.query.with_entities(EprelData.product_id)
+                 .filter(EprelData.gevonden.is_(True)).all()}
+    uit = []
+    for rij in (AIContent.query
+                .filter(AIContent.content_type == _SOORT,
+                        AIContent.generated_at < _PROEF_HERZIEN_VOOR,
+                        AIContent.product_id.in_(met_eprel))
+                .order_by(AIContent.product_id)):
+        product = Product.query.get(rij.product_id)
+        if product is None or not product.is_available or not _eprel_regels(product):
+            continue
+        uit.append(product)
+        if len(uit) >= limiet:
+            break
+    return uit
+
+
+def _herzien_via_batch(app, sleutel):
+    """Lever de herziening in als batch, of verwerk hem als hij klaar is."""
+    from ai_content import batch_resultaten, batch_toestand, controleer, dien_batch_in
+    from models import AIContent, Product, db
+
+    rij = AIContent.query.filter_by(content_type=_HERZIEN_BATCH_SOORT).first()
+    if rij is None:
+        kandidaten = _batch_kandidaten()
+        if not kandidaten:
+            return
+        batch_id = dien_batch_in(kandidaten, model=app.config.get('ANTHROPIC_MODEL'),
+                                 api_key=sleutel)
+        db.session.add(AIContent(product_id=None, content_type=_HERZIEN_BATCH_SOORT,
+                                 content=batch_id, cost=0.0))
+        db.session.commit()
+        logger.info("teksten bijwerken: herzieningsbatch %s ingeleverd met %d teksten",
+                    batch_id, len(kandidaten))
+        return
+
+    batch_id = rij.content
+    toestand = batch_toestand(batch_id, sleutel)
+    if not toestand['klaar']:
+        logger.info("teksten bijwerken: herzieningsbatch %s nog bezig (%s)", batch_id, toestand)
+        return
+
+    opgeslagen, gepubliceerd, overgeslagen, mislukt, euro = 0, 0, 0, 0, 0.0
+    for uitkomst in batch_resultaten(batch_id, sleutel):
+        try:
+            if uitkomst['fout']:
+                mislukt += 1
+                continue
+            product = Product.query.get(uitkomst['product_id'])
+            oud = AIContent.query.filter_by(product_id=uitkomst['product_id'],
+                                            content_type=_SOORT).first()
+            # Intussen al (tegen vol tarief) herschreven of verdwenen: laten.
+            if product is None or (oud is not None and oud.generated_at
+                                   and oud.generated_at >= _PROEF_HERZIEN_VOOR):
+                overgeslagen += 1
+                continue
+            if oud is not None:
+                db.session.delete(oud)
+            k = uitkomst['kosten']
+            db.session.add(AIContent(
+                product_id=product.id, content_type=_SOORT, content=uitkomst['tekst'],
+                tokens_used=(k['invoer'] + k['uitvoer'] + k['cache_geschreven'] + k['cache_gelezen']),
+                cost=k['euro'], bron_specs=None))
+            if not controleer(uitkomst['tekst']):
+                product.ai_description = uitkomst['tekst']
+                gepubliceerd += 1
+            db.session.commit()
+            opgeslagen += 1
+            euro += k['euro']
+        except Exception:
+            db.session.rollback()
+            mislukt += 1
+            logger.exception("teksten bijwerken: batchtekst verwerken mislukt (%s)",
+                             uitkomst.get('product_id'))
+    db.session.delete(rij)
+    db.session.commit()
+    logger.info("teksten bijwerken: herzieningsbatch %s verwerkt: %d opgeslagen (%d live), "
+                "%d overgeslagen, %d mislukt, EUR %.4f", batch_id, opgeslagen, gepubliceerd,
+                overgeslagen, mislukt, euro)
+
+
 def _draai_ronde(app):
     """Het eigenlijke werk. Draait binnen de app-context van de aanroeper."""
     from ai_content import (Budgetstop, TekstFout, bewaak_budget, controleer,
@@ -309,6 +411,12 @@ def _draai_ronde(app):
     if not sleutel:
         logger.info("teksten bijwerken: geen ANTHROPIC_API_KEY, overgeslagen")
         return
+
+    # De batchherziening mag de rest van de ronde nooit tegenhouden.
+    try:
+        _herzien_via_batch(app, sleutel)
+    except Exception:
+        logger.exception("teksten bijwerken: batchherziening mislukt")
 
     producten = [(p, None) for p in _zonder_tekst(_PER_RONDE)]
     # Ontbrekende teksten gaan voor; met de ruimte die overblijft de

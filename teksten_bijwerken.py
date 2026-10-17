@@ -304,6 +304,8 @@ def vul_ontbrekende_teksten(app):
 # meer in aanmerking.
 _HERZIEN_BATCH_SOORT = 'herzien-batch'
 _HERZIEN_BATCH_MAX = 800
+# Gemeten 16 okt 2026: 643 batchteksten kostten EUR 5,71.
+_BATCH_EURO_PER_TEKST = 0.009
 
 
 def _batch_kandidaten(limiet=_HERZIEN_BATCH_MAX):
@@ -338,6 +340,22 @@ def _herzien_via_batch(app, sleutel):
         kandidaten = _batch_kandidaten()
         if not kandidaten:
             return
+        # Noodrem ook voor batches (Peters akkoord 17 okt 2026): de eerste
+        # batch kostte EUR 5,71 en bracket 16 okt op EUR 5,85, boven de grens,
+        # omdat het bedrag pas bij het verwerken geboekt wordt. Nu vooraf
+        # rekenen: wat vandaag al uitgegeven is plus _BATCH_EURO_PER_TEKST per
+        # tekst moet onder de daggrens blijven; de rest gaat een dag later.
+        from ai_content import besteed_vandaag
+        ruimte = app.config['AI_DAGLIMIET_EURO'] - besteed_vandaag()
+        past = int(max(ruimte, 0) // _BATCH_EURO_PER_TEKST)
+        if past <= 0:
+            logger.info("teksten bijwerken: herzieningsbatch wacht op de noodrem "
+                        "(nog EUR %.2f ruimte vandaag)", ruimte)
+            return
+        if len(kandidaten) > past:
+            logger.info("teksten bijwerken: noodrem: %d van %d teksten in deze batch, "
+                        "de rest later", past, len(kandidaten))
+            kandidaten = kandidaten[:past]
         batch_id = dien_batch_in(kandidaten, model=app.config.get('ANTHROPIC_MODEL'),
                                  api_key=sleutel)
         db.session.add(AIContent(product_id=None, content_type=_HERZIEN_BATCH_SOORT,

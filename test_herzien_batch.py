@@ -86,5 +86,19 @@ with app.app_context():
     tb._draai_ronde(app)
     check('daarna geen nieuwe batch meer', len(ingeleverd) == 1, ingeleverd)
 
+    # Noodrem voor batches (17 okt): drie nieuwe kandidaten, vandaag al
+    # EUR 4,985 uitgegeven -> ruimte EUR 0,015 -> past 1 tekst van EUR 0,009.
+    extra = [maak(str(20 + i), eprel=True) for i in range(3)]
+    db.session.add(AIContent(product_id=None, content_type='kostenpost', content='x', cost=4.978))
+    db.session.commit()
+    tb._draai_ronde(app)
+    check('noodrem: alleen wat binnen de daggrens past', len(ingeleverd) == 2 and len(ingeleverd[1]) == 1,
+          ingeleverd)
+    db.session.query(AIContent).filter_by(content_type='herzien-batch').delete()
+    db.session.add(AIContent(product_id=None, content_type='kostenpost', content='y', cost=1.0))
+    db.session.commit()
+    tb._draai_ronde(app)
+    check('noodrem: daggrens op, geen batch', len(ingeleverd) == 2, ingeleverd)
+
 print(f'\n{fouten} fout')
 sys.exit(1 if fouten else 0)
